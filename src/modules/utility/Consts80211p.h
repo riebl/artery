@@ -21,6 +21,8 @@
 #ifndef CONSTANTS_802_11p
 #define CONSTANTS_802_11p
 
+#include <simtime_t.h>
+
 /** @brief Bit rates for 802.11p
  *
  * as defined in Table 17-14 MIB attribute default values/ranges in the IEEE 802.11-2007 standard
