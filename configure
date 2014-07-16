@@ -9,12 +9,14 @@ import sys
 from subprocess import check_call
 from logging import warning, error
 from optparse import OptionParser
+import ConfigParser
 import fnmatch
 
 
 # Option handling
 parser = OptionParser()
 parser.add_option("--with-inet", dest="inet", help="link Veins with a version of the INET Framework installed in PATH [default: do not link with INET]", metavar="PATH")
+parser.add_option("--with-vanetza", action="store_true", dest="vanetza", help="link Veins with Vanetza")
 (options, args) = parser.parse_args()
 
 if args:
@@ -58,6 +60,27 @@ else:
 # Start creating files
 if not os.path.isdir('out'):
     os.mkdir('out')
+
+# Config file settings
+config = ConfigParser.SafeConfigParser()
+config.add_section('vanetza')
+config.set('vanetza', 'lib_dir', '%(root)s/build/lib')
+config.set('vanetza', 'inc_dir', '%(root)s')
+config.set('vanetza', 'asn1c_inc_dir', '%(root)s/vanetza/asn1/gen')
+config.add_section('boost')
+config.set('boost', 'date_time', 'boost_date_time')
+config.set('boost', 'system', 'boost_system')
+config.read('local.configure')
+
+if options.vanetza:
+    vanetza_libraries = ['asn1', 'btp', 'dcc', 'geonet', 'gnss', 'net']
+    vanetza_includes = ['-I', config.get('vanetza', 'inc_dir'), '-I', config.get('vanetza', 'asn1c_inc_dir')]
+    vanetza_link = ['-L', config.get('vanetza', 'lib_dir')]
+    vanetza_link += ['-lvanetza_' + lib for lib in vanetza_libraries]
+    vanetza_link += ['-l' + config.get('boost', 'date_time')]
+    vanetza_link += ['-l' + config.get('boost', 'system')]
+    vanetza_defs = ['-DVANETZA_GEONET_USE_PACKET_VARIANT']
+    makemake_flags += vanetza_includes + vanetza_link + vanetza_defs
 
 f = open(os.path.join('out', 'config.py'), 'w')
 f.write('run_libs = %s\n' % repr(run_libs))

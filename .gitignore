@@ -11,6 +11,7 @@ doc/neddoc
 /memcheck
 
 /out
+/local.configure
 
 tests/**/results
 tests/**/.tkenvrc
