@@ -114,6 +114,7 @@ class TraCIMobility : public BaseMobility
 			if (angle == M_PI) throw cRuntimeError("TraCIMobility::getAngleRad called with no angle set yet");
 			return angle;
 		}
+		virtual std::pair<double, double> getGeoPosition() const;
 		virtual TraCIScenarioManager* getManager() const {
 			if (!manager) manager = TraCIScenarioManagerAccess().get();
 			return manager;
