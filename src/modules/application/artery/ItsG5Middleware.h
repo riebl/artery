@@ -83,6 +83,7 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 		vanetza::geonet::Router mGeoRouter;
 		vanetza::btp::PortDispatcher mBtpPortDispatcher;
 		boost::posix_time::ptime mTimebase;
+		unsigned mAdditionalHeaderBits;
 		simtime_t mUpdateInterval;
 		cMessage* mUpdateMessage;
 		std::unique_ptr<Facilities> mFacilities;

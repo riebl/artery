@@ -70,7 +70,8 @@ ItsG5Middleware::ItsG5Middleware() :
 		mClock(std::chrono::milliseconds(simTime().inUnit(SIMTIME_MS))),
 		mDccScheduler(mDccFsm, mClock),
 		mDccControl(mDccScheduler, *this),
-		mGeoRouter(mGeoMib, mDccControl)
+		mGeoRouter(mGeoMib, mDccControl),
+		mAdditionalHeaderBits(0)
 {
 }
 
@@ -91,6 +92,7 @@ void ItsG5Middleware::request(const vanetza::access::DataRequest& req,
 	net->setByteLength(payload->size());
 	net->setPayload(GeoNetPacketWrapper(std::move(payload)));
 	net->setControlInfo(macCtrlInfo);
+	net->addBitLength(mAdditionalHeaderBits);
 
 	sendDown(net);
 }
@@ -155,6 +157,7 @@ void ItsG5Middleware::initializeMiddleware()
 	}
 	mFacilities.reset(new Facilities(mVehicleDataProvider, *mMobility, mDccFsm, mDccScheduler));
 
+	mAdditionalHeaderBits = par("headerLength");
 	mTimebase = boost::posix_time::time_from_string(par("datetime"));
 	mUpdateInterval = par("updateInterval").doubleValue();
 	mUpdateMessage = new cMessage("update ITS-G5");
