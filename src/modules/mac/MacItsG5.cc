@@ -15,11 +15,13 @@
 //
 
 #include "MacItsG5.h"
+#include "ChannelLoadReport_m.h"
 #include "Decider80211p.h"
 #include "GeoNetToMacControlInfo.h"
 #include "MacToGeoNetControlInfo.h"
 #include "MacToPhyControlInfo.h"
 #include "MacToPhyInterface.h"
+#include <vanetza/dcc/channel_load.hpp>
 
 Define_Module(MacItsG5);
 
@@ -41,6 +43,10 @@ void MacItsG5::initialize(int stage)
 
 		mMacAddress = 0; // set by GeoNet control info later on
 		mNextMacEventMessage = new cMessage("next MAC event");
+		mChannelLoadReport = new cMessage("report channel load");
+		mChannelLoadReportInterval = simtime_t(100, SIMTIME_MS);
+		mChannelLoadMeasurements.reset();
+		scheduleAt(simTime() + mChannelLoadReportInterval, mChannelLoadReport);
 
 		mStatistics = Statistics {};
 		mCarrierSensing.setState(CarrierSensing::IDLE);
@@ -50,6 +56,7 @@ void MacItsG5::initialize(int stage)
 void MacItsG5::finish()
 {
 	cancelAndDelete(mNextMacEventMessage);
+	cancelAndDelete(mChannelLoadReport);
 	writeRecord(mStatistics, mEdca);
 }
 
@@ -81,6 +88,11 @@ void MacItsG5::handleSelfMsg(cMessage* msg)
 		assert(phyInfo);
 		sendDelayed(mac, RADIODELAY_11P, lowerLayerOut);
 		mStatistics.SentPackets++;
+	} else if (msg == mChannelLoadReport) {
+		auto* report = new ChannelLoadReport();
+		report->setChannelLoad(mChannelLoadMeasurements.channel_load());
+		sendControlUp(report);
+		scheduleAt(simTime() + mChannelLoadReportInterval, mChannelLoadReport);
 	} else {
 		opp_error("Unknown MacItsG5 self-message");
 	}
@@ -119,6 +131,7 @@ void MacItsG5::handleLowerControl(cMessage* msg)
 		phy->setRadioState(Veins::Radio::RX);
 		mEdca.txSuccess();
 	} else if (msg->getKind() == Mac80211pToPhy11pInterface::CHANNEL_BUSY) {
+		mChannelLoadMeasurements.busy();
 		auto idleDuration = mCarrierSensing.getIdleDuration();
 		mCarrierSensing.setState(CarrierSensing::BUSY_PHYSICAL);
 		if (idleDuration) {
@@ -126,6 +139,7 @@ void MacItsG5::handleLowerControl(cMessage* msg)
 		}
 		cancelEvent(mNextMacEventMessage);
 	} else if (msg->getKind() == Mac80211pToPhy11pInterface::CHANNEL_IDLE) {
+		mChannelLoadMeasurements.idle();
 		mCarrierSensing.setState(CarrierSensing::IDLE);
 		scheduleNextMacEvent();
 	} else if (msg->getKind() == Decider80211p::BITERROR) {

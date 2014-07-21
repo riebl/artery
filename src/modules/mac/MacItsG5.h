@@ -28,6 +28,7 @@
 
 #include <omnetpp.h>
 #include <CarrierSensing.h>
+#include <ChannelLoadMeasurements.h>
 #include <Edca.h>
 #include <BaseMacLayer.h>
 #include <Mac80211Pkt_m.h>
@@ -96,6 +97,15 @@ class MacItsG5 : public BaseMacLayer
 
 		/** @brief EDCA subsystem */
 		Edca mEdca;
+
+		/** @brief Self message to generate a new channel load report */
+		cMessage* mChannelLoadReport;
+
+		/** @brief Duration between two channel load reports */
+		simtime_t mChannelLoadReportInterval;
+
+		/** @brief Buffer with channel load samples*/
+		ChannelLoadMeasurements mChannelLoadMeasurements;
 
 		/** @brief stats */
 		Statistics mStatistics;
