@@ -67,6 +67,7 @@ vanetza::MacAddress convertToMacAddress(const LAddress::L2Type& addr)
 }
 
 ItsG5Middleware::ItsG5Middleware() :
+		mClock(std::chrono::milliseconds(simTime().inUnit(SIMTIME_MS))),
 		mDccScheduler(mDccFsm, mClock),
 		mDccControl(mDccScheduler, *this),
 		mGeoRouter(mGeoMib, mDccControl)
