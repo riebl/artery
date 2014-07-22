@@ -67,6 +67,7 @@ void ItsG5Service::indicate(const vanetza::btp::DataIndication& ind, std::unique
 
 void ItsG5Service::indicate(const vanetza::btp::DataIndication& ind, cPacket* packet)
 {
+	delete packet;
 }
 
 void ItsG5Service::request(const vanetza::btp::DataRequestB& req, cPacket* packet)
