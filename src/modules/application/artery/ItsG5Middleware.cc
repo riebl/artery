@@ -224,6 +224,7 @@ void ItsG5Middleware::handleLowerMsg(cMessage *msg)
 	vanetza::MacAddress sender = convertToMacAddress(info->source_addr);
 	vanetza::MacAddress destination = convertToMacAddress(info->destination_addr);
 	mGeoRouter.indicate(wrapper.extract_up_packet(), sender, destination);
+	delete msg;
 }
 
 void ItsG5Middleware::update()
