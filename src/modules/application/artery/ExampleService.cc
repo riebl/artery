@@ -35,6 +35,8 @@ void ExampleService::indicate(const btp::DataIndication& ind, cPacket* packet)
 	if (packet->getByteLength() == 42) {
 		findHost()->bubble("packet indication");
 	}
+
+	delete(packet);
 }
 
 void ExampleService::initialize()
