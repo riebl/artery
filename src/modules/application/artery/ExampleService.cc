@@ -69,7 +69,7 @@ void ExampleService::trigger()
 	req.gn.traffic_class.tc_id(static_cast<unsigned>(dcc::Profile::DP3));
 	req.gn.communication_profile = geonet::CommunicationProfile::ITS_G5;
 
-	cPacket* packet = new cPacket();
+	cPacket* packet = new cPacket("Example Service Packet");
 	packet->setByteLength(42);
 	request(req, packet);
 }
