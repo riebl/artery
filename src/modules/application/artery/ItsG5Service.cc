@@ -44,12 +44,12 @@ void ItsG5Service::indicate(const vanetza::btp::DataIndication& ind, std::unique
 		{
 			cPacket* result = nullptr;
 			typedef convertible::byte_buffer byte_buffer;
-			typedef convertible::byte_buffer_impl<cPacket&> byte_buffer_impl;
+			typedef convertible::byte_buffer_impl<cPacket*> byte_buffer_impl;
 
-			const byte_buffer* ptr = packet[OsiLayer::Application].ptr();
-			const byte_buffer_impl* impl = dynamic_cast<const byte_buffer_impl*>(ptr);
+			byte_buffer* ptr = packet[OsiLayer::Application].ptr();
+			byte_buffer_impl* impl = dynamic_cast<byte_buffer_impl*>(ptr);
 			if (impl != nullptr) {
-				result = &(impl->m_packet);
+				result = impl->consume();
 			}
 
 			return result;
@@ -72,6 +72,6 @@ void ItsG5Service::indicate(const vanetza::btp::DataIndication& ind, cPacket* pa
 void ItsG5Service::request(const vanetza::btp::DataRequestB& req, cPacket* packet)
 {
 	std::unique_ptr<vanetza::btp::DownPacket> buffer { new vanetza::btp::DownPacket() };
-	buffer->layer(vanetza::OsiLayer::Application) = *packet;
+	buffer->layer(vanetza::OsiLayer::Application) = std::move(packet);
 	ItsG5BaseService::request(req, std::move(buffer));
 }

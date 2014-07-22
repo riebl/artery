@@ -22,24 +22,43 @@
 #include <cmessage.h>
 #include <simutil.h>
 #include <vanetza/common/byte_buffer_convertible.hpp>
+#include <memory>
 
 namespace vanetza {
 namespace convertible {
 
 template<>
-struct byte_buffer_impl<cPacket&> : public byte_buffer
+class byte_buffer_impl<cPacket*> : public byte_buffer
 {
-	byte_buffer_impl(cPacket& packet) : m_packet(packet) {}
-	void convert(ByteBuffer& buf) const override { opp_error("Can't serialize cPacket"); }
-	std::size_t size() const override { return m_packet.getByteLength(); }
-	std::unique_ptr<byte_buffer> duplicate() const override
-	{
-		return std::unique_ptr<byte_buffer> {
-			new byte_buffer_impl<cPacket&>(*m_packet.dup())
-		};
-	}
+	public:
+		byte_buffer_impl(cPacket* packet) : m_packet(packet)
+		{
+		}
 
-	cPacket& m_packet;
+		void convert(ByteBuffer& buf) const override
+		{
+			opp_error("Can't serialize cPacket");
+		}
+
+		std::size_t size() const override
+		{
+			return m_packet->getByteLength();
+		}
+
+		std::unique_ptr<byte_buffer> duplicate() const override
+		{
+			return std::unique_ptr<byte_buffer> {
+				new byte_buffer_impl<cPacket*>(m_packet->dup())
+			};
+		}
+
+		cPacket* consume()
+		{
+			return m_packet.release();
+		}
+
+	private:
+		std::unique_ptr<cPacket> m_packet;
 };
 
 }
