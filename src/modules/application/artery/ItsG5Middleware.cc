@@ -148,7 +148,7 @@ void ItsG5Middleware::initialize(int stage)
 
 void ItsG5Middleware::initializeMiddleware()
 {
-	mMobility = Veins::TraCIMobilityAccess().get(getParentModule()->getParentModule());
+	mMobility = Veins::TraCIMobilityAccess().get(getParentModule());
 	if (mMobility == nullptr) {
 		opp_error("Mobility not found");
 	}
