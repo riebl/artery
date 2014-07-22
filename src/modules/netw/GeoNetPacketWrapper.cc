@@ -56,12 +56,6 @@ GeoNetPacketWrapper& GeoNetPacketWrapper::operator=(const GeoNetPacketWrapper& o
 	return *this;
 }
 
-vanetza::geonet::UpPacket* GeoNetPacketWrapper::up()
-{
-	assert(mPacket);
-	return mPacket.get();
-}
-
 std::unique_ptr<vanetza::geonet::UpPacket> GeoNetPacketWrapper::extract_up_packet()
 {
 	return std::move(mPacket);

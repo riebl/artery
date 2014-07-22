@@ -31,7 +31,6 @@ class GeoNetPacketWrapper
 		GeoNetPacketWrapper(const GeoNetPacketWrapper&);
 		GeoNetPacketWrapper& operator=(const GeoNetPacketWrapper&);
 		virtual ~GeoNetPacketWrapper();
-		vanetza::geonet::UpPacket* up();
 		std::unique_ptr<vanetza::geonet::UpPacket> extract_up_packet();
 
 	private:
