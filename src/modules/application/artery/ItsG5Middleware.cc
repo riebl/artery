@@ -141,9 +141,11 @@ void ItsG5Middleware::initialize(int stage)
 		case 1:
 			initializeServices();
 			break;
-		case 2:
-			// start update cycle with random jitter to avoid unrealistic node synchronization
-			scheduleAt(simTime() + uniform(SimTime(0, SIMTIME_MS), mUpdateInterval), mUpdateMessage);
+		case 2: {
+				// start update cycle with random jitter to avoid unrealistic node synchronization
+				auto start = simTime() + mUpdateInterval + uniform(SimTime(0, SIMTIME_MS), mUpdateInterval);
+				scheduleAt(start, mUpdateMessage);
+			}
 			break;
 		default:
 			break;
