@@ -20,19 +20,28 @@
 #define CPACKET_BYTE_BUFFER_CONVERTIBLE_H_
 
 #include <cmessage.h>
+#include <cobject.h>
 #include <simutil.h>
 #include <vanetza/common/byte_buffer_convertible.hpp>
+#include <cassert>
 #include <memory>
 
 namespace vanetza {
 namespace convertible {
 
 template<>
-class byte_buffer_impl<cPacket*> : public byte_buffer
+class byte_buffer_impl<cPacket*> : public byte_buffer, public cObject
 {
 	public:
 		byte_buffer_impl(cPacket* packet) : m_packet(packet)
 		{
+			assert(packet);
+			take(m_packet.get());
+		}
+
+		~byte_buffer_impl()
+		{
+			drop_packet();
 		}
 
 		void convert(ByteBuffer& buf) const override
@@ -54,10 +63,18 @@ class byte_buffer_impl<cPacket*> : public byte_buffer
 
 		cPacket* consume()
 		{
+			drop_packet();
 			return m_packet.release();
 		}
 
 	private:
+		void drop_packet()
+		{
+			if (m_packet) {
+				drop(m_packet.get());
+			}
+		}
+
 		std::unique_ptr<cPacket> m_packet;
 };
 
