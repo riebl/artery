@@ -68,11 +68,14 @@ config.set('vanetza', 'lib_dir', '%(root)s/build/lib')
 config.set('vanetza', 'inc_dir', '%(root)s')
 config.set('vanetza', 'asn1c_inc_dir', '%(root)s/vanetza/asn1/gen')
 config.add_section('boost')
+config.set('boost', 'lib_dir', '%(root)s/lib')
+config.set('boost', 'inc_dir', '%(root)s/include')
 config.set('boost', 'date_time', 'boost_date_time')
 config.set('boost', 'system', 'boost_system')
 config.read('local.configure')
 
 if options.vanetza:
+    makemake_flags += ['-I', config.get('boost', 'inc_dir'), '-L', config.get('boost', 'lib_dir')]
     vanetza_libraries = ['asn1', 'btp', 'dcc', 'geonet', 'gnss', 'net']
     vanetza_includes = ['-I', config.get('vanetza', 'inc_dir'), '-I', config.get('vanetza', 'asn1c_inc_dir')]
     vanetza_link = ['-L', config.get('vanetza', 'lib_dir')]
