@@ -72,6 +72,7 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 		void updateServices();
 		void initializeMiddleware();
 		void initializeServices();
+		bool checkServiceFilterRules(const cXMLElement* filters) const;
 		vanetza::geonet::Timestamp deriveTimestamp(simtime_t) const;
 
 		Veins::TraCIMobility* mMobility;

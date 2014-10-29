@@ -34,6 +34,9 @@
 #include <vanetza/geonet/position_vector.hpp>
 #include <vanetza/net/mac_address.hpp>
 #include <boost/lexical_cast.hpp>
+#include <algorithm>
+#include <regex>
+#include <string>
 
 Define_Module(ItsG5Middleware);
 
@@ -187,22 +190,87 @@ void ItsG5Middleware::initializeServices()
 		const char* service_name = service_cfg->getAttribute("name") ?
 				service_cfg->getAttribute("name") :
 				service_cfg->getAttribute("type");
-		cModule* module = module_type->createScheduleInit(service_name, this);
 
-		ItsG5BaseService* service = dynamic_cast<ItsG5BaseService*>(module);
-		if (service == nullptr) {
-			opp_error("%s is not of type ItsG5BaseService", service_cfg->getAttribute("type"));
-		} else {
-			cXMLElement* listener = service_cfg->getFirstChildWithTag("listener");
-			if (listener && listener->getAttribute("port")) {
-				port_type port = boost::lexical_cast<port_type>(listener->getAttribute("port"));
-				mServices.emplace(service, port);
-				mBtpPortDispatcher.set_non_interactive_handler(vanetza::host_cast<port_type>(port), service);
+		if (checkServiceFilterRules(service_cfg->getFirstChildWithTag("filters"))) {
+			cModule* module = module_type->createScheduleInit(service_name, this);
+			ItsG5BaseService* service = dynamic_cast<ItsG5BaseService*>(module);
+
+			if (service == nullptr) {
+				opp_error("%s is not of type ItsG5BaseService", module_type->getFullName());
 			} else {
-				opp_error("No listener port defined for %s", service_name);
+				cXMLElement* listener = service_cfg->getFirstChildWithTag("listener");
+				if (listener && listener->getAttribute("port")) {
+					port_type port = boost::lexical_cast<port_type>(listener->getAttribute("port"));
+					mServices.emplace(service, port);
+					mBtpPortDispatcher.set_non_interactive_handler(vanetza::host_cast<port_type>(port), service);
+				} else {
+					opp_error("No listener port defined for %s", service_name);
+				}
 			}
 		}
 	}
+}
+
+bool ItsG5Middleware::checkServiceFilterRules(const cXMLElement* filter_cfg) const
+{
+	bool add_service = true;
+
+	if (filter_cfg) {
+		using filter_fn = std::function<bool(void)>;
+		std::list<filter_fn> filters;
+
+		// add name pattern filter
+		cXMLElement* name_filter_cfg = filter_cfg->getFirstChildWithTag("name");
+		if (name_filter_cfg) {
+			const char* name_pattern = name_filter_cfg->getAttribute("pattern");
+			if (!name_pattern) {
+				opp_error("Required pattern attribute is missing for name filter");
+			} else {
+				std::regex name_regex(name_pattern);
+				filter_fn name_filter = [this, name_regex]() {
+					return std::regex_match(this->mMobility->getExternalId(), name_regex);
+				};
+				filters.emplace_back(std::move(name_filter));
+			}
+		}
+
+		// add penetration rate filter
+		cXMLElement* penetration_filter_cfg = filter_cfg->getFirstChildWithTag("penetration");
+		if (penetration_filter_cfg) {
+			const char* penetration_rate_str = penetration_filter_cfg->getAttribute("rate");
+			if (!penetration_rate_str) {
+				opp_error("Required rate attribute is missing for penetration filter");
+			}
+
+			float penetration_rate = boost::lexical_cast<float>(penetration_rate_str);
+			if (penetration_rate > 1.0 || penetration_rate < 0.0) {
+				opp_error("Penetration rate is out of range [0.0, 1.0]");
+			}
+
+			filter_fn penetration_filter = [this, penetration_rate]() {
+				return penetration_rate >= uniform(0.0f, 1.0f);
+			};
+			filters.emplace_back(std::move(penetration_filter));
+		}
+
+		// apply filter rules
+		std::string filter_operator = filter_cfg->getAttribute("operator") ?
+				filter_cfg->getAttribute("operator") : "or";
+		auto filter_executor = [](filter_fn f) { return f(); };
+		if (filter_operator == "or") {
+			if (!filters.empty()) {
+				add_service = std::any_of(filters.begin(), filters.end(), filter_executor);
+			} else {
+				add_service = true;
+			}
+		} else if (filter_operator == "and") {
+			add_service = std::all_of(filters.begin(), filters.end(), filter_executor);
+		} else {
+			opp_error("Unsupported filter operator: %s", filter_operator.c_str());
+		}
+	}
+
+	return add_service;
 }
 
 void ItsG5Middleware::finish()

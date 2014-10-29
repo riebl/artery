@@ -5,5 +5,9 @@
 	</service>
 	<service type="org.car2x.veins.modules.application.artery.ExampleService">
 		<listener port="4711" />
+		<filters>
+			<name pattern="flow0\.1.*" />
+			<penetration rate="0.1" />
+		</filters>
 	</service>
 </services>
