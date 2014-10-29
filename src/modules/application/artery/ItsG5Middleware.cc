@@ -187,7 +187,7 @@ void ItsG5Middleware::initializeServices()
 
 		ItsG5BaseService* service = dynamic_cast<ItsG5BaseService*>(module);
 		if (service == nullptr) {
-			opp_error("%s is not of type ItsG5Service", service_cfg->getAttribute("type"));
+			opp_error("%s is not of type ItsG5BaseService", service_cfg->getAttribute("type"));
 		} else {
 			int port = strtol(service_cfg->getFirstChildWithTag("port")->getNodeValue(), nullptr, 0);
 			mServices.emplace(service, port);
