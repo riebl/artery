@@ -184,7 +184,10 @@ void ItsG5Middleware::initializeServices()
 	cXMLElement* config = par("services").xmlValue();
 	for (cXMLElement* service_cfg : config->getChildrenByTagName("service")) {
 		cModuleType* module_type = cModuleType::get(service_cfg->getAttribute("type"));
-		cModule* module = module_type->createScheduleInit(service_cfg->getAttribute("name"), this);
+		const char* service_name = service_cfg->getAttribute("name") ?
+				service_cfg->getAttribute("name") :
+				service_cfg->getAttribute("type");
+		cModule* module = module_type->createScheduleInit(service_name, this);
 
 		ItsG5BaseService* service = dynamic_cast<ItsG5BaseService*>(module);
 		if (service == nullptr) {

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services>
-	<service type="org.car2x.veins.modules.application.artery.CaService" name="Cooperative Awareness">
+	<service type="org.car2x.veins.modules.application.artery.CaService">
 		<listener port="2001" />
 	</service>
-	<service type="org.car2x.veins.modules.application.artery.ExampleService" name="Example Service">
+	<service type="org.car2x.veins.modules.application.artery.ExampleService">
 		<listener port="4711" />
 	</service>
 </services>
