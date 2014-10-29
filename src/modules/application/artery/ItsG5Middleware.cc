@@ -33,6 +33,7 @@
 #include <vanetza/geonet/packet.hpp>
 #include <vanetza/geonet/position_vector.hpp>
 #include <vanetza/net/mac_address.hpp>
+#include <boost/lexical_cast.hpp>
 
 Define_Module(ItsG5Middleware);
 
@@ -189,9 +190,14 @@ void ItsG5Middleware::initializeServices()
 		if (service == nullptr) {
 			opp_error("%s is not of type ItsG5BaseService", service_cfg->getAttribute("type"));
 		} else {
-			int port = strtol(service_cfg->getFirstChildWithTag("port")->getNodeValue(), nullptr, 0);
-			mServices.emplace(service, port);
-			mBtpPortDispatcher.set_non_interactive_handler(vanetza::host_cast<uint16_t>(port), service);
+			cXMLElement* listener = service_cfg->getFirstChildWithTag("listener");
+			if (listener && listener->getAttribute("port")) {
+				port_type port = boost::lexical_cast<port_type>(listener->getAttribute("port"));
+				mServices.emplace(service, port);
+				mBtpPortDispatcher.set_non_interactive_handler(vanetza::host_cast<port_type>(port), service);
+			} else {
+				opp_error("No listener port defined for %s", service_name);
+			}
 		}
 	}
 }
