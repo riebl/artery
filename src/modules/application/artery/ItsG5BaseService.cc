@@ -58,6 +58,18 @@ void ItsG5BaseService::initialize()
 	m_middleware = middleware;
 }
 
+void ItsG5BaseService::subscribe(const simsignal_t& signal)
+{
+	assert(m_middleware);
+	m_middleware->subscribe(signal, this);
+}
+
+void ItsG5BaseService::unsubscribe(const simsignal_t& signal)
+{
+	assert(m_middleware);
+	m_middleware->unsubscribe(signal, this);
+}
+
 void ItsG5BaseService::trigger()
 {
 }

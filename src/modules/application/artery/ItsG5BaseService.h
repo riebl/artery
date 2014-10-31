@@ -19,13 +19,16 @@
 #ifndef ITSG5BASESERVICE_H_
 #define ITSG5BASESERVICE_H_
 
+#include <clistener.h>
 #include <csimplemodule.h>
 #include <vanetza/btp/data_interface.hpp>
 #include <vanetza/btp/data_request.hpp>
 #include "Facilities.h"
 #include "ItsG5Middleware.h"
 
-class ItsG5BaseService : public cSimpleModule, public vanetza::btp::IndicationInterface
+class ItsG5BaseService :
+	public cSimpleModule, public cListener,
+	public vanetza::btp::IndicationInterface
 {
 	public:
 		typedef ItsG5Middleware::port_type port_type;
@@ -41,6 +44,8 @@ class ItsG5BaseService : public cSimpleModule, public vanetza::btp::IndicationIn
 		Facilities& getFacilities();
 		port_type getPortNumber() const;
 		cModule* findHost();
+		void subscribe(const simsignal_t&);
+		void unsubscribe(const simsignal_t&);
 
 	private:
 		Facilities* m_facilities;
