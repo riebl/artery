@@ -18,6 +18,8 @@
 #include <vanetza/dcc/profile.hpp>
 #include <vanetza/geonet/interface.hpp>
 
+static const simsignal_t scSignalCamReceived = cComponent::registerSignal("CaService.received");
+
 Define_Module(ExampleService);
 
 using namespace vanetza;
@@ -43,6 +45,7 @@ void ExampleService::initialize()
 {
 	ItsG5BaseService::initialize();
 	m_self_msg = new cMessage("Example Service");
+	subscribe(scSignalCamReceived);
 
 	scheduleAt(simTime() + 3.0, m_self_msg);
 }
@@ -72,4 +75,11 @@ void ExampleService::trigger()
 	cPacket* packet = new cPacket("Example Service Packet");
 	packet->setByteLength(42);
 	request(req, packet);
+}
+
+void ExampleService::receiveSignal(cComponent* source, simsignal_t signal, bool valid)
+{
+	if (signal == scSignalCamReceived && valid) {
+		EV << "Vehicle " << getFacilities().getMobility().getExternalId() << " received a CAM in sibling serivce\n";
+	}
 }

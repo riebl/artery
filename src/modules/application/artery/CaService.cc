@@ -11,6 +11,7 @@ auto microdegree = vanetza::units::degree * boost::units::si::micro;
 auto decidegree = vanetza::units::degree * boost::units::si::deci;
 auto centimeter_per_second = vanetza::units::si::meter_per_second * boost::units::si::centi;
 
+static const simsignal_t scSignalCamReceived = cComponent::registerSignal("CaService.received");
 
 Define_Module(CaService);
 
@@ -78,7 +79,10 @@ void CaService::indicate(const vanetza::btp::DataIndication& ind, std::unique_pt
 
 	packet_visitor visitor;
 	asn1::Cam* cam = boost::apply_visitor(visitor, *packet);
-	// TODO: collect statistic data
+	if (cam) {
+		// TODO: collect statistic data
+		emit(scSignalCamReceived, cam->validate());
+	}
 }
 
 void CaService::checkTriggeringConditions(const VehicleDataProvider& vdp, const simtime_t& T_now)
