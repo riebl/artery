@@ -38,6 +38,9 @@ EdcaQueue::EdcaQueue(unsigned aifsn, unsigned cwmin, unsigned cwmax) :
 
 EdcaQueue::~EdcaQueue()
 {
+	for (cPacket* packet : mPackets) {
+		delete packet;
+	}
 }
 
 bool EdcaQueue::queuePacket(cPacket* packet, boost::optional<simtime_t> idleDuration)
