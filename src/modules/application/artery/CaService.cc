@@ -12,6 +12,7 @@ auto decidegree = vanetza::units::degree * boost::units::si::deci;
 auto centimeter_per_second = vanetza::units::si::meter_per_second * boost::units::si::centi;
 
 static const simsignal_t scSignalCamReceived = cComponent::registerSignal("CaService.received");
+static const simsignal_t scSignalCamSent = cComponent::registerSignal("CaService.sent");
 
 Define_Module(CaService);
 
@@ -134,7 +135,10 @@ void CaService::sendCam(const VehicleDataProvider& vdp, const simtime_t& T_now)
 
 	std::unique_ptr<geonet::DownPacket> payload { new geonet::DownPacket };
 	payload->layer(OsiLayer::Application) = std::move(cam);
+	const std::size_t payload_length = payload->size();
 	this->request(request, std::move(payload));
+
+	emit(scSignalCamSent, payload_length);
 }
 
 simtime_t CaService::genCamDcc()
