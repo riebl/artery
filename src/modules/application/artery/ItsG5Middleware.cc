@@ -203,6 +203,8 @@ void ItsG5Middleware::initializeServices()
 					port_type port = boost::lexical_cast<port_type>(listener->getAttribute("port"));
 					mServices.emplace(service, port);
 					mBtpPortDispatcher.set_non_interactive_handler(vanetza::host_cast<port_type>(port), service);
+				} else if (!service->requiresListener()) {
+					mServices.emplace(service, 0);
 				} else {
 					opp_error("No listener port defined for %s", service_name);
 				}

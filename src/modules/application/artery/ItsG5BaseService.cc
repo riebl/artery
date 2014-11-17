@@ -36,6 +36,11 @@ Facilities& ItsG5BaseService::getFacilities()
 	return *m_facilities;
 }
 
+bool ItsG5BaseService::requiresListener() const
+{
+	return true;
+}
+
 ItsG5BaseService::port_type ItsG5BaseService::getPortNumber() const
 {
 	assert(m_middleware);

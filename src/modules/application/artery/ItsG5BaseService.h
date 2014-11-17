@@ -36,6 +36,7 @@ class ItsG5BaseService :
 		ItsG5BaseService();
 		virtual ~ItsG5BaseService();
 		virtual void trigger();
+		virtual bool requiresListener() const;
 
 	protected:
 		void initialize() override;
