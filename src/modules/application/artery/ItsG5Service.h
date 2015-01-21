@@ -28,6 +28,8 @@ class ItsG5Service : public ItsG5BaseService
 		virtual ~ItsG5Service();
 
 	protected:
+		using ItsG5BaseService::indicate;
+		using ItsG5BaseService::request;
 		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::btp::UpPacket>) override;
 		virtual void indicate(const vanetza::btp::DataIndication&, cPacket*);
 		void request(const vanetza::btp::DataRequestB&, cPacket*);
