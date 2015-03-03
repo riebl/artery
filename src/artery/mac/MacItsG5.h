@@ -26,13 +26,13 @@
 #ifndef MACITSG5_H_
 #define MACITSG5_H_
 
+#include "artery/mac/CarrierSensing.h"
+#include "artery/mac/ChannelLoadMeasurements.h"
+#include "artery/mac/Edca.h"
+#include "veins/base/modules/BaseMacLayer.h"
+#include "veins/base/utils/SimpleAddress.h"
+#include "veins/modules/messages/Mac80211Pkt_m.h"
 #include <omnetpp.h>
-#include <CarrierSensing.h>
-#include <ChannelLoadMeasurements.h>
-#include <Edca.h>
-#include <BaseMacLayer.h>
-#include <Mac80211Pkt_m.h>
-#include <SimpleAddress.h>
 
 /**
  * @brief

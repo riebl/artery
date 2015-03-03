@@ -19,10 +19,10 @@
 #ifndef EDCA_H_
 #define EDCA_H_
 
-#include "AccessCategories.h"
-#include "CarrierSensing.h"
-#include "Consts80211p.h"
-#include "EdcaQueue.h"
+#include "artery/mac/AccessCategories.h"
+#include "artery/mac/CarrierSensing.h"
+#include "artery/mac/EdcaQueue.h"
+#include "veins/modules/utility/Consts80211p.h"
 #include <cmessage.h>
 #include <simtime_t.h>
 #include <deque>

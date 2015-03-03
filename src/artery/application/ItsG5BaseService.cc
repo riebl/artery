@@ -16,9 +16,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#include "ItsG5Service.h"
-#include "ItsG5Middleware.h"
-#include "FindModule.h"
+#include "artery/application/ItsG5Service.h"
+#include "artery/application/ItsG5Middleware.h"
+#include "veins/base/utils/FindModule.h"
 #include <cassert>
 
 ItsG5BaseService::ItsG5BaseService() :

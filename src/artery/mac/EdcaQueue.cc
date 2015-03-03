@@ -16,9 +16,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#include "Consts80211p.h"
-#include "CarrierSensing.h"
-#include "EdcaQueue.h"
+#include "artery/mac/CarrierSensing.h"
+#include "artery/mac/EdcaQueue.h"
+#include "veins/modules/utility/Consts80211p.h"
 #include <omnetpp.h>
 #include <cassert>
 

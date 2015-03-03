@@ -16,8 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#include "VehicleDataProvider.h"
-#include "TraCIMobility.h"
+#include "artery/application/VehicleDataProvider.h"
+#include "veins/modules/mobility/traci/TraCIMobility.h"
 #undef ev
 #include <cassert>
 #include <cmath>

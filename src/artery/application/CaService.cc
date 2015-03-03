@@ -1,6 +1,6 @@
-#include "CaService.h"
-#include "Coord.h"
-#include "VehicleDataProvider.h"
+#include "artery/application/CaService.h"
+#include "artery/application/VehicleDataProvider.h"
+#include "veins/base/utils/Coord.h"
 #undef ev
 #include <vanetza/btp/ports.hpp>
 #include <boost/units/cmath.hpp>

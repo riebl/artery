@@ -19,8 +19,8 @@
 #ifndef CASERVICE_H_
 #define CASERVICE_H_
 
-#include "Coord.h"
-#include "ItsG5BaseService.h"
+#include "artery/application/ItsG5BaseService.h"
+#include "veins/base/utils/Coord.h"
 #include <vanetza/asn1/cam.hpp>
 #include <vanetza/btp/data_interface.hpp>
 #include <vanetza/units/angle.hpp>

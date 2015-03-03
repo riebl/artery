@@ -19,9 +19,9 @@
 #ifndef ITSG5MIDDLEWARE_H_
 #define ITSG5MIDDLEWARE_H_
 
-#include "BaseApplLayer.h"
-#include "Facilities.h"
-#include "VehicleDataProvider.h"
+#include "artery/application/Facilities.h"
+#include "artery/application/VehicleDataProvider.h"
+#include "veins/base/modules/BaseApplLayer.h"
 #include <omnetpp.h>
 #include <vanetza/access/data_request.hpp>
 #include <vanetza/access/interface.hpp>

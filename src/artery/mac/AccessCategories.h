@@ -19,7 +19,7 @@
 #ifndef EDCA_ACCESS_CATEGORIES_H_0RRX3OUI
 #define EDCA_ACCESS_CATEGORIES_H_0RRX3OUI
 
-#include "Consts80211p.h"
+#include "veins/modules/utility/Consts80211p.h"
 
 namespace edca {
 

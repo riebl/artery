@@ -19,7 +19,7 @@
 #ifndef VEHICLEDATAPROVIDER_H_
 #define VEHICLEDATAPROVIDER_H_
 
-#include "Coord.h"
+#include "veins/base/utils/Coord.h"
 #include <simtime_t.h>
 #include <cstdint>
 #include <vanetza/units/acceleration.hpp>

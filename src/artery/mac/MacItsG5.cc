@@ -14,13 +14,13 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#include "MacItsG5.h"
-#include "ChannelLoadReport_m.h"
-#include "Decider80211p.h"
-#include "GeoNetToMacControlInfo.h"
-#include "MacToGeoNetControlInfo.h"
-#include "MacToPhyControlInfo.h"
-#include "MacToPhyInterface.h"
+#include "artery/mac/MacItsG5.h"
+#include "artery/mac/MacToGeoNetControlInfo.h"
+#include "artery/messages/ChannelLoadReport_m.h"
+#include "artery/netw/GeoNetToMacControlInfo.h"
+#include "veins/base/phyLayer/MacToPhyControlInfo.h"
+#include "veins/base/phyLayer/MacToPhyInterface.h"
+#include "veins/modules/phy/Decider80211p.h"
 #include <vanetza/dcc/channel_load.hpp>
 
 Define_Module(MacItsG5);

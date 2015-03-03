@@ -16,16 +16,16 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#include "AccessCategories.h"
-#include "AccessCategoriesVanetza.h"
-#include "ChannelAccess.h"
-#include "ChannelLoadReport_m.h"
-#include "GeoNetPacket_m.h"
-#include "GeoNetToMacControlInfo.h"
-#include "ItsG5Middleware.h"
-#include "ItsG5Service.h"
-#include "MacToGeoNetControlInfo.h"
-#include "TraCIMobility.h"
+#include "artery/application/ItsG5Middleware.h"
+#include "artery/application/ItsG5Service.h"
+#include "artery/mac/AccessCategories.h"
+#include "artery/mac/AccessCategoriesVanetza.h"
+#include "artery/mac/MacToGeoNetControlInfo.h"
+#include "artery/messages/ChannelLoadReport_m.h"
+#include "artery/messages/GeoNetPacket_m.h"
+#include "artery/netw/GeoNetToMacControlInfo.h"
+#include "veins/base/connectionManager/ChannelAccess.h"
+#include "veins/modules/mobility/traci/TraCIMobility.h"
 #include <vanetza/btp/header.hpp>
 #include <vanetza/btp/header_conversion.hpp>
 #include <vanetza/btp/ports.hpp>

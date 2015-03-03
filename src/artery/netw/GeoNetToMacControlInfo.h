@@ -20,8 +20,8 @@
 #define GEONETTOMACCONTROLINFO_H_
 
 #include <cobject.h>
-#include "AccessCategories.h"
-#include "SimpleAddress.h"
+#include "artery/mac/AccessCategories.h"
+#include "veins/base/utils/SimpleAddress.h"
 
 class GeoNetToMacControlInfo : public cObject
 {

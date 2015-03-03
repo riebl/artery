@@ -17,7 +17,7 @@
 //
 
 cplusplus {{
-	#include "GeoNetPacketWrapper.h"
+	#include "artery/netw/GeoNetPacketWrapper.h"
 }}
 
 class noncobject GeoNetPacketWrapper;

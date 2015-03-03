@@ -20,7 +20,7 @@
 #define MACTOGEONETCONTROLINFO_H_
 
 #include <cobject.h>
-#include "SimpleAddress.h"
+#include "veins/base/utils/SimpleAddress.h"
 
 class MacToGeoNetControlInfo : public cObject
 {

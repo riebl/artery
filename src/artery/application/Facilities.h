@@ -19,8 +19,8 @@
 #ifndef FACILITIES_H_
 #define FACILITIES_H_
 
-#include "TraCIMobility.h"
-#include "VehicleDataProvider.h"
+#include "artery/application/VehicleDataProvider.h"
+#include "veins/modules/mobility/traci/TraCIMobility.h"
 #include <vanetza/dcc/scheduler.hpp>
 #include <vanetza/dcc/state_machine.hpp>
 
