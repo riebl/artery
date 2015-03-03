@@ -19,6 +19,7 @@
 #include "AccessCategories.h"
 #include "AccessCategoriesVanetza.h"
 #include "ChannelAccess.h"
+#include "ChannelLoadReport_m.h"
 #include "GeoNetPacket_m.h"
 #include "GeoNetToMacControlInfo.h"
 #include "ItsG5Middleware.h"
@@ -228,6 +229,17 @@ void ItsG5Middleware::handleLowerMsg(cMessage *msg)
 	vanetza::MacAddress sender = convertToMacAddress(info->source_addr);
 	vanetza::MacAddress destination = convertToMacAddress(info->destination_addr);
 	mGeoRouter.indicate(wrapper.extract_up_packet(), sender, destination);
+	delete msg;
+}
+
+void ItsG5Middleware::handleLowerControl(cMessage *msg)
+{
+	auto* channel_load_msg = dynamic_cast<ChannelLoadReport*>(msg);
+	if (nullptr != channel_load_msg) {
+		mDccFsm.update(channel_load_msg->getChannelLoad());
+	} else {
+		opp_error("Unknown lower control message");
+	}
 	delete msg;
 }
 
