@@ -239,8 +239,7 @@ void TraCIMobility::changeParkingState(bool newState) {
 
 std::pair<double, double> TraCIMobility::getGeoPosition() const
 {
-	TraCICoord roadPositionTraci = getManager()->omnet2traci(roadPosition);
-	return getManager()->getCommandInterface()->positionConversionLonLat(roadPositionTraci);
+	return getManager()->getCommandInterface()->getLonLat(roadPosition);
 }
 
 void TraCIMobility::updateDisplayString() {
