@@ -131,6 +131,6 @@ class MacItsG5 : public BaseMacLayer
 		simtime_t mIdleSince;
 };
 
-void assert80211pBitrate(int bitrate);
+void assert80211pBitrate(uint64_t bitrate);
 
 #endif /* MACITSG5_H_*/

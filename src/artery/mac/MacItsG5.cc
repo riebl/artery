@@ -251,7 +251,7 @@ void MacItsG5::scheduleNextMacEvent()
 	}
 }
 
-void assert80211pBitrate(int bitrate)
+void assert80211pBitrate(uint64_t bitrate)
 {
 	for (unsigned int i = 0; i < sizeof(BITRATES_80211P); i++) {
 		if (bitrate == BITRATES_80211P[i]) return;
