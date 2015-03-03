@@ -34,8 +34,8 @@ class Facilities
 				const vanetza::dcc::StateMachine&, vanetza::dcc::Scheduler&);
 		const VehicleDataProvider& getVehicleDataProvider() const { return m_vdp; }
 		Veins::TraCIMobility& getMobility() { return m_mobility; }
-		const char* getDccState() const;
 		vanetza::dcc::Scheduler& getDccScheduler() { return m_dcc_scheduler; }
+		const vanetza::dcc::StateMachine& getDccStateMachine() { return m_dcc_fsm; }
 
 	private:
 		const VehicleDataProvider& m_vdp;

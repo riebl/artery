@@ -31,7 +31,3 @@ Facilities::Facilities(
 {
 }
 
-const char* Facilities::getDccState() const
-{
-	return m_dcc_fsm.state().name();
-}
