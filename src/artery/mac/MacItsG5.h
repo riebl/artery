@@ -120,17 +120,20 @@ class MacItsG5 : public BaseMacLayer
 		double mTxPower;
 
 		/** @brief the bit rate at which we transmit */
-		double mBitrate;
+		uint64_t mBitrate;
+
+		/** @brief Number of data bits per OFDM symbol */
+		uint32_t mDataBitsPerSymbol;
 
 	private:
 		void attachSignal(Mac80211Pkt* mac, simtime_t startTime, double frequency);
-		Signal* createSignal(simtime_t start, simtime_t length, double power, double bitrate, double frequency);
+		Signal* createSignal(simtime_t start, simtime_t length, double power, uint64_t bitrate, double frequency);
 		void scheduleNextMacEvent();
 		void writeRecord(const Statistics&, const Edca&);
+		void setBitrate(uint64_t bitrate);
 
 		simtime_t mIdleSince;
 };
 
-void assert80211pBitrate(uint64_t bitrate);
 
 #endif /* MACITSG5_H_*/

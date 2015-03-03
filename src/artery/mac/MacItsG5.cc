@@ -38,8 +38,7 @@ void MacItsG5::initialize(int stage)
 
 		mHeaderLength = par("headerLength");
 		mTxPower = par("txPower");
-		mBitrate = par("bitrate");
-		assert80211pBitrate(mBitrate);
+		setBitrate(par("bitrate"));
 
 		mMacAddress = 0; // set by GeoNet control info later on
 		mNextMacEventMessage = new cMessage("next MAC event");
@@ -189,7 +188,7 @@ void MacItsG5::attachSignal(Mac80211Pkt* mac, simtime_t startTime, double freque
 	simtime_t duration =
 			PHY_HDR_PREAMBLE_DURATION +
 			PHY_HDR_PLCPSIGNAL_DURATION +
-			((macPktlen + PHY_HDR_PSDU_HEADER_LENGTH) / mBitrate);
+			T_SYM_80211P * std::ceil((macPktlen + 22) / mDataBitsPerSymbol);
 
 	Signal* s = createSignal(startTime, duration, mTxPower, mBitrate, frequency);
 	MacToPhyControlInfo* cinfo = new MacToPhyControlInfo(s);
@@ -197,7 +196,7 @@ void MacItsG5::attachSignal(Mac80211Pkt* mac, simtime_t startTime, double freque
 	mac->setControlInfo(cinfo);
 }
 
-Signal* MacItsG5::createSignal(simtime_t start, simtime_t length, double power, double bitrate, double frequency) {
+Signal* MacItsG5::createSignal(simtime_t start, simtime_t length, double power, uint64_t bitrate, double frequency) {
 	simtime_t end = start + length;
 	//create signal with start at current simtime and passed length
 	Signal* s = new Signal(start, length);
@@ -251,10 +250,14 @@ void MacItsG5::scheduleNextMacEvent()
 	}
 }
 
-void assert80211pBitrate(uint64_t bitrate)
+void MacItsG5::setBitrate(uint64_t bitrate)
 {
-	for (unsigned int i = 0; i < sizeof(BITRATES_80211P); i++) {
-		if (bitrate == BITRATES_80211P[i]) return;
+	for (unsigned i = 0; i < sizeof(BITRATES_80211P); ++i) {
+		if (bitrate == BITRATES_80211P[i]) {
+			mBitrate = bitrate;
+			mDataBitsPerSymbol = N_DBPS_80211P[i];
+			return;
+		}
 	}
 	opp_error("Invalid 802.11p bitrate");
 }
