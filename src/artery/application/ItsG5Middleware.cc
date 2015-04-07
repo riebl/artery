@@ -17,6 +17,7 @@
 //
 
 #include "artery/application/ItsG5Middleware.h"
+#include "artery/application/ItsG5PromiscuousService.h"
 #include "artery/application/ItsG5Service.h"
 #include "artery/mac/AccessCategories.h"
 #include "artery/mac/AccessCategoriesVanetza.h"
@@ -234,7 +235,13 @@ void ItsG5Middleware::initializeServices()
 				} else if (!service->requiresListener()) {
 					mServices.emplace(service, 0);
 				} else {
-					throw cRuntimeError("No listener port defined for %s", service_name);
+					auto promiscuous = dynamic_cast<ItsG5PromiscuousService*>(service);
+					if (promiscuous != nullptr) {
+						mServices.emplace(service, 0);
+						mBtpPortDispatcher.add_promiscuous_hook(promiscuous);
+					} else {
+						throw cRuntimeError("No listener port defined for %s", service_name);
+					}
 				}
 			}
 		}

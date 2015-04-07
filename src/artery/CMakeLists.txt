@@ -32,6 +32,7 @@ set(SOURCES
     application/Facilities.cc
     application/ItsG5BaseService.cc
     application/ItsG5Middleware.cc
+    application/ItsG5PromiscuousService.cc
     application/ItsG5Service.cc
     application/Timer.cc
     application/VehicleDataProvider.cc
