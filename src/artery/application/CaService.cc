@@ -1,11 +1,11 @@
 #include "artery/application/CaService.h"
+#include "artery/application/Asn1PacketVisitor.h"
 #include "artery/application/VehicleDataProvider.h"
 #include "veins/base/utils/Coord.h"
 #undef ev
 #include <vanetza/btp/ports.hpp>
 #include <boost/units/cmath.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
-#include <boost/variant/static_visitor.hpp>
 
 auto microdegree = vanetza::units::degree * boost::units::si::micro;
 auto decidegree = vanetza::units::degree * boost::units::si::deci;
@@ -53,34 +53,8 @@ void CaService::trigger()
 
 void CaService::indicate(const vanetza::btp::DataIndication& ind, std::unique_ptr<vanetza::btp::UpPacket> packet)
 {
-	using namespace vanetza;
-
-	struct packet_visitor : public boost::static_visitor<asn1::Cam*>
-	{
-		asn1::Cam* operator()(CohesivePacket& packet)
-		{
-			opp_error("CAM deserialization isn't implemented yet in CaService");
-			return nullptr;
-		}
-
-		asn1::Cam* operator()(ChunkPacket& packet)
-		{
-			typedef convertible::byte_buffer byte_buffer;
-			typedef convertible::byte_buffer_impl<asn1::Cam> byte_buffer_impl;
-
-			byte_buffer* ptr = packet[OsiLayer::Application].ptr();
-			auto impl = dynamic_cast<byte_buffer_impl*>(ptr);
-			if (impl) {
-				return &(impl->m_wrapper);
-			} else {
-				opp_error("ChunkPacket doesn't contain a CAM structure");
-				return nullptr;
-			}
-		}
-	};
-
-	packet_visitor visitor;
-	asn1::Cam* cam = boost::apply_visitor(visitor, *packet);
+	Asn1PacketVisitor<vanetza::asn1::Cam> visitor;
+	vanetza::asn1::Cam* cam = boost::apply_visitor(visitor, *packet);
 	if (cam) {
 		// TODO: collect statistic data
 		emit(scSignalCamReceived, cam->validate());
