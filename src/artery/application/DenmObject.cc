@@ -18,5 +18,13 @@
 DenmObject::DenmObject(vanetza::asn1::Denm&& denm) :
     vanetza::asn1::Denm(std::move(denm))
 {
+}
 
+bool operator&(const DenmObject& obj, denm::CauseCode cause)
+{
+    bool is_cause_code = false;
+    if (obj->denm.situation) {
+        is_cause_code = (obj->denm.situation->eventType.causeCode == static_cast<CauseCodeType_t>(cause));
+    }
+    return is_cause_code;
 }

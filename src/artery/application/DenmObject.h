@@ -56,4 +56,6 @@ class DenmObject : public cObject, public vanetza::asn1::Denm
         DenmObject(vanetza::asn1::Denm&&);
 };
 
+bool operator&(const DenmObject&, denm::CauseCode);
+
 #endif /* __ARTERY_DENMOBJECT_H_ */
