@@ -18,6 +18,7 @@
 
 #include <cobject.h>
 #include <vanetza/asn1/denm.hpp>
+#include <boost/optional.hpp>
 
 namespace denm {
 
@@ -54,6 +55,7 @@ class DenmObject : public cObject, public vanetza::asn1::Denm
 {
     public:
         DenmObject(vanetza::asn1::Denm&&);
+        boost::optional<denm::CauseCode> situation_cause_code() const;
 };
 
 bool operator&(const DenmObject&, denm::CauseCode);

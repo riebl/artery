@@ -20,11 +20,18 @@ DenmObject::DenmObject(vanetza::asn1::Denm&& denm) :
 {
 }
 
+boost::optional<denm::CauseCode> DenmObject::situation_cause_code() const
+{
+    boost::optional<denm::CauseCode> cause_code;
+    const SituationContainer* situation = static_cast<const vanetza::asn1::Denm&>(*this)->denm.situation;
+    if (situation) {
+        cause_code = static_cast<denm::CauseCode>(situation->eventType.causeCode);
+    }
+    return cause_code;
+}
+
 bool operator&(const DenmObject& obj, denm::CauseCode cause)
 {
-    bool is_cause_code = false;
-    if (obj->denm.situation) {
-        is_cause_code = (obj->denm.situation->eventType.causeCode == static_cast<CauseCodeType_t>(cause));
-    }
-    return is_cause_code;
+    const auto obj_cause = obj.situation_cause_code();
+    return (obj_cause && obj_cause.get() == cause);
 }
