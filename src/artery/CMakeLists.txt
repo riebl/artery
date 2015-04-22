@@ -10,17 +10,19 @@ macro(generate_opp_msg _msg)
     )
 endmacro()
 
+generate_opp_msg(AsioData)
 generate_opp_msg(ChannelLoadReport)
 generate_opp_msg(GeoNetPacket)
 
 add_library(messages OBJECT
+    messages/AsioData_m.cc
     messages/ChannelLoadReport_m.cc
     messages/GeoNetPacket_m.cc)
 set_target_properties(messages PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     INCLUDE_DIRECTORIES $<TARGET_PROPERTY:artery,INCLUDE_DIRECTORIES>)
 
-find_package(Boost COMPONENTS date_time REQUIRED)
+find_package(Boost COMPONENTS date_time system REQUIRED)
 
 set(SOURCES
     application/CaService.cc
@@ -41,6 +43,8 @@ set(SOURCES
     netw/GeoNetPacketWrapper.cc
     traci/TraCIArteryNodeManager.cc
     traci/TraCIScenarioManagerArtery.cc
+    utility/AsioScheduler.cc
+    utility/AsioTask.cc
 )
 
 add_library(artery SHARED ${SOURCES} $<TARGET_OBJECTS:messages>)
