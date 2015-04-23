@@ -42,11 +42,15 @@ if(Boost_PYTHON_FOUND)
     set(_storyboard_default ON)
 endif()
 option(WITH_STORYBOARD "Build Artery with storyboard feature" ${_storyboard_default})
+option(WITH_TRANSFUSION "Build Artery with transfusion feature" OFF)
 
-add_subdirectory(src/artery)
 if(WITH_STORYBOARD)
     add_subdirectory(src/artery/storyboard)
 endif()
+if(WITH_TRANSFUSION)
+    add_subdirectory(src/artery/transfusion)
+endif()
+add_subdirectory(src/artery)
 add_subdirectory(scenarios)
 
 # sumo-launchd should be run from root directory for correct file look-up

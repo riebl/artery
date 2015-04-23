@@ -1,0 +1,50 @@
+package Transfusion;
+
+message TransfusionMsg {
+	required uint32 destination_port = 1; // only 16 bits are used for BTP
+	required bytes payload = 2;
+	required TrafficClass traffic_class = 3;
+	optional uint32 maximum_lifetime = 4; // seconds
+	optional uint32 repetition_interval = 5; // milliseconds
+
+	oneof transport_type {
+	    SingleHopBroadcast shb = 20;
+	    GeoBroadcast gbc = 21;
+	}
+}
+
+message TrafficClass {
+	required bool store_carry_forward = 10 [default = false];
+	required bool channel_offload = 11 [default = false];
+
+	enum DccProfile {
+	    DP0 = 0;
+	    DP1 = 1;
+	    DP2 = 2;
+	    DP3 = 3;
+	}
+
+	required DccProfile dcc_profile = 12;
+}
+
+message SingleHopBroadcast {
+}
+
+message GeoBroadcast {
+	required DestinationArea area = 100;
+}
+
+message DestinationArea {
+	enum ShapeType {
+		Circle = 0;
+		Rectangle = 1;
+		Ellipse = 2;
+	}
+
+	required ShapeType shape = 30;
+	required int32 latitude = 31; // 1/10 microdegree
+	required int32 longitude = 32; // 1/10 microdegree
+	required uint32 distance_a = 33; // meter
+	required uint32 distance_b = 34 [default = 0]; // meter
+	required uint32 angle = 35 [default = 0]; // microdegree from north
+}
