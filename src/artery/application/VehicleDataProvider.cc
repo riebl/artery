@@ -78,7 +78,7 @@ void VehicleDataProvider::update(const Veins::TraCIMobility* mob)
 	// SUMO cars do sometimes very sharp turns causing insane yaw rates
 	mYawRate = std::min(180.0, std::max(mYawRate, -180.0));
 
-	std::pair<double, double> posLatLon = mob->getGeoPosition();
+	std::pair<double, double> posLatLon = mob->getCommandInterface()->getLonLat(mob->getCurrentPosition());
 	mLat = posLatLon.first * vanetza::units::degree;
 	mLon = posLatLon.second * vanetza::units::degree;
 
