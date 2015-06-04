@@ -157,8 +157,7 @@ void VehicleDataProvider::update(const Veins::TraCIMobility* mob)
 		mHeading = new_heading;
 	}
 
-	mPosition = mob->getCurrentPosition();
-	std::pair<double, double> posLatLon = mob->getGeoPosition();
+	std::pair<double, double> posLatLon = mob->getCommandInterface()->getLonLat(mob->getCurrentPosition());
 	mLat = posLatLon.first * vanetza::units::degree;
 	mLon = posLatLon.second * vanetza::units::degree;
 	mLastUpdate = simTime();
