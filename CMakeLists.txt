@@ -21,7 +21,14 @@ macro(import_opp_target _target _opp_makefile)
     # generate target file (prior to build system generation)
     execute_process(
         COMMAND ${PYTHON_EXECUTABLE} opp_cmake.py ${_opp_makefile} ${_cmake_target}
+        ERROR_VARIABLE _opp_cmake_error
+        RESULT_VARIABLE _opp_cmake_result
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+    if(_opp_cmake_result)
+        message(STATUS "opp_cmake generated following error log")
+        message(SEND_ERROR ${_opp_cmake_error})
+        message(FATAL_ERROR "import_opp_target for ${_target} aborted due to above opp_cmake error")
+    endif()
 
     # include import targets if generated successfully
     if(EXISTS ${_cmake_target})
