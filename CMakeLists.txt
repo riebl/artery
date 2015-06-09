@@ -2,7 +2,7 @@ project(Artery)
 cmake_minimum_required(VERSION 3.0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-find_package(OmnetPP REQUIRED)
+find_package(OmnetPP 4.6 REQUIRED)
 
 find_package(PythonInterp 3 REQUIRED)
 macro(import_opp_target _target _opp_makefile)

@@ -3,6 +3,11 @@ find_program(OMNETPP_MSGC NAMES nedtool opp_msgc PATHS ${OMNETPP_ROOT}/bin DOC "
 find_path(OMNETPP_INCLUDE_DIR NAMES omnetpp.h PATHS ${OMNETPP_ROOT}/include DOC "OMNeT++ include directory")
 
 if(EXISTS ${OMNETPP_ROOT}/Makefile.inc)
+    # extract version from Makefile.inc
+    file(STRINGS ${OMNETPP_ROOT}/Makefile.inc _inc_version REGEX "^OMNETPP_VERSION = (.*)")
+    string(REGEX MATCH "([0-9.]+)$" _match_version ${_inc_version})
+    set(OMNETPP_VERSION ${CMAKE_MATCH_1})
+
     # extract compile definitions from Makefile.inc
     file(STRINGS ${OMNETPP_ROOT}/Makefile.inc _cflags_release REGEX "^CFLAGS_RELEASE = .*")
     string(REGEX MATCHALL "-D[^ ]+" _cflags_release_definitions ${_cflags_release})
@@ -32,4 +37,5 @@ unset(_libraries)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(OmnetPP
     FOUND_VAR OMNETPP_FOUND
+    VERSION_VAR OMNETPP_VERSION
     REQUIRED_VARS OMNETPP_INCLUDE_DIR OMNETPP_LIBRARIES OMNETPP_MSGC OMNETPP_ROOT)
