@@ -1,1 +1,1 @@
-add_opp_run(artery omnetpp.ini)
+add_opp_run(example omnetpp.ini artery)
