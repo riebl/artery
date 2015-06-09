@@ -67,8 +67,8 @@ macro(get_ned_folders _target _output)
     endif()
 endmacro()
 
-find_program(OMNETPP_RUN NAME opp_run PATHS ${OMNETPP_ROOT}/bin DOC "OMNeT++ opp_run executable")
-macro(add_opp_run _target _config)
+find_program(OMNETPP_RUN NAMES opp_run opp_run_release PATHS ${OMNETPP_ROOT}/bin DOC "OMNeT++ opp_run executable")
+macro(add_opp_run _name _config _target)
     get_ned_folders(${_target} _list_ned_folders)
     list(APPEND _list_ned_folders ${ARGN})
     foreach(_ned_folder IN LISTS _list_ned_folders)
@@ -77,7 +77,7 @@ macro(add_opp_run _target _config)
     if(_ned_folders)
         string(SUBSTRING ${_ned_folders} 1 -1 _ned_folders)
     endif()
-    add_custom_target(run_${_target}
+    add_custom_target(run_${_name}
         COMMAND ${OMNETPP_RUN} -n ${_ned_folders} -l $<TARGET_FILE:${_target}> ${_config}
         SOURCES ${_config}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
