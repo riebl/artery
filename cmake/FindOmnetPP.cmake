@@ -17,6 +17,10 @@ if(EXISTS ${OMNETPP_ROOT}/Makefile.inc)
     endforeach()
 endif()
 
+add_library(opp_interface INTERFACE)
+target_compile_definitions(opp_interface INTERFACE ${_compile_definitions})
+target_include_directories(opp_interface INTERFACE ${OMNETPP_INCLUDE_DIR})
+
 # create imported library targets
 set(_libraries cmdenv common envir eventlog layout main nedxml scave sim tkenv)
 foreach(_library IN LISTS _libraries)
@@ -28,8 +32,7 @@ foreach(_library IN LISTS _libraries)
     set_target_properties(opp_${_library} PROPERTIES
         IMPORTED_LOCATION_RELEASE ${OMNETPP_${_LIBRARY}_LIBRARY_RELEASE}
         IMPORTED_LOCATION_DEBUG ${OMNETPP_${_LIBRARY}_LIBRARY_DEBUG}
-        INTERFACE_INCLUDE_DIRECTORIES ${OMNETPP_INCLUDE_DIR})
-    set_property(TARGET opp_${_library} PROPERTY INTERFACE_COMPILE_DEFINITIONS ${_compile_definitions})
+        INTERFACE_LINK_LIBRARIES opp_interface)
     set_property(TARGET opp_${_library} PROPERTY IMPORTED_CONFIGURATIONS "DEBUG" "RELEASE")
 endforeach()
 unset(_libraries)
