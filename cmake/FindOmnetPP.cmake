@@ -1,4 +1,4 @@
-find_path(OMNETPP_ROOT NAMES bin/omnetpp DOC "Path to OMNeT++ root directory")
+find_path(OMNETPP_ROOT NAMES bin/omnetpp PATHS ENV PATH PATH_SUFFIXES .. DOC "Path to OMNeT++ root directory")
 find_program(OMNETPP_MSGC NAMES nedtool opp_msgc PATHS ${OMNETPP_ROOT}/bin DOC "OMNeT++ message compiler")
 find_path(OMNETPP_INCLUDE_DIR NAMES omnetpp.h PATHS ${OMNETPP_ROOT}/include DOC "OMNeT++ include directory")
 
