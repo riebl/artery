@@ -36,7 +36,7 @@ set(SOURCES
 add_library(artery SHARED ${SOURCES})
 set_property(TARGET artery PROPERTY NED_FOLDERS ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(artery PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(artery opp_sim)
+target_link_libraries(artery opp_interface)
 target_link_libraries(artery veins)
 target_link_libraries(artery Vanetza::asn1 Vanetza::btp Vanetza::geonet)
 target_link_libraries(artery ${Boost_LIBRARIES})
