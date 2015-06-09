@@ -55,11 +55,11 @@ class CMakeTarget:
     def _makefile_path(self):
         return os.path.dirname(self._project.makefile)
 
-    def __getattr__(self, name):
-        return getattr(self._project, name)
+    def _target_output_path(self, mode):
+        out_subdir = os.path.relpath(self._makefile_path(), self._project.root_directory)
+        return os.path.join(self._project.root_directory, self._project.output_directory, mode, out_subdir)
 
-    @property
-    def location(self):
+    def _import_location(self, mode):
         binary = {
             'executable': "{}${{CMAKE_EXECUTABLE_SUFFIX}}",
             'shared': "${{CMAKE_SHARED_LIBRARY_PREFIX}}{}${{CMAKE_SHARED_LIBRARY_SUFFIX}}",
@@ -67,7 +67,29 @@ class CMakeTarget:
         }
 
         filename = binary[self._project.binary].format(self._project.name)
-        return os.path.join(self._makefile_path(), filename)
+        path = None
+        if (mode == "release"):
+            path = self._target_output_path('gcc-release')
+        elif (mode == "debug"):
+            path = self._target_output_path('gcc-debug')
+        else:
+            path = self._makefile_path()
+        return os.path.join(path, filename)
+
+    def __getattr__(self, name):
+        return getattr(self._project, name)
+
+    @property
+    def location(self):
+        return self._import_location()
+
+    @property
+    def location_debug(self):
+        return self._import_location('debug')
+
+    @property
+    def location_release(self):
+        return self._import_location('release')
 
     @property
     def target(self):
@@ -81,8 +103,14 @@ class CMakeTarget:
 
     @property
     def target_properties(self, ned_folders_property=True):
-        props = ["set_target_properties({} PROPERTIES".format(self.name),
-                 "  IMPORTED_LOCATION \"{}\"".format(self.location)]
+        props = ["set_target_properties({} PROPERTIES".format(self.name)]
+        configurations = []
+        if os.path.exists(os.path.dirname(self.location_release)):
+            props.append("  IMPORTED_LOCATION_RELEASE \"{}\"".format(self.location_release))
+            configurations.append("RELEASE")
+        if os.path.exists(os.path.dirname(self.location_debug)):
+            props.append("  IMPORTED_LOCATION_DEBUG \"{}\"".format(self.location_debug))
+            configurations.append("DEBUG")
         if self.binary != "executable":
             if self.include_directories:
                 include_dirs = ';'.join(self.include_directories)
@@ -97,6 +125,8 @@ class CMakeTarget:
                 ned_folders = ';'.join(self.ned_folders)
                 props.append("  NED_FOLDERS \"{}\"".format(ned_folders))
         props.append(")")
+        props.append("set_property(TARGET {target} PROPERTY IMPORTED_CONFIGURATIONS {configs})"
+                     .format(target=self.name, configs=" ".join(configurations)))
         return props
 
 
