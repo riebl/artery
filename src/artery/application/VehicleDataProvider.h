@@ -21,10 +21,15 @@
 
 #include "veins/base/utils/Coord.h"
 #include <simtime_t.h>
-#include <cstdint>
+#include <boost/circular_buffer.hpp>
+#include <boost/units/systems/si/angular_acceleration.hpp>
 #include <vanetza/units/acceleration.hpp>
 #include <vanetza/units/angle.hpp>
 #include <vanetza/units/velocity.hpp>
+#include <vanetza/units/angular_velocity.hpp>
+#include <vanetza/units/curvature.hpp>
+#include <cstdint>
+#include <map>
 
 namespace Veins { class TraCIMobility; }
 
@@ -38,25 +43,36 @@ class VehicleDataProvider
 		uint16_t timestamp() const; // ms TAI timestamp
 		const simtime_t& simtime() const { return mLastUpdate; }
 		const Coord& position() const { return mPosition; }
-		vanetza::units::GeoAngle longitude() const { return mLon; } // degree, positive for east
-		vanetza::units::GeoAngle latitude() const { return mLat; } // degree, positive for north
-		vanetza::units::Velocity speed() const { return mSpeed; }// m/s
-		vanetza::units::Acceleration acceleration() const { return mAccel; } // m/s^2
+		vanetza::units::GeoAngle longitude() const { return mLon; } // positive for east
+		vanetza::units::GeoAngle latitude() const { return mLat; } // positive for north
+		vanetza::units::Velocity speed() const { return mSpeed; }
+		vanetza::units::Acceleration acceleration() const { return mAccel; }
 		vanetza::units::Angle heading() const { return mHeading; } // degree from north, clockwise
-		double yaw_rate() const { return mYawRate; } // deg/s, counter-clockwise positive
-		double curvature() const { return mCurvature; } // 1/m radius, left turn positive
+		vanetza::units::AngularVelocity yaw_rate() const { return mYawRate; } // counter-clockwise positive
+		vanetza::units::Curvature curvature() const { return mCurvature; } // 1/m radius, left turn positive
+		double confidence() const { return mConfidence; } // percentage value
 
 	private:
+		typedef boost::units::quantity<boost::units::si::angular_acceleration> AngularAcceleration;
+		void calculateCurvature();
+		void calculateCurvatureConfidence();
+		double mapOntoConfidence(AngularAcceleration) const;
+
 		uint32_t mStationId;
 		vanetza::units::GeoAngle mLon;
 		vanetza::units::GeoAngle mLat;
 		vanetza::units::Velocity mSpeed;
 		vanetza::units::Acceleration mAccel;
 		vanetza::units::Angle mHeading;
-		double mYawRate;
-		double mCurvature;
+		vanetza::units::AngularVelocity mYawRate;
+		vanetza::units::Curvature mCurvature;
+		double mConfidence;
 		Coord mPosition;
 		simtime_t mLastUpdate;
+		boost::circular_buffer<vanetza::units::Curvature> mCurvatureOutput;
+		boost::circular_buffer<AngularAcceleration> mCurvatureConfidenceOutput;
+		vanetza::units::AngularVelocity mCurvatureConfidenceInput;
+		static const std::map<AngularAcceleration, double> mConfidenceTable;
 };
 
 #endif /* VEHICLEDATAPROVIDER_H_ */

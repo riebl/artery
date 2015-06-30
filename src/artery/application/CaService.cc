@@ -9,6 +9,7 @@
 
 auto microdegree = vanetza::units::degree * boost::units::si::micro;
 auto decidegree = vanetza::units::degree * boost::units::si::deci;
+auto degree_per_second = vanetza::units::degree / vanetza::units::si::second;
 auto centimeter_per_second = vanetza::units::si::meter_per_second * boost::units::si::centi;
 
 static const simsignal_t scSignalCamReceived = cComponent::registerSignal("CaService.received");
@@ -189,11 +190,11 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 			(vdp.acceleration() / vanetza::units::si::meter_per_second_squared).value() * LongitudinalAccelerationValue_pointOneMeterPerSecSquaredForward;
 	bvc.longitudinalAcceleration.longitudinalAccelerationConfidence =
 			AccelerationConfidence_unavailable;
-	bvc.curvature.curvatureValue = vdp.curvature() *
+	bvc.curvature.curvatureValue = (vdp.curvature() / vanetza::units::reciprocal_metre) *
 			CurvatureValue_reciprocalOf1MeterRadiusToLeft;
 	bvc.curvature.curvatureConfidence = CurvatureConfidence_unavailable;
 	bvc.curvatureCalculationMode = CurvatureCalculationMode_yawRateUsed;
-	bvc.yawRate.yawRateValue = vdp.yaw_rate() *
+	bvc.yawRate.yawRateValue = (vdp.yaw_rate() / degree_per_second).value() *
 			YawRateValue_degSec_000_01ToLeft * 100.0;
 	bvc.vehicleLength.vehicleLengthValue = VehicleLengthValue_unavailable;
 	bvc.vehicleLength.vehicleLengthConfidenceIndication =
