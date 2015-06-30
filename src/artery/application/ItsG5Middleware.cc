@@ -225,12 +225,14 @@ bool ItsG5Middleware::checkServiceFilterRules(const cXMLElement* filter_cfg) con
 		cXMLElement* name_filter_cfg = filter_cfg->getFirstChildWithTag("name");
 		if (name_filter_cfg) {
 			const char* name_pattern = name_filter_cfg->getAttribute("pattern");
+			const char* name_match = name_filter_cfg->getAttribute("match");
+			bool inverse = name_match && strcmp(name_match, "inverse") == 0;
 			if (!name_pattern) {
 				opp_error("Required pattern attribute is missing for name filter");
 			} else {
 				std::regex name_regex(name_pattern);
-				filter_fn name_filter = [this, name_regex]() {
-					return std::regex_match(this->mMobility->getExternalId(), name_regex);
+				filter_fn name_filter = [this, name_regex, inverse]() {
+					return std::regex_match(this->mMobility->getExternalId(), name_regex) ^ inverse;
 				};
 				filters.emplace_back(std::move(name_filter));
 			}
