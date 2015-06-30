@@ -124,6 +124,19 @@ void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique
 			mGeoRouter.request(request, std::move(payload));
 		}
 			break;
+		case geonet::TransportType::GBC: {
+			geonet::GbcDataRequest request(mGeoMib);
+			request.destination = boost::get<geonet::Area>(req.gn.destination);
+			request.upper_protocol = geonet::UpperProtocol::BTP_B;
+			request.communication_profile = req.gn.communication_profile;
+			if (req.gn.maximum_lifetime) {
+				request.maximum_lifetime = req.gn.maximum_lifetime.get();
+			}
+			request.repetition = req.gn.repetition;
+			request.traffic_class = req.gn.traffic_class;
+			mGeoRouter.request(request, std::move(payload));
+		}
+			break;
 		default:
 			opp_error("Unknown or unimplemented transport type");
 			break;
