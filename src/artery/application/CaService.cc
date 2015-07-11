@@ -155,8 +155,7 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 	BasicVehicleContainerHighFrequency& bvc = hfc.choice.basicVehicleContainerHighFrequency;
 	bvc.heading.headingValue = (vdp.heading() / decidegree).value();
 	bvc.heading.headingConfidence = HeadingConfidence_withinOneDegree;
-	bvc.speed.speedValue = std::abs((vdp.speed() / centimeter_per_second).value()) *
-			SpeedValue_oneCentimeterPerSec;
+	bvc.speed.speedValue = abs(vdp.speed() / centimeter_per_second).value() * SpeedValue_oneCentimeterPerSec;
 	bvc.speed.speedConfidence = SpeedConfidence_withinOneCentimeterPerSec * 3;
 	bvc.driveDirection = vdp.speed().value() >= 0.0 ?
 			DriveDirection_forward : DriveDirection_backward;
