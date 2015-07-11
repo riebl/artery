@@ -160,10 +160,14 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 	bvc.speed.speedConfidence = SpeedConfidence_withinOneCentimeterPerSec * 3;
 	bvc.driveDirection = vdp.speed().value() >= 0.0 ?
 			DriveDirection_forward : DriveDirection_backward;
-	bvc.longitudinalAcceleration.longitudinalAccelerationValue =
-			(vdp.acceleration() / vanetza::units::si::meter_per_second_squared).value() * LongitudinalAccelerationValue_pointOneMeterPerSecSquaredForward;
-	bvc.longitudinalAcceleration.longitudinalAccelerationConfidence =
-			AccelerationConfidence_unavailable;
+	const double lonAccelValue = vdp.acceleration() / vanetza::units::si::meter_per_second_squared;
+	// extreme speed changes can occur when SUMO swaps vehicles between lanes (speed is swapped as well)
+	if (lonAccelValue >= -160.0 && lonAccelValue <= 161.0) {
+		bvc.longitudinalAcceleration.longitudinalAccelerationValue = lonAccelValue * LongitudinalAccelerationValue_pointOneMeterPerSecSquaredForward;
+	} else {
+		bvc.longitudinalAcceleration.longitudinalAccelerationValue = LongitudinalAccelerationValue_unavailable;
+	}
+	bvc.longitudinalAcceleration.longitudinalAccelerationConfidence = AccelerationConfidence_unavailable;
 	bvc.curvature.curvatureValue = (vdp.curvature() / vanetza::units::reciprocal_metre) *
 			CurvatureValue_reciprocalOf1MeterRadiusToLeft;
 	bvc.curvature.curvatureConfidence = CurvatureConfidence_unavailable;
