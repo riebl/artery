@@ -68,11 +68,13 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 
 	private:
 		void update();
+		void updateRouterTimer();
 		void updateGeoRouter();
 		void updateServices();
 		void initializeMiddleware();
 		void initializeServices();
 		bool checkServiceFilterRules(const cXMLElement* filters) const;
+		void scheduleRouterTimer();
 		vanetza::geonet::Timestamp deriveTimestamp(simtime_t) const;
 
 		Veins::TraCIMobility* mMobility;
@@ -88,6 +90,7 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 		unsigned mAdditionalHeaderBits;
 		simtime_t mUpdateInterval;
 		cMessage* mUpdateMessage;
+		cMessage* mUpdateRouterTimer;
 		std::unique_ptr<Facilities> mFacilities;
 		std::map<ItsG5BaseService*, port_type> mServices;
 };

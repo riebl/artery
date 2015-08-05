@@ -141,6 +141,8 @@ void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique
 			opp_error("Unknown or unimplemented transport type");
 			break;
 	}
+
+	scheduleRouterTimer();
 }
 
 int ItsG5Middleware::numInitStages() const
@@ -181,6 +183,7 @@ void ItsG5Middleware::initializeMiddleware()
 	mTimebase = boost::posix_time::time_from_string(par("datetime"));
 	mUpdateInterval = par("updateInterval").doubleValue();
 	mUpdateMessage = new cMessage("update ITS-G5");
+	mUpdateRouterTimer = new cMessage("router timer");
 	findHost()->subscribe(cMobilityStateChangedSignal, this);
 
 	vanetza::geonet::Address gn_addr;
@@ -293,6 +296,7 @@ bool ItsG5Middleware::checkServiceFilterRules(const cXMLElement* filter_cfg) con
 void ItsG5Middleware::finish()
 {
 	cancelAndDelete(mUpdateMessage);
+	cancelAndDelete(mUpdateRouterTimer);
 	findHost()->unsubscribe(cMobilityStateChangedSignal, this);
 	BaseApplLayer::finish();
 }
@@ -310,6 +314,8 @@ void ItsG5Middleware::handleSelfMsg(cMessage *msg)
 {
 	if (msg == mUpdateMessage) {
 		update();
+	} else if (msg == mUpdateRouterTimer) {
+		updateRouterTimer();
 	} else {
 		opp_error("Unknown self-message in ITS-G5");
 	}
@@ -325,6 +331,7 @@ void ItsG5Middleware::handleLowerMsg(cMessage *msg)
 	vanetza::MacAddress sender = convertToMacAddress(info->source_addr);
 	vanetza::MacAddress destination = convertToMacAddress(info->destination_addr);
 	mGeoRouter.indicate(wrapper.extract_up_packet(), sender, destination);
+	scheduleRouterTimer();
 	delete msg;
 }
 
@@ -354,9 +361,25 @@ void ItsG5Middleware::receiveSignal(cComponent* component, simsignal_t signal, c
 	}
 }
 
-void ItsG5Middleware::updateGeoRouter()
+void ItsG5Middleware::scheduleRouterTimer()
+{
+	vanetza::geonet::Timestamp update_ts = mGeoRouter.next_update();
+	vanetza::geonet::Timestamp now_ts = deriveTimestamp(simTime());
+	assert(update_ts >= now_ts);
+	vanetza::geonet::Timestamp::duration_type diff_ts = update_ts - now_ts;
+	simtime_t diff_sim { diff_ts.value(), SIMTIME_MS };
+	cancelEvent(mUpdateRouterTimer);
+	scheduleAt(simTime() + diff_sim, mUpdateRouterTimer);
+}
+
+void ItsG5Middleware::updateRouterTimer()
 {
 	mGeoRouter.update(deriveTimestamp(simTime()));
+}
+
+void ItsG5Middleware::updateGeoRouter()
+{
+	updateRouterTimer();
 
 	vanetza::geonet::LongPositionVector lpv;
 	lpv.timestamp = deriveTimestamp(mVehicleDataProvider.simtime());
