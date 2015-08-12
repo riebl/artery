@@ -29,6 +29,12 @@ MacItsG5::MacItsG5() : mEdca(mCarrierSensing)
 {
 }
 
+MacItsG5::~MacItsG5()
+{
+	cancelAndDelete(mNextMacEventMessage);
+	cancelAndDelete(mChannelLoadReport);
+}
+
 void MacItsG5::initialize(int stage)
 {
 	BaseMacLayer::initialize(stage);
@@ -54,8 +60,6 @@ void MacItsG5::initialize(int stage)
 
 void MacItsG5::finish()
 {
-	cancelAndDelete(mNextMacEventMessage);
-	cancelAndDelete(mChannelLoadReport);
 	writeRecord(mStatistics, mEdca);
 }
 

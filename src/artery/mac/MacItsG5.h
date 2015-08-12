@@ -50,7 +50,7 @@ class MacItsG5 : public BaseMacLayer
 {
 	public:
 		MacItsG5();
-		virtual ~MacItsG5() {}
+		virtual ~MacItsG5();
 
 		struct Statistics {
 				Statistics() :
