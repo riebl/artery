@@ -34,6 +34,7 @@ foreach(_library IN LISTS _libraries)
         IMPORTED_LOCATION_DEBUG ${OMNETPP_${_LIBRARY}_LIBRARY_DEBUG}
         INTERFACE_LINK_LIBRARIES opp_interface)
     set_property(TARGET opp_${_library} PROPERTY IMPORTED_CONFIGURATIONS "DEBUG" "RELEASE")
+    mark_as_advanced(OMNETPP_${_LIBRARY}_LIBRARY_RELEASE OMNETPP_${_LIBRARY}_LIBRARY_DEBUG)
 endforeach()
 unset(_libraries)
 
