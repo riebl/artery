@@ -50,7 +50,7 @@ boost::optional<simtime_t> CarrierSensing::getIdleDuration() const
 	boost::optional<simtime_t> idleDuration;
 	if (isIdle()) {
 		idleDuration = simTime() - getStateSince();
-		assert(idleDuration >= 0);
+		assert(idleDuration.get() >= 0);
 	}
 	return idleDuration;
 }
