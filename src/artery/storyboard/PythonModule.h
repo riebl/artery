@@ -1,6 +1,7 @@
 #ifndef PYTHONMODULE_H_
 #define PYTHONMODULE_H_
 
+#include "artery/storyboard/AndCondition.h"
 #include "artery/storyboard/CarSetCondition.h"
 #include "artery/storyboard/SpeedEffectFactory.h"
 #include "artery/storyboard/Story.h"
@@ -145,6 +146,8 @@ BOOST_PYTHON_MODULE(storyboard) {
     python::class_<CarSetCondition, CarSetCondition*, python::bases<Condition> >("CarSetCondition", python::init<std::set<std::string> >())
     .def(python::init<std::string>());
 
+    python::class_<AndCondition, AndCondition*, python::bases<Condition> >("AndCondition", python::init<Condition*, Condition*>());
+
 
     /**
      * Effect related classes
@@ -158,7 +161,7 @@ BOOST_PYTHON_MODULE(storyboard) {
     /**
      * Story related classes
      */
-    python::class_<Story, std::shared_ptr<Story> >("Story", python::init<std::vector<Condition*>, std::vector<EffectFactory*>>());
+    python::class_<Story, std::shared_ptr<Story> >("Story", python::init<Condition*, std::vector<EffectFactory*>>());
 
     /**
      * Miscellaneous classes

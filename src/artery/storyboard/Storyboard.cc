@@ -48,7 +48,7 @@ void Storyboard::updateStoryboard()
         // test all story conditions for each story
         for (auto& story : m_stories) {
             bool conditionTest = true;
-            if(!story->testConditions(car)) {
+            if(!story->testCondition(car)) {
                 conditionTest = false;
             }
             // check if the story has to be applied or removed

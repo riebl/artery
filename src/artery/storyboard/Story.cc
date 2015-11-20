@@ -3,25 +3,14 @@
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 
 
-Story::Story(std::vector<Condition*> conditions, std::vector<EffectFactory*> factories) :
-    m_conditions(conditions), m_factories(factories)
+Story::Story(Condition* condition, std::vector<EffectFactory*> factories) :
+    m_condition(condition), m_factories(factories)
 {
 }
 
-bool Story::testConditions(Veins::TraCIMobility* car)
+bool Story::testCondition(Veins::TraCIMobility* car)
 {
-    bool conditionsPassed = true;
-    for (auto cond : m_conditions) {
-        if (!cond->testCondition(car)) {
-            conditionsPassed = false;
-        }
-    }
-    return conditionsPassed;
-}
-
-void Story::addCondition(Condition* con)
-{
-    m_conditions.push_back(con);
+    return (m_condition->testCondition(car));
 }
 
 std::vector<EffectFactory*> Story::getEffectFactories() {

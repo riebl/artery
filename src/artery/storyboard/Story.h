@@ -19,20 +19,14 @@ class EffectFactory;
 class Story
 {
 public:
-    Story(std::vector<Condition*>, std::vector<EffectFactory*>);
+    Story(Condition*, std::vector<EffectFactory*>);
 
     /**
-     * Tests all cars if the conditions in m_condidions are passed or not
-     * Invokes adding effects to cars which have passed the condition
-     * param: std::vector<Veins::TraCIMobility*> containing all cars in the simulation
+     * Tests the car if the condition is true
+     * \param car to test
+     * \return result of the test
      */
-    bool testConditions(Veins::TraCIMobility*);
-
-    /**
-     * Adds a Condition to an existing Story
-     * param: Condition* to add
-     */
-    void addCondition(Condition*);
+    bool testCondition(Veins::TraCIMobility*);
 
     /**
      * Returns vector containing all EffectFactories
@@ -40,7 +34,7 @@ public:
     std::vector<EffectFactory*> getEffectFactories();
 
 private:
-    std::vector<Condition*> m_conditions;
+    Condition* m_condition;
     std::vector<EffectFactory*> m_factories;
 };
 
