@@ -8,7 +8,6 @@
 /**
  * Condition: CarSet
  * allows to specify the affected cars of a Story
- * each Story must only contain one CarCondition. If more cars are affected, add all cars to this condition
  */
 class CarSetCondition : public Condition {
 public:

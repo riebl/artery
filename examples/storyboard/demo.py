@@ -28,8 +28,12 @@ def createStories():
 	and0 = storyboard.AndCondition(cond0, cond1)
 	and1 = storyboard.AndCondition(and0, cond2)
 
+	# Create OrCondition
+	cond3 = storyboard.TimeCondition(storyboard.SimTime(170))
+	or0 = storyboard.OrCondition(cond3, and1)
+
 	# Create Story
-	story = storyboard.Story(and1,[effectFactory0])
+	story = storyboard.Story(or0, [effectFactory0])
 
 	# Register Story at the Storyboard
 	board.registerStory(story)

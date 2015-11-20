@@ -5,6 +5,7 @@
 #include "artery/storyboard/CarSetCondition.h"
 #include "artery/storyboard/SpeedEffectFactory.h"
 #include "artery/storyboard/Story.h"
+#include "artery/storyboard/OrCondition.h"
 #include "artery/storyboard/PolygonCondition.h"
 #include "artery/storyboard/TimeCondition.h"
 #include <boost/python.hpp>
@@ -147,6 +148,7 @@ BOOST_PYTHON_MODULE(storyboard) {
     .def(python::init<std::string>());
 
     python::class_<AndCondition, AndCondition*, python::bases<Condition> >("AndCondition", python::init<Condition*, Condition*>());
+    python::class_<OrCondition, OrCondition*, python::bases<Condition> >("OrCondition", python::init<Condition*, Condition*>());
 
 
     /**
