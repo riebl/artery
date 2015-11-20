@@ -29,14 +29,28 @@ def createStories():
 	and1 = storyboard.AndCondition(and0, cond2)
 
 	# Create OrCondition
-	cond3 = storyboard.TimeCondition(storyboard.SimTime(170))
+	cond3 = storyboard.TimeCondition(storyboard.SimTime(190))
 	or0 = storyboard.OrCondition(cond3, and1)
 
 	# Create Story
 	story = storyboard.Story(or0, [effectFactory0])
 
-	# Register Story at the Storyboard
+	# Create Story 2
+	cond4 = storyboard.TimeCondition(storyboard.SimTime(50), storyboard.SimTime(60))
+	effectFactory1 = storyboard.SpeedEffectFactory(2.44)
+	story1 = storyboard.Story(cond4, [effectFactory1])
+
+	# Create Story 3, overlapping story0
+	cond5 = storyboard.TimeCondition(storyboard.SimTime(200), storyboard.SimTime(210))
+	cond6 = storyboard.CarSetCondition(["flow0.0", "flow0.1"])
+	and2 = storyboard.AndCondition(cond5, cond6)
+	effectFactory2 = storyboard.SpeedEffectFactory(0.1)
+	story2 = storyboard.Story(and2, [effectFactory2])
+
+	# Register Stories at the Storyboard
 	board.registerStory(story)
+	board.registerStory(story1)
+	board.registerStory(story2)
 
 	print("Stories loaded!")
 
