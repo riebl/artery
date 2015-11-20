@@ -15,11 +15,14 @@ def createStories():
 	# Create PolygonCondition
 	cond0 = storyboard.PolygonCondition([coord0, coord1, coord2, coord3])
 
+	# Create TimeCondition
+	cond1 = storyboard.TimeCondition(storyboard.SimTime(10))
+
 	# Create SpeedEffectFactory
 	effectFactory0 = storyboard.SpeedEffectFactory(2.44)
 
 	# Create Story
-	story = storyboard.Story([cond0],[effectFactory0])
+	story = storyboard.Story([cond0, cond1],[effectFactory0])
 
 	# Register Story at the Storyboard
 	board.registerStory(story)

@@ -4,6 +4,7 @@
 #include "artery/storyboard/SpeedEffectFactory.h"
 #include "artery/storyboard/Story.h"
 #include "artery/storyboard/PolygonCondition.h"
+#include "artery/storyboard/TimeCondition.h"
 #include <boost/python.hpp>
 #include <boost/python/stl_iterator.hpp>
 
@@ -130,18 +131,14 @@ BOOST_PYTHON_MODULE(storyboard) {
     .from_python<std::vector<Coord> >();
 
     /**
-     * Coord related classes
-     */
-    python::class_<Coord>("Coord", python::init<double, double, double>())
-    .def_readwrite("x", &Coord::x)
-    .def_readwrite("y", &Coord::y);
-
-    /**
      * Condition related classes
      */
     python::class_<ConditionWrap, ConditionWrap*, boost::noncopyable>("Condition");
 
     python::class_<PolygonCondition, PolygonCondition*, python::bases<Condition> >("PolygonCondition", python::init<std::vector<Coord> >());
+
+    python::class_<TimeCondition, TimeCondition*, python::bases<Condition> >("TimeCondition", python::init<SimTime, SimTime>())
+    .def(python::init<SimTime>());
 
     /**
      * Effect related classes
@@ -156,6 +153,14 @@ BOOST_PYTHON_MODULE(storyboard) {
      * Story related classes
      */
     python::class_<Story, std::shared_ptr<Story> >("Story", python::init<std::vector<Condition*>, std::vector<EffectFactory*>>());
+
+    /**
+     * Miscellaneous classes
+     */
+    python::class_<Coord>("Coord", python::init<double, double, double>());
+
+    python::class_<SimTime>("SimTime", python::init<double>());
+
 }
 
 
