@@ -18,11 +18,14 @@ def createStories():
 	# Create TimeCondition
 	cond1 = storyboard.TimeCondition(storyboard.SimTime(10))
 
+	# Create CarSetCondition
+	cond2 = storyboard.CarSetCondition(["flow1.0", "flow0.1", "flow0.2"])
+
 	# Create SpeedEffectFactory
 	effectFactory0 = storyboard.SpeedEffectFactory(2.44)
 
 	# Create Story
-	story = storyboard.Story([cond0, cond1],[effectFactory0])
+	story = storyboard.Story([cond0, cond1, cond2],[effectFactory0])
 
 	# Register Story at the Storyboard
 	board.registerStory(story)

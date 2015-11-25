@@ -1,6 +1,7 @@
 #ifndef PYTHONMODULE_H_
 #define PYTHONMODULE_H_
 
+#include "artery/storyboard/CarSetCondition.h"
 #include "artery/storyboard/SpeedEffectFactory.h"
 #include "artery/storyboard/Story.h"
 #include "artery/storyboard/PolygonCondition.h"
@@ -128,6 +129,7 @@ BOOST_PYTHON_MODULE(storyboard) {
     iterable_converter()
     .from_python<std::vector<Condition*> >()
     .from_python<std::vector<EffectFactory*> >()
+    .from_python<std::set<std::string> >()
     .from_python<std::vector<Coord> >();
 
     /**
@@ -139,6 +141,10 @@ BOOST_PYTHON_MODULE(storyboard) {
 
     python::class_<TimeCondition, TimeCondition*, python::bases<Condition> >("TimeCondition", python::init<SimTime, SimTime>())
     .def(python::init<SimTime>());
+
+    python::class_<CarSetCondition, CarSetCondition*, python::bases<Condition> >("CarSetCondition", python::init<std::set<std::string> >())
+    .def(python::init<std::string>());
+
 
     /**
      * Effect related classes
