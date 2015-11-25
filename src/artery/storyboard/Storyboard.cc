@@ -14,6 +14,7 @@ void Storyboard::initialize(int stage)
 
     // Import staticly linked modules
     PyImport_AppendInittab("storyboard", &initstoryboard);
+    PyImport_AppendInittab("timeline", &inittimeline);
 
     // Initialize python
     setenv("PYTHONPATH", ".", 1);

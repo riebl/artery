@@ -174,5 +174,32 @@ BOOST_PYTHON_MODULE(storyboard) {
 
 }
 
+/**
+ * Wrapper function for creating a SimTime in seconds
+ * \param seconds
+ * \return SimTime, unit: seconds
+ */
+SimTime timelineSeconds(double time) {
+    return SimTime(time, SimTimeUnit::SIMTIME_S);
+}
+
+/**
+ * Wrapper function for creating a SimTime in milliseconds
+ * \param milliseconds
+ * \return SimTime, unit: milliseconds
+ */
+SimTime timelineMilliseconds(double time) {
+    return SimTime(time, SimTimeUnit::SIMTIME_MS);
+}
+
+/**
+ * Boost Python module for creating objects related to the Omnet timeline
+ */
+BOOST_PYTHON_MODULE(timeline) {
+
+    python::def("seconds", timelineSeconds);
+    python::def("milliseconds", timelineMilliseconds);
+
+}
 
 #endif /* PYTHONMODULE_H_ */
