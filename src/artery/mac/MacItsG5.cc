@@ -235,10 +235,10 @@ void MacItsG5::writeRecord(const Statistics& stats, const Edca& edca)
 
 void MacItsG5::scheduleNextMacEvent()
 {
+	cancelEvent(mNextMacEventMessage);
 	boost::optional<simtime_t> time = mEdca.getNextEventSlot();
 	if (time) {
 		if (time.get() > simTime()) {
-			cancelEvent(mNextMacEventMessage);
 			scheduleAt(time.get(), mNextMacEventMessage);
 			EV << "mac event; now: " << simTime() << " scheduled: " << time.get() << endl;
 		} else if (time.get() == simTime()) {
