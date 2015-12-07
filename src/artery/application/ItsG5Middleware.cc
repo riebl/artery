@@ -177,7 +177,10 @@ void ItsG5Middleware::initializeMiddleware()
 	if (mMobility == nullptr) {
 		throw cRuntimeError("Mobility not found");
 	}
-	mFacilities.reset(new Facilities(mVehicleDataProvider, *mMobility, mDccFsm, mDccScheduler));
+	mFacilities.register_const(&mVehicleDataProvider);
+	mFacilities.register_mutable(mMobility);
+	mFacilities.register_const(&mDccFsm);
+	mFacilities.register_mutable(&mDccScheduler);
 
 	mAdditionalHeaderBits = par("headerLength");
 	mTimebase = boost::posix_time::time_from_string(par("datetime"));

@@ -14,6 +14,7 @@
 // 
 
 #include "ExampleService.h"
+#include "veins/modules/mobility/traci/TraCIMobility.h"
 #include <vanetza/btp/data_request.hpp>
 #include <vanetza/dcc/profile.hpp>
 #include <vanetza/geonet/interface.hpp>

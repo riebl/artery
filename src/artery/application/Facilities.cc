@@ -16,18 +16,28 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#include "Facilities.h"
+#include "artery/application/Facilities.h"
+#include "artery/application/VehicleDataProvider.h"
+#include "veins/modules/mobility/traci/TraCIMobility.h"
+#include <vanetza/dcc/scheduler.hpp>
+#include <vanetza/dcc/state_machine.hpp>
 
-Facilities::Facilities(
-		const VehicleDataProvider& vdp,
-		Veins::TraCIMobility& mob,
-		const vanetza::dcc::StateMachine& fsm,
-		vanetza::dcc::Scheduler& scheduler
-) :
-		m_vdp(vdp),
-		m_mobility(mob),
-		m_dcc_fsm(fsm),
-		m_dcc_scheduler(scheduler)
+const VehicleDataProvider& Facilities::getVehicleDataProvider() const
 {
+	return *get<const VehicleDataProvider>();
 }
 
+Veins::TraCIMobility& Facilities::getMobility()
+{
+	return *get<Veins::TraCIMobility>();
+}
+
+vanetza::dcc::Scheduler& Facilities::getDccScheduler()
+{
+	return *get<vanetza::dcc::Scheduler>();
+}
+
+const vanetza::dcc::StateMachine& Facilities::getDccStateMachine()
+{
+	return *get<const vanetza::dcc::StateMachine>();
+}

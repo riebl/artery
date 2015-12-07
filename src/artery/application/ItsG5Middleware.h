@@ -54,7 +54,7 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 		ItsG5Middleware();
 		void request(const vanetza::access::DataRequest&, std::unique_ptr<vanetza::DownPacket>) override;
 		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::DownPacket>) override;
-		Facilities* getFacilities() { return mFacilities.get(); }
+		Facilities* getFacilities() { return &mFacilities; }
 		port_type getPortNumber(const ItsG5BaseService*) const;
 
 	protected:
@@ -91,7 +91,7 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 		simtime_t mUpdateInterval;
 		cMessage* mUpdateMessage;
 		cMessage* mUpdateRuntimeMessage;
-		std::unique_ptr<Facilities> mFacilities;
+		Facilities mFacilities;
 		std::map<ItsG5BaseService*, port_type> mServices;
 };
 
