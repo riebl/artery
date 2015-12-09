@@ -48,10 +48,18 @@ def createStories():
 	effectFactory2 = storyboard.SpeedEffectFactory(0.1)
 	story2 = storyboard.Story(and2, [effectFactory2])
 
+	# Create Story 4, SpeedConditionGreater
+	cond7 = storyboard.SpeedConditionGreater(4.0)
+	cond8 = storyboard.TimeCondition(timeline.seconds(20), timeline.seconds(30))
+	and3 = storyboard.AndCondition(cond7, cond8)
+	effectFactory3 = storyboard.SpeedEffectFactory(1.0)
+	story3 = storyboard.Story(and3, [effectFactory3])
+
 	# Register Stories at the Storyboard
 	board.registerStory(story)
 	board.registerStory(story1)
 	board.registerStory(story2)
+	board.registerStory(story3)
 
 	print("Stories loaded!")
 

@@ -3,6 +3,7 @@
 
 #include "artery/storyboard/AndCondition.h"
 #include "artery/storyboard/CarSetCondition.h"
+#include "artery/storyboard/SpeedCondition.h"
 #include "artery/storyboard/SpeedEffectFactory.h"
 #include "artery/storyboard/Story.h"
 #include "artery/storyboard/OrCondition.h"
@@ -150,6 +151,8 @@ BOOST_PYTHON_MODULE(storyboard) {
     python::class_<AndCondition, AndCondition*, python::bases<Condition> >("AndCondition", python::init<Condition*, Condition*>());
     python::class_<OrCondition, OrCondition*, python::bases<Condition> >("OrCondition", python::init<Condition*, Condition*>());
 
+    python::class_<SpeedCondition<std::less<vanetza::units::Velocity>>, SpeedCondition<std::less<vanetza::units::Velocity>>* , python::bases<Condition>>("SpeedConditionLess", python::init<double> ());
+    python::class_<SpeedCondition<std::greater<vanetza::units::Velocity>>, SpeedCondition<std::greater<vanetza::units::Velocity>>* , python::bases<Condition>>("SpeedConditionGreater", python::init<double> ());
 
     /**
      * Effect related classes
