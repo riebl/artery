@@ -53,18 +53,18 @@ void Storyboard::updateStoryboard()
                 conditionTest = false;
             }
             // check if the story has to be applied or removed
-            checkCar(car, conditionTest, story.get());
+            checkCar(car.mobility, conditionTest, story.get());
         }
     }
 }
 
-void Storyboard::checkCar(Veins::TraCIMobility* car, bool conditionsPassed, Story* story)
+void Storyboard::checkCar(Veins::TraCIMobility& car, bool conditionsPassed, Story* story)
 {
     // If the Story is already applied on this car and the condition test is not passed
     // remove Story from EffectStack, because the car left the affected area
-    if (storyApplied(car, story)) {
+    if (storyApplied(&car, story)) {
         if (!conditionsPassed) {
-            removeStory(car, story);
+            removeStory(&car, story);
         }
     }
     // Story was not applied on this car and condition test is passed
@@ -80,11 +80,16 @@ void Storyboard::checkCar(Veins::TraCIMobility* car, bool conditionsPassed, Stor
     }
 }
 
-std::vector<Veins::TraCIMobility*> Storyboard::getCars()
-{
-    std::vector<Veins::TraCIMobility*> vec;
+std::vector<Vehicle> Storyboard::getCars() {
+    std::vector<Vehicle> vec;
     for (auto host : manager->getManagedHosts()) {
-        vec.push_back(static_cast<Veins::TraCIMobility*>(host.second->getSubmodule("veinsmobility")));
+        ItsG5Middleware* appl = dynamic_cast<ItsG5Middleware*>(host.second->getSubmodule("appl"));
+        if (appl == nullptr) {
+            opp_error("Could not find ItsG5Middleware submodule");
+        }
+        Facilities* f = appl->getFacilities();
+        Vehicle v(f->getMobility(), f->getVehicleDataProvider());
+        vec.push_back(v);
     }
     return vec;
 }

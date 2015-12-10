@@ -23,7 +23,7 @@ public:
      * \param Speed in m/s
      * \param Story from which the Effect is created
      */
-    SpeedEffect(Veins::TraCIMobility* car, double speed, Story* story) :
+    SpeedEffect(Veins::TraCIMobility& car, double speed, Story* story) :
         Effect(story, car), m_speed(speed)
     {
     }

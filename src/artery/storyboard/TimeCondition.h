@@ -36,7 +36,7 @@ public:
      * \param TraciMobility to test
      * \return result of the performed test
      */
-    bool testCondition(Veins::TraCIMobility* car);
+    bool testCondition(const Vehicle& car);
 
 private:
     SimTime m_begin = 0;

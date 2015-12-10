@@ -4,7 +4,9 @@
 #include <boost/python.hpp>
 #include <map>
 #include <omnetpp.h>
+#include "artery/application/ItsG5Middleware.h"
 #include "artery/storyboard/EffectStack.h"
+#include "artery/storyboard/Vehicle.h"
 
 namespace Veins
 {
@@ -81,13 +83,13 @@ public:
      * param: bool result of condition test
      * param: Story which was tested in the update function
      */
-    void checkCar(Veins::TraCIMobility*, bool, Story*);
+    void checkCar(Veins::TraCIMobility&, bool, Story*);
 
     /**
-     * Fetches all TraCIMobility vehicles from TraCIScenarioManager
-     * \return Vector containing all active TraCIMobiliy vehicles
+     * Fetches all vehicles from TraCIScenarioManager
+     * \return Vector containing all active vehicles
      */
-    std::vector<Veins::TraCIMobility*> getCars();
+    std::vector<Vehicle> getCars();
 
     /**
      * Fetches a parent cModule of a given cModule

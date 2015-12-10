@@ -3,7 +3,7 @@
 #include "artery/storyboard/TimeCondition.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 
-bool TimeCondition::testCondition(Veins::TraCIMobility* car)
+bool TimeCondition::testCondition(const Vehicle& car)
 {
     return (simTime() >= m_begin && simTime() <= m_end);
 }

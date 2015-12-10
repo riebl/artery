@@ -12,7 +12,7 @@ class EffectFactory
 public:
     virtual ~EffectFactory() = default;
 
-    virtual std::shared_ptr<Effect> create(Veins::TraCIMobility*, Story*) = 0;
+    virtual std::shared_ptr<Effect> create(Veins::TraCIMobility&, Story*) = 0;
 };
 
 #endif /* EFFECTFACTORY_H_ */

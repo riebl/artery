@@ -6,7 +6,7 @@ OrCondition::OrCondition(Condition* left, Condition* right) :
 {
 }
 
-bool OrCondition::testCondition(Veins::TraCIMobility* car)
+bool OrCondition::testCondition(const Vehicle& car)
 {
     return (m_left->testCondition(car) ||  m_right->testCondition(car));
 }

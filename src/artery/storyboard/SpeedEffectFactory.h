@@ -22,7 +22,7 @@ public:
      * \param Story from which the Effect should be created
      * \return Effect to add on the EffectStack from the TraCIMobility
      */
-    std::shared_ptr<Effect> create(Veins::TraCIMobility*, Story*);
+    std::shared_ptr<Effect> create(Veins::TraCIMobility&, Story*);
 
 private:
     double m_speed;

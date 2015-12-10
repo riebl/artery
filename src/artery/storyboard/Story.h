@@ -4,11 +4,8 @@
 #include <vector>
 #include "artery/storyboard/Condition.h"
 #include "artery/storyboard/EffectFactory.h"
+#include "artery/storyboard/Vehicle.h"
 
-namespace Veins
-{
-class TraCIMobility;
-}
 class Storyboard;
 class EffectFactory;
 
@@ -26,7 +23,7 @@ public:
      * \param car to test
      * \return result of the test
      */
-    bool testCondition(Veins::TraCIMobility*);
+    bool testCondition(const Vehicle&);
 
     /**
      * Returns vector containing all EffectFactories

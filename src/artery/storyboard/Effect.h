@@ -13,7 +13,7 @@ class Story;
 class Effect
 {
 public:
-    Effect(Story* story, Veins::TraCIMobility* car);
+    Effect(Story* story, Veins::TraCIMobility& car);
     virtual ~Effect() = default;
     virtual void applyEffect() = 0;
     virtual void reapplyEffect() = 0;

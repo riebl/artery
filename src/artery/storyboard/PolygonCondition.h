@@ -30,7 +30,7 @@ public:
      * \param TraCIMobility to check if its inside
      * \return result of the performed check
      */
-    bool testCondition(Veins::TraCIMobility* car);
+    bool testCondition(const Vehicle& car);
 
 private:
     std::vector<Coord> m_vertices;

@@ -1,8 +1,8 @@
 #include "artery/storyboard/PolygonCondition.h"
 
-bool PolygonCondition::testCondition(Veins::TraCIMobility* car)
+bool PolygonCondition::testCondition(const Vehicle& car)
 {
-    const Coord& point = car->getCurrentPosition();
+    const Coord& point = car.mobility.getCurrentPosition();
     bool c = false;
     // Raycasting algorithm, performing the check if the point is inside the polygon
     for (unsigned i = 0, j = m_vertices.size() - 1; i < m_vertices.size(); j = i++) {

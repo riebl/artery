@@ -77,7 +77,7 @@ struct iterable_converter
 struct EffectWrap : Effect, python::wrapper<Effect>
 {
     EffectWrap(Story* story, Veins::TraCIMobility* car) :
-        Effect(story, car)
+        Effect(story, *car)
     {
     }
 
@@ -100,7 +100,7 @@ struct EffectWrap : Effect, python::wrapper<Effect>
  */
 struct EffectFactoryWrap : EffectFactory, python::wrapper<EffectFactory>
 {
-    std::shared_ptr<Effect> create(Veins::TraCIMobility*, Story*)
+    std::shared_ptr<Effect> create(Veins::TraCIMobility&, Story*)
     {
         return this->get_override("create") ();
     }
@@ -111,7 +111,7 @@ struct EffectFactoryWrap : EffectFactory, python::wrapper<EffectFactory>
  */
 struct ConditionWrap : Condition, python::wrapper<Condition>
 {
-    bool testCondition(Veins::TraCIMobility* car)
+    bool testCondition(const Vehicle& car)
     {
         return this->get_override("testCondition") ();
     }

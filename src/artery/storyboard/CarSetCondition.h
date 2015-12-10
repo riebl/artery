@@ -29,7 +29,7 @@ public:
      * \param car to test
      * \return result of the test
      */
-    bool testCondition(Veins::TraCIMobility* car);
+    bool testCondition(const Vehicle& car);
 
 private:
     std::set<std::string> m_cars;

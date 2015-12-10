@@ -5,7 +5,7 @@ AndCondition::AndCondition(Condition* left, Condition* right) :
 {
 }
 
-bool AndCondition::testCondition(Veins::TraCIMobility* car)
+bool AndCondition::testCondition(const Vehicle& car)
 {
     return(m_left->testCondition(car) && m_right->testCondition(car));
 }

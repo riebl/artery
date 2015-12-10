@@ -16,7 +16,7 @@ public:
      * \param Car to test
      * \return true if condition test for left or right is passed
      */
-    bool testCondition(Veins::TraCIMobility* car);
+    bool testCondition(const Vehicle& car);
 
 private:
     Condition* m_left;
