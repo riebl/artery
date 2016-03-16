@@ -28,6 +28,7 @@ simple ItsG5Middleware like IBaseApplLayer
 		bool vanetzaEnableSecurity = default(true);
 		bool vanetzaDeferSigning = default(false);
 		string vanetzaCryptoBackend = default("default");
+		int vanetzaDccQueueLength = default(2);
 
 	gates:
 		input lowerLayerIn;

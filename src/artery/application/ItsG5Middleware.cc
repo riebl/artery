@@ -205,6 +205,7 @@ void ItsG5Middleware::initializeMiddleware()
 	mGeoRouter.reset(new vanetza::geonet::Router {mRuntime, mGeoMib});
 	mGeoRouter->set_address(gn_addr);
 	mDccControl.reset(new vanetza::dcc::FlowControl {mRuntime, mDccScheduler, *this});
+	mDccControl->queue_length(par("vanetzaDccQueueLength"));
 	mGeoRouter->set_access_interface(mDccControl.get());
 	mGeoRouter->set_transport_handler(UpperProtocol::BTP_B, &mBtpPortDispatcher);
 }
