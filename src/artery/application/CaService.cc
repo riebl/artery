@@ -118,7 +118,7 @@ void CaService::sendCam(const VehicleDataProvider& vdp, const simtime_t& T_now)
 
 simtime_t CaService::genCamDcc()
 {
-	vanetza::clock::duration delay = getFacilities().getDccScheduler().delay(vanetza::dcc::Profile::DP2);
+	vanetza::Clock::duration delay = getFacilities().getDccScheduler().delay(vanetza::dcc::Profile::DP2);
 	simtime_t dcc { static_cast<int64_t>(delay.count()), SIMTIME_MS };
 	return std::max(mGenCamMin, dcc);
 }

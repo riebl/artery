@@ -75,11 +75,11 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 		void initializeServices();
 		bool checkServiceFilterRules(const cXMLElement* filters) const;
 		void scheduleRouterTimer();
-		vanetza::geonet::Timestamp deriveTimestamp(simtime_t) const;
 
 		Veins::TraCIMobility* mMobility;
 		VehicleDataProvider mVehicleDataProvider;
-		vanetza::clock::time_point mClock;
+		vanetza::Clock::time_point mClock;
+		vanetza::Clock::time_point mLastRouterUpdate;
 		vanetza::dcc::StateMachine mDccFsm;
 		vanetza::dcc::Scheduler mDccScheduler;
 		vanetza::dcc::AccessControl mDccControl;
