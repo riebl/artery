@@ -25,9 +25,9 @@ static const simsignal_t scSignalDenmReceived = cComponent::registerSignal("Denm
 void DenmService::indicate(const vanetza::btp::DataIndication& indication, std::unique_ptr<vanetza::UpPacket> packet)
 {
     Asn1PacketVisitor<vanetza::asn1::Denm> visitor;
-    vanetza::asn1::Denm* denm = boost::apply_visitor(visitor, *packet);
+    const vanetza::asn1::Denm* denm = boost::apply_visitor(visitor, *packet);
     if (denm) {
-        DenmObject obj = std::move(*denm);
+        DenmObject obj = visitor.shared_wrapper;
         emit(scSignalDenmReceived, &obj);
     }
 }
