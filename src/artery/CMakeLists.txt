@@ -17,6 +17,8 @@ find_package(Boost COMPONENTS date_time REQUIRED)
 
 set(SOURCES
     application/CaService.cc
+    application/DenmObject.cc
+    application/DenmService.cc
     application/ExampleService.cc
     application/Facilities.cc
     application/ItsG5BaseService.cc
