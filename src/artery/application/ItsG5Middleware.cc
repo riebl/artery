@@ -46,7 +46,7 @@ const simsignalwrap_t cMobilityStateChangedSignal(MIXIM_SIGNAL_MOBILITY_CHANGE_N
 LAddress::L2Type convertToL2Type(const vanetza::MacAddress& mac)
 {
 	if (mac == vanetza::cBroadcastMacAddress) {
-		return LAddress::L2BROADCAST;
+		return LAddress::L2BROADCAST();
 	} else {
 		LAddress::L2Type result = 0;
 		for (unsigned i = 0; i < mac.octets.size(); ++i) {
@@ -59,7 +59,7 @@ LAddress::L2Type convertToL2Type(const vanetza::MacAddress& mac)
 
 vanetza::MacAddress convertToMacAddress(const LAddress::L2Type& addr)
 {
-	if (addr == LAddress::L2BROADCAST) {
+	if (LAddress::isL2Broadcast(addr)) {
 		return vanetza::cBroadcastMacAddress;
 	} else {
 		LAddress::L2Type tmp = addr;

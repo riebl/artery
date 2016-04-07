@@ -176,7 +176,7 @@ void MacItsG5::handleLowerMsg(cMessage* msg)
 	if (destMac == mMacAddress) {
 		mStatistics.ReceivedPackets++;
 		sendUp(packetUp);
-	} else if (destMac == LAddress::L2BROADCAST) {
+	} else if (destMac == LAddress::L2BROADCAST()) {
 		mStatistics.ReceivedBroadcasts++;
 		sendUp(packetUp);
 	} else {
@@ -209,7 +209,7 @@ Signal* MacItsG5::createSignal(simtime_t start, simtime_t length, double power, 
 	ConstMapping* txPowerMapping = createSingleFrequencyMapping(start, end, frequency, 5.0e6, power);
 	s->setTransmissionPower(txPowerMapping);
 
-	Mapping* bitrateMapping = MappingUtils::createMapping(DimensionSet::timeDomain, Mapping::STEPS);
+	Mapping* bitrateMapping = MappingUtils::createMapping(DimensionSet::timeDomain(), Mapping::STEPS);
 
 	Argument pos(start);
 	bitrateMapping->setValue(pos, bitrate);
