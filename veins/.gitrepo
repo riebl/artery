@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/sommer/veins
+	branch = veins-4.4
+	commit = e318d300316834b267c7fabf72317cb10ed7b5ff
+	parent = e0a5b720e31840fccf6f726fdc7b50bef36bfacb
+	cmdver = 0.3.0
