@@ -22,7 +22,7 @@ Define_Module(DenmService);
 
 static const simsignal_t scSignalDenmReceived = cComponent::registerSignal("DenmService.received");
 
-void DenmService::indicate(const vanetza::btp::DataIndication& indication, std::unique_ptr<vanetza::btp::UpPacket> packet)
+void DenmService::indicate(const vanetza::btp::DataIndication& indication, std::unique_ptr<vanetza::UpPacket> packet)
 {
     Asn1PacketVisitor<vanetza::asn1::Denm> visitor;
     vanetza::asn1::Denm* denm = boost::apply_visitor(visitor, *packet);

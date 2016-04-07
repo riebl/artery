@@ -22,7 +22,7 @@
 class DenmService : public ItsG5BaseService
 {
     public:
-        void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::btp::UpPacket>) override;
+        void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::UpPacket>) override;
 };
 
 #endif

@@ -40,8 +40,8 @@ class ItsG5BaseService :
 
 	protected:
 		void initialize() override;
-		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::btp::DownPacket>);
-		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::btp::UpPacket>) override;
+		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::DownPacket>);
+		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::UpPacket>) override;
 		Facilities& getFacilities();
 		port_type getPortNumber() const;
 		cModule* findHost();

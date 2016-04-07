@@ -24,15 +24,15 @@
 #include <simutil.h>
 
 template<class T>
-struct Asn1PacketVisitor : public boost::static_visitor<T*>
+struct Asn1PacketVisitor : public boost::static_visitor<const T*>
 {
-    T* operator()(vanetza::CohesivePacket& packet)
+    const T* operator()(vanetza::CohesivePacket& packet)
     {
         opp_error("ASN.1 packet deserialization is not yet implemented");
         return nullptr;
     }
 
-    T* operator()(vanetza::ChunkPacket& packet)
+    const T* operator()(vanetza::ChunkPacket& packet)
     {
         typedef vanetza::convertible::byte_buffer byte_buffer;
         typedef vanetza::convertible::byte_buffer_impl<T> byte_buffer_impl;
@@ -40,12 +40,15 @@ struct Asn1PacketVisitor : public boost::static_visitor<T*>
         byte_buffer* ptr = packet[vanetza::OsiLayer::Application].ptr();
         auto impl = dynamic_cast<byte_buffer_impl*>(ptr);
         if (impl) {
-            return &(impl->m_wrapper);
+            shared_wrapper = impl->wrapper();
+            return shared_wrapper.get();
         } else {
             opp_error("ChunkPacket doesn't contain requested ASN.1 structure");
             return nullptr;
         }
     }
+
+    std::shared_ptr<T> shared_wrapper;
 };
 
 #endif /* __ARTERY_ASN1PACKETVISITOR_H_ */

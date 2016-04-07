@@ -51,10 +51,10 @@ void CaService::trigger()
 	checkTriggeringConditions(getFacilities().getVehicleDataProvider(), simTime());
 }
 
-void CaService::indicate(const vanetza::btp::DataIndication& ind, std::unique_ptr<vanetza::btp::UpPacket> packet)
+void CaService::indicate(const vanetza::btp::DataIndication& ind, std::unique_ptr<vanetza::UpPacket> packet)
 {
 	Asn1PacketVisitor<vanetza::asn1::Cam> visitor;
-	vanetza::asn1::Cam* cam = boost::apply_visitor(visitor, *packet);
+	const vanetza::asn1::Cam* cam = boost::apply_visitor(visitor, *packet);
 	if (cam) {
 		// TODO: collect statistic data
 		emit(scSignalCamReceived, cam->validate());

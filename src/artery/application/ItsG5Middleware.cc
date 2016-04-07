@@ -73,11 +73,9 @@ vanetza::MacAddress convertToMacAddress(const LAddress::L2Type& addr)
 }
 
 ItsG5Middleware::ItsG5Middleware() :
-		mClock(std::chrono::milliseconds(simTime().inUnit(SIMTIME_MS))),
-		mLastRouterUpdate(mClock),
-		mDccScheduler(mDccFsm, mClock),
+		mDccScheduler(mDccFsm, mRuntime.now()),
 		mDccControl(mDccScheduler, *this),
-		mGeoRouter(mGeoMib, mDccControl),
+		mGeoRouter(mRuntime, mGeoMib),
 		mAdditionalHeaderBits(0)
 {
 }
@@ -95,7 +93,7 @@ void ItsG5Middleware::request(const vanetza::access::DataRequest& req,
 		opp_error("Missing network layer payload in middleware request");
 	}
 
-	GeoNetPacket* net = new GeoNetPacket("GeoNet");
+	GeoNetPacket* net = new GeoNetPacket("GeoNet packet");
 	net->setByteLength(payload->size());
 	net->setPayload(GeoNetPacketWrapper(std::move(payload)));
 	net->setControlInfo(macCtrlInfo);
@@ -104,7 +102,7 @@ void ItsG5Middleware::request(const vanetza::access::DataRequest& req,
 	sendDown(net);
 }
 
-void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique_ptr<vanetza::btp::DownPacket> payload)
+void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique_ptr<vanetza::DownPacket> payload)
 {
 	Enter_Method("request");
 	using namespace vanetza;
@@ -144,7 +142,7 @@ void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique
 			break;
 	}
 
-	scheduleRouterTimer();
+	scheduleRuntime();
 }
 
 int ItsG5Middleware::numInitStages() const
@@ -166,7 +164,7 @@ void ItsG5Middleware::initialize(int stage)
 				// start update cycle with random jitter to avoid unrealistic node synchronization
 				const auto jitter = uniform(SimTime(0, SIMTIME_MS), mUpdateInterval);
 				scheduleAt(simTime() + jitter + mUpdateInterval, mUpdateMessage);
-				mGeoRouter.update(std::chrono::milliseconds(jitter.inUnit(SIMTIME_MS)));
+				scheduleRuntime();
 			}
 			break;
 		default:
@@ -184,11 +182,10 @@ void ItsG5Middleware::initializeMiddleware()
 
 	mAdditionalHeaderBits = par("headerLength");
 	mTimebase = boost::posix_time::time_from_string(par("datetime"));
-	mClock = vanetza::Clock::at(mTimebase) + std::chrono::milliseconds(simTime().inUnit(SIMTIME_MS));
-	mLastRouterUpdate = mClock;
+	mRuntime.reset(deriveClock());
 	mUpdateInterval = par("updateInterval").doubleValue();
-	mUpdateMessage = new cMessage("update ITS-G5");
-	mUpdateRouterTimer = new cMessage("router timer");
+	mUpdateMessage = new cMessage("middleware update");
+	mUpdateRuntimeMessage = new cMessage("runtime update");
 	findHost()->subscribe(cMobilityStateChangedSignal, this);
 
 	vanetza::geonet::Address gn_addr;
@@ -197,10 +194,10 @@ void ItsG5Middleware::initializeMiddleware()
 	gn_addr.country_code(0);
 	gn_addr.mid(vanetza::create_mac_address(this->getId()));
 	mGeoRouter.set_address(gn_addr);
-	mGeoRouter.set_time(mClock);
+	mGeoRouter.set_access_interface(&mDccControl);
 
 	using vanetza::geonet::UpperProtocol;
-	mGeoRouter.set_transport_handler(UpperProtocol::BTP_B, mBtpPortDispatcher);
+	mGeoRouter.set_transport_handler(UpperProtocol::BTP_B, &mBtpPortDispatcher);
 }
 
 void ItsG5Middleware::initializeServices()
@@ -301,7 +298,7 @@ bool ItsG5Middleware::checkServiceFilterRules(const cXMLElement* filter_cfg) con
 void ItsG5Middleware::finish()
 {
 	cancelAndDelete(mUpdateMessage);
-	cancelAndDelete(mUpdateRouterTimer);
+	cancelAndDelete(mUpdateRuntimeMessage);
 	findHost()->unsubscribe(cMobilityStateChangedSignal, this);
 	BaseApplLayer::finish();
 }
@@ -309,7 +306,7 @@ void ItsG5Middleware::finish()
 void ItsG5Middleware::handleMessage(cMessage *msg)
 {
 	// Update clock before anything else is executed (which might read the clock)
-	mClock = vanetza::Clock::at(mTimebase) + std::chrono::milliseconds(simTime().inUnit(SIMTIME_MS));
+	mRuntime.trigger(deriveClock());
 
 	// Don't forget to dispatch message properly
 	BaseApplLayer::handleMessage(msg);
@@ -319,8 +316,8 @@ void ItsG5Middleware::handleSelfMsg(cMessage *msg)
 {
 	if (msg == mUpdateMessage) {
 		update();
-	} else if (msg == mUpdateRouterTimer) {
-		updateRouterTimer();
+	} else if (msg == mUpdateRuntimeMessage) {
+		// runtime is triggered each handleMessage invocation
 	} else {
 		opp_error("Unknown self-message in ITS-G5");
 	}
@@ -336,7 +333,7 @@ void ItsG5Middleware::handleLowerMsg(cMessage *msg)
 	vanetza::MacAddress sender = convertToMacAddress(info->source_addr);
 	vanetza::MacAddress destination = convertToMacAddress(info->destination_addr);
 	mGeoRouter.indicate(wrapper.extract_up_packet(), sender, destination);
-	scheduleRouterTimer();
+	scheduleRuntime();
 	delete msg;
 }
 
@@ -353,7 +350,7 @@ void ItsG5Middleware::handleLowerControl(cMessage *msg)
 
 void ItsG5Middleware::update()
 {
-	updateGeoRouter();
+	updatePosition();
 	updateServices();
 	scheduleAt(simTime() + mUpdateInterval, mUpdateMessage);
 }
@@ -366,26 +363,22 @@ void ItsG5Middleware::receiveSignal(cComponent* component, simsignal_t signal, c
 	}
 }
 
-void ItsG5Middleware::scheduleRouterTimer()
+void ItsG5Middleware::scheduleRuntime()
 {
 	using namespace std::chrono;
-	const auto update_step_us = duration_cast<microseconds>(mGeoRouter.next_update());
-	const simtime_t update_step { update_step_us.count(), SIMTIME_US };
-	cancelEvent(mUpdateRouterTimer);
-	scheduleAt(simTime() + update_step, mUpdateRouterTimer);
+	const auto next_time_point = mRuntime.next();
+	cancelEvent(mUpdateRuntimeMessage);
+	if (next_time_point < vanetza::Clock::time_point::max()) {
+		const auto next_time_step = duration_cast<microseconds>(next_time_point - mRuntime.now());
+		const simtime_t update_step { next_time_step.count(), SIMTIME_US };
+		scheduleAt(simTime() + update_step, mUpdateRuntimeMessage);
+	}
 }
 
-void ItsG5Middleware::updateRouterTimer()
-{
-	const auto delta = mClock - mLastRouterUpdate;
-	mGeoRouter.update(delta);
-	mLastRouterUpdate = mClock;
-}
-
-void ItsG5Middleware::updateGeoRouter()
+void ItsG5Middleware::updatePosition()
 {
 	vanetza::geonet::LongPositionVector lpv;
-	lpv.timestamp = vanetza::geonet::Timestamp(mClock);
+	lpv.timestamp = vanetza::geonet::Timestamp(mRuntime.now());
 	lpv.latitude = static_cast<decltype(lpv.latitude)>(mVehicleDataProvider.latitude());
 	lpv.longitude = static_cast<decltype(lpv.longitude)>(mVehicleDataProvider.longitude());
 	lpv.heading = static_cast<decltype(lpv.heading)>(mVehicleDataProvider.heading());
@@ -409,4 +402,9 @@ ItsG5Middleware::port_type ItsG5Middleware::getPortNumber(const ItsG5BaseService
 		port = it->second;
 	}
 	return port;
+}
+
+vanetza::Clock::time_point ItsG5Middleware::deriveClock() const
+{
+	return vanetza::Clock::at(mTimebase) + std::chrono::milliseconds(simTime().inUnit(SIMTIME_MS));
 }

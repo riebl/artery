@@ -28,6 +28,7 @@
 #include <vanetza/btp/data_interface.hpp>
 #include <vanetza/btp/port_dispatcher.hpp>
 #include <vanetza/common/clock.hpp>
+#include <vanetza/common/runtime.hpp>
 #include <vanetza/dcc/access_control.hpp>
 #include <vanetza/dcc/scheduler.hpp>
 #include <vanetza/dcc/state_machine.hpp>
@@ -51,8 +52,8 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 		typedef uint16_t port_type;
 
 		ItsG5Middleware();
-		void request(const vanetza::access::DataRequest&, std::unique_ptr<vanetza::geonet::DownPacket>) override;
-		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::btp::DownPacket>) override;
+		void request(const vanetza::access::DataRequest&, std::unique_ptr<vanetza::DownPacket>) override;
+		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::DownPacket>) override;
 		Facilities* getFacilities() { return mFacilities.get(); }
 		port_type getPortNumber(const ItsG5BaseService*) const;
 
@@ -68,18 +69,17 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 
 	private:
 		void update();
-		void updateRouterTimer();
-		void updateGeoRouter();
+		void updatePosition();
 		void updateServices();
 		void initializeMiddleware();
 		void initializeServices();
 		bool checkServiceFilterRules(const cXMLElement* filters) const;
-		void scheduleRouterTimer();
+		void scheduleRuntime();
+		vanetza::Clock::time_point deriveClock() const;
 
 		Veins::TraCIMobility* mMobility;
 		VehicleDataProvider mVehicleDataProvider;
-		vanetza::Clock::time_point mClock;
-		vanetza::Clock::time_point mLastRouterUpdate;
+		vanetza::Runtime mRuntime;
 		vanetza::dcc::StateMachine mDccFsm;
 		vanetza::dcc::Scheduler mDccScheduler;
 		vanetza::dcc::AccessControl mDccControl;
@@ -90,7 +90,7 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 		unsigned mAdditionalHeaderBits;
 		simtime_t mUpdateInterval;
 		cMessage* mUpdateMessage;
-		cMessage* mUpdateRouterTimer;
+		cMessage* mUpdateRuntimeMessage;
 		std::unique_ptr<Facilities> mFacilities;
 		std::map<ItsG5BaseService*, port_type> mServices;
 };
