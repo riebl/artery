@@ -3,6 +3,9 @@
 	<AnalogueModels>
 		<AnalogueModel type="SimpleObstacleShadowing">
 			<parameter name="carrierFrequency" type="double" value="5.90e+9"/>
+			<obstacles>
+				<type id="building" db-per-cut="9" db-per-meter="0.4" />
+			</obstacles>
 		</AnalogueModel>
 		<AnalogueModel type="TwoRayInterferenceModel">
 			<parameter name="DielectricConstant" type="double" value="1.02" />
