@@ -59,14 +59,16 @@ class CMakeTarget:
         out_subdir = os.path.relpath(self._makefile_path(), self._project.root_directory)
         return os.path.join(self._project.root_directory, self._project.output_directory, mode, out_subdir)
 
-    def _import_location(self, mode):
+    def _filename(self, mode):
         binary = {
             'executable': "{}${{CMAKE_EXECUTABLE_SUFFIX}}",
             'shared': "${{CMAKE_SHARED_LIBRARY_PREFIX}}{}${{CMAKE_SHARED_LIBRARY_SUFFIX}}",
             'static': "${{CMAKE_STATIC_LIBRARY_PREFIX}}{}${{CMAKE_STATIC_LIBRARY_SUFFIX}}"
         }
+        return binary[self._project.binary].format(self._project.name)
 
-        filename = binary[self._project.binary].format(self._project.name)
+    def _import_location(self, mode):
+        filename = self._filename(mode)
         path = None
         if (mode == "release"):
             path = self._target_output_path('gcc-release')
