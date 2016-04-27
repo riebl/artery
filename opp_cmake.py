@@ -107,9 +107,11 @@ class CMakeTarget:
         configurations = []
         if os.path.exists(os.path.dirname(self.location_release)):
             props.append("  IMPORTED_LOCATION_RELEASE \"{}\"".format(self.location_release))
+            props.append("  IMPORTED_NO_SONAME TRUE")
             configurations.append("RELEASE")
         if os.path.exists(os.path.dirname(self.location_debug)):
             props.append("  IMPORTED_LOCATION_DEBUG \"{}\"".format(self.location_debug))
+            props.append("  IMPORTED_NO_SONAME TRUE")
             configurations.append("DEBUG")
         if self.binary != "executable":
             if self.include_directories:
