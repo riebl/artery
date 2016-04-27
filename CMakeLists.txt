@@ -87,7 +87,7 @@ endmacro()
 find_package(Vanetza REQUIRED)
 option(Vanetza_STATIC "Link with static Vanetza libraries" OFF)
 
-find_path(Veins_DIR NAMES src/veins/package.ned DOC "Veins root directory")
+find_path(Veins_DIR NAMES src/veins/package.ned PATHS extern/veins DOC "Veins root directory")
 import_opp_target(veins ${Veins_DIR}/src/Makefile)
 
 add_subdirectory(src/artery)

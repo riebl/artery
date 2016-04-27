@@ -1,7 +1,8 @@
 PYTHON ?= python
+VEINS_DIR = extern/veins
 
-veins/src/Makefile:
-	cd veins && $(PYTHON) configure
+$(VEINS_DIR)/src/Makefile:
+	cd $(VEINS_DIR) && $(PYTHON) configure
 
-veins: veins/src/Makefile
-	$(MAKE) -C veins
+veins: $(VEINS_DIR)/src/Makefile
+	$(MAKE) -C $(VEINS_DIR)
