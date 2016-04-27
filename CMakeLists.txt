@@ -91,3 +91,4 @@ find_path(Veins_DIR NAMES src/veins/package.ned PATHS extern/veins DOC "Veins ro
 import_opp_target(veins ${Veins_DIR}/src/Makefile)
 
 add_subdirectory(src/artery)
+add_subdirectory(scenarios)
