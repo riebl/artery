@@ -27,12 +27,13 @@
 #include <vanetza/units/velocity.hpp>
 #include <simtime_t.h>
 
+using UpPacket = vanetza::PacketVariant;
 
 class CaService : public ItsG5BaseService
 {
 	public:
 		CaService();
-		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::btp::UpPacket>) override;
+		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<UpPacket>) override;
 		void trigger() override;
 
 	private:

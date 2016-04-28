@@ -104,7 +104,7 @@ void ItsG5Middleware::request(const vanetza::access::DataRequest& req,
 	sendDown(net);
 }
 
-void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique_ptr<vanetza::btp::DownPacket> payload)
+void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique_ptr<DownPacket> payload)
 {
 	Enter_Method("request");
 	using namespace vanetza;

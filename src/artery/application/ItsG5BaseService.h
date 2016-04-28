@@ -26,6 +26,9 @@
 #include "Facilities.h"
 #include "ItsG5Middleware.h"
 
+using DownPacket = vanetza::ChunkPacket;
+using UpPacket = vanetza::PacketVariant;
+
 class ItsG5BaseService :
 	public cSimpleModule, public cListener,
 	public vanetza::btp::IndicationInterface
@@ -40,8 +43,8 @@ class ItsG5BaseService :
 
 	protected:
 		void initialize() override;
-		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::btp::DownPacket>);
-		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::btp::UpPacket>) override;
+		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<DownPacket>);
+		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<UpPacket>) override;
 		Facilities& getFacilities();
 		port_type getPortNumber() const;
 		cModule* findHost();

@@ -36,6 +36,9 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <map>
 #include <memory>
+#include <vanetza/net/packet_variant.hpp>
+
+using DownPacket = vanetza::ChunkPacket;
 
 // forward declarations
 namespace Veins { class TraCIMobility; }
@@ -52,7 +55,7 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 
 		ItsG5Middleware();
 		void request(const vanetza::access::DataRequest&, std::unique_ptr<vanetza::geonet::DownPacket>) override;
-		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::btp::DownPacket>) override;
+		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<DownPacket>) override;
 		Facilities* getFacilities() { return mFacilities.get(); }
 		port_type getPortNumber(const ItsG5BaseService*) const;
 

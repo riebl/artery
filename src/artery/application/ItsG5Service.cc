@@ -28,7 +28,7 @@ ItsG5Service::~ItsG5Service()
 {
 }
 
-void ItsG5Service::indicate(const vanetza::btp::DataIndication& ind, std::unique_ptr<vanetza::btp::UpPacket> raw_packet)
+void ItsG5Service::indicate(const vanetza::btp::DataIndication& ind, std::unique_ptr<UpPacket> raw_packet)
 {
 	using namespace vanetza;
 
@@ -72,7 +72,7 @@ void ItsG5Service::indicate(const vanetza::btp::DataIndication& ind, cPacket* pa
 
 void ItsG5Service::request(const vanetza::btp::DataRequestB& req, cPacket* packet)
 {
-	std::unique_ptr<vanetza::btp::DownPacket> buffer { new vanetza::btp::DownPacket() };
+	std::unique_ptr<DownPacket> buffer { new DownPacket() };
 	buffer->layer(vanetza::OsiLayer::Application) = std::move(packet);
 	ItsG5BaseService::request(req, std::move(buffer));
 }
