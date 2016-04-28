@@ -40,7 +40,7 @@ struct Asn1PacketVisitor : public boost::static_visitor<T*>
         byte_buffer* ptr = packet[vanetza::OsiLayer::Application].ptr();
         auto impl = dynamic_cast<byte_buffer_impl*>(ptr);
         if (impl) {
-            return &(impl->m_wrapper);
+            return &*(impl->m_wrapper);
         } else {
             opp_error("ChunkPacket doesn't contain requested ASN.1 structure");
             return nullptr;
