@@ -85,7 +85,7 @@ macro(add_opp_run _name _config _target)
         VERBATIM)
 endmacro()
 
-find_package(Vanetza REQUIRED)
+find_package(Vanetza PATHS extern/vanetza/build REQUIRED)
 option(Vanetza_STATIC "Link with static Vanetza libraries" OFF)
 
 find_path(Veins_DIR NAMES src/veins/package.ned PATHS extern/veins DOC "Veins root directory")

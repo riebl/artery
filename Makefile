@@ -1,4 +1,5 @@
 PYTHON ?= python
+VANETZA_DIR = extern/vanetza
 VEINS_DIR = extern/veins
 
 $(VEINS_DIR)/src/Makefile:
@@ -6,3 +7,9 @@ $(VEINS_DIR)/src/Makefile:
 
 veins: $(VEINS_DIR)/src/Makefile
 	$(MAKE) -C $(VEINS_DIR)
+
+$(VANETZA_DIR)/build:
+	mkdir $(VANETZA_DIR)/build
+
+vanetza: $(VANETZA_DIR)/build
+	cd $(VANETZA_DIR)/build && cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .
