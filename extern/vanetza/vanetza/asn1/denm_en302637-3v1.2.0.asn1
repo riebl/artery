@@ -1,0 +1,127 @@
+DENM-PDU-Descriptions {
+ itu-t (0) identified-organization (4) etsi (0) itsDomain (5) wg1 (1) en (302637) denm (1) version (1) 
+}
+
+DEFINITIONS AUTOMATIC TAGS ::= 
+
+BEGIN
+
+IMPORTS 
+   ItsPduHeader, CauseCode, Percentage, StationID, Speed, InformationQuality, ReferencePosition, DangerousGoodsExtended, Heading, LaneNumber, LightBarSirenInUse, PathHistory, RoadType, HeightLonCarr, PosLonCarr, PosPillar, PosCentMass, PositioningSolutionType, RequestResponseIndication, StationType, SpeedLimit, StationarySince, TimestampIts, WheelBaseVehicle, TurningRadius, PosFrontAx, PositionOfOccupants, Temperature, VehicleMass, VehicleIdentification, EnergyStorageType, ClosedLanes, HardShoulderStatus, DrivingLaneStatus FROM ITS-Container {
+ itu-t (0) identified-organization (4) etsi (0) itsDomain (5) wg1 (1) ts (102894) ccd (2) version (1)
+};
+
+
+DENM ::= SEQUENCE {
+	header	ItsPduHeader,
+	denm	DecentralizedEnvironmentalNotificationMessage
+
+}
+
+DecentralizedEnvironmentalNotificationMessage ::= SEQUENCE {
+	
+	management	ManagementContainer,
+	situation	SituationContainer OPTIONAL,
+  	location	LocationContainer OPTIONAL,
+   	alacarte	AlacarteContainer OPTIONAL
+}
+
+ManagementContainer ::= SEQUENCE {
+	actionID	ActionID,
+	detectionTime	TimestampIts,
+	referenceTime	TimestampIts,
+	isNegation	BOOLEAN,
+	isCancellation	BOOLEAN,
+	eventPosition	ReferencePosition,
+	relevanceDistance	RelevanceDistance,
+	relevanceTrafficDirection RelevanceTrafficDirection,
+	validityDuration	ValidityDuration DEFAULT defaultValidity,
+	transmissionInterval	TransmissionInterval OPTIONAL 
+}
+
+SituationContainer ::= SEQUENCE {
+	informationQuality InformationQuality,
+	eventType CauseCode,
+	linkedCause CauseCode OPTIONAL
+}
+
+LocationContainer ::= SEQUENCE {
+	eventSpeed Speed OPTIONAL,
+	eventPositionHeading Heading OPTIONAL,
+	traces Traces,
+	roadClass RoadType OPTIONAL
+}
+
+ImpactReductionContainer ::= SEQUENCE {
+  heightLonCarrLeft HeightLonCarr,
+  heightLonCarrRight HeightLonCarr,
+  posLonCarrLeft PosLonCarr,
+  posLonCarrRight PosLonCarr,
+  positionOfPillars PositionOfPillars,
+  posCentMass PosCentMass,
+  wheelBaseVehicle WheelBaseVehicle,
+  turningRadius TurningRadius,
+  posFrontAx PosFrontAx,
+  positionOfOccupants PositionOfOccupants,
+  vehicleMass VehicleMass,
+  requestResponseIndication RequestResponseIndication
+}
+
+PositionOfPillars ::= SEQUENCE (SIZE(1..3, ...)) OF PosPillar
+
+ RoadWorksContainerExtended ::= SEQUENCE {
+  lightBarSirenInUse LightBarSirenInUse OPTIONAL,
+  closedLanes ClosedLanes OPTIONAL,
+  restriction RestrictedTypes OPTIONAL,
+  speedLimit SpeedLimit OPTIONAL,
+  incidentIndication CauseCode OPTIONAL,
+  recommendedPath ItineraryPath OPTIONAL	--Traces without timestamps
+ }
+
+RestrictedTypes ::= SEQUENCE OF StationType
+
+StationaryVehicleContainer ::= SEQUENCE {
+ stationType StationType,
+ stationarySince StationarySince OPTIONAL,
+ stationaryCause CauseCode OPTIONAL,
+ carryingDangerousGoods DangerousGoodsExtended OPTIONAL,
+ numberOfOccupants INTEGER(0..127) OPTIONAL,
+ vehicleIdentification VehicleIdentification OPTIONAL,
+ energyStorageType EnergyStorageType OPTIONAL
+}
+
+
+AlacarteContainer ::= SEQUENCE {
+	laneNumber LaneNumber OPTIONAL,
+	impactReduction	ImpactReductionContainer OPTIONAL,
+	externalTemperature Temperature OPTIONAL,
+	roadWorks RoadWorksContainerExtended OPTIONAL,
+	positioningSolution PositioningSolutionType OPTIONAL,
+	stationaryVehicle StationaryVehicleContainer OPTIONAL,
+	...
+}
+
+ ActionID ::= SEQUENCE {
+
+  originatorStationID StationID,
+  sequenceNumber SequenceNumber
+ }
+
+ SequenceNumber ::=	INTEGER (0..65535)
+
+ defaultValidity INTEGER ::= 600
+ 
+ ValidityDuration ::=	INTEGER { timeOfDetection(0), oneSecondAfterDetection(1) } (0..86400)
+ 
+ Traces ::= SEQUENCE SIZE(0..7) OF PathHistory
+    
+ ItineraryPath ::= SEQUENCE SIZE(0..40) OF ReferencePosition
+ 
+ TransmissionInterval ::= INTEGER { oneMilliSecond(1), tenSeconds(10000) } (1..10000)
+ 
+ RelevanceDistance ::= ENUMERATED { lessThan50m(0)
+, lessThan100m(1), lessThan200m(2), lessThan500m(3), lessThan1000m(4), lessThan5km(5), lessThan10km(6), over10km(7) }
+  
+ RelevanceTrafficDirection ::= ENUMERATED { unavailable(0), upstreamTraffic(1), downstreamTraffic(2), allTrafficDirection(3) }
+
+END

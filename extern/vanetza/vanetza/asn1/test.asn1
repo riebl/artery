@@ -1,0 +1,12 @@
+Test-Descriptions { vanetza (0) test (1) }
+
+DEFINITIONS AUTOMATIC TAGS ::=
+
+BEGIN
+
+VanetzaTest ::= SEQUENCE {
+    field INTEGER { magicValue(42) } (0..321),
+    string NumericString
+}
+
+END
