@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sensors>
+	<sensor type="artery.envmod.sensor.FrontRadar">
+		<visualization>
+			<showObjectsInSensorRange value="false" />
+			<showObstaclesInSensorRange value="false" />
+			<showSensorCone value="true" />
+			<showLineOfSight value="true" />
+		</visualization>
+	</sensor>
+	<sensor type="artery.envmod.sensor.CamSensor" />
+</sensors>

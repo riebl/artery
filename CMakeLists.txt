@@ -63,6 +63,7 @@ set(_storyboard_default OFF)
 if(Boost_PYTHON_FOUND)
     set(_storyboard_default ON)
 endif()
+option(WITH_ENVMOD "Build Artery with environment model feature" ON)
 option(WITH_STORYBOARD "Build Artery with storyboard feature" ${_storyboard_default})
 option(WITH_TRANSFUSION "Build Artery with transfusion feature" OFF)
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services>
+	<service type="artery.application.CaService">
+		<listener port="2001" />
+	</service>
+	<service type="artery.envmod.service.EnvmodPrinter">
+		<listener port="3001" />
+	</service>
+</services>

@@ -113,6 +113,10 @@ if(WITH_TRANSFUSION)
     target_link_libraries(artery PRIVATE transfusion)
 endif()
 
+if(WITH_ENVMOD)
+    add_subdirectory(envmod)
+    target_link_libraries(artery PRIVATE envmod)
+endif()
 
 if("${Vanetza_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/vanetza/build")
     set(_make_command ${MAKE_COMMAND})

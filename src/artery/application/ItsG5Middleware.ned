@@ -24,10 +24,13 @@ simple ItsG5Middleware
 		@signal[StoryboardSignal](type=StoryboardSignal);
 
 		string radioDriverModule;
+		string localEnvironmentModule = default("");
+		string globalEnvironmentModule = default("");
 		string mobilityModule;
 		double updateInterval = default(0.1s) @unit(s);
 		string datetime;
 		xml services;
+
 		bool vanetzaEnableSecurity = default(true);
 		string vanetzaCryptoBackend = default("Null");
 		string vanetzaCertificateManager = default("NullOk");

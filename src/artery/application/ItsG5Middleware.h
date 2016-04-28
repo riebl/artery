@@ -45,6 +45,11 @@
 #include <memory>
 
 // forward declarations
+namespace artery
+{
+    class GlobalEnvironmentModel;
+    class LocalEnvironmentModel;
+} // namespace artery
 class ItsG5BaseService;
 class RadioDriverBase;
 namespace traci { class VehicleController; }
@@ -81,6 +86,7 @@ class ItsG5Middleware :
 		void updatePosition();
 		void updateServices();
 		void initializeMiddleware();
+		void initializeEnviromentModel();
 		void initializeServices();
 		void initializeVehicleController();
 		void initializeSecurity();
@@ -111,6 +117,8 @@ class ItsG5Middleware :
 		omnetpp::cMessage* mUpdateRuntimeMessage;
 		Facilities mFacilities;
 		std::map<ItsG5BaseService*, port_type> mServices;
+		artery::GlobalEnvironmentModel* mGlobalEnvironmentModel;
+		artery::LocalEnvironmentModel* mLocalEnvironmentModel;
 };
 
 #endif

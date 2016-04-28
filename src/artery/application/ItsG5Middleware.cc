@@ -29,6 +29,8 @@
 #include "artery/traci/MobilityBase.h"
 #include "artery/utility/IdentityRegistry.h"
 #include "artery/utility/FilterRules.h"
+#include "artery/envmod/LocalEnvironmentModel.h"
+#include "artery/envmod/GlobalEnvironmentModel.h"
 #include "inet/common/ModuleAccess.h"
 #include <vanetza/btp/header.hpp>
 #include <vanetza/btp/header_conversion.hpp>
@@ -43,6 +45,7 @@
 #include <string>
 
 Define_Module(ItsG5Middleware)
+
 
 ItsG5Middleware::ItsG5Middleware() :
 		mRadioDriver(nullptr), mRadioDriverIn(nullptr), mRadioDriverOut(nullptr),
@@ -111,6 +114,7 @@ void ItsG5Middleware::initialize(int stage)
 	switch (stage) {
 		case 0:
 			initializeMiddleware();
+			initializeEnviromentModel();
 			break;
 		case 1:
 			initializeServices();
@@ -220,6 +224,16 @@ void ItsG5Middleware::initializeVehicleController()
 	auto mobility = inet::getModuleFromPar<ControllableVehicle>(par("mobilityModule"), findHost());
 	mVehicleController = mobility->getVehicleController();
 	ASSERT(mVehicleController);
+}
+
+void ItsG5Middleware::initializeEnviromentModel()
+{
+	mLocalEnvironmentModel = inet::findModuleFromPar<artery::LocalEnvironmentModel>(par("localEnvironmentModule"), findHost());
+	if (mLocalEnvironmentModel) {
+		mGlobalEnvironmentModel = inet::getModuleFromPar<artery::GlobalEnvironmentModel>(par("globalEnvironmentModule"), findHost());
+		mFacilities.register_mutable(mLocalEnvironmentModel);
+		mFacilities.register_mutable(mGlobalEnvironmentModel);
+	}
 }
 
 void ItsG5Middleware::initializeServices()
