@@ -43,6 +43,13 @@ target_link_libraries(artery veins)
 target_link_libraries(artery ${Boost_LIBRARIES})
 target_include_directories(artery PUBLIC ${Boost_INCLUDE_DIRS})
 
+add_custom_target(build_vanetza
+    COMMAND ${MAKE_COMMAND} ${MAKE_ARGUMENTS} vanetza
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    COMMENT "Building Vanetza (external dependency)"
+    VERBATIM)
+add_dependencies(artery build_vanetza)
+
 foreach (_vanetza_lib IN ITEMS asn1 btp geonet)
     if(Vanetza_STATIC)
         target_link_libraries(artery Vanetza::${_vanetza_lib}_static)
