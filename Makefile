@@ -12,5 +12,8 @@ veins: $(VEINS_DIR)/src/Makefile
 $(VANETZA_DIR)/build:
 	mkdir $(VANETZA_DIR)/build
 
-vanetza: $(VANETZA_DIR)/build
-	cd $(VANETZA_DIR)/build && cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .
+$(VANETZA_DIR)/build/CMakeCache.txt: $(VANETZA_DIR)/build
+	cd $< && cmake -DCMAKE_BUILD_TYPE=Release ..
+
+vanetza: $(VANETZA_DIR)/build/CMakeCache.txt
+	cmake --build $(VANETZA_DIR)/build
