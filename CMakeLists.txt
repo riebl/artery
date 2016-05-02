@@ -119,5 +119,12 @@ option(Vanetza_STATIC "Link with static Vanetza libraries" OFF)
 find_path(Veins_DIR NAMES src/veins/package.ned PATHS extern/veins DOC "Veins root directory")
 import_opp_target(veins ${Veins_DIR}/src/Makefile)
 
+find_program(MAKE_COMMAND NAMES make gmake HINTS ${CMAKE_MAKE_COMMAND} DOC "Makefile processor")
+add_custom_target(build_veins
+    COMMAND ${MAKE_COMMAND} veins
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    COMMENT "Building Veins (external dependency)"
+    VERBATIM)
+
 add_subdirectory(src/artery)
 add_subdirectory(scenarios)
