@@ -120,8 +120,11 @@ find_path(Veins_DIR NAMES src/veins/package.ned PATHS extern/veins DOC "Veins ro
 import_opp_target(veins ${Veins_DIR}/src/Makefile)
 
 find_program(MAKE_COMMAND NAMES make gmake HINTS ${CMAKE_MAKE_COMMAND} DOC "Makefile processor")
+set(MAKE_ARGUMENTS "" CACHE STRING "Additional arguments passed to Makefile processor")
+string(REPLACE " " ";" MAKE_ARGUMENTS "${MAKE_ARGUMENTS}")
+
 add_custom_target(build_veins
-    COMMAND ${MAKE_COMMAND} veins
+    COMMAND ${MAKE_COMMAND} ${MAKE_ARGUMENTS} veins
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Building Veins (external dependency)"
     VERBATIM)
