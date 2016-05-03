@@ -125,6 +125,7 @@ add_custom_target(build_veins
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Building Veins (external dependency)"
     VERBATIM)
+add_dependencies(veins build_veins)
 
 add_subdirectory(src/artery)
 add_subdirectory(scenarios)
