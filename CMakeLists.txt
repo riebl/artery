@@ -123,12 +123,14 @@ find_program(MAKE_COMMAND NAMES make gmake HINTS ${CMAKE_MAKE_COMMAND} DOC "Make
 set(MAKE_ARGUMENTS "" CACHE STRING "Additional arguments passed to Makefile processor")
 string(REPLACE " " ";" MAKE_ARGUMENTS "${MAKE_ARGUMENTS}")
 
-add_custom_target(build_veins
-    COMMAND ${MAKE_COMMAND} ${MAKE_ARGUMENTS} veins
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-    COMMENT "Building Veins (external dependency)"
-    VERBATIM)
-add_dependencies(veins build_veins)
+if("${Veins_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/veins")
+    add_custom_target(build_veins
+        COMMAND ${MAKE_COMMAND} ${MAKE_ARGUMENTS} veins
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMENT "Building Veins (external dependency)"
+        VERBATIM)
+    add_dependencies(veins build_veins)
+endif()
 
 add_subdirectory(src/artery)
 add_subdirectory(scenarios)
