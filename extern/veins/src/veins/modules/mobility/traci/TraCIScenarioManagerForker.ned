@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2006-2012 Christoph Sommer <christoph.sommer@uibk.ac.at>
+// Copyright (C) 2006-2016 Christoph Sommer <christoph.sommer@uibk.ac.at>
 //
 // Documentation for these modules is at http://veins.car2x.org/
 //
@@ -21,25 +21,23 @@
 package org.car2x.veins.modules.mobility.traci;
 
 //
-// Extends the TraCIScenarioManager for use with sumo-launchd.py and SUMO.
-//
-// Connects to a running instance of the sumo-launchd.py script
-// to automatically launch/kill SUMO when the simulation starts/ends.
+// Extends the TraCIScenarioManager to automatically fork an instance of SUMO when needed.
 //
 // All other functionality is provided by the TraCIScenarioManager.
 //
 // See the Veins website <a href="http://veins.car2x.org/"> for a tutorial, documentation, and publications </a>.
 //
-// @author Christoph Sommer, David Eckhoff
+// @author Christoph Sommer, Florian Hagenauer
 //
 // @see TraCIMobility
 // @see TraCIScenarioManager
 //
-simple TraCIScenarioManagerLaunchd like ITraCIScenarioManager
+simple TraCIScenarioManagerForker like ITraCIScenarioManager
 {
     parameters:
         @display("i=block/network2");
-        @class(Veins::TraCIScenarioManagerLaunchd);
+        @class(Veins::TraCIScenarioManagerForker);
+        bool debug = default(false);  // emit debug messages?
         double connectAt @unit("s") = default(0s);  // when to connect to TraCI server (must be the initial timestep of the server)
         double firstStepAt @unit("s") = default(-1s);  // when to start synchronizing with the TraCI server (-1: immediately after connecting)
         double updateInterval @unit("s") = default(1s);  // time interval of hosts' position updates
@@ -47,9 +45,6 @@ simple TraCIScenarioManagerLaunchd like ITraCIScenarioManager
         string moduleName = default("host");  // module name to be used in the simulation for each managed vehicle
         string moduleDisplayString = default("i=misc/node2;is=vs;r=0,,#707070,1");  // module displayString to be used in the simulation for each managed vehicle
         string host = default("localhost");  // sumo-launchd.py server hostname
-        int port = default(9999);  // sumo-launchd.py server port
-        xml launchConfig; // launch configuration to send to sumo-launchd.py
-        int seed = default(-1); // seed value to set in launch configuration, if missing (-1: current run number)
         bool autoShutdown = default(true);  // Shutdown module as soon as no more vehicles are in the simulation
         int margin = default(25);  // margin to add to all received vehicle positions
         string roiRoads = default("");  // which roads (e.g. "hwy1 hwy2") are considered to consitute the region of interest, if not empty
@@ -58,5 +53,10 @@ simple TraCIScenarioManagerLaunchd like ITraCIScenarioManager
         int numVehicles = default(0);
         bool useRouteDistributions = default(false);
         int vehicleRngIndex = default(0); // index of the RNG stream to be used, all random numbers concerning the managed vehicles
+
+        string commandLine = default("sumo --remote-port $port --seed $seed --configuration-file $configFile"); // command line for running TraCI server (substituting $configFile, $seed, $port)
+        string configFile = default("my.sumo.cfg"); // substitution for $configFile parameter
+        int seed = default(-1); // substitution for $seed parameter (-1: current run number)
+        int port = default(-1);  // substitution for $port parameter (-1: autodetect)
 }
 

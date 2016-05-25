@@ -4,8 +4,8 @@
 ; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
 ;
 [subrepo]
-	remote = https://github.com/sommer/veins
-	branch = veins-4.4
-	commit = e318d300316834b267c7fabf72317cb10ed7b5ff
-	parent = e0a5b720e31840fccf6f726fdc7b50bef36bfacb
+	remote = https://github.com/riebl/veins
+	branch = traci_components
+	commit = 367d80dbf2fb407261c092b66e56bca78ac9b49f
+	parent = 6cf7cbc6a3de07ddb59a67ed3081301b4dd4b7d9
 	cmdver = 0.3.0
