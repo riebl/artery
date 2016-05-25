@@ -145,6 +145,7 @@ if("${Veins_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/veins")
 endif()
 
 add_subdirectory(src/artery)
+add_subdirectory(src/artery/storyboard)
 add_subdirectory(scenarios)
 
 # sumo-launchd should be run from root directory for correct file look-up
