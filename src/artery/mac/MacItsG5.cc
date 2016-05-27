@@ -22,6 +22,7 @@
 #include "veins/base/phyLayer/MacToPhyInterface.h"
 #include "veins/modules/phy/Decider80211p.h"
 #include <vanetza/dcc/channel_load.hpp>
+#include <cmath>
 
 Define_Module(MacItsG5);
 
