@@ -2,7 +2,7 @@ PYTHON ?= python
 VANETZA_DIR = extern/vanetza
 VEINS_DIR = extern/veins
 
-$(VEINS_DIR)/src/Makefile:
+$(VEINS_DIR)/src/Makefile: $(VEINS_DIR)/.gitrepo
 	cd $(VEINS_DIR) && $(PYTHON) configure
 
 veins: $(VEINS_DIR)/src/Makefile
