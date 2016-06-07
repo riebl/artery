@@ -129,10 +129,13 @@ if("${Veins_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/veins")
         set(_veins_mode "debug")
     endif()
 
+    set(_make_command ${MAKE_COMMAND})
+    if(CMAKE_GENERATOR MATCHES "Makefiles")
+        set(_make_command \$\(MAKE\))
     endif()
 
     add_custom_target(build_veins
-        COMMAND ${MAKE_COMMAND} ${MAKE_ARGUMENTS} veins MODE=${_veins_mode}
+        COMMAND ${_make_command} ${MAKE_ARGUMENTS} veins MODE=${_veins_mode}
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMENT "Building Veins (external dependency)"
         VERBATIM)
