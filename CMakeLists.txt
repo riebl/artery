@@ -124,8 +124,15 @@ set(MAKE_ARGUMENTS "" CACHE STRING "Additional arguments passed to Makefile proc
 string(REPLACE " " ";" MAKE_ARGUMENTS "${MAKE_ARGUMENTS}")
 
 if("${Veins_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/veins")
+    set(_veins_mode "release")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(_veins_mode "debug")
+    endif()
+
+    endif()
+
     add_custom_target(build_veins
-        COMMAND ${MAKE_COMMAND} ${MAKE_ARGUMENTS} veins
+        COMMAND ${MAKE_COMMAND} ${MAKE_ARGUMENTS} veins MODE=${_veins_mode}
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMENT "Building Veins (external dependency)"
         VERBATIM)
