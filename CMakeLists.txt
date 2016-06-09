@@ -86,8 +86,10 @@ macro(add_opp_run _name _config _target)
         set(_exec ${OMNETPP_RUN} -n ${_ned_folders} -l $<TARGET_FILE:${_target}>)
     endif()
 
+    set(RUN_FLAGS "" CACHE STRING "Flags appended to run command (and debug)")
+    string(REPLACE " " ";" _run_flags "${RUN_FLAGS}")
     add_custom_target(run_${_name}
-        COMMAND ${_exec} ${_config}
+        COMMAND ${_exec} ${_config} ${_run_flags}
         SOURCES ${_config}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         VERBATIM)
@@ -95,7 +97,7 @@ macro(add_opp_run _name _config _target)
     find_program(GDB_COMMAND gdb DOC "GNU debugger")
     if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND GDB_COMMAND)
         add_custom_target(debug_${_name}
-            COMMAND ${GDB_COMMAND} --args ${_exec} ${_config}
+            COMMAND ${GDB_COMMAND} --args ${_exec} ${_config} ${_run_flags}
             SOURCES ${_config}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             VERBATIM)
@@ -104,8 +106,8 @@ macro(add_opp_run _name _config _target)
     find_program(VALGRIND_COMMAND valgrind DOC "Valgrind executable")
     set(VALGRIND_FLAGS "--track-origins=yes" CACHE STRING "Flags passed to Valgrind for memcheck targets")
     set(VALGRIND_EXEC_FLAGS "-u Cmdenv" CACHE STRING "Flags passed to executable run by Valgrind")
-    string(REPLACE " " ";" _valgrind_flags ${VALGRIND_FLAGS})
-    string(REPLACE " " ";" _valgrind_exec_flags ${VALGRIND_EXEC_FLAGS})
+    string(REPLACE " " ";" _valgrind_flags "${VALGRIND_FLAGS}")
+    string(REPLACE " " ";" _valgrind_exec_flags "${VALGRIND_EXEC_FLAGS}")
     add_custom_target(memcheck_${_name}
         COMMAND ${VALGRIND_COMMAND} ${_valgrind_flags} ${_exec} ${_valgrind_exec_flags} ${_config}
         SOURCES ${_config}
