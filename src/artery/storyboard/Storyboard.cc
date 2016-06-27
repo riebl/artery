@@ -24,12 +24,18 @@ void Storyboard::initialize(int stage)
     PyImport_AppendInittab("timeline", &inittimeline);
 
     // Initialize python
-    setenv("PYTHONPATH", ".", 1);
     Py_Initialize();
 
     try {
-        // Load storyboard.py
-        module = python::import("demo");
+        // Append directory containing omnetpp.ini to Python import path
+        const auto& netConfigEntry = getEnvir()->getConfig()->getConfigEntry("network");
+        const char* simBaseDir = netConfigEntry.getBaseDirectory();
+        assert(simBaseDir);
+        python::import("sys").attr("path").attr("append")(simBaseDir);
+        EV << "Appended " << simBaseDir << " to Python system path";
+
+        // Load module containing storyboard description
+        module = python::import(par("python").stringValue());
         module.attr("board") = boost::cref(*this);
         module.attr("createStories") ();
 
