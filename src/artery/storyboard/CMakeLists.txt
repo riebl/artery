@@ -12,6 +12,7 @@ set(STORYBOARD_SOURCES
     Storyboard.cc
     Story.cc
     TimeCondition.cc
+    TraCIScenarioManagerStoryboard.cc
 )
 
 if(Boost_PYTHON_FOUND)

@@ -2,6 +2,8 @@
 #include "artery/storyboard/PythonModule.h"
 #include "artery/storyboard/Story.h"
 #include "artery/storyboard/Effect.h"
+#include "artery/storyboard/TraCIScenarioManagerStoryboard.h"
+#include "artery/traci/TraCIArteryNodeManager.h"
 #include "veins/modules/mobility/traci/TraCIScenarioManager.h"
 
 Define_Module(Storyboard);
@@ -9,8 +11,13 @@ Define_Module(Storyboard);
 void Storyboard::initialize(int stage)
 {
     // Get TraCiScenarioManager
-    manager = static_cast<Veins::TraCIScenarioManager*>(this->getModuleByPath("^.manager"));
+    manager = dynamic_cast<Veins::TraCIScenarioManager*>(this->getModuleByPath("^.manager"));
     assert(manager);
+
+    manager->subscribe(TraCIArteryNodeManager::signalAddNode, this);
+    manager->subscribe(TraCIArteryNodeManager::signalRemoveNode, this);
+    manager->subscribe(TraCIArteryNodeManager::signalUpdateNode, this);
+    manager->subscribe(TraCIScenarioManagerStoryboard::signalUpdateStep, this);
 
     // Import staticly linked modules
     PyImport_AppendInittab("storyboard", &initstoryboard);
@@ -23,7 +30,7 @@ void Storyboard::initialize(int stage)
     try {
         // Load storyboard.py
         module = python::import("demo");
-        module.attr("board") = boost::cref(this);
+        module.attr("board") = boost::cref(*this);
         module.attr("createStories") ();
 
     } catch (const python::error_already_set&) {
@@ -37,23 +44,40 @@ void Storyboard::handleMessage(cMessage * msg)
     EV << "Message arrived \n";
 }
 
-cModule* Storyboard::getParentModule(cModule* mod)
+void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const char* nodeId)
 {
-    return mod->getParentModule();
+    if (signalId == TraCIArteryNodeManager::signalAddNode) {
+        cModule* node = manager->getModule(nodeId);
+        ItsG5Middleware* appl = dynamic_cast<ItsG5Middleware*>(node->getSubmodule("appl"));
+        if (appl == nullptr) {
+            opp_error("Could not find ItsG5Middleware submodule");
+        }
+        Facilities* fac = appl->getFacilities();
+        m_vehicles.emplace(nodeId, Vehicle { fac->getMobility(), fac->getVehicleDataProvider() });
+    }
+    else if (signalId == TraCIArteryNodeManager::signalRemoveNode) {
+        m_vehicles.erase(nodeId);
+    }
+    else if (signalId == TraCIArteryNodeManager::signalUpdateNode) {
+    }
+}
+
+void Storyboard::receiveSignal(cComponent*, simsignal_t signalId, const simtime_t&)
+{
+    if (signalId == TraCIScenarioManagerStoryboard::signalUpdateStep) {
+        updateStoryboard();
+    }
 }
 
 void Storyboard::updateStoryboard()
 {
     // iterate through all cars
-    for (auto& car : getCars()) {
+    for (auto& car : m_vehicles) {
         // test all story conditions for each story
         for (auto& story : m_stories) {
-            bool conditionTest = true;
-            if(!story->testCondition(car)) {
-                conditionTest = false;
-            }
+            bool conditionTest = story->testCondition(car.second);
             // check if the story has to be applied or removed
-            checkCar(car.mobility, conditionTest, story.get());
+            checkCar(car.second.mobility, conditionTest, story.get());
         }
     }
 }
@@ -78,20 +102,6 @@ void Storyboard::checkCar(Veins::TraCIMobility& car, bool conditionsPassed, Stor
             addEffect(effects);
         }
     }
-}
-
-std::vector<Vehicle> Storyboard::getCars() {
-    std::vector<Vehicle> vec;
-    for (auto host : manager->getManagedHosts()) {
-        ItsG5Middleware* appl = dynamic_cast<ItsG5Middleware*>(host.second->getSubmodule("appl"));
-        if (appl == nullptr) {
-            opp_error("Could not find ItsG5Middleware submodule");
-        }
-        Facilities* f = appl->getFacilities();
-        Vehicle v(f->getMobility(), f->getVehicleDataProvider());
-        vec.push_back(v);
-    }
-    return vec;
 }
 
 void Storyboard::registerStory(std::shared_ptr<Story> story)

@@ -22,7 +22,7 @@ namespace Veins
 class TraCIScenarioManager;
 }
 
-class Storyboard : public cSimpleModule
+class Storyboard : public cSimpleModule, public cListener
 {
 private:
 
@@ -38,10 +38,14 @@ private:
      */
     virtual void handleMessage(cMessage * msg);
 
+    void receiveSignal(cComponent* source, simsignal_t, const char*) override;
+    void receiveSignal(cComponent* source, simsignal_t, const simtime_t&) override;
+
     Veins::TraCIScenarioManager* manager;
     python::object module;
     std::vector<std::shared_ptr<Story>> m_stories;
     std::map<Veins::TraCIMobility*, EffectStack> m_affectedCars;
+    std::map<std::string, Vehicle> m_vehicles;
 
 public:
     /**
@@ -84,19 +88,6 @@ public:
      * param: Story which was tested in the update function
      */
     void checkCar(Veins::TraCIMobility&, bool, Story*);
-
-    /**
-     * Fetches all vehicles from TraCIScenarioManager
-     * \return Vector containing all active vehicles
-     */
-    std::vector<Vehicle> getCars();
-
-    /**
-     * Fetches a parent cModule of a given cModule
-     * \param Child cModule
-     * \return Parent cModule
-     */
-    cModule* getParentModule(cModule*);
 };
 
 #endif /* STORYBOARD_H_ */
