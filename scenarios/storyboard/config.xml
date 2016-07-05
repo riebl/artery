@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<AnalogueModels>
-		<AnalogueModel type="SimpleObstacleShadowing">
+		<AnalogueModel type="SimplePathlossModel">
 			<parameter name="carrierFrequency" type="double" value="5.90e+9"/>
-		</AnalogueModel>
-		<AnalogueModel type="TwoRayInterferenceModel">
-			<parameter name="DielectricConstant" type="double" value="1.02" />
 		</AnalogueModel>
 	</AnalogueModels>
 	<Decider type="Decider80211p">
