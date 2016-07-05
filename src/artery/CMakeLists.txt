@@ -33,6 +33,7 @@ set(SOURCES
     messages/ChannelLoadReport_m.cc
     messages/GeoNetPacket_m.cc
     netw/GeoNetPacketWrapper.cc
+    traci/TraCIArteryNodeManager.cc
 )
 
 add_library(artery SHARED ${SOURCES})
