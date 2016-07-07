@@ -48,6 +48,13 @@ set(SOURCES
     utility/AsioTask.cc
 )
 
+if(TARGET INET)
+    message(STATUS "Enable INET integration")
+    list(APPEND SOURCES
+        inet/InetTraCIMobility.cc
+    )
+endif()
+
 add_library(artery SHARED ${SOURCES} $<TARGET_OBJECTS:messages>)
 set_property(TARGET artery PROPERTY NED_FOLDERS ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(artery PUBLIC ${PROJECT_SOURCE_DIR}/src)
@@ -60,6 +67,10 @@ target_include_directories(artery PUBLIC ${Boost_INCLUDE_DIRS})
 if(TARGET transfusion)
     target_link_libraries(artery transfusion)
     add_dependencies(transfusion messages)
+endif()
+
+if(TARGET INET)
+    target_link_libraries(artery INET)
 endif()
 
 if("${Vanetza_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/vanetza/build")
