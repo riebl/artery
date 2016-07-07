@@ -43,6 +43,7 @@ set(SOURCES
     mac/MacItsG5.cc
     netw/GeoNetPacketWrapper.cc
     traci/TraCIArteryNodeManager.cc
+    traci/TraCISimpleNodeManager.cc
     traci/TraCIScenarioManagerArtery.cc
     utility/AsioScheduler.cc
     utility/AsioTask.cc
