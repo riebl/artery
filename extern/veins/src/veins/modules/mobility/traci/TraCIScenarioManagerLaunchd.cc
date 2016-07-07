@@ -27,8 +27,6 @@
 #include <iostream>
 #include <fstream>
 
-#define MYDEBUG EV
-
 using Veins::TraCIScenarioManagerLaunchd;
 
 Define_Module(Veins::TraCIScenarioManagerLaunchd);
@@ -44,8 +42,25 @@ void TraCIScenarioManagerLaunchd::initialize(int stage)
 		TraCIScenarioManager::initialize(stage);
 		return;
 	}
-	launchConfig = par("launchConfig").xmlValue();
 	seed = par("seed");
+	prepareSeed(seed);
+	launchConfig = par("launchConfig").xmlValue();
+	prepareLaunchConfig(launchConfig, seed);
+	TraCIScenarioManager::initialize(stage);
+}
+
+void TraCIScenarioManagerLaunchd::finish()
+{
+	TraCIScenarioManager::finish();
+}
+
+void TraCIScenarioManagerLaunchd::init_traci() {
+	checkLaunchdCompatibility(*getCommandInterface());
+	sendFileCommand(*connection, launchConfig);
+	TraCIScenarioManager::init_traci();
+}
+
+void TraCIScenarioManagerLaunchd::prepareLaunchConfig(cXMLElement* launchConfig, int seed) {
 	cXMLElementList basedir_nodes = launchConfig->getElementsByTagName("basedir");
 	if (basedir_nodes.size() == 0) {
 		// default basedir is where current network file was loaded from
@@ -56,54 +71,50 @@ void TraCIScenarioManagerLaunchd::initialize(int stage)
 	}
 	cXMLElementList seed_nodes = launchConfig->getElementsByTagName("seed");
 	if (seed_nodes.size() == 0) {
-		if (seed == -1) {
-			// default seed is current repetition
-			const char* seed_s = cSimulation::getActiveSimulation()->getEnvir()->getConfigEx()->getVariable(CFGVAR_RUNNUMBER);
-			seed = atoi(seed_s);
-		}
 		std::stringstream ss; ss << seed;
 		cXMLElement* seed_node = new cXMLElement("seed", __FILE__, launchConfig);
 		seed_node->setAttribute("value", ss.str().c_str());
 		launchConfig->appendChild(seed_node);
 	}
-	TraCIScenarioManager::initialize(stage);
 }
 
-void TraCIScenarioManagerLaunchd::finish()
-{
-	TraCIScenarioManager::finish();
-}
-
-void TraCIScenarioManagerLaunchd::init_traci() {
-	{
-		std::pair<uint32_t, std::string> version = getCommandInterface()->getVersion();
-		uint32_t apiVersion = version.first;
-		std::string serverVersion = version.second;
-
-		if (apiVersion == 1) {
-			MYDEBUG << "TraCI server \"" << serverVersion << "\" reports API version " << apiVersion << endl;
-		}
-		else {
-			error("TraCI server \"%s\" reports API version %d, which is unsupported. We recommend using the version of sumo-launchd that ships with Veins.", serverVersion.c_str(), apiVersion);
-		}
+void TraCIScenarioManagerLaunchd::prepareSeed(int& seed) {
+	if (seed == -1) {
+		// default seed is current repetition
+		const char* seed_s = cSimulation::getActiveSimulation()->getEnvir()->getConfigEx()->getVariable(CFGVAR_RUNNUMBER);
+		seed = atoi(seed_s);
 	}
+}
 
+void TraCIScenarioManagerLaunchd::checkLaunchdCompatibility(TraCICommandInterface& cmd) {
+	std::pair<uint32_t, std::string> version = cmd.getVersion();
+	uint32_t apiVersion = version.first;
+	std::string serverVersion = version.second;
+
+	if (apiVersion == 1) {
+		EV_STATICCONTEXT;
+		EV << "TraCI launchd server \"" << serverVersion << "\" reports API version " << apiVersion << endl;
+	}
+	else {
+		throw cRuntimeError("TraCI launchd server \"%s\" reports API version %d, which is unsupported. We recommend using the version of sumo-launchd that ships with Veins.", serverVersion.c_str(), apiVersion);
+	}
+}
+
+void TraCIScenarioManagerLaunchd::sendFileCommand(TraCIConnection& connection, cXMLElement* launchConfig) {
 	std::string contents = launchConfig->tostr(0);
 
 	TraCIBuffer buf;
 	buf << std::string("sumo-launchd.launch.xml") << contents;
-	connection->sendMessage(makeTraCICommand(CMD_FILE_SEND, buf));
+	connection.sendMessage(makeTraCICommand(CMD_FILE_SEND, buf));
 
-	TraCIBuffer obuf(connection->receiveMessage());
+	TraCIBuffer obuf(connection.receiveMessage());
 	uint8_t cmdLength; obuf >> cmdLength;
-	uint8_t commandResp; obuf >> commandResp; if (commandResp != CMD_FILE_SEND) error("Expected response to command %d, but got one for command %d", CMD_FILE_SEND, commandResp);
+	uint8_t commandResp; obuf >> commandResp;
+	if (commandResp != CMD_FILE_SEND) throw cRuntimeError("Expected response to command %d, but got one for command %d", CMD_FILE_SEND, commandResp);
 	uint8_t result; obuf >> result;
 	std::string description; obuf >> description;
 	if (result != RTYPE_OK) {
+		EV_STATICCONTEXT;
 		EV << "Warning: Received non-OK response from TraCI server to command " << CMD_FILE_SEND << ":" << description.c_str() << std::endl;
 	}
-
-	TraCIScenarioManager::init_traci();
 }
-
-
