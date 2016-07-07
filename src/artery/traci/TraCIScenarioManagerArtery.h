@@ -1,5 +1,5 @@
-#ifndef ARTERY_STORYBOARD_TRACISCENARIOMANAGERSTORYBOARD_H_QEMRAYD1
-#define ARTERY_STORYBOARD_TRACISCENARIOMANAGERSTORYBOARD_H_QEMRAYD1
+#ifndef ARTERY_TRACISCENARIOMANAGERSTORYBOARD_H_QEMRAYD1
+#define ARTERY_TRACISCENARIOMANAGERSTORYBOARD_H_QEMRAYD1
 
 #include "veins/modules/mobility/traci/TraCIScenarioManagerLaunchd.h"
 
@@ -8,11 +8,11 @@ class TraCIListener;
 class TraCINodeManager;
 }
 
-class TraCIScenarioManagerStoryboard : public Veins::TraCIScenarioManagerLaunchd
+class TraCIScenarioManagerArtery : public Veins::TraCIScenarioManagerLaunchd
 {
 public:
-    TraCIScenarioManagerStoryboard();
-    virtual ~TraCIScenarioManagerStoryboard();
+    TraCIScenarioManagerArtery();
+    virtual ~TraCIScenarioManagerArtery();
     void initialize(int stage) override;
     void handleSelfMsg(cMessage*) override;
 
@@ -23,5 +23,5 @@ private:
     Veins::TraCINodeManager* nodes;
 };
 
-#endif /* ARTERY_STORYBOARD_TRACISCENARIOMANAGERSTORYBOARD_H_QEMRAYD1 */
+#endif /* ARTERY_TRACISCENARIOMANAGERSTORYBOARD_H_QEMRAYD1 */
 

@@ -6,7 +6,7 @@ import org.car2x.veins.nodes.Scenario;
 network StoryboardScenario extends Scenario
 {
     parameters:
-        traciScenarioManager = "TraCIScenarioManagerStoryboard";
+        traciScenarioManager = "TraCIScenarioManagerArtery";
 
     submodules:
         storyboard: Storyboard {

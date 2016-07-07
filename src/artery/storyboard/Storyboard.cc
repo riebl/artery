@@ -2,7 +2,7 @@
 #include "artery/storyboard/PythonModule.h"
 #include "artery/storyboard/Story.h"
 #include "artery/storyboard/Effect.h"
-#include "artery/storyboard/TraCIScenarioManagerStoryboard.h"
+#include "artery/traci/TraCIScenarioManagerArtery.h"
 #include "artery/traci/TraCIArteryNodeManager.h"
 #include "veins/modules/mobility/traci/TraCIScenarioManager.h"
 #include <omnetpp/cexception.h>
@@ -20,7 +20,7 @@ void Storyboard::initialize(int stage)
     manager->subscribe(TraCIArteryNodeManager::signalAddNode, this);
     manager->subscribe(TraCIArteryNodeManager::signalRemoveNode, this);
     manager->subscribe(TraCIArteryNodeManager::signalUpdateNode, this);
-    manager->subscribe(TraCIScenarioManagerStoryboard::signalUpdateStep, this);
+    manager->subscribe(TraCIScenarioManagerArtery::signalUpdateStep, this);
 
     // Import staticly linked modules
     PyImport_AppendInittab("storyboard", &initstoryboard);
@@ -73,7 +73,7 @@ void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const c
 
 void Storyboard::receiveSignal(cComponent*, simsignal_t signalId, const simtime_t&, cObject*)
 {
-    if (signalId == TraCIScenarioManagerStoryboard::signalUpdateStep) {
+    if (signalId == TraCIScenarioManagerArtery::signalUpdateStep) {
         updateStoryboard();
     }
 }

@@ -34,6 +34,7 @@ set(SOURCES
     messages/GeoNetPacket_m.cc
     netw/GeoNetPacketWrapper.cc
     traci/TraCIArteryNodeManager.cc
+    traci/TraCIScenarioManagerArtery.cc
 )
 
 add_library(artery SHARED ${SOURCES})
