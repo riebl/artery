@@ -118,7 +118,7 @@ class TraCIMobility : public BaseMobility
 			if (angle == M_PI) throw cRuntimeError("TraCIMobility::getAngleRad called with no angle set yet");
 			return angle;
 		}
-		virtual TraCIScenarioManager* getManager() const {
+		virtual TraCIScenarioManagerBase* getManager() const {
 			if (!manager) manager = TraCIScenarioManagerAccess().get();
 			return manager;
 		}
