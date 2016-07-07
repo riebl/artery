@@ -13,6 +13,9 @@ find_package(Vanetza CONFIG PATHS extern/vanetza/build REQUIRED NO_CMAKE_PACKAGE
 find_path(Veins_DIR NAMES src/veins/package.ned PATHS extern/veins DOC "Veins root directory")
 import_opp_target(veins ${Veins_DIR}/src/Makefile)
 
+find_path(INET_DIR NAMES src/inet/package.ned PATHS extern/inet DOC "INET root directory")
+import_opp_target(INET ${INET_DIR}/src/Makefile)
+
 find_program(MAKE_COMMAND NAMES make gmake HINTS ${CMAKE_MAKE_COMMAND} DOC "Makefile processor")
 set(MAKE_ARGUMENTS "" CACHE STRING "Additional arguments passed to Makefile processor")
 string(REPLACE " " ";" MAKE_ARGUMENTS "${MAKE_ARGUMENTS}")
@@ -34,6 +37,25 @@ if("${Veins_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/veins")
         COMMENT "Building Veins (external dependency)"
         VERBATIM)
     add_dependencies(veins build_veins)
+endif()
+
+if("${INET_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/inet")
+    set(_inet_mode "release")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(_inet_mode "debug")
+    endif()
+
+    set(_make_command ${MAKE_COMMAND})
+    if(CMAKE_GENERATOR MATCHES "Makefiles")
+        set(_make_command \$\(MAKE\))
+    endif()
+
+    add_custom_target(build_inet
+        COMMAND ${_make_command} ${MAKE_ARGUMENTS} inet MODE=${_inet_mode}
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMENT "Building INET (external dependency)"
+        VERBATIM)
+    add_dependencies(INET build_inet)
 endif()
 
 find_package(Boost COMPONENTS python QUIET)
