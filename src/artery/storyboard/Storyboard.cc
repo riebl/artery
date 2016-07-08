@@ -77,7 +77,7 @@ void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const c
             Facilities* fac = appl->getFacilities();
             auto& controller = fac->get_mutable<traci::VehicleController>();
             auto& vdp = fac->get_const<VehicleDataProvider>();
-            m_vehicles.emplace(nodeId, Vehicle { controller, vdp });
+            m_vehicles.emplace(nodeId, Vehicle { controller, vdp, m_vehicles });
         } else {
             EV_DEBUG << "Node " << nodeId << " is not equipped with middleware module, skipped by Storyboard" << endl;
         }
