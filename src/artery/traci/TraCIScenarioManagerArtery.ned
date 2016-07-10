@@ -10,4 +10,5 @@ simple TraCIScenarioManagerArtery extends TraCIScenarioManagerLaunchd
         @signal[traci.remove_node](type=string);
         @signal[traci.update_node](type=string);
         @signal[traci.update_step](type=simtime_t);
+        string mobilityNodeModule = default(".mobility");
 }
