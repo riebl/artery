@@ -4,9 +4,9 @@ VEINS_DIR = extern/veins
 
 $(VEINS_DIR)/src/Makefile: $(VEINS_DIR)/.gitrepo
 	cd $(VEINS_DIR) && $(PYTHON) configure
+	$(MAKE) -C $(VEINS_DIR)/src depend
 
 veins: $(VEINS_DIR)/src/Makefile
-	$(MAKE) -C $(VEINS_DIR)/src depend
 	$(MAKE) -C $(VEINS_DIR)
 
 $(VANETZA_DIR)/build:
