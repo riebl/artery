@@ -3,6 +3,7 @@
 from functools import partial
 import os
 import re
+import subprocess
 import sys
 
 
@@ -40,11 +41,12 @@ class OmnetProject:
 
 class CMakeTarget:
 
-    def __init__(self, project):
+    def __init__(self, project, toolchain='gcc'):
         if project.deep_include:
             raise NotImplementedError("Deep includes are not supported")
 
         self._project = project
+        self._toolchain = toolchain
         self.include_directories = [self._make_absolute_path(self._makefile_path(), d) for d in self._project.include_directories]
         self.library_directories = [self._make_absolute_path(self._makefile_path(), d) for d in self._project.library_directories]
         self.ned_folders = [self._make_absolute_path(self.root_directory, d) for d in self._project.ned_folders]
@@ -71,9 +73,9 @@ class CMakeTarget:
         filename = self._filename(mode)
         path = None
         if (mode == "release"):
-            path = self._target_output_path('gcc-release')
+            path = self._target_output_path('{}-release'.format(self._toolchain))
         elif (mode == "debug"):
-            path = self._target_output_path('gcc-debug')
+            path = self._target_output_path('{}-debug'.format(self._toolchain))
         else:
             path = self._makefile_path()
         return os.path.join(path, filename)
@@ -136,7 +138,7 @@ class CMakeTarget:
 
 class FlagsHandler:
 
-    def __init__(self, makefile):
+    def __init__(self, makefile, configfile):
         self._iterator = None
         self._options = {
             "-f": self.ignore,
@@ -162,6 +164,7 @@ class FlagsHandler:
             "--projectdir": self.project_directory
         }
         self._project = OmnetProject(makefile)
+        self._configfile = configfile
 
     def process(self, flags):
         self._iterator = iter(flags)
@@ -173,7 +176,7 @@ class FlagsHandler:
 
     def target(self):
         self._project.read_ned_folders()
-        return CMakeTarget(self._project)
+        return CMakeTarget(self._project, which_opp_toolchain(self._configfile))
 
     def ignore(self):
         pass
@@ -215,6 +218,32 @@ class FlagsHandler:
         self._project.root_directory = self.fetch()
 
 
+def find_opp_configfile():
+    configfile = None
+
+    if os.environ.get('OMNETPP_CONFIGFILE'):
+        configfile = os.environ['OMNETPP_CONFIGFILE']
+    elif os.environ.get('OMNETPP_ROOT'):
+        configfile = os.path.join(os.environ['OMNETPP_ROOT'], 'Makefile.inc')
+    else:
+        opp_configfilepath = subprocess.check_output('opp_configfilepath', shell=True)
+        configfile = str(opp_configfilepath, encoding='utf-8').rstrip('\n')
+
+    if not os.path.isfile(configfile):
+        raise Exception('Assumed OMNeT++ configfile at {} does not exist'.format(configfile))
+
+    return configfile
+
+
+def which_opp_toolchain(configfile_path):
+    with open(configfile_path, "r", encoding="utf-8") as configfile:
+        toolchain_pattern = re.compile("TOOLCHAIN_NAME = (\w+)")
+        for line in configfile:
+            line_match = toolchain_pattern.match(line)
+            if line_match:
+                return line_match.group(1)
+
+
 def parse_opp_makefile(makefile):
     command = extract_makemake_command(makefile)
     makemake_flags = command.split()
@@ -225,7 +254,7 @@ def parse_opp_makefile(makefile):
             makemake_flags.insert(i + 1, flag[2:])
             makemake_flags[i] = flag[0:2]
 
-    handler = FlagsHandler(makefile)
+    handler = FlagsHandler(makefile, find_opp_configfile())
     handler.process(makemake_flags)
     return handler.target()
 
