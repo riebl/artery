@@ -74,7 +74,6 @@ vanetza::MacAddress convertToMacAddress(const LAddress::L2Type& addr)
 
 ItsG5Middleware::ItsG5Middleware() :
 		mDccScheduler(mDccFsm, mRuntime.now()),
-		mDccControl(mDccScheduler, *this),
 		mGeoRouter(mRuntime, mGeoMib),
 		mAdditionalHeaderBits(0)
 {
@@ -194,7 +193,8 @@ void ItsG5Middleware::initializeMiddleware()
 	gn_addr.country_code(0);
 	gn_addr.mid(vanetza::create_mac_address(this->getId()));
 	mGeoRouter.set_address(gn_addr);
-	mGeoRouter.set_access_interface(&mDccControl);
+	mDccControl.reset(new vanetza::dcc::AccessControl {mDccScheduler, *this});
+	mGeoRouter.set_access_interface(mDccControl.get());
 
 	using vanetza::geonet::UpperProtocol;
 	mGeoRouter.set_transport_handler(UpperProtocol::BTP_B, &mBtpPortDispatcher);
