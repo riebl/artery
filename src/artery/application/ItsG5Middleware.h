@@ -65,7 +65,7 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 		void handleSelfMsg(cMessage *sg) override;
 		void handleLowerMsg(cMessage *msg) override;
 		void handleLowerControl(cMessage *msg) override;
-		void receiveSignal(cComponent*, simsignal_t, cObject*) override;
+		void receiveSignal(cComponent*, simsignal_t, cObject*, cObject*) override;
 
 	private:
 		void update();

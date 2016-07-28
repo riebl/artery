@@ -355,9 +355,9 @@ void ItsG5Middleware::update()
 	scheduleAt(simTime() + mUpdateInterval, mUpdateMessage);
 }
 
-void ItsG5Middleware::receiveSignal(cComponent* component, simsignal_t signal, cObject* obj)
+void ItsG5Middleware::receiveSignal(cComponent* component, simsignal_t signal, cObject* obj, cObject* details)
 {
-	BaseApplLayer::receiveSignal(component, signal, obj);
+	BaseApplLayer::receiveSignal(component, signal, obj, details);
 	if (signal == cMobilityStateChangedSignal) {
 		mVehicleDataProvider.update(mMobility);
 	}
