@@ -6,6 +6,6 @@
 [subrepo]
 	remote = https://github.com/riebl/veins
 	branch = traci_components
-	commit = 367d80dbf2fb407261c092b66e56bca78ac9b49f
-	parent = 6cf7cbc6a3de07ddb59a67ed3081301b4dd4b7d9
+	commit = 68f25b2d7d71eac88612ead43bede693ac42346f
+	parent = 82b8d5accee2dbcc0dc5195fb44d9a247eb8daaa
 	cmdver = 0.3.0
