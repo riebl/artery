@@ -8,17 +8,12 @@
 #include "artery/storyboard/EffectStack.h"
 #include "artery/storyboard/Vehicle.h"
 
-namespace Veins
-{
-class TraCIMobility;
-}
 class Effect;
 class Story;
 
-namespace python = boost::python;
-
 namespace Veins
 {
+class TraCIMobility;
 class TraCIScenarioManager;
 }
 
@@ -38,11 +33,11 @@ private:
      */
     virtual void handleMessage(cMessage * msg);
 
-    void receiveSignal(cComponent* source, simsignal_t, const char*) override;
-    void receiveSignal(cComponent* source, simsignal_t, const simtime_t&) override;
+    void receiveSignal(cComponent* source, simsignal_t, const char*, cObject*) override;
+    void receiveSignal(cComponent* source, simsignal_t, const simtime_t&, cObject*) override;
 
     Veins::TraCIScenarioManager* manager;
-    python::object module;
+    boost::python::object module;
     std::vector<std::shared_ptr<Story>> m_stories;
     std::map<Veins::TraCIMobility*, EffectStack> m_affectedCars;
     std::map<std::string, Vehicle> m_vehicles;

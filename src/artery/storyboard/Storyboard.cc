@@ -5,6 +5,9 @@
 #include "artery/storyboard/TraCIScenarioManagerStoryboard.h"
 #include "artery/traci/TraCIArteryNodeManager.h"
 #include "veins/modules/mobility/traci/TraCIScenarioManager.h"
+#include <omnetpp/cexception.h>
+
+using omnetpp::cRuntimeError;
 
 Define_Module(Storyboard);
 
@@ -50,13 +53,13 @@ void Storyboard::handleMessage(cMessage * msg)
     EV << "Message arrived \n";
 }
 
-void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const char* nodeId)
+void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const char* nodeId, cObject*)
 {
     if (signalId == TraCIArteryNodeManager::signalAddNode) {
         cModule* node = manager->getModule(nodeId);
         ItsG5Middleware* appl = dynamic_cast<ItsG5Middleware*>(node->getSubmodule("appl"));
         if (appl == nullptr) {
-            opp_error("Could not find ItsG5Middleware submodule");
+            throw cRuntimeError("Could not find ItsG5Middleware submodule");
         }
         Facilities* fac = appl->getFacilities();
         m_vehicles.emplace(nodeId, Vehicle { fac->getMobility(), fac->getVehicleDataProvider() });
@@ -68,7 +71,7 @@ void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const c
     }
 }
 
-void Storyboard::receiveSignal(cComponent*, simsignal_t signalId, const simtime_t&)
+void Storyboard::receiveSignal(cComponent*, simsignal_t signalId, const simtime_t&, cObject*)
 {
     if (signalId == TraCIScenarioManagerStoryboard::signalUpdateStep) {
         updateStoryboard();
@@ -138,7 +141,7 @@ void Storyboard::addEffect(const std::vector<std::shared_ptr<Effect>>& effects)
     }
     // Effect is already on Stack -> should never happen
     else {
-        opp_error("It's not allowed to add effects from a Story twice");
+        throw cRuntimeError("It's not allowed to add effects from a Story twice");
     }
 }
 
