@@ -195,6 +195,7 @@ void ItsG5Middleware::initializeMiddleware()
 	mGeoRouter.set_address(gn_addr);
 	mDccControl.reset(new vanetza::dcc::AccessControl {mDccScheduler, *this});
 	mGeoRouter.set_access_interface(mDccControl.get());
+	mGeoMib.itsGnDefaultTrafficClass.tc_id(3); // send BEACONs with DP3
 
 	using vanetza::geonet::UpperProtocol;
 	mGeoRouter.set_transport_handler(UpperProtocol::BTP_B, &mBtpPortDispatcher);
