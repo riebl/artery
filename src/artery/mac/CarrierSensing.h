@@ -19,7 +19,7 @@
 #ifndef CARRIERSENSING_H_
 #define CARRIERSENSING_H_
 
-#include <simtime_t.h>
+#include <omnetpp/simtime.h>
 #include <boost/optional/optional.hpp>
 
 class CarrierSensing
@@ -33,13 +33,13 @@ class CarrierSensing
 		virtual ~CarrierSensing();
 		void setState(State);
 		State getState() const { return mState; }
-		simtime_t getStateSince() const { return mSince; }
+		omnetpp::SimTime getStateSince() const { return mSince; }
 		bool isBusy() const { return !isIdle(); }
 		bool isIdle() const { return mState == IDLE; }
-		boost::optional<simtime_t> getIdleDuration() const;
+		boost::optional<omnetpp::SimTime> getIdleDuration() const;
 
 	private:
-		simtime_t mSince;
+		omnetpp::SimTime mSince;
 		State mState;
 };
 

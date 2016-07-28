@@ -20,7 +20,7 @@
 #define VEHICLEDATAPROVIDER_H_
 
 #include "veins/base/utils/Coord.h"
-#include <simtime_t.h>
+#include <omnetpp/simtime.h>
 #include <boost/circular_buffer.hpp>
 #include <boost/units/systems/si/angular_acceleration.hpp>
 #include <vanetza/units/acceleration.hpp>

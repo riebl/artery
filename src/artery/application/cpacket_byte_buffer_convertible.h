@@ -19,9 +19,8 @@
 #ifndef CPACKET_BYTE_BUFFER_CONVERTIBLE_H_
 #define CPACKET_BYTE_BUFFER_CONVERTIBLE_H_
 
-#include <cmessage.h>
-#include <cobject.h>
-#include <simutil.h>
+#include <omnetpp/cmessage.h>
+#include <omnetpp/cobject.h>
 #include <vanetza/common/byte_buffer_convertible.hpp>
 #include <cassert>
 #include <memory>
@@ -30,7 +29,7 @@ namespace vanetza {
 namespace convertible {
 
 template<>
-class byte_buffer_impl<cPacket*> : public byte_buffer, public cObject
+class byte_buffer_impl<cPacket*> : public byte_buffer, public omnetpp::cObject
 {
 	public:
 		byte_buffer_impl(cPacket* packet) : m_packet(packet)
@@ -46,7 +45,7 @@ class byte_buffer_impl<cPacket*> : public byte_buffer, public cObject
 
 		void convert(ByteBuffer& buf) const override
 		{
-			opp_error("Can't serialize cPacket");
+			throw cRuntimeError("Can't serialize cPacket");
 		}
 
 		std::size_t size() const override

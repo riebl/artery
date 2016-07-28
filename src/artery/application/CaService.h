@@ -25,7 +25,7 @@
 #include <vanetza/btp/data_interface.hpp>
 #include <vanetza/units/angle.hpp>
 #include <vanetza/units/velocity.hpp>
-#include <simtime_t.h>
+#include <omnetpp/simtime.h>
 
 
 class CaService : public ItsG5BaseService

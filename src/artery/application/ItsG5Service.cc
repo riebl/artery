@@ -36,7 +36,7 @@ void ItsG5Service::indicate(const vanetza::btp::DataIndication& ind, std::unique
 	{
 		cPacket* operator()(CohesivePacket& packet)
 		{
-			opp_error("Can't handle CohesivePackets in ItsG5Service");
+			throw cRuntimeError("Can't handle CohesivePackets in ItsG5Service");
 			return nullptr;
 		}
 
@@ -61,7 +61,7 @@ void ItsG5Service::indicate(const vanetza::btp::DataIndication& ind, std::unique
 	if (packet != nullptr) {
 		indicate(ind, packet);
 	} else {
-		opp_error("Unable to extract cPacket out of data indication");
+		throw cRuntimeError("Unable to extract cPacket out of data indication");
 	}
 }
 

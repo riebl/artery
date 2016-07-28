@@ -21,13 +21,13 @@
 
 using namespace edca;
 
-Edca::Edca(const CarrierSensing& cs) : mCarrierSensing(cs)
+Edca::Edca(const CarrierSensing& cs, omnetpp::cRNG* rng) : mCarrierSensing(cs), mRng(rng)
 {
 	// create queues for all ACs, highest priority first
-	mQueues.insert(std::make_pair(AC_VO, createEdcaQueue<AC_VO>()));
-	mQueues.insert(std::make_pair(AC_VI, createEdcaQueue<AC_VI>()));
-	mQueues.insert(std::make_pair(AC_BE, createEdcaQueue<AC_BE>()));
-	mQueues.insert(std::make_pair(AC_BK, createEdcaQueue<AC_BK>()));
+	mQueues.insert(std::make_pair(AC_VO, createEdcaQueue<AC_VO>(mRng)));
+	mQueues.insert(std::make_pair(AC_VI, createEdcaQueue<AC_VI>(mRng)));
+	mQueues.insert(std::make_pair(AC_BE, createEdcaQueue<AC_BE>(mRng)));
+	mQueues.insert(std::make_pair(AC_BK, createEdcaQueue<AC_BK>(mRng)));
 }
 
 Edca::~Edca()
@@ -41,17 +41,17 @@ void Edca::setQueueSize(std::size_t size)
 	}
 }
 
-bool Edca::queuePacket(enum AccessCategory ac, cPacket* packet)
+bool Edca::queuePacket(enum AccessCategory ac, omnetpp::cPacket* packet)
 {
 	return mQueues[ac].queuePacket(packet, mCarrierSensing.getIdleDuration());
 }
 
-cPacket* Edca::initiateTransmission()
+omnetpp::cPacket* Edca::initiateTransmission()
 {
-	cPacket* readyPacket = nullptr;
+	omnetpp::cPacket* readyPacket = nullptr;
 
 	for (auto& iter : mQueues) {
-		cPacket* queueReadyPacket = iter.second.getReadyPacket();
+		omnetpp::cPacket* queueReadyPacket = iter.second.getReadyPacket();
 		if (queueReadyPacket == nullptr) continue;
 		if (readyPacket == nullptr) {
 			// highest priority message found
@@ -66,7 +66,7 @@ cPacket* Edca::initiateTransmission()
 	return readyPacket;
 }
 
-void Edca::doContention(simtime_t idleDuration)
+void Edca::doContention(omnetpp::SimTime idleDuration)
 {
 	for (auto& iter : mQueues) {
 		iter.second.doContention(idleDuration);
@@ -87,12 +87,12 @@ void Edca::txFailure()
 	mQueues.at(mLastAC).txFailure();
 }
 
-boost::optional<simtime_t> Edca::getNextEventSlot()
+boost::optional<omnetpp::SimTime> Edca::getNextEventSlot()
 {
-	boost::optional<simtime_t> slot;
+	boost::optional<omnetpp::SimTime> slot;
 
 	for (auto& iter : mQueues) {
-		boost::optional<simtime_t> possible_slot = iter.second.getNextEventSlot(mCarrierSensing);
+		boost::optional<omnetpp::SimTime> possible_slot = iter.second.getNextEventSlot(mCarrierSensing);
 		if (!slot && possible_slot) {
 			slot = possible_slot;
 		} else if (possible_slot) {

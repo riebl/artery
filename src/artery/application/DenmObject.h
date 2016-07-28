@@ -16,7 +16,7 @@
 #ifndef __ARTERY_DENMOBJECT_H_
 #define __ARTERY_DENMOBJECT_H_
 
-#include <cobject.h>
+#include <omnetpp/cobject.h>
 #include <vanetza/asn1/denm.hpp>
 #include <boost/optional.hpp>
 #include <memory>
@@ -52,7 +52,7 @@ enum class CauseCode {
 
 } // namespace denm
 
-class DenmObject : public cObject
+class DenmObject : public omnetpp::cObject
 {
     public:
         DenmObject(vanetza::asn1::Denm&&);

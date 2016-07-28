@@ -21,14 +21,14 @@
 #include <vanetza/net/cohesive_packet.hpp>
 #include <vanetza/net/osi_layer.hpp>
 #include <boost/variant/static_visitor.hpp>
-#include <simutil.h>
+#include <omnetpp/cexception.h>
 
 template<class T>
 struct Asn1PacketVisitor : public boost::static_visitor<const T*>
 {
     const T* operator()(vanetza::CohesivePacket& packet)
     {
-        opp_error("ASN.1 packet deserialization is not yet implemented");
+        throw omnetpp::cRuntimeError("ASN.1 packet deserialization is not yet implemented");
         return nullptr;
     }
 
@@ -43,7 +43,7 @@ struct Asn1PacketVisitor : public boost::static_visitor<const T*>
             shared_wrapper = impl->wrapper();
             return shared_wrapper.get();
         } else {
-            opp_error("ChunkPacket doesn't contain requested ASN.1 structure");
+            throw omnetpp::cRuntimeError("ChunkPacket doesn't contain requested ASN.1 structure");
             return nullptr;
         }
     }

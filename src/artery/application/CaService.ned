@@ -17,4 +17,7 @@ package artery.application;
 
 simple CaService like ItsG5Service
 {
+    parameters:
+        @signal[CaService.received](type=bool);
+        @signal[CaService.sent](type=unsigned long);
 }

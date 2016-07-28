@@ -19,11 +19,11 @@
 #ifndef GEONETTOMACCONTROLINFO_H_
 #define GEONETTOMACCONTROLINFO_H_
 
-#include <cobject.h>
+#include <omnetpp/cobject.h>
 #include "artery/mac/AccessCategories.h"
 #include "veins/base/utils/SimpleAddress.h"
 
-class GeoNetToMacControlInfo : public cObject
+class GeoNetToMacControlInfo : public omnetpp::cObject
 {
     public:
         LAddress::L2Type source_addr;

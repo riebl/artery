@@ -19,10 +19,10 @@
 #ifndef MACTOGEONETCONTROLINFO_H_
 #define MACTOGEONETCONTROLINFO_H_
 
-#include <cobject.h>
+#include <omnetpp/cobject.h>
 #include "veins/base/utils/SimpleAddress.h"
 
-class MacToGeoNetControlInfo : public cObject
+class MacToGeoNetControlInfo : public omnetpp::cObject
 {
 	public:
 		LAddress::L2Type source_addr;

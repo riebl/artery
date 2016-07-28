@@ -20,7 +20,9 @@
 #define EDCAQUEUE_H_
 
 #include "AccessCategories.h"
-#include <cmessage.h>
+#include <omnetpp/cpacket.h>
+#include <omnetpp/crng.h>
+#include <omnetpp/simtime.h>
 #include <deque>
 #include <boost/optional/optional.hpp>
 
@@ -48,23 +50,23 @@ class EdcaQueue
 		static const unsigned scDot11RTSThreshold = 1000; // octets, see ES 202 663, A.1
 
 		EdcaQueue();
-		EdcaQueue(unsigned aifsn, unsigned cwmin, unsigned cwmax);
+		EdcaQueue(unsigned aifsn, unsigned cwmin, unsigned cwmax, omnetpp::cRNG*);
 		virtual ~EdcaQueue();
 		void setQueueSize(std::size_t size) { mQueueSize = size; }
-		bool queuePacket(cPacket*, boost::optional<simtime_t> idleDuration);
-		cPacket* getReadyPacket();
-		void doContention(simtime_t idleDuration);
+		bool queuePacket(omnetpp::cPacket*, boost::optional<omnetpp::SimTime> idleDuration);
+		omnetpp::cPacket* getReadyPacket();
+		void doContention(omnetpp::SimTime idleDuration);
 		void backoff(BackoffReason reason);
 		void txFailure();
 		void txSuccess();
-		boost::optional<simtime_t> getNextEventSlot(const CarrierSensing&);
+		boost::optional<omnetpp::SimTime> getNextEventSlot(const CarrierSensing&);
 		const Statistics& statistics() const { return mStatistics; }
 
 	private:
-		bool canTransmitImmediately(boost::optional<simtime_t> idleDuration);
+		bool canTransmitImmediately(boost::optional<omnetpp::SimTime> idleDuration);
 		void updateContentionWindow();
 
-		typedef std::deque<cPacket*> PacketQueue;
+		typedef std::deque<omnetpp::cPacket*> PacketQueue;
 
 		const unsigned mAifsn;
 		const unsigned mCWmin;
@@ -76,14 +78,15 @@ class EdcaQueue
 		unsigned mQSRC; // QoS short retry counter
 		unsigned mQLRC; // QoS long retry counter
 		std::size_t mQueueSize;
+		omnetpp::cRNG* mRng;
 };
 
 template<enum edca::AccessCategory AC>
-EdcaQueue createEdcaQueue()
+EdcaQueue createEdcaQueue(omnetpp::cRNG* rng)
 {
 	return EdcaQueue(edca::AccessCategoryTraits<AC>::AIFSN,
 			edca::AccessCategoryTraits<AC>::CW_min,
-			edca::AccessCategoryTraits<AC>::CW_max);
+			edca::AccessCategoryTraits<AC>::CW_max, rng);
 }
 
 #endif /* EDCAQUEUE_H_ */

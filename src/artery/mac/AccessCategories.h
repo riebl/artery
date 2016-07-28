@@ -19,7 +19,10 @@
 #ifndef EDCA_ACCESS_CATEGORIES_H_0RRX3OUI
 #define EDCA_ACCESS_CATEGORIES_H_0RRX3OUI
 
-#include <simtime_t.h> // issue in Veins' Consts80211p header (workaround)
+// issue in Veins' Consts80211p header (workaround)
+#include <omnetpp/simtime.h>
+using omnetpp::SimTime;
+
 #include "veins/modules/utility/Consts80211p.h"
 
 namespace edca {

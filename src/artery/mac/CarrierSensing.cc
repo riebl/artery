@@ -17,7 +17,8 @@
 //
 
 #include "CarrierSensing.h"
-#include <omnetpp.h>
+#include <omnetpp/cexception.h>
+#include <omnetpp/csimulation.h>
 #include <cassert>
 
 CarrierSensing::CarrierSensing() : mState(IDLE)
@@ -36,20 +37,20 @@ void CarrierSensing::setState(State state)
 		case IDLE:
 		case BUSY_PHYSICAL:
 		case BUSY_SELF:
-			mSince = simTime();
+			mSince = omnetpp::simTime();
 			mState = state;
 			break;
 		default:
-			opp_error("Unknown carrier sensing state");
+			throw omnetpp::cRuntimeError("Unknown carrier sensing state");
 			break;
 	}
 }
 
-boost::optional<simtime_t> CarrierSensing::getIdleDuration() const
+boost::optional<omnetpp::SimTime> CarrierSensing::getIdleDuration() const
 {
-	boost::optional<simtime_t> idleDuration;
+	boost::optional<omnetpp::SimTime> idleDuration;
 	if (isIdle()) {
-		idleDuration = simTime() - getStateSince();
+		idleDuration = omnetpp::simTime() - getStateSince();
 		assert(idleDuration.get() >= 0);
 	}
 	return idleDuration;

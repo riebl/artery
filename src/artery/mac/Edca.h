@@ -23,8 +23,9 @@
 #include "artery/mac/CarrierSensing.h"
 #include "artery/mac/EdcaQueue.h"
 #include "veins/modules/utility/Consts80211p.h"
-#include <cmessage.h>
-#include <simtime_t.h>
+#include <omnetpp/cpacket.h>
+#include <omnetpp/crng.h>
+#include <omnetpp/simtime.h>
 #include <deque>
 #include <map>
 #include <boost/optional/optional.hpp>
@@ -32,15 +33,15 @@
 class Edca
 {
 	public:
-		Edca(const CarrierSensing&);
+		Edca(const CarrierSensing&, omnetpp::cRNG*);
 		virtual ~Edca();
-		bool queuePacket(enum edca::AccessCategory, cPacket*);
-		cPacket* initiateTransmission();
-		void doContention(simtime_t idleDuration);
+		bool queuePacket(enum edca::AccessCategory, omnetpp::cPacket*);
+		omnetpp::cPacket* initiateTransmission();
+		void doContention(omnetpp::SimTime idleDuration);
 		void txSuccess();
 		void txFailure();
 
-		boost::optional<simtime_t> getNextEventSlot();
+		boost::optional<omnetpp::SimTime> getNextEventSlot();
 
 		void setQueueSize(std::size_t size);
 		long getBackoffTimes() const;
@@ -51,6 +52,7 @@ class Edca
 		const CarrierSensing& mCarrierSensing;
 		std::map<edca::AccessCategory, EdcaQueue, std::greater<edca::AccessCategory>> mQueues;
 		edca::AccessCategory mLastAC;
+		omnetpp::cRNG* mRng;
 };
 
 #endif /* EDCA_H_ */

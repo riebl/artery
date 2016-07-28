@@ -1,7 +1,7 @@
 #ifndef CHANNELLOADMEASUREMENTS_H_
 #define CHANNELLOADMEASUREMENTS_H_
 
-#include <simtime_t.h>
+#include <omnetpp/simtime.h>
 #include <vanetza/dcc/channel_load.hpp>
 #include <boost/circular_buffer.hpp>
 
@@ -18,7 +18,7 @@ class ChannelLoadMeasurements
         void fill(bool busy);
 
         boost::circular_buffer<bool> m_samples;
-        simtime_t m_last_update;
+        omnetpp::SimTime m_last_update;
         bool m_busy;
 };
 

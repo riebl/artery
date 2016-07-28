@@ -77,7 +77,7 @@ void ExampleService::trigger()
 	request(req, packet);
 }
 
-void ExampleService::receiveSignal(cComponent* source, simsignal_t signal, bool valid)
+void ExampleService::receiveSignal(cComponent* source, simsignal_t signal, bool valid, cObject*)
 {
 	if (signal == scSignalCamReceived && valid) {
 		EV << "Vehicle " << getFacilities().getMobility().getExternalId() << " received a CAM in sibling serivce\n";

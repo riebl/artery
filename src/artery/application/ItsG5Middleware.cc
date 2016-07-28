@@ -90,7 +90,7 @@ void ItsG5Middleware::request(const vanetza::access::DataRequest& req,
 	macCtrlInfo->source_addr = convertToL2Type(req.source_addr);
 
 	if ((*payload)[vanetza::OsiLayer::Network].ptr() == nullptr) {
-		opp_error("Missing network layer payload in middleware request");
+		throw cRuntimeError("Missing network layer payload in middleware request");
 	}
 
 	GeoNetPacket* net = new GeoNetPacket("GeoNet packet");
@@ -138,7 +138,7 @@ void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique
 		}
 			break;
 		default:
-			opp_error("Unknown or unimplemented transport type");
+			throw cRuntimeError("Unknown or unimplemented transport type");
 			break;
 	}
 
@@ -176,7 +176,7 @@ void ItsG5Middleware::initializeMiddleware()
 {
 	mMobility = Veins::TraCIMobilityAccess().get(getParentModule());
 	if (mMobility == nullptr) {
-		opp_error("Mobility not found");
+		throw cRuntimeError("Mobility not found");
 	}
 	mFacilities.reset(new Facilities(mVehicleDataProvider, *mMobility, mDccFsm, mDccScheduler));
 
@@ -214,7 +214,7 @@ void ItsG5Middleware::initializeServices()
 			ItsG5BaseService* service = dynamic_cast<ItsG5BaseService*>(module);
 
 			if (service == nullptr) {
-				opp_error("%s is not of type ItsG5BaseService", module_type->getFullName());
+				throw cRuntimeError("%s is not of type ItsG5BaseService", module_type->getFullName());
 			} else {
 				cXMLElement* listener = service_cfg->getFirstChildWithTag("listener");
 				if (listener && listener->getAttribute("port")) {
@@ -224,7 +224,7 @@ void ItsG5Middleware::initializeServices()
 				} else if (!service->requiresListener()) {
 					mServices.emplace(service, 0);
 				} else {
-					opp_error("No listener port defined for %s", service_name);
+					throw cRuntimeError("No listener port defined for %s", service_name);
 				}
 			}
 		}
@@ -246,7 +246,7 @@ bool ItsG5Middleware::checkServiceFilterRules(const cXMLElement* filter_cfg) con
 			const char* name_match = name_filter_cfg->getAttribute("match");
 			bool inverse = name_match && strcmp(name_match, "inverse") == 0;
 			if (!name_pattern) {
-				opp_error("Required pattern attribute is missing for name filter");
+				throw cRuntimeError("Required pattern attribute is missing for name filter");
 			} else {
 				std::regex name_regex(name_pattern);
 				filter_fn name_filter = [this, name_regex, inverse]() {
@@ -261,12 +261,12 @@ bool ItsG5Middleware::checkServiceFilterRules(const cXMLElement* filter_cfg) con
 		if (penetration_filter_cfg) {
 			const char* penetration_rate_str = penetration_filter_cfg->getAttribute("rate");
 			if (!penetration_rate_str) {
-				opp_error("Required rate attribute is missing for penetration filter");
+				throw cRuntimeError("Required rate attribute is missing for penetration filter");
 			}
 
 			float penetration_rate = boost::lexical_cast<float>(penetration_rate_str);
 			if (penetration_rate > 1.0 || penetration_rate < 0.0) {
-				opp_error("Penetration rate is out of range [0.0, 1.0]");
+				throw cRuntimeError("Penetration rate is out of range [0.0, 1.0]");
 			}
 
 			filter_fn penetration_filter = [this, penetration_rate]() {
@@ -288,7 +288,7 @@ bool ItsG5Middleware::checkServiceFilterRules(const cXMLElement* filter_cfg) con
 		} else if (filter_operator == "and") {
 			add_service = std::all_of(filters.begin(), filters.end(), filter_executor);
 		} else {
-			opp_error("Unsupported filter operator: %s", filter_operator.c_str());
+			throw cRuntimeError("Unsupported filter operator: %s", filter_operator.c_str());
 		}
 	}
 
@@ -319,7 +319,7 @@ void ItsG5Middleware::handleSelfMsg(cMessage *msg)
 	} else if (msg == mUpdateRuntimeMessage) {
 		// runtime is triggered each handleMessage invocation
 	} else {
-		opp_error("Unknown self-message in ITS-G5");
+		throw cRuntimeError("Unknown self-message in ITS-G5");
 	}
 }
 
@@ -343,7 +343,7 @@ void ItsG5Middleware::handleLowerControl(cMessage *msg)
 	if (nullptr != channel_load_msg) {
 		mDccFsm.update(channel_load_msg->getChannelLoad());
 	} else {
-		opp_error("Unknown lower control message");
+		throw cRuntimeError("Unknown lower control message");
 	}
 	delete msg;
 }

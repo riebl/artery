@@ -19,31 +19,33 @@
 #include "artery/mac/CarrierSensing.h"
 #include "artery/mac/EdcaQueue.h"
 #include "veins/modules/utility/Consts80211p.h"
-#include <omnetpp.h>
 #include <cassert>
+#include <omnetpp/csimulation.h>
+#include <omnetpp/distrib.h>
 
 EdcaQueue::EdcaQueue() :
 EdcaQueue(edca::AccessCategoryTraits<edca::AC_BK>::AIFSN,
 		edca::AccessCategoryTraits<edca::AC_BK>::CW_min,
-		edca::AccessCategoryTraits<edca::AC_BK>::CW_max)
+		edca::AccessCategoryTraits<edca::AC_BK>::CW_max, nullptr)
 {
 }
 
-EdcaQueue::EdcaQueue(unsigned aifsn, unsigned cwmin, unsigned cwmax) :
+EdcaQueue::EdcaQueue(unsigned aifsn, unsigned cwmin, unsigned cwmax, omnetpp::cRNG* rng) :
 		mAifsn(aifsn), mCWmin(cwmin), mCWmax(cwmax),
 		mContentionWindow(cwmin), mBackoffSlots(0),
-		mQSRC(0), mQLRC(0), mQueueSize(0)
+		mQSRC(0), mQLRC(0), mQueueSize(0),
+		mRng(rng)
 {
 }
 
 EdcaQueue::~EdcaQueue()
 {
-	for (cPacket* packet : mPackets) {
+	for (omnetpp::cPacket* packet : mPackets) {
 		delete packet;
 	}
 }
 
-bool EdcaQueue::queuePacket(cPacket* packet, boost::optional<simtime_t> idleDuration)
+bool EdcaQueue::queuePacket(omnetpp::cPacket* packet, boost::optional<omnetpp::SimTime> idleDuration)
 {
 	if (mQueueSize == 0 || mPackets.size() < mQueueSize) {
 		if (!canTransmitImmediately(idleDuration)) {
@@ -58,7 +60,7 @@ bool EdcaQueue::queuePacket(cPacket* packet, boost::optional<simtime_t> idleDura
 	}
 }
 
-bool EdcaQueue::canTransmitImmediately(boost::optional<simtime_t> idleDuration)
+bool EdcaQueue::canTransmitImmediately(boost::optional<omnetpp::SimTime> idleDuration)
 {
 	if (mPackets.empty() && mBackoffSlots == 0 &&
 			idleDuration && idleDuration.get() >= mAifsn * SLOTLENGTH_11P) {
@@ -68,9 +70,9 @@ bool EdcaQueue::canTransmitImmediately(boost::optional<simtime_t> idleDuration)
 	}
 }
 
-cPacket* EdcaQueue::getReadyPacket()
+omnetpp::cPacket* EdcaQueue::getReadyPacket()
 {
-	cPacket* packet = nullptr;
+	omnetpp::cPacket* packet = nullptr;
 	if (!mPackets.empty() && mBackoffSlots == 0) {
 		packet = mPackets.front();
 	}
@@ -78,7 +80,7 @@ cPacket* EdcaQueue::getReadyPacket()
 	return packet;
 }
 
-void EdcaQueue::doContention(simtime_t idleDuration)
+void EdcaQueue::doContention(omnetpp::SimTime idleDuration)
 {
 	idleDuration -= mAifsn * SLOTLENGTH_11P;
 	if (idleDuration > 0.0) {
@@ -105,17 +107,18 @@ void EdcaQueue::backoff(BackoffReason reason)
 			mStatistics.internalContentions++;
 			break;
 		default:
-			opp_error("Unknown backoff reason");
+			throw omnetpp::cRuntimeError("Unknown backoff reason");
 	}
 
-	mBackoffSlots = intuniform(0, mContentionWindow);
+	assert(mRng);
+	mBackoffSlots = omnetpp::intuniform(mRng, 0, mContentionWindow);
 	mStatistics.backoffTimes++;
 	mStatistics.backoffSlots += mBackoffSlots;
 }
 
 void EdcaQueue::txFailure()
 {
-	cPacket* packet = mPackets.front();
+	omnetpp::cPacket* packet = mPackets.front();
 	assert(packet != nullptr);
 	if (packet->getByteLength() >= scDot11RTSThreshold) {
 		++mQLRC;
@@ -126,7 +129,7 @@ void EdcaQueue::txFailure()
 
 void EdcaQueue::txSuccess()
 {
-	cPacket* packet = mPackets.front();
+	omnetpp::cPacket* packet = mPackets.front();
 	mPackets.pop_front();
 	assert(packet != nullptr);
 
@@ -152,13 +155,13 @@ void EdcaQueue::updateContentionWindow()
 	}
 }
 
-boost::optional<simtime_t> EdcaQueue::getNextEventSlot(const CarrierSensing& cs)
+boost::optional<omnetpp::SimTime> EdcaQueue::getNextEventSlot(const CarrierSensing& cs)
 {
-	boost::optional<simtime_t> slot;
+	boost::optional<omnetpp::SimTime> slot;
 	if (cs.isIdle() && mPackets.size() > 0) {
 		slot = cs.getStateSince() + (mAifsn + mBackoffSlots) * SLOTLENGTH_11P + SIFS_11P;
-		if (slot <= simTime()) {
-			slot = simTime();
+		if (slot <= omnetpp::simTime()) {
+			slot = omnetpp::simTime();
 		}
 	}
 	return slot;

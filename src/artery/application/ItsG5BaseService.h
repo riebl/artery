@@ -19,8 +19,8 @@
 #ifndef ITSG5BASESERVICE_H_
 #define ITSG5BASESERVICE_H_
 
-#include <clistener.h>
-#include <csimplemodule.h>
+#include <omnetpp/clistener.h>
+#include <omnetpp/csimplemodule.h>
 #include <vanetza/btp/data_interface.hpp>
 #include <vanetza/btp/data_request.hpp>
 #include "Facilities.h"

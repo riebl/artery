@@ -22,11 +22,12 @@
 #include "veins/base/phyLayer/MacToPhyInterface.h"
 #include "veins/modules/phy/Decider80211p.h"
 #include <vanetza/dcc/channel_load.hpp>
+#include <omnetpp/cexception.h>
 #include <cmath>
 
 Define_Module(MacItsG5);
 
-MacItsG5::MacItsG5() : mEdca(mCarrierSensing)
+MacItsG5::MacItsG5() : mEdca(mCarrierSensing, getRNG(0))
 {
 }
 
@@ -69,7 +70,7 @@ void MacItsG5::handleSelfMsg(cMessage* msg)
 	if (msg == mNextMacEventMessage) {
 		auto idleDuration = mCarrierSensing.getIdleDuration();
 		if (!idleDuration) {
-			opp_error("MacItsG5 should receive self message only during idle medium");
+			throw cRuntimeError("MacItsG5 should receive self message only during idle medium");
 		}
 		mCarrierSensing.setState(CarrierSensing::BUSY_SELF);
 		mEdca.doContention(idleDuration.get());
@@ -98,25 +99,25 @@ void MacItsG5::handleSelfMsg(cMessage* msg)
 		sendControlUp(report);
 		scheduleAt(simTime() + mChannelLoadReportInterval, mChannelLoadReport);
 	} else {
-		opp_error("Unknown MacItsG5 self-message");
+		throw cRuntimeError("Unknown MacItsG5 self-message");
 	}
 }
 
 void MacItsG5::handleUpperControl(cMessage* msg)
 {
-	opp_error("No implementation of MacItsG5 upper control messages");
+	throw cRuntimeError("No implementation of MacItsG5 upper control messages");
 }
 
 void MacItsG5::handleUpperMsg(cMessage* msg)
 {
 	cPacket* packet = dynamic_cast<cPacket*>(msg);
 	if (packet == nullptr) {
-		opp_error("MacItsG5 requires packet from upper layer");
+		throw cRuntimeError("MacItsG5 requires packet from upper layer");
 	}
 
 	GeoNetToMacControlInfo* macCtrlInfo = dynamic_cast<GeoNetToMacControlInfo*>(packet->getControlInfo());
 	if (macCtrlInfo == nullptr) {
-		opp_error("MacItsG5 requires message with GeoNetToMacControlInfo from upper layer");
+		throw cRuntimeError("MacItsG5 requires message with GeoNetToMacControlInfo from upper layer");
 	} else {
 		// actually GeoNet layer determines MAC address
 		mMacAddress = macCtrlInfo->source_addr;
@@ -156,7 +157,7 @@ void MacItsG5::handleLowerControl(cMessage* msg)
 		phy->setRadioState(Veins::Radio::RX);
 		mStatistics.DroppedPackets++;
 	} else {
-		opp_error("Unknown MacItsG5 lower control message");
+		throw cRuntimeError("Unknown MacItsG5 lower control message");
 	}
 
 	delete msg;
@@ -250,7 +251,7 @@ void MacItsG5::scheduleNextMacEvent()
 			// This can occur for immediate transmissions
 			handleSelfMsg(mNextMacEventMessage);
 		} else {
-			opp_error("Can't schedule events in the past");
+			throw cRuntimeError("Can't schedule events in the past");
 		}
 	}
 }
@@ -264,5 +265,5 @@ void MacItsG5::setBitrate(uint64_t bitrate)
 			return;
 		}
 	}
-	opp_error("Invalid 802.11p bitrate");
+	throw cRuntimeError("Invalid 802.11p bitrate");
 }

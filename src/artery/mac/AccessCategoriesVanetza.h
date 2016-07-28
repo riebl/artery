@@ -21,7 +21,6 @@
 
 #include "AccessCategories.h"
 #include <vanetza/net/access_category.hpp>
-#include <simutil.h>
 
 namespace edca
 {
@@ -45,7 +44,7 @@ inline AccessCategory map(vanetza::AccessCategory ac)
 			result = AC_BK;
 			break;
 		default:
-			opp_error("AC mapping failure");
+			throw cRuntimeError("AC mapping failure");
 			break;
 	}
 
@@ -71,7 +70,7 @@ inline vanetza::AccessCategory map(AccessCategory ac)
 			result = AC::BK;
 			break;
 		default:
-			opp_error("AC mapping failure");
+			throw cRuntimeError("AC mapping failure");
 			break;
 	}
 

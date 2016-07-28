@@ -2,10 +2,10 @@
 #include "artery/application/Asn1PacketVisitor.h"
 #include "artery/application/VehicleDataProvider.h"
 #include "veins/base/utils/Coord.h"
-#undef ev
 #include <vanetza/btp/ports.hpp>
 #include <boost/units/cmath.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
+#include <omnetpp/cexception.h>
 
 auto microdegree = vanetza::units::degree * boost::units::si::micro;
 auto decidegree = vanetza::units::degree * boost::units::si::deci;
@@ -70,7 +70,7 @@ void CaService::checkTriggeringConditions(const VehicleDataProvider& vdp, const 
 	const simtime_t T_elapsed = T_now - mLastCamTimestamp;
 
 	if (T_GenCamDcc < T_GenCamMin || T_GenCamDcc > T_GenCamMax) {
-		opp_error("T_GenCamDcc is out of bounds");
+		throw cRuntimeError("T_GenCamDcc is out of bounds");
 	}
 
 	if (T_elapsed >= T_GenCamDcc) {
@@ -177,7 +177,7 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 
 	std::string error;
 	if (!message.validate(error)) {
-		opp_error("Invalid High Frequency CAM: %s", error.c_str());
+		throw cRuntimeError("Invalid High Frequency CAM: %s", error.c_str());
 	}
 
 	return message;
@@ -198,6 +198,6 @@ void addLowFrequencyContainer(vanetza::asn1::Cam& message)
 
 	std::string error;
 	if (!message.validate(error)) {
-		opp_error("Invalid Low Frequency CAM: %s", error.c_str());
+		throw cRuntimeError("Invalid Low Frequency CAM: %s", error.c_str());
 	}
 }

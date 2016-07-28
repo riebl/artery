@@ -2,7 +2,6 @@
 #define ARTERY_TRACIARTERYNODEMANAGER_H_ZLFJ1KXJ
 
 #include "veins/modules/mobility/traci/TraCINodeManager.h"
-#include <ccomponent.h>
 
 class TraCIArteryNodeManager : public Veins::TraCINodeManager
 {

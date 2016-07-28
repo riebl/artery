@@ -1,5 +1,5 @@
 #include "ChannelLoadMeasurements.h"
-#include <csimulation.h>
+#include <omnetpp/csimulation.h>
 #include <algorithm>
 
 ChannelLoadMeasurements::ChannelLoadMeasurements() :
@@ -10,7 +10,7 @@ ChannelLoadMeasurements::ChannelLoadMeasurements() :
 void ChannelLoadMeasurements::reset()
 {
     m_samples.clear();
-    m_last_update = simTime();
+    m_last_update = omnetpp::simTime();
     m_busy = false;
 }
 
@@ -26,10 +26,10 @@ void ChannelLoadMeasurements::idle()
 
 void ChannelLoadMeasurements::fill(bool busy)
 {
-    const simtime_t now = simTime();
-    const simtime_t duration = now - m_last_update;
+    const omnetpp::SimTime now = omnetpp::simTime();
+    const omnetpp::SimTime duration = now - m_last_update;
 
-    const std::size_t samples = duration / simtime_t { 8, SIMTIME_US };
+    const std::size_t samples = duration / omnetpp::SimTime { 8, omnetpp::SIMTIME_US };
     for (std::size_t i = 0; i < samples; ++i) {
         m_samples.push_back(m_busy);
     }
