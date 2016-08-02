@@ -23,8 +23,13 @@ void Storyboard::initialize(int stage)
     manager->subscribe(TraCIScenarioManagerArtery::signalUpdateStep, this);
 
     // Import staticly linked modules
+#   if PY_VERSION_HEX >= 0x03000000
+    PyImport_AppendInittab("storyboard", &PyInit_storyboard);
+    PyImport_AppendInittab("timeline", &PyInit_timeline);
+#   else
     PyImport_AppendInittab("storyboard", &initstoryboard);
     PyImport_AppendInittab("timeline", &inittimeline);
+#   endif
 
     // Initialize python
     Py_Initialize();
