@@ -48,7 +48,7 @@ class VehicleDataProvider
 		vanetza::units::Velocity speed() const { return mSpeed; }
 		vanetza::units::Acceleration acceleration() const { return mAccel; }
 		vanetza::units::Angle heading() const { return mHeading; } // degree from north, clockwise
-		vanetza::units::AngularVelocity yaw_rate() const { return mYawRate; } // counter-clockwise positive
+		vanetza::units::AngularVelocity yaw_rate() const { return mYawRate; } // left turn positive
 		vanetza::units::Curvature curvature() const { return mCurvature; } // 1/m radius, left turn positive
 		double confidence() const { return mConfidence; } // percentage value
 

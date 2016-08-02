@@ -152,7 +152,7 @@ void VehicleDataProvider::update(const Veins::TraCIMobility* mob)
 		mSpeed = new_speed;
 
 		auto new_heading = convertMobilityAngle(mob->getAngleRad() * radians);
-		auto diff_heading = pi * radians - abs(abs(new_heading - mHeading) - pi * radians);
+		auto diff_heading = mHeading - new_heading; // left turn positive
 		mYawRate = diff_heading / delta;
 		mHeading = new_heading;
 	}
