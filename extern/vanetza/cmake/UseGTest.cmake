@@ -31,12 +31,13 @@ macro(add_gtest NAME)
       COMMAND GTest_${NAME})
 endmacro(add_gtest)
 
-# Set target properties for a GTest
+# Set target property for a GTest
 ## NAME name of the test case
-## ARGS passed to set_target_properties command
-macro(set_gtest_properties NAME)
-    set_target_properties(GTest_${NAME} PROPERTIES ${ARGN})
-endmacro(set_gtest_properties)
+## PROP property name
+## ARGS passed to set_property(TARGET) command
+macro(set_gtest_property NAME PROP)
+  set_property(TARGET GTest_${NAME} PROPERTY ${PROP} ${ARGN})
+endmacro(set_gtest_property)
 
 # Link libraries to a GTest
 ## NAME name of the test case

@@ -32,7 +32,7 @@ public:
     CommonHeader(const DataRequest&, const MIB&);
     CommonHeader(const ShbDataRequest&, const MIB&);
 
-    static const std::size_t length_bytes = 8;
+    static constexpr std::size_t length_bytes = 8;
 
     NextHeaderCommon next_header; // 4 bit
     BitNumber<unsigned, 4> reserved1;

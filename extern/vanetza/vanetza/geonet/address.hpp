@@ -16,7 +16,7 @@ namespace geonet
 class Address
 {
 public:
-    static const std::size_t length_bytes = 8;
+    static constexpr std::size_t length_bytes = 8;
 
     Address();
     explicit Address(const MacAddress&);

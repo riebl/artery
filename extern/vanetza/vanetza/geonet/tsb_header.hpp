@@ -12,7 +12,7 @@ namespace geonet
 struct TsbHeader
 {
 public:
-    static const std::size_t length_bytes = 4 + LongPositionVector::length_bytes;
+    static constexpr std::size_t length_bytes = 4 + LongPositionVector::length_bytes;
 
     SequenceNumber sequence_number;
     uint16_t reserved;

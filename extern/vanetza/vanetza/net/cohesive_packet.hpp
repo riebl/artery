@@ -50,6 +50,13 @@ public:
     void set_boundary(OsiLayer, unsigned bytes);
 
     /**
+     * Trim size of packet, i.e. cut bytes at the end if too long.
+     * \param from start counting with this layer
+     * \param bytes target length in bytes
+     */
+    void trim(OsiLayer from,  unsigned bytes);
+
+    /**
      * Get size of whole packet
      * \return length in bytes
      */

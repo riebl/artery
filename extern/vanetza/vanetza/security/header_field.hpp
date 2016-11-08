@@ -4,6 +4,7 @@
 #include <vanetza/security/basic_elements.hpp>
 #include <vanetza/security/certificate.hpp>
 #include <vanetza/security/encryption_parameter.hpp>
+#include <vanetza/security/int_x.hpp>
 #include <vanetza/security/recipient_info.hpp>
 #include <vanetza/security/region.hpp>
 #include <vanetza/security/signer_info.hpp>
@@ -23,20 +24,20 @@ enum class HeaderFieldType : uint8_t
     Expiration = 2,                         // Time32
     Generation_Location = 3,                // TreeDLocation
     Request_Unrecognized_Certificate = 4,   // std::list<HashedId3>
-    Message_Type = 5,                       // uint16 -> uint16be_t
+    Its_Aid = 5,                            // IntX
     Signer_Info = 128,                      // SignerInfo
     Encryption_Parameters = 129,            // EncryptionParameters
     Recipient_Info = 130,                   // std::list<RecipientInfo>
 };
 
 /// HeaderField specified in TS 103 097 v1.2.1, section 5.4
-using HeaderField =  boost::variant<
+using HeaderField = boost::variant<
     Time64,
     Time64WithStandardDeviation,
     Time32,
     ThreeDLocation,
     std::list<HashedId3>,
-    uint16_t,
+    IntX,
     SignerInfo,
     EncryptionParameter,
     std::list<RecipientInfo>

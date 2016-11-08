@@ -3,6 +3,7 @@ set(CXX_SOURCES
     buffer_packet.cpp
     chunk_packet.cpp
     cohesive_packet.cpp
+    ethernet_header.cpp
     mac_address.cpp
     packet_variant.cpp
     packet.cpp
@@ -10,7 +11,6 @@ set(CXX_SOURCES
 )
 
 set(CXX_SOURCES_POSIX
-    ethernet_header.cpp
     io_vector.cpp
     sockaddr.cpp
 )

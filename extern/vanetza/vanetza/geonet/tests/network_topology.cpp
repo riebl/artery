@@ -60,7 +60,7 @@ NetworkTopology::RouterContext::RouterContext(NetworkTopology& network) :
     router.set_access_interface(&request_interface);
 }
 
-NetworkTopology::NetworkTopology()
+NetworkTopology::NetworkTopology() : now(Clock::at("2016-02-29 23:59"))
 {
     set_duplication_mode(PacketDuplicationMode::COPY_CONSTRUCT);
     assert(fn_duplicate);

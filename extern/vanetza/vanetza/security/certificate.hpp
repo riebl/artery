@@ -2,12 +2,16 @@
 #define CERTIFICATE_HPP_LWBWIAVL
 
 #include <vanetza/common/byte_buffer.hpp>
+#include <vanetza/security/basic_elements.hpp>
+#include <vanetza/security/ecc_point.hpp>
+#include <vanetza/security/ecdsa256.hpp>
 #include <vanetza/security/serialization.hpp>
 #include <vanetza/security/signature.hpp>
 #include <vanetza/security/signer_info.hpp>
 #include <vanetza/security/subject_attribute.hpp>
 #include <vanetza/security/subject_info.hpp>
 #include <vanetza/security/validity_restriction.hpp>
+#include <boost/optional/optional.hpp>
 
 namespace vanetza
 {
@@ -24,6 +28,52 @@ struct Certificate
     Signature signature;
     // certificate version is two, for conformance with the present standard
     uint8_t version() const { return 2; }
+};
+
+enum class CertificateInvalidReason
+{
+    BROKEN_TIME_PERIOD,
+    OFF_TIME_PERIOD,
+    INVALID_ROOT_HASH,
+    MISSING_SIGNATURE,
+    INVALID_SIGNATURE,
+    INVALID_NAME,
+};
+
+class CertificateValidity
+{
+public:
+    CertificateValidity() = default;
+
+    /**
+     * Create CertificateValidity signalling an invalid certificate
+     * \param reason Reason for invalidity
+     */
+    CertificateValidity(CertificateInvalidReason reason) : m_reason(reason) {}
+
+    /**
+     * \brief Create CertificateValidity signalling a valid certificate
+     * This method is equivalent to default construction but should be more expressive.
+     * \return validity
+     */
+    static CertificateValidity valid() { return CertificateValidity(); }
+
+    /**
+     * Check if status corresponds to a valid certificate
+     * \return true if certificate is valid
+     */
+    operator bool() const { return !m_reason; }
+
+    /**
+     * \brief Get reason for certificate invalidity
+     * This call is only safe if reason is available, i.e. check validity before!
+     *
+     * \return reason
+     */
+    CertificateInvalidReason reason() const { return *m_reason; }
+
+private:
+    boost::optional<CertificateInvalidReason> m_reason;
 };
 
 /**
@@ -61,6 +111,27 @@ size_t deserialize(InputArchive&, Certificate&);
 * \return binary representation
 */
 ByteBuffer convert_for_signing(const Certificate&);
+
+/**
+ * \brief Extract public key from certificate
+ * \param cert Certificate
+ * \return Uncompressed public key (if available)
+ */
+boost::optional<Uncompressed> get_uncompressed_public_key(const Certificate&);
+
+/**
+ * \brief Extract public ECDSA256 key from certificate
+ * \param cert Certificate
+ * \return public key (if available)
+ */
+boost::optional<ecdsa256::PublicKey> get_public_key(const Certificate&);
+
+/**
+ * Calculate hash id of certificate
+ * \param cert Certificate
+ * \return hash
+ */
+HashedId8 calculate_hash(const Certificate&);
 
 } // namespace security
 } // namespace vanetza

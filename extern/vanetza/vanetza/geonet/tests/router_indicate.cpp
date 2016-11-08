@@ -14,6 +14,7 @@ public:
 protected:
     virtual void SetUp() override
     {
+        runtime.trigger(Clock::at("2010-12-23 18:30"));
         router.set_access_interface(&req_ifc);
         router.set_transport_handler(geonet::UpperProtocol::IPv6, &ind_ifc);
         packet_drop_occurred = false;

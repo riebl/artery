@@ -12,7 +12,7 @@ namespace geonet
 
 struct GeoUnicastHeader
 {
-    static const std::size_t length_bytes = 4 +
+    static constexpr std::size_t length_bytes = 4 +
         LongPositionVector::length_bytes +
         ShortPositionVector::length_bytes;
 

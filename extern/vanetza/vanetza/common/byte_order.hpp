@@ -33,9 +33,9 @@ namespace detail
 {
 
 #if BYTE_ORDER == LITTLE_ENDIAN
-    static const ByteOrder host_byte_order = ByteOrder::LittleEndian;
+    static constexpr ByteOrder host_byte_order = ByteOrder::LittleEndian;
 #elif BYTE_ORDER == BIG_ENDIAN
-    static const ByteOrder host_byte_order = ByteOrder::BigEndian;
+    static constexpr ByteOrder host_byte_order = ByteOrder::BigEndian;
 #else
 #   error "Unknown byte order"
 #endif

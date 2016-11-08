@@ -10,6 +10,7 @@
 #include <vanetza/units/frequency.hpp>
 #include <vanetza/units/length.hpp>
 #include <vanetza/units/time.hpp>
+#include <string>
 
 namespace vanetza
 {
@@ -87,6 +88,8 @@ struct ManagementInformationBase
     unsigned itsGnBcForwardingPacketBufferSize; // kbyte
     unsigned itsGnCbfPacketBufferSize; // kbyte
     TrafficClass itsGnDefaultTrafficClass;
+    std::string vanetzaCryptoBackend; /*< choose preferred crypto backend implementation */
+    bool vanetzaDeferSigning; /*< calculate signatures on-demand, i.e. defer calculation (experimental option) */
 };
 
 // This name is too clumsy to write it out every time

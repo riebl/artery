@@ -1,6 +1,7 @@
 #ifndef BASIC_ELEMENTS_HPP_RALCTYHI
 #define BASIC_ELEMENTS_HPP_RALCTYHI
 
+#include <vanetza/common/clock.hpp>
 #include <array>
 #include <cstdint>
 
@@ -23,6 +24,20 @@ struct Time64WithStandardDeviation
     Time64 time64;
     uint8_t log_std_dev;
 };
+
+/**
+ * Convert time point to time stamp
+ * \param tp time point
+ * \return time stamp with second accuracy
+ */
+Time32 convert_time32(const Clock::time_point& tp);
+
+/**
+ * Convert time point to time stamp
+ * \param tp time point
+ * \return time stamp with microsecond accuracy
+ */
+Time64 convert_time64(const Clock::time_point& tp);
 
 } // namespace security
 } // namespace vanetza

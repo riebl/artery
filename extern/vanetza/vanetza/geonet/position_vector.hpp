@@ -20,7 +20,7 @@ struct GeodeticPosition;
 class LongPositionVector
 {
 public:
-    static const std::size_t length_bytes = 24;
+    static constexpr std::size_t length_bytes = 24;
     typedef boost::units::quantity<boost::units::make_scaled_unit<
                 boost::units::si::velocity,
                 boost::units::scale<10, boost::units::static_rational<-2>>
@@ -47,7 +47,7 @@ void deserialize(LongPositionVector&, InputArchive&);
 class ShortPositionVector
 {
 public:
-    static const std::size_t length_bytes = 20;
+    static constexpr std::size_t length_bytes = 20;
 
     ShortPositionVector() = default;
     ShortPositionVector(const ShortPositionVector&) = default;

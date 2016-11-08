@@ -21,7 +21,7 @@ namespace detail
  */
 struct GbcGacHeader
 {
-    static const std::size_t length_bytes = 20 + LongPositionVector::length_bytes;
+    static constexpr std::size_t length_bytes = 20 + LongPositionVector::length_bytes;
 
     SequenceNumber sequence_number;
     uint16_t reserved1;

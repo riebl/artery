@@ -156,12 +156,8 @@ boost::optional<HeaderConstRefVariant> IndicationContextDeserialize::parse_exten
 IndicationContext::UpPacketPtr IndicationContextDeserialize::finish()
 {
     m_cohesive_packet.set_boundary(OsiLayer::Network, parsed_bytes());
+    m_cohesive_packet.trim(OsiLayer::Transport, pdu().common().payload);
     return std::move(m_packet);
-}
-
-std::size_t IndicationContextDeserialize::payload_length() const
-{
-    return m_cohesive_packet.size(OsiLayer::Network, max_osi_layer()) - parsed_bytes();
 }
 
 
@@ -207,11 +203,6 @@ IndicationContext::UpPacketPtr IndicationContextCast::finish()
     return std::move(m_packet);
 }
 
-std::size_t IndicationContextCast::payload_length() const
-{
-    return m_packet ? size(*m_packet, OsiLayer::Transport, max_osi_layer()) : 0;
-}
-
 IndicationContextSecuredDeserialize::IndicationContextSecuredDeserialize(IndicationContext& parent, CohesivePacket& payload) :
     detail::IndicationContextChild(parent),
     detail::IndicationContextDeserializer(payload),
@@ -237,11 +228,6 @@ IndicationContext::UpPacketPtr IndicationContextSecuredDeserialize::finish()
     auto packet = m_parent.finish();
     (*packet) = m_packet;
     return packet;
-}
-
-std::size_t IndicationContextSecuredDeserialize::payload_length() const
-{
-    return m_packet.size(OsiLayer::Network, max_osi_layer()) - parsed_bytes();
 }
 
 IndicationContextSecuredCast::IndicationContextSecuredCast(IndicationContext& parent, ChunkPacket& packet) :
@@ -302,11 +288,6 @@ boost::optional<HeaderConstRefVariant> IndicationContextSecuredCast::parse_exten
 IndicationContext::UpPacketPtr IndicationContextSecuredCast::finish()
 {
     return std::move(m_packet);
-}
-
-std::size_t IndicationContextSecuredCast::payload_length() const
-{
-    return m_packet ? size(*m_packet, OsiLayer::Transport, max_osi_layer()) : 0;
 }
 
 } // namespace geonet

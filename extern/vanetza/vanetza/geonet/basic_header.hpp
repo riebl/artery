@@ -30,7 +30,7 @@ struct BasicHeader
     BasicHeader(const DataRequest&, const MIB&);
     BasicHeader(const ShbDataRequest&, const MIB&);
 
-    static const std::size_t length_bytes = 3 + sizeof(Lifetime);
+    static constexpr std::size_t length_bytes = 3 + sizeof(Lifetime);
 
     BitNumber<unsigned, 4> version;
     NextHeaderBasic next_header; // 4 bit

@@ -33,9 +33,9 @@ HeaderFieldType get_type(const HeaderField& field)
         {
             return  HeaderFieldType::Request_Unrecognized_Certificate;
         }
-        HeaderFieldType operator()(const uint16_t& msgType)
+        HeaderFieldType operator()(const IntX& itsAid)
         {
-            return  HeaderFieldType::Message_Type;
+            return  HeaderFieldType::Its_Aid;
         }
         HeaderFieldType operator()(const SignerInfo& info)
         {
@@ -85,9 +85,9 @@ size_t get_size(const HeaderField& field)
             }
             m_size += length_coding_size(m_size);
         }
-        void operator()(const uint16_t& msgType)
+        void operator()(const IntX& itsAid)
         {
-            m_size = sizeof(uint16_t);
+            m_size = get_size(itsAid);
         }
         void operator()(const SignerInfo& info)
         {
@@ -149,9 +149,9 @@ void serialize(OutputArchive& ar, const HeaderField& field)
                 m_archive << elem[2];
             }
         }
-        void operator()(const uint16_t& msg_type)
+        void operator()(const IntX& itsAid)
         {
-            serialize(m_archive, host_cast(msg_type));
+            serialize(m_archive, itsAid);
         }
         void operator()(const SignerInfo& info)
         {
@@ -235,12 +235,11 @@ size_t deserialize(InputArchive& ar, std::list<HeaderField>& list)
                 list.push_back(field);
                 break;
             }
-            case HeaderFieldType::Message_Type: {
-                uint16_t uint;
-                deserialize(ar, uint);
-                field = uint;
+            case HeaderFieldType::Its_Aid: {
+                IntX its_aid;
+                size -= deserialize(ar, its_aid);
+                field = its_aid;
                 list.push_back(field);
-                size -= sizeof(uint16_t);
                 break;
             }
             case HeaderFieldType::Signer_Info: {

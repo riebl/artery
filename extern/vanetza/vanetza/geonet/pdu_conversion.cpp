@@ -12,6 +12,7 @@ typedef std::unique_ptr<vanetza::geonet::Pdu> PduPtr;
 void byte_buffer_impl<PduPtr>::convert(ByteBuffer& dest) const
 {
     assert(m_pdu);
+    dest.clear();
     geonet::serialize_into_buffer(*m_pdu, dest);
 }
 

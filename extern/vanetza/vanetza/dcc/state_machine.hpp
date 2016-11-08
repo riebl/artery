@@ -15,7 +15,7 @@ namespace dcc
 struct ChannelLoad;
 
 // constants
-static const Clock::duration NDL_minDccSampling = std::chrono::milliseconds(100);
+static constexpr Clock::duration NDL_minDccSampling = std::chrono::milliseconds(100);
 
 
 class State

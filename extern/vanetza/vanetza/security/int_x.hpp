@@ -17,12 +17,16 @@ class IntX : public boost::equality_comparable<IntX>
 {
 public:
     using integer_type = std::uintmax_t;
-    IntX();
+    constexpr IntX() : m_value(0) {}
+    constexpr explicit IntX(integer_type x) : m_value(x) {}
 
     void set(integer_type x);
-    integer_type get() const;
+    constexpr integer_type get() const { return m_value; }
 
-    bool operator==(const IntX&) const;
+    constexpr bool operator==(const IntX& other) const
+    {
+        return m_value == other.m_value;
+    }
 
     ByteBuffer encode() const;
     static boost::optional<IntX> decode(const ByteBuffer&);

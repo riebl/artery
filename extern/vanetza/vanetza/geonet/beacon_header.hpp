@@ -12,7 +12,7 @@ namespace geonet
 struct BeaconHeader
 {
 public:
-    static const std::size_t length_bytes = LongPositionVector::length_bytes;
+    static constexpr std::size_t length_bytes = LongPositionVector::length_bytes;
 
     LongPositionVector source_position;
 };

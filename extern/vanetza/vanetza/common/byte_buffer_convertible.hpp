@@ -85,7 +85,7 @@ public:
 
     template<class T>
     ByteBufferConvertible(T&& t) :
-        m_wrapper(new convertible::byte_buffer_impl<typename std::remove_const<T>::type>(std::forward<T>(t))) {}
+        m_wrapper(new convertible::byte_buffer_impl<typename std::decay<T>::type>(std::forward<T>(t))) {}
 
     ByteBufferConvertible(const ByteBufferConvertible&);
     ByteBufferConvertible& operator=(const ByteBufferConvertible&);

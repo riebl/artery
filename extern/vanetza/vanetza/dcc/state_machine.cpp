@@ -11,11 +11,11 @@ namespace vanetza
 namespace dcc
 {
 
-static const std::size_t N_samples_up = std::chrono::seconds(1) / NDL_minDccSampling;
-static const std::size_t N_samples_down = std::chrono::seconds(5) / NDL_minDccSampling;
+static constexpr std::size_t N_samples_up = std::chrono::seconds(1) / NDL_minDccSampling;
+static constexpr std::size_t N_samples_down = std::chrono::seconds(5) / NDL_minDccSampling;
 
-static const double NDL_minChannelLoad = 0.19;
-static const double NDL_maxChannelLoad = 0.59;
+static constexpr double NDL_minChannelLoad = 0.19;
+static constexpr double NDL_maxChannelLoad = 0.59;
 
 Clock::duration Relaxed::transmission_interval() const
 {

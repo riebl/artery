@@ -13,7 +13,7 @@ struct ShbHeader
 {
     ShbHeader();
 
-    static const std::size_t length_bytes = 4 + LongPositionVector::length_bytes;
+    static constexpr std::size_t length_bytes = 4 + LongPositionVector::length_bytes;
 
     LongPositionVector source_position;
     uint32_t reserved; // ITS-G5 uses it for DCC related information

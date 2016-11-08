@@ -16,8 +16,8 @@ class BitNumber : public boost::totally_ordered<BitNumber<T, WIDTH>>
             "width has to be less than size of underlying type");
 
 public:
-    static const T mask = (1 << WIDTH) - 1;
-    static const std::size_t bits = WIDTH;
+    static constexpr T mask = (1 << WIDTH) - 1;
+    static constexpr std::size_t bits = WIDTH;
     typedef T value_type;
 
     BitNumber(): mValue(0) {}

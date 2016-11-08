@@ -12,7 +12,7 @@ namespace geonet
 
 struct LsRequestHeader
 {
-    static const std::size_t length_bytes = 4 +
+    static constexpr std::size_t length_bytes = 4 +
         LongPositionVector::length_bytes +
         Address::length_bytes;
 
@@ -24,7 +24,7 @@ struct LsRequestHeader
 
 struct LsReplyHeader
 {
-    static const std::size_t length_bytes = 4 +
+    static constexpr std::size_t length_bytes = 4 +
         LongPositionVector::length_bytes +
         ShortPositionVector::length_bytes;
 

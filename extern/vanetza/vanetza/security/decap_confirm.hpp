@@ -1,6 +1,7 @@
 #ifndef DECAP_CONFIRM_HPP
 #define DECAP_CONFIRM_HPP
 
+#include <vanetza/security/certificate.hpp>
 #include <vanetza/security/payload.hpp>
 #include <boost/optional.hpp>
 #include <cstdint>
@@ -38,6 +39,7 @@ struct DecapConfirm
     // plaintext_packet_length is gathered via ByteBuffer::size(); valid range 0 ... 2^16-1; mandatory
     PacketVariant plaintext_payload; // mandatory
     ReportType report; // mandatory
+    CertificateValidity certificate_validity; // non-standard extension
     boost::optional<uint64_t> certificate_id; // optional
     // member field 'permissions' currently not used; optional
 };

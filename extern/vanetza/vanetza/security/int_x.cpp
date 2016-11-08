@@ -6,21 +6,9 @@ namespace vanetza
 namespace security
 {
 
-IntX::IntX() : m_value(0) {}
-
 void IntX::set(integer_type x)
 {
     m_value = x;
-}
-
-IntX::integer_type IntX::get() const
-{
-    return m_value;
-}
-
-bool IntX::operator==(const IntX& other) const
-{
-    return this->m_value == other.m_value;
 }
 
 ByteBuffer IntX::encode() const

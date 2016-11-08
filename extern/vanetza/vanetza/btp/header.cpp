@@ -9,8 +9,8 @@ namespace btp
 using vanetza::serialize;
 using vanetza::deserialize;
 
-const std::size_t HeaderA::length_bytes;
-const std::size_t HeaderB::length_bytes;
+constexpr std::size_t HeaderA::length_bytes;
+constexpr std::size_t HeaderB::length_bytes;
 
 void serialize(OutputArchive& ar, const HeaderB& hdr)
 {

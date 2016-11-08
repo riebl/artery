@@ -4,6 +4,7 @@
 #include <vanetza/security/header_field.hpp>
 #include <vanetza/security/trailer_field.hpp>
 #include <vanetza/security/payload.hpp>
+#include <boost/optional/optional.hpp>
 #include <cstdint>
 #include <list>
 
@@ -20,6 +21,13 @@ struct SecuredMessageV2
     Payload payload;
 
     unsigned protocol_version() const { return 2; }
+
+    /**
+     * Fetch reference of first matching header field
+     * \param type HeaderField has to match given type
+     * \return matching HeaderField
+     */
+    boost::optional<HeaderField&> header_field(HeaderFieldType);
 };
 
 using SecuredMessage = SecuredMessageV2;

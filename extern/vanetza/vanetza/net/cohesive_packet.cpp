@@ -55,9 +55,26 @@ void CohesivePacket::set_boundary(OsiLayer layer, unsigned bytes)
     m_iterators[layer_idx] = m_iterators[layer_idx - 1] + bytes;
 }
 
+void CohesivePacket::trim(OsiLayer from, unsigned bytes)
+{
+    if (size(from, max_osi_layer()) > bytes) {
+        const auto from_idx = layer_index(from) - 1;
+        const auto max_idx = layer_index(max_osi_layer());
+        m_iterators[max_idx] = m_iterators[from_idx] + bytes;
+        assert(&m_iterators.back() == &m_iterators[max_idx]);
+        assert(m_iterators.back() >= m_iterators.front());
+        for (auto idx = from_idx; idx < max_idx; ++idx) {
+            if (m_iterators[idx] > m_iterators[max_idx]) {
+                m_iterators[idx] = m_iterators[max_idx];
+            }
+        }
+    }
+    assert(size(from, max_osi_layer()) <= bytes);
+}
+
 std::size_t CohesivePacket::size() const
 {
-    return m_buffer.size();
+    return std::distance(m_iterators.front(), m_iterators.back());
 }
 
 std::size_t CohesivePacket::size(OsiLayer single_layer) const
@@ -69,7 +86,8 @@ std::size_t CohesivePacket::size(OsiLayer from, OsiLayer to) const
 {
     auto begin = m_iterators[layer_index(from) - 1];
     auto end = m_iterators[layer_index(to)];
-    return std::distance(begin, end);
+    auto dist = std::distance(begin, end);
+    return dist < 0 ? 0 : dist;
 }
 
 void CohesivePacket::reset_iterators(OsiLayer ins_layer)
@@ -98,7 +116,6 @@ void CohesivePacket::rebuild_iterators(const CohesivePacket& other)
         next += other.m_iterators[i] - other.m_iterators[i - 1];
         m_iterators[i] = next;
     }
-    assert(m_iterators.back() == m_buffer.end());
 }
 
 auto CohesivePacket::get(unsigned layer_idx) -> buffer_range

@@ -5,124 +5,106 @@
 #include <vanetza/geonet/mib.hpp>
 #include <vanetza/geonet/position_vector.hpp>
 #include <vanetza/geonet/sequence_number.hpp>
+#include <vanetza/geonet/soft_state_map.hpp>
 #include <vanetza/geonet/station_type.hpp>
 #include <vanetza/geonet/timestamp.hpp>
-#include <boost/heap/binomial_heap.hpp>
-#include <boost/iterator/filter_iterator.hpp>
-#include <boost/iterator/transform_iterator.hpp>
 #include <boost/optional.hpp>
-#include <boost/range/iterator_range.hpp>
-#include <unordered_map>
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/adaptor/map.hpp>
 
 namespace vanetza
 {
 namespace geonet
 {
-namespace detail
-{
 
-class LocationTable
+class LocationTableEntry
 {
 public:
-    struct EntryData;
-    class EntryLifetime;
-    typedef MacAddress key_type;
-    typedef std::greater<EntryLifetime> heap_comparator;
-    typedef boost::heap::binomial_heap<EntryLifetime,
-            boost::heap::compare<heap_comparator>> heap_type;
-    typedef std::unordered_map<key_type, EntryData> map_type;
+    LocationTableEntry(const Runtime& rt);
 
-    class EntryLifetime : public boost::totally_ordered<EntryLifetime>
-    {
-    public:
-        typedef typename Timestamp::duration_type duration_type;
+    const Address& geonet_address() const;
+    const MacAddress& link_layer_address() const;
+    StationType station_type() const;
 
-        EntryLifetime() : m_lifetime(0) {}
-        EntryLifetime(const key_type&, duration_type lifetime);
+    /**
+     * Check if packet is a duplicate based on its sequence number and time stamp.
+     * This implements algorithm A.2 in EN 302 636-4-1.
+     * \param sn sequence number
+     * \param t time stamp
+     * \return true if duplicate
+     */
+    bool is_duplicate_packet(SequenceNumber, Timestamp);
 
-        const key_type& key() const { return m_key; }
-        void set_lifetime(duration_type ticks) { m_lifetime = ticks; }
-        void reduce_lifetime(duration_type);
-        bool is_expired() const { return m_lifetime.value() == 0; }
+    /**
+     * Check if packet is a duplicate based on its time stamp.
+     * This implements algorithm A.3 in EN 302 636-4-1.
+     * \param t time stamp
+     * \return true if duplicate
+     */
+    bool is_duplicate_packet(Timestamp);
 
-        bool operator<(const EntryLifetime& other) const;
-        bool operator==(const EntryLifetime& other) const;
+    /**
+     * Get packed data rate (PDR) of corresponding source.
+     * \return PDR in bytes per second, might be not-a-number
+     */
+    double get_pdr() const;
 
-    private:
-        key_type m_key;
-        duration_type m_lifetime;
-    };
+    /**
+     * Update packet data rate.
+     * See Annex B of EN 302 636-4-1 for details.
+     * \param packet_size received number of bytes
+     */
+    void update_pdr(std::size_t packet_size);
 
-    struct EntryData
-    {
-        EntryData();
-
-        StationType station_type;
-        LongPositionVector position;
-        bool is_neighbour;
-        boost::optional<Timestamp> location_service_expiration;
-        boost::optional<Timestamp> received_timestamp;
-        boost::optional<SequenceNumber> sequence_number;
-        double packet_data_rate;
-        Timestamp pdr_update;
-        LocationTable::heap_type::handle_type handle;
-    };
-
-    LocationTable(const MIB&);
-
-    EntryData& get_entry(const key_type&);
-    EntryData* get_entry_ptr(const key_type&);
-    const EntryData* get_entry_ptr(const key_type&) const;
-    bool has_entry(const key_type&) const;
-    void expire(Timestamp::duration_type);
-    void refresh(const key_type&);
-
-    map_type::iterator begin() { return m_map.begin(); }
-    map_type::iterator end() { return m_map.end(); }
-    map_type::const_iterator begin() const { return m_map.begin(); }
-    map_type::const_iterator end() const { return m_map.end(); }
+    bool is_neighbour;
+    LongPositionVector position_vector;
 
 private:
-    heap_type m_heap;
-    map_type m_map;
-    const MIB& m_mib;
+    const Runtime& runtime;
+    boost::optional<Timestamp> timestamp;
+    boost::optional<SequenceNumber> sequence_number;
+    double pdr;
+    Clock::time_point pdr_update;
 };
 
-bool is_neighbour(const LocationTable::map_type::value_type&);
-const LocationTable::EntryData& get_entry_data(const LocationTable::map_type::value_type&);
+class LocationTableEntryCreator
+{
+public:
+    LocationTableEntryCreator(const Runtime& rt) : m_runtime(rt) {}
+    LocationTableEntry operator()() { return LocationTableEntry(m_runtime); }
 
-} // namespace detail
+private:
+    const Runtime& m_runtime;
+};
 
+/**
+ * GeoNetworking LocationTable
+ * See section 7.1 of EN 302 636-4-1 for details.
+ */
 class LocationTable
 {
 public:
-    typedef typename detail::LocationTable::EntryData entry_type;
-    typedef boost::transform_iterator<
-                decltype(&detail::get_entry_data),
-                boost::filter_iterator<
-                    decltype(&detail::is_neighbour),
-                    detail::LocationTable::map_type::const_iterator>
-            > neighbour_iterator;
-    typedef boost::iterator_range<neighbour_iterator> neighbour_range;
+    using table_type = SoftStateMap<MacAddress, LocationTableEntry, LocationTableEntryCreator>;
+    using neighbour_range =
+        boost::select_second_const_range<
+            boost::filtered_range<
+                std::function<bool(const typename table_type::value_type&)>,
+                const typename table_type::map_range>>;
 
-    LocationTable(const MIB&);
+    LocationTable(const MIB&, Runtime&);
     bool has_entry(const Address&) const;
-    boost::optional<const entry_type&> get_entry(const Address&) const;
+    LocationTableEntry& get_entry(const Address&);
     boost::optional<const LongPositionVector&> get_position(const Address&) const;
     boost::optional<const LongPositionVector&> get_position(const MacAddress&) const;
     bool has_neighbours() const;
-    neighbour_range neighbours();
-    void is_neighbour(const Address&, bool flag);
+    neighbour_range neighbours() const;
     bool is_duplicate_packet(const Address& source, SequenceNumber, Timestamp);
     bool is_duplicate_packet(const Address& source, Timestamp);
     void update(const LongPositionVector&);
-    void update_pdr(const Address&, std::size_t packet_size, Timestamp);
-    double get_pdr(const Address&) const;
-    void expire(Timestamp now);
+    void drop_expired() { m_table.drop_expired(); }
 
 private:
-    detail::LocationTable m_table;
-    Timestamp m_expiry_update;
+    table_type m_table;
 };
 
 } // namespace geonet

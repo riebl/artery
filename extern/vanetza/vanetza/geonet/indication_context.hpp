@@ -37,7 +37,6 @@ public:
     virtual VariantPdu& pdu() = 0;
     virtual UpPacketPtr finish() = 0;
     virtual const LinkLayer& link_layer() const = 0;
-    virtual std::size_t payload_length() const = 0;
     virtual ~IndicationContext() = default;
 };
 
@@ -101,7 +100,6 @@ public:
     SecuredMessage* parse_secured() override;
     boost::optional<HeaderConstRefVariant> parse_extended(HeaderType) override;
     UpPacketPtr finish() override;
-    std::size_t payload_length() const override;
 
 private:
     UpPacketPtr m_packet;
@@ -118,7 +116,6 @@ public:
     SecuredMessage* parse_secured() override;
     boost::optional<HeaderConstRefVariant> parse_extended(HeaderType) override;
     UpPacketPtr finish() override;
-    std::size_t payload_length() const override;
 
 private:
     UpPacketPtr m_packet;
@@ -135,7 +132,6 @@ public:
     SecuredMessage* parse_secured() override { return nullptr; }
     boost::optional<HeaderConstRefVariant> parse_extended(HeaderType) override;
     UpPacketPtr finish() override;
-    std::size_t payload_length() const override;
 
 private:
     CohesivePacket& m_packet;
@@ -151,7 +147,6 @@ public:
     SecuredMessage* parse_secured() override { return nullptr; }
     boost::optional<HeaderConstRefVariant> parse_extended(HeaderType) override;
     UpPacketPtr finish() override;
-    std::size_t payload_length() const override;
 
 private:
     UpPacketPtr m_packet;

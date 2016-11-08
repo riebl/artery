@@ -28,9 +28,9 @@ public:
     uint8_t raw() const { return m_tc; }
 
 private:
-    static const uint8_t scf_mask = 0x80;
-    static const uint8_t channel_offload_mask = 0x40;
-    static const uint8_t tc_id_mask = 0x3f;
+    static constexpr uint8_t scf_mask = 0x80;
+    static constexpr uint8_t channel_offload_mask = 0x40;
+    static constexpr uint8_t tc_id_mask = 0x3f;
     uint8_t m_tc;
 };
 

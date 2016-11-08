@@ -11,8 +11,8 @@ namespace vanetza
 namespace dcc
 {
 
-static const Clock::duration T_Burst = std::chrono::seconds(1);
-static const Clock::duration T_BurstPeriod = std::chrono::seconds(10);
+static constexpr Clock::duration T_Burst = std::chrono::seconds(1);
+static constexpr Clock::duration T_BurstPeriod = std::chrono::seconds(10);
 constexpr std::size_t N_Burst = 20;
 
 class BurstBudget

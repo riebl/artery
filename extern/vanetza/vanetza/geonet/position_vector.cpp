@@ -7,8 +7,8 @@ namespace vanetza
 namespace geonet
 {
 
-const std::size_t LongPositionVector::length_bytes;
-const std::size_t ShortPositionVector::length_bytes;
+constexpr std::size_t LongPositionVector::length_bytes;
+constexpr std::size_t ShortPositionVector::length_bytes;
 
 LongPositionVector::LongPositionVector() : position_accuracy_indicator(false)
 {

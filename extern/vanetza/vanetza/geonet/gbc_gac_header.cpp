@@ -61,7 +61,7 @@ private:
     const GbcGacHeader& m_header;
 };
 
-const std::size_t GbcGacHeader::length_bytes;
+constexpr std::size_t GbcGacHeader::length_bytes;
 
 void GbcGacHeader::destination(const Area& area)
 {

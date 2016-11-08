@@ -37,6 +37,7 @@ TEST(CohesivePacket, set_boundary)
     EXPECT_EQ(512, packet.size());
 
     EXPECT_EQ(448, packet.size(OsiLayer::Network, OsiLayer::Application));
+    EXPECT_EQ(0, packet.size(OsiLayer::Application, OsiLayer::Network));
 }
 
 TEST(CohesivePacket, access)
@@ -59,4 +60,41 @@ TEST(CohesivePacket, access)
         EXPECT_EQ(expected_byte, byte);
         ++expected_byte;
     }
+}
+
+TEST(CohesivePacket, trim_simple_boundaries)
+{
+    CohesivePacket packet(ByteBuffer(128), OsiLayer::Link);
+    EXPECT_EQ(128, packet.size());
+    packet.trim(OsiLayer::Physical, 100);
+    EXPECT_EQ(100, packet.size());
+    packet.trim(OsiLayer::Physical, 130);
+    EXPECT_EQ(100, packet.size());
+}
+
+TEST(CohesivePacket, trim_advanced_boundaries)
+{
+    CohesivePacket packet(ByteBuffer(128), OsiLayer::Link);
+    packet.set_boundary(OsiLayer::Link, 12);
+    packet.set_boundary(OsiLayer::Network, 0);
+    packet.set_boundary(OsiLayer::Transport, 24);
+    packet.set_boundary(OsiLayer::Session, 48);
+    EXPECT_EQ(128, packet.size(OsiLayer::Link, OsiLayer::Presentation));
+    EXPECT_EQ(0, packet.size(OsiLayer::Physical));
+    EXPECT_EQ(12, packet.size(OsiLayer::Link));
+    EXPECT_EQ(0, packet.size(OsiLayer::Network));
+    EXPECT_EQ(24, packet.size(OsiLayer::Transport));
+    EXPECT_EQ(48, packet.size(OsiLayer::Session));
+    EXPECT_EQ(44, packet.size(OsiLayer::Presentation));
+    EXPECT_EQ(0, packet.size(OsiLayer::Application));
+
+    packet.trim(OsiLayer::Network, 24 + 48 + 20);
+    EXPECT_EQ(24 + 48 + 20, packet.size(OsiLayer::Network, OsiLayer::Application));
+    EXPECT_EQ(104, packet.size());
+
+    packet.trim(OsiLayer::Network, 24 + 8);
+    EXPECT_EQ(44, packet.size());
+    EXPECT_EQ(24, packet.size(OsiLayer::Transport));
+    EXPECT_EQ(8, packet.size(OsiLayer::Session));
+    EXPECT_EQ(0, packet.size(OsiLayer::Presentation, OsiLayer::Application));
 }

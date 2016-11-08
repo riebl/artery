@@ -15,8 +15,8 @@ namespace geonet
 class Lifetime : public boost::totally_ordered<Lifetime>
 {
 public:
-    static const uint8_t multiplier_mask = 0xFC;
-    static const uint8_t base_mask = 0x03;
+    static constexpr uint8_t multiplier_mask = 0xFC;
+    static constexpr uint8_t base_mask = 0x03;
 
     enum class Base {
         _50_MS = 0,

@@ -17,7 +17,7 @@ namespace vanetza
 class MacAddress : public boost::totally_ordered<MacAddress>
 {
 public:
-    static const std::size_t length_bytes = 6;
+    static constexpr std::size_t length_bytes = 6;
 
     MacAddress();
     MacAddress(std::initializer_list<uint8_t> args);

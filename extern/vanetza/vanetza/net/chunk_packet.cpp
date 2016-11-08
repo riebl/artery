@@ -13,7 +13,9 @@ ChunkPacket::ChunkPacket()
 
 ChunkPacket::ChunkPacket(const ChunkPacket& other)
 {
-    *this = other;
+    for (auto& layer : other.m_layers) {
+        m_layers.insert(layer);
+    }
 }
 
 ChunkPacket& ChunkPacket::operator=(const ChunkPacket& other)

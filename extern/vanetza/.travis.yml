@@ -1,0 +1,81 @@
+language: cpp
+sudo: false
+compiler:
+- gcc
+os:
+- linux
+cache:
+  apt: true
+  directories:
+  - $HOME/deps
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-4.8
+      - g++-4.8
+install:
+- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+- mkdir -p "$HOME/deps"
+- |-
+  # Boost dependency
+  pushd "$HOME/deps"
+  export BOOST_ROOT="$PWD/boost_1_58_0"
+  if [ -d ${BOOST_ROOT} ]; then
+    echo "using Boost from Travis cache"
+  else
+    wget -nc 'https://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.bz2'
+    tar xjf boost_1_58_0.tar.bz2
+    pushd ${BOOST_ROOT}
+    ./bootstrap.sh
+    ./b2 --with-date_time --with-serialization --with-system
+    popd
+  fi
+  popd
+- |-
+  # GeographicLib dependency
+  pushd "$HOME/deps"
+  GEOGRAPHICLIB_ROOT="$PWD/GeographicLib-1.37"
+  if [ -d ${GEOGRAPHICLIB_ROOT} ]; then
+    echo "using GeographicLib from Travis cache"
+  else
+    wget -nc 'https://sourceforge.net/projects/geographiclib/files/distrib/archive/GeographicLib-1.37.tar.gz'
+    tar xzf GeographicLib-1.37.tar.gz
+    pushd ${GEOGRAPHICLIB_ROOT}
+    ./configure
+    make
+    popd
+  fi
+  export CMAKE_GEOGRAPHICLIB_FLAGS="-DGeographicLib_INCLUDE_DIR=${GEOGRAPHICLIB_ROOT}/include -DGeographicLib_LIBRARY=${GEOGRAPHICLIB_ROOT}/src/.libs/libGeographic.so"
+  popd
+- |-
+  # Crypto++ dependency
+  pushd "$HOME/deps"
+  CRYPTOPP_ROOT="$PWD/cryptopp-5.6.2"
+  if [ -d ${CRYPTOPP_ROOT} ]; then
+    echo "using Crypto++ from Travis cache"
+  else
+    wget -nc 'https://sourceforge.net/projects/cryptopp/files/cryptopp/5.6.2/cryptopp562.zip'
+    unzip cryptopp562.zip -d ${CRYPTOPP_ROOT}
+    pushd ${CRYPTOPP_ROOT}
+    make dynamic install CXXFLAGS="-fPIC -DNDEBUG -march=native -pipe" PREFIX=./install
+    popd
+  fi
+  export CMAKE_CRYPTOPP_FLAGS="-DCryptoPP_INCLUDE_DIR=${CRYPTOPP_ROOT}/install/include -DCryptoPP_LIBRARY=${CRYPTOPP_ROOT}/install/lib/libcryptopp.so"
+  popd
+- |-
+  # CMake 3.0+
+  pushd "$HOME/deps"
+  CMAKE_VERSION="3.1.3-Linux-x86_64"
+  wget -nc --no-check-certificate "https://cmake.org/files/v3.1/cmake-${CMAKE_VERSION}.tar.gz"
+  tar xzf cmake-${CMAKE_VERSION}.tar.gz
+  export PATH="$PWD/cmake-${CMAKE_VERSION}/bin:$PATH"
+  popd
+script:
+- mkdir -p "${HOME}/build"
+- pushd "${HOME}/build"
+- cmake -DENABLE_TESTS=ON ${CMAKE_GEOGRAPHICLIB_FLAGS} ${CMAKE_CRYPTOPP_FLAGS} ${TRAVIS_BUILD_DIR}
+- cmake --build .
+- ctest
+- popd

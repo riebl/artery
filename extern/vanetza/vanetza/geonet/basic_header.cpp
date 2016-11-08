@@ -7,7 +7,7 @@ namespace vanetza
 namespace geonet
 {
 
-const std::size_t BasicHeader::length_bytes;
+constexpr std::size_t BasicHeader::length_bytes;
 
 BasicHeader::BasicHeader() :
     version(0),

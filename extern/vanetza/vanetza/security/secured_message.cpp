@@ -10,6 +10,18 @@ namespace vanetza
 namespace security
 {
 
+boost::optional<HeaderField&> SecuredMessage::header_field(HeaderFieldType type)
+{
+    boost::optional<HeaderField&> match;
+    for (auto& field : header_fields) {
+        if (get_type(field) == type) {
+            match = field;
+            break;
+        }
+    }
+    return match;
+}
+
 size_t get_size(const SecuredMessage& message)
 {
     size_t size = sizeof(uint8_t); // protocol version

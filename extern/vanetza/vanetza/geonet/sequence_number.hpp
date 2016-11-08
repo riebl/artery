@@ -17,7 +17,7 @@ class SequenceNumber :
 {
 public:
     using value_type = uint16_t;
-    static const value_type max = std::numeric_limits<value_type>::max();
+    static constexpr value_type max = std::numeric_limits<value_type>::max();
 
     SequenceNumber() : m_number(0) {}
     explicit SequenceNumber(value_type number) : m_number(number) {}
