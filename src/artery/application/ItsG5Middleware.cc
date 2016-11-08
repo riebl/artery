@@ -74,7 +74,6 @@ vanetza::MacAddress convertToMacAddress(const LAddress::L2Type& addr)
 
 ItsG5Middleware::ItsG5Middleware() :
 		mDccScheduler(mDccFsm, mRuntime.now()),
-		mGeoRouter(mRuntime, mGeoMib),
 		mAdditionalHeaderBits(0)
 {
 }
@@ -120,7 +119,7 @@ void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique
 			}
 			request.repetition = req.gn.repetition;
 			request.traffic_class = req.gn.traffic_class;
-			mGeoRouter.request(request, std::move(payload));
+			mGeoRouter->request(request, std::move(payload));
 		}
 			break;
 		case geonet::TransportType::GBC: {
@@ -133,7 +132,7 @@ void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique
 			}
 			request.repetition = req.gn.repetition;
 			request.traffic_class = req.gn.traffic_class;
-			mGeoRouter.request(request, std::move(payload));
+			mGeoRouter->request(request, std::move(payload));
 		}
 			break;
 		default:
@@ -190,20 +189,22 @@ void ItsG5Middleware::initializeMiddleware()
 	mUpdateRuntimeMessage = new cMessage("runtime update");
 	findHost()->subscribe(cMobilityStateChangedSignal, this);
 
+	mGeoMib.itsGnDefaultTrafficClass.tc_id(3); // send BEACONs with DP3
+	mGeoMib.itsGnSecurity = par("vanetzaEnableSecurity").boolValue();
+	mGeoMib.vanetzaDeferSigning = par("vanetzaDeferSigning").boolValue();
+	mGeoMib.vanetzaCryptoBackend = par("vanetzaCryptoBackend").stringValue();
+
+	using vanetza::geonet::UpperProtocol;
 	vanetza::geonet::Address gn_addr;
 	gn_addr.is_manually_configured(true);
 	gn_addr.station_type(vanetza::geonet::StationType::PASSENGER_CAR);
 	gn_addr.country_code(0);
 	gn_addr.mid(vanetza::create_mac_address(this->getId()));
-	mGeoRouter.set_address(gn_addr);
+	mGeoRouter.reset(new vanetza::geonet::Router {mRuntime, mGeoMib});
+	mGeoRouter->set_address(gn_addr);
 	mDccControl.reset(new vanetza::dcc::AccessControl {mDccScheduler, *this});
-	mGeoRouter.set_access_interface(mDccControl.get());
-	mGeoMib.itsGnDefaultTrafficClass.tc_id(3); // send BEACONs with DP3
-	mGeoMib.itsGnSecurity = par("vanetzaEnableSecurity").boolValue();
-	mGeoMib.vanetzaDeferSigning = par("vanetzaDeferSigning").boolValue();
-
-	using vanetza::geonet::UpperProtocol;
-	mGeoRouter.set_transport_handler(UpperProtocol::BTP_B, &mBtpPortDispatcher);
+	mGeoRouter->set_access_interface(mDccControl.get());
+	mGeoRouter->set_transport_handler(UpperProtocol::BTP_B, &mBtpPortDispatcher);
 }
 
 void ItsG5Middleware::initializeServices()
@@ -338,7 +339,7 @@ void ItsG5Middleware::handleLowerMsg(cMessage *msg)
 	assert(info);
 	vanetza::MacAddress sender = convertToMacAddress(info->source_addr);
 	vanetza::MacAddress destination = convertToMacAddress(info->destination_addr);
-	mGeoRouter.indicate(wrapper.extract_up_packet(), sender, destination);
+	mGeoRouter->indicate(wrapper.extract_up_packet(), sender, destination);
 	scheduleRuntime();
 	delete msg;
 }
@@ -390,7 +391,7 @@ void ItsG5Middleware::updatePosition()
 	lpv.heading = static_cast<decltype(lpv.heading)>(mVehicleDataProvider.heading());
 	lpv.speed = static_cast<decltype(lpv.speed)>(mVehicleDataProvider.speed());
 	lpv.position_accuracy_indicator = true;
-	mGeoRouter.update(lpv);
+	mGeoRouter->update(lpv);
 }
 
 void ItsG5Middleware::updateServices()
