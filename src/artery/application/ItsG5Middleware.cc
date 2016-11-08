@@ -200,6 +200,7 @@ void ItsG5Middleware::initializeMiddleware()
 	mGeoRouter.set_access_interface(mDccControl.get());
 	mGeoMib.itsGnDefaultTrafficClass.tc_id(3); // send BEACONs with DP3
 	mGeoMib.itsGnSecurity = par("vanetzaEnableSecurity").boolValue();
+	mGeoMib.vanetzaDeferSigning = par("vanetzaDeferSigning").boolValue();
 
 	using vanetza::geonet::UpperProtocol;
 	mGeoRouter.set_transport_handler(UpperProtocol::BTP_B, &mBtpPortDispatcher);

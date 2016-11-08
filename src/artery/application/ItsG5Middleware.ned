@@ -26,6 +26,7 @@ simple ItsG5Middleware like IBaseApplLayer
 		string datetime;
 		xml services;
 		bool vanetzaEnableSecurity = default(true);
+		bool vanetzaDeferSigning = default(false);
 
 	gates:
 		input lowerLayerIn;
