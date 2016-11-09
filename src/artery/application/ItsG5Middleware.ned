@@ -25,7 +25,8 @@ simple ItsG5Middleware like IBaseApplLayer
 		double updateInterval = default(0.1s) @unit(s);
 		string datetime;
 		xml services;
-	
+		bool vanetzaEnableSecurity = default(true);
+
 	gates:
 		input lowerLayerIn;
 		output lowerLayerOut;
