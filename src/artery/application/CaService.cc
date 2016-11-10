@@ -138,14 +138,11 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 	HighFrequencyContainer_t& hfc = cam.camParameters.highFrequencyContainer;
 
 	basic.stationType = StationType_passengerCar;
-	basic.referencePosition.altitude.altitudeValue = AltitudeValue_seaLevel;
+	basic.referencePosition.altitude.altitudeValue = AltitudeValue_unavailable;
 	basic.referencePosition.altitude.altitudeConfidence = AltitudeConfidence_unavailable;
 	basic.referencePosition.longitude = (vdp.longitude() / microdegree).value() * Longitude_oneMicrodegreeEast;
 	basic.referencePosition.latitude = (vdp.latitude() / microdegree).value() * Latitude_oneMicrodegreeNorth;
-	basic.referencePosition.positionConfidenceEllipse.semiMajorOrientation.
-	headingValue = HeadingValue_unavailable;
-	basic.referencePosition.positionConfidenceEllipse.semiMajorOrientation.
-	headingConfidence = HeadingConfidence_unavailable;
+	basic.referencePosition.positionConfidenceEllipse.semiMajorOrientation = HeadingValue_unavailable;
 	basic.referencePosition.positionConfidenceEllipse.semiMajorConfidence =
 			SemiAxisLength_unavailable;
 	basic.referencePosition.positionConfidenceEllipse.semiMinorConfidence =
@@ -154,9 +151,9 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 	hfc.present = HighFrequencyContainer_PR_basicVehicleContainerHighFrequency;
 	BasicVehicleContainerHighFrequency& bvc = hfc.choice.basicVehicleContainerHighFrequency;
 	bvc.heading.headingValue = (vdp.heading() / decidegree).value();
-	bvc.heading.headingConfidence = HeadingConfidence_withinOneDegree;
+	bvc.heading.headingConfidence = HeadingConfidence_equalOrWithinOneDegree;
 	bvc.speed.speedValue = abs(vdp.speed() / centimeter_per_second).value() * SpeedValue_oneCentimeterPerSec;
-	bvc.speed.speedConfidence = SpeedConfidence_withinOneCentimeterPerSec * 3;
+	bvc.speed.speedConfidence = SpeedConfidence_equalOrWithinOneCentimeterPerSec * 3;
 	bvc.driveDirection = vdp.speed().value() >= 0.0 ?
 			DriveDirection_forward : DriveDirection_backward;
 	const double lonAccelValue = vdp.acceleration() / vanetza::units::si::meter_per_second_squared;
