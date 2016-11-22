@@ -2,10 +2,11 @@
 #include "artery/application/Asn1PacketVisitor.h"
 #include "artery/application/VehicleDataProvider.h"
 #include "veins/base/utils/Coord.h"
-#include <vanetza/btp/ports.hpp>
 #include <boost/units/cmath.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
 #include <omnetpp/cexception.h>
+#include <vanetza/btp/ports.hpp>
+#include <chrono>
 
 auto microdegree = vanetza::units::degree * boost::units::si::micro;
 auto decidegree = vanetza::units::degree * boost::units::si::deci;
@@ -38,6 +39,7 @@ bool checkSpeedDelta(vanetza::units::Velocity prev, vanetza::units::Velocity now
 
 
 CaService::CaService() :
+		mVehicleDataProvider(nullptr),
 		mGenCamMin { 100, SIMTIME_MS },
 		mGenCamMax { 1000, SIMTIME_MS },
 		mGenCam(mGenCamMax),
@@ -46,9 +48,15 @@ CaService::CaService() :
 {
 }
 
+void CaService::initialize()
+{
+	ItsG5BaseService::initialize();
+	mVehicleDataProvider = &getFacilities().get_const<VehicleDataProvider>();
+}
+
 void CaService::trigger()
 {
-	checkTriggeringConditions(getFacilities().getVehicleDataProvider(), simTime());
+	checkTriggeringConditions(simTime());
 }
 
 void CaService::indicate(const vanetza::btp::DataIndication& ind, std::unique_ptr<vanetza::UpPacket> packet)
@@ -61,7 +69,7 @@ void CaService::indicate(const vanetza::btp::DataIndication& ind, std::unique_pt
 	}
 }
 
-void CaService::checkTriggeringConditions(const VehicleDataProvider& vdp, const simtime_t& T_now)
+void CaService::checkTriggeringConditions(const simtime_t& T_now)
 {
 	simtime_t& T_GenCam = mGenCam;
 	const simtime_t& T_GenCamMin = mGenCamMin;
@@ -74,14 +82,14 @@ void CaService::checkTriggeringConditions(const VehicleDataProvider& vdp, const 
 	}
 
 	if (T_elapsed >= T_GenCamDcc) {
-		if (checkHeadingDelta(mLastCamHeading, vdp.heading()) ||
-			checkPositionDelta(mLastCamPosition, vdp.position()) ||
-			checkSpeedDelta(mLastCamSpeed, vdp.speed())) {
-			sendCam(vdp, T_now);
+		if (checkHeadingDelta(mLastCamHeading, mVehicleDataProvider->heading()) ||
+			checkPositionDelta(mLastCamPosition, mVehicleDataProvider->position()) ||
+			checkSpeedDelta(mLastCamSpeed, mVehicleDataProvider->speed())) {
+			sendCam(T_now);
 			T_GenCam = T_elapsed;
 			mGenCamLowDynamicsCounter = 0;
 		} else if (T_elapsed >= T_GenCam) {
-			sendCam(vdp, T_now);
+			sendCam(T_now);
 			if (++mGenCamLowDynamicsCounter >= mGenCamLowDynamicsLimit) {
 				T_GenCam = T_GenCamMax;
 			}
@@ -89,12 +97,13 @@ void CaService::checkTriggeringConditions(const VehicleDataProvider& vdp, const 
 	}
 }
 
-void CaService::sendCam(const VehicleDataProvider& vdp, const simtime_t& T_now)
+void CaService::sendCam(const simtime_t& T_now)
 {
-	auto cam = createCooperativeAwarenessMessage(vdp);
-	mLastCamPosition = vdp.position();
-	mLastCamSpeed = vdp.speed();
-	mLastCamHeading = vdp.heading();
+	auto cam = createCooperativeAwarenessMessage(*mVehicleDataProvider);
+
+	mLastCamPosition = mVehicleDataProvider->position();
+	mLastCamSpeed = mVehicleDataProvider->speed();
+	mLastCamHeading = mVehicleDataProvider->heading();
 	mLastCamTimestamp = T_now;
 	if (T_now - mLastLowCamTimestamp >= simtime_t { 500, SIMTIME_MS }) {
 		addLowFrequencyContainer(cam);

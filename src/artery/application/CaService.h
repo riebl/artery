@@ -32,14 +32,16 @@ class CaService : public ItsG5BaseService
 {
 	public:
 		CaService();
+		void initialize() override;
 		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::UpPacket>) override;
 		void trigger() override;
 
 	private:
-		void checkTriggeringConditions(const VehicleDataProvider&, const simtime_t&);
-		void sendCam(const VehicleDataProvider&, const simtime_t&);
+		void checkTriggeringConditions(const simtime_t&);
+		void sendCam(const simtime_t&);
 		simtime_t genCamDcc();
 
+		const VehicleDataProvider* mVehicleDataProvider;
 		const simtime_t mGenCamMin;
 		const simtime_t mGenCamMax;
 		simtime_t mGenCam;
