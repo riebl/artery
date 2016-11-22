@@ -14,7 +14,10 @@
 // 
 
 #include <artery/application/DenmObject.h>
+#include <omnetpp.h>
 #include <cassert>
+
+Register_Abstract_Class(DenmObject);
 
 using Denm = vanetza::asn1::Denm;
 
