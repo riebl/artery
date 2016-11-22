@@ -181,9 +181,3 @@ double VehicleDataProvider::mapOntoConfidence(AngularAcceleration x) const
 	}
 	return it->second;
 }
-
-uint16_t VehicleDataProvider::timestamp() const
-{
-	uint16_t tai = mLastUpdate.inUnit(SIMTIME_MS);
-	return tai;
-}

@@ -42,6 +42,7 @@ class CaService : public ItsG5BaseService
 		simtime_t genCamDcc();
 
 		const VehicleDataProvider* mVehicleDataProvider;
+		const Timer* mTimer;
 		const simtime_t mGenCamMin;
 		const simtime_t mGenCamMax;
 		simtime_t mGenCam;
@@ -54,7 +55,7 @@ class CaService : public ItsG5BaseService
 		simtime_t mLastLowCamTimestamp;
 };
 
-vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider&);
+vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider&, uint16_t genDeltaTime);
 void addLowFrequencyContainer(vanetza::asn1::Cam&);
 
 #endif /*CASERVICE_H_ */

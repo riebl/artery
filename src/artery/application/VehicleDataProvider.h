@@ -40,7 +40,6 @@ class VehicleDataProvider
 		void update(const Veins::TraCIMobility*);
 
 		uint32_t station_id() const { return mStationId; }
-		uint16_t timestamp() const; // ms TAI timestamp
 		const simtime_t& simtime() const { return mLastUpdate; }
 		const Coord& position() const { return mPosition; }
 		vanetza::units::GeoAngle longitude() const { return mLon; } // positive for east

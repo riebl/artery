@@ -40,6 +40,7 @@ bool checkSpeedDelta(vanetza::units::Velocity prev, vanetza::units::Velocity now
 
 CaService::CaService() :
 		mVehicleDataProvider(nullptr),
+		mTimer(nullptr),
 		mGenCamMin { 100, SIMTIME_MS },
 		mGenCamMax { 1000, SIMTIME_MS },
 		mGenCam(mGenCamMax),
@@ -52,6 +53,7 @@ void CaService::initialize()
 {
 	ItsG5BaseService::initialize();
 	mVehicleDataProvider = &getFacilities().get_const<VehicleDataProvider>();
+	mTimer = &getFacilities().get_const<Timer>();
 }
 
 void CaService::trigger()
@@ -99,7 +101,8 @@ void CaService::checkTriggeringConditions(const simtime_t& T_now)
 
 void CaService::sendCam(const simtime_t& T_now)
 {
-	auto cam = createCooperativeAwarenessMessage(*mVehicleDataProvider);
+	uint16_t genDeltaTimeMod = countTaiMilliseconds(mTimer->getTimeFor(mVehicleDataProvider->simtime()));
+	auto cam = createCooperativeAwarenessMessage(*mVehicleDataProvider, genDeltaTimeMod);
 
 	mLastCamPosition = mVehicleDataProvider->position();
 	mLastCamSpeed = mVehicleDataProvider->speed();
@@ -133,7 +136,7 @@ simtime_t CaService::genCamDcc()
 	return std::max(mGenCamMin, dcc);
 }
 
-vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& vdp)
+vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& vdp, uint16_t genDeltaTime)
 {
 	vanetza::asn1::Cam message;
 
@@ -143,7 +146,7 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 	header.stationID = vdp.station_id();
 
 	CoopAwareness_t& cam = (*message).cam;
-	cam.generationDeltaTime = vdp.timestamp() * GenerationDeltaTime_oneMilliSec;
+	cam.generationDeltaTime = genDeltaTime * GenerationDeltaTime_oneMilliSec;
 	BasicContainer_t& basic = cam.camParameters.basicContainer;
 	HighFrequencyContainer_t& hfc = cam.camParameters.highFrequencyContainer;
 
