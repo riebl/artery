@@ -24,6 +24,7 @@ set(SOURCES
     application/ItsG5BaseService.cc
     application/ItsG5Middleware.cc
     application/ItsG5Service.cc
+    application/Timer.cc
     application/VehicleDataProvider.cc
     mac/CarrierSensing.cc
     mac/ChannelLoadMeasurements.cc

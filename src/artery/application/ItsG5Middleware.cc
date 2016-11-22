@@ -172,6 +172,7 @@ void ItsG5Middleware::initialize(int stage)
 
 void ItsG5Middleware::initializeMiddleware()
 {
+	mTimer.setTimebase(par("datetime"));
 	mMobility = Veins::TraCIMobilityAccess().get(getParentModule());
 	if (mMobility == nullptr) {
 		throw cRuntimeError("Mobility not found");
@@ -180,10 +181,10 @@ void ItsG5Middleware::initializeMiddleware()
 	mFacilities.register_mutable(mMobility);
 	mFacilities.register_const(&mDccFsm);
 	mFacilities.register_mutable(&mDccScheduler);
+	mFacilities.register_const(&mTimer);
 
 	mAdditionalHeaderBits = par("headerLength");
-	mTimebase = boost::posix_time::time_from_string(par("datetime"));
-	mRuntime.reset(deriveClock());
+	mRuntime.reset(mTimer.getCurrentTime());
 	mUpdateInterval = par("updateInterval").doubleValue();
 	mUpdateMessage = new cMessage("middleware update");
 	mUpdateRuntimeMessage = new cMessage("runtime update");
@@ -313,7 +314,7 @@ void ItsG5Middleware::finish()
 void ItsG5Middleware::handleMessage(cMessage *msg)
 {
 	// Update clock before anything else is executed (which might read the clock)
-	mRuntime.trigger(deriveClock());
+	mRuntime.trigger(mTimer.getCurrentTime());
 
 	// Don't forget to dispatch message properly
 	BaseApplLayer::handleMessage(msg);
@@ -411,7 +412,3 @@ ItsG5Middleware::port_type ItsG5Middleware::getPortNumber(const ItsG5BaseService
 	return port;
 }
 
-vanetza::Clock::time_point ItsG5Middleware::deriveClock() const
-{
-	return vanetza::Clock::at(mTimebase) + std::chrono::milliseconds(simTime().inUnit(SIMTIME_MS));
-}

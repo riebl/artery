@@ -20,6 +20,7 @@
 #define ITSG5MIDDLEWARE_H_
 
 #include "artery/application/Facilities.h"
+#include "artery/application/Timer.h"
 #include "artery/application/VehicleDataProvider.h"
 #include "veins/base/modules/BaseApplLayer.h"
 #include <omnetpp.h>
@@ -34,7 +35,6 @@
 #include <vanetza/dcc/state_machine.hpp>
 #include <vanetza/geonet/packet.hpp>
 #include <vanetza/geonet/router.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <map>
 #include <memory>
 
@@ -75,10 +75,10 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 		void initializeServices();
 		bool checkServiceFilterRules(const cXMLElement* filters) const;
 		void scheduleRuntime();
-		vanetza::Clock::time_point deriveClock() const;
 
 		Veins::TraCIMobility* mMobility;
 		VehicleDataProvider mVehicleDataProvider;
+		Timer mTimer;
 		vanetza::Runtime mRuntime;
 		vanetza::dcc::StateMachine mDccFsm;
 		vanetza::dcc::Scheduler mDccScheduler;
