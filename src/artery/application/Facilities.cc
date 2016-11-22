@@ -24,20 +24,20 @@
 
 const VehicleDataProvider& Facilities::getVehicleDataProvider() const
 {
-	return *get<const VehicleDataProvider>();
+	return get_const<VehicleDataProvider>();
 }
 
 Veins::TraCIMobility& Facilities::getMobility()
 {
-	return *get<Veins::TraCIMobility>();
+	return get_mutable<Veins::TraCIMobility>();
 }
 
 vanetza::dcc::Scheduler& Facilities::getDccScheduler()
 {
-	return *get<vanetza::dcc::Scheduler>();
+	return get_mutable<vanetza::dcc::Scheduler>();
 }
 
-const vanetza::dcc::StateMachine& Facilities::getDccStateMachine()
+const vanetza::dcc::StateMachine& Facilities::getDccStateMachine() const
 {
-	return *get<const vanetza::dcc::StateMachine>();
+	return get_const<vanetza::dcc::StateMachine>();
 }

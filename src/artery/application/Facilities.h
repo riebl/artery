@@ -19,11 +19,11 @@
 #ifndef FACILITIES_H_
 #define FACILITIES_H_
 
+#include <cassert>
 #include <stdexcept>
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
-#include <unordered_set>
 
 // forward declarations (for deprecated getters)
 class VehicleDataProvider;
@@ -42,45 +42,75 @@ class Facilities
 {
 	public:
 		template<typename T>
-		T* get()
+		typename std::decay<T>::type* get_mutable_ptr() const
 		{
-			auto index = std::type_index(typeid(T));
-			if (m_const_objects.find(index) != m_const_objects.end()) {
-				throw std::logic_error("Illegal mutable access to const object");
+			static_assert(std::is_class<T>::value, "T has to be a class type");
+			using DT = typename std::decay<T>::type;
+			DT* object = nullptr;
+			auto found = m_mutable_objects.find(std::type_index(typeid(DT)));
+			if (found != m_mutable_objects.end()) {
+				object = static_cast<DT*>(found->second);
 			}
-			return static_cast<T*>(m_objects.at(index));
+			return object;
 		}
 
 		template<typename T>
-		const T* get() const
+		typename std::decay<T>::type& get_mutable() const
 		{
-			auto index = std::type_index(typeid(T));
-			return static_cast<const T*>(m_objects.at(index));
+			auto obj = get_mutable_ptr<T>();
+			if (!obj) throw std::out_of_range("no valid object registered");
+			return *obj;
+		}
+
+		template<typename T>
+		const typename std::decay<T>::type* get_const_ptr() const
+		{
+			static_assert(std::is_class<T>::value, "T has to be a class type");
+			using DT = typename std::decay<T>::type;
+			const DT* object = nullptr;
+			auto found = m_const_objects.find(std::type_index(typeid(DT)));
+			if (found != m_const_objects.end()) {
+				object = static_cast<const DT*>(found->second);
+			}
+			return object;
+		}
+
+		template<typename T>
+		const typename std::decay<T>::type& get_const() const
+		{
+			auto obj = get_const_ptr<T>();
+			if (!obj) throw std::out_of_range("no valid object registered");
+			return *obj;
 		}
 
 		template<typename T>
 		void register_mutable(T* object)
 		{
-			m_objects[std::type_index(typeid(T))] = object;
+			assert(object);
+			static_assert(std::is_class<T>::value, "T has to be a class type");
+			using DT = typename std::decay<T>::type;
+			m_mutable_objects[std::type_index(typeid(DT))] = object;
+			register_const(object);
 		}
 
 		template<typename T>
 		void register_const(const T* object)
 		{
-			auto index = std::type_index(typeid(T));
-			m_objects[index] = const_cast<T*>(object);
-			m_const_objects.insert(index);
+			assert(object);
+			static_assert(std::is_class<T>::value, "T has to be a class type");
+			using DT = typename std::decay<T>::type;
+			m_const_objects[std::type_index(typeid(DT))] = object;
 		}
 
 		// these (deprecated) getters are only provided for compatibility reasons
 		const VehicleDataProvider& getVehicleDataProvider() const;
 		Veins::TraCIMobility& getMobility();
 		vanetza::dcc::Scheduler& getDccScheduler();
-		const vanetza::dcc::StateMachine& getDccStateMachine();
+		const vanetza::dcc::StateMachine& getDccStateMachine() const;
 
 	private:
-		std::unordered_map<std::type_index, void*> m_objects;
-		std::unordered_set<std::type_index> m_const_objects;
+		std::unordered_map<std::type_index, void*> m_mutable_objects;
+		std::unordered_map<std::type_index, const void*> m_const_objects;
 };
 
 #endif /* FACILITIES_H_ */
