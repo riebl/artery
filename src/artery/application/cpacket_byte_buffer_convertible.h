@@ -45,7 +45,9 @@ class byte_buffer_impl<cPacket*> : public byte_buffer, public omnetpp::cObject
 
 		void convert(ByteBuffer& buf) const override
 		{
-			throw cRuntimeError("Can't serialize cPacket");
+			// Dummy serialization for faking cryptographic signatures of cPackets
+			EV_DETAIL << "cPacket serialization is only a dummy implementation";
+			buf.resize(size());
 		}
 
 		std::size_t size() const override
