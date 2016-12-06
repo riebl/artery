@@ -37,6 +37,7 @@ find_package(Boost COMPONENTS date_time system REQUIRED)
 
 set(SOURCES
     application/CaService.cc
+    application/DenmMemory.cc
     application/DenmObject.cc
     application/DenmService.cc
     application/ExampleService.cc
