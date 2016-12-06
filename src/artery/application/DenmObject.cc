@@ -13,13 +13,26 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <artery/application/DenmObject.h>
+#include "artery/application/DenmObject.h"
 #include <omnetpp.h>
 #include <cassert>
 
-Register_Abstract_Class(DenmObject);
-
 using Denm = vanetza::asn1::Denm;
+
+namespace artery
+{
+namespace denm
+{
+
+CauseCode convert(const CauseCodeType_t& type)
+{
+    return static_cast<CauseCode>(type);
+}
+
+} // namespace denm
+
+
+Register_Abstract_Class(DenmObject);
 
 DenmObject::DenmObject(Denm&& denm) :
     m_denm_wrapper(std::make_shared<Denm>(std::move(denm)))
@@ -42,7 +55,7 @@ boost::optional<denm::CauseCode> DenmObject::situation_cause_code() const
     boost::optional<denm::CauseCode> cause_code;
     const SituationContainer* situation = asn1()->denm.situation;
     if (situation) {
-        cause_code = static_cast<denm::CauseCode>(situation->eventType.causeCode);
+        cause_code = denm::convert(situation->eventType.causeCode);
     }
     return cause_code;
 }
@@ -67,3 +80,5 @@ bool operator&(const DenmObject& obj, denm::CauseCode cause)
     const auto obj_cause = obj.situation_cause_code();
     return (obj_cause && obj_cause.get() == cause);
 }
+
+} // namespace artery

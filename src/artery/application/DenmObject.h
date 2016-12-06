@@ -17,11 +17,14 @@
 #define __ARTERY_DENMOBJECT_H_
 
 #include <omnetpp/cobject.h>
-#include <vanetza/asn1/denm.hpp>
 #include <boost/optional.hpp>
+#include <vanetza/asn1/denm.hpp>
 #include <memory>
 
-namespace denm {
+namespace artery
+{
+namespace denm
+{
 
 enum class CauseCode {
     TrafficCondition = 1,
@@ -50,6 +53,8 @@ enum class CauseCode {
     DangerousSituation = 99
 };
 
+CauseCode convert(const CauseCodeType_t&);
+
 } // namespace denm
 
 class DenmObject : public omnetpp::cObject
@@ -69,5 +74,7 @@ class DenmObject : public omnetpp::cObject
 };
 
 bool operator&(const DenmObject&, denm::CauseCode);
+
+} // namespace artery
 
 #endif /* __ARTERY_DENMOBJECT_H_ */

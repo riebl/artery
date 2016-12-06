@@ -27,7 +27,7 @@ void DenmService::indicate(const vanetza::btp::DataIndication& indication, std::
     Asn1PacketVisitor<vanetza::asn1::Denm> visitor;
     const vanetza::asn1::Denm* denm = boost::apply_visitor(visitor, *packet);
     if (denm) {
-        DenmObject obj = visitor.shared_wrapper;
+        artery::DenmObject obj = visitor.shared_wrapper;
         emit(scSignalDenmReceived, &obj);
     }
 }
