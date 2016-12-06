@@ -39,6 +39,7 @@ set(SOURCES
     application/CaService.cc
     application/DenmMemory.cc
     application/DenmObject.cc
+    application/DenmUseCase.cc
     application/DenmService.cc
     application/ExampleService.cc
     application/Facilities.cc
