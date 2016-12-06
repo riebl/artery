@@ -57,6 +57,11 @@ const Denm& DenmObject::asn1() const
     return *m_denm_wrapper;
 }
 
+std::shared_ptr<const Denm> DenmObject::shared_ptr() const
+{
+    return m_denm_wrapper;
+}
+
 bool operator&(const DenmObject& obj, denm::CauseCode cause)
 {
     const auto obj_cause = obj.situation_cause_code();

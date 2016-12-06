@@ -62,6 +62,8 @@ class DenmObject : public omnetpp::cObject
         vanetza::asn1::Denm& asn1();
         const vanetza::asn1::Denm& asn1() const;
 
+        std::shared_ptr<const vanetza::asn1::Denm> shared_ptr() const;
+
     private:
         std::shared_ptr<vanetza::asn1::Denm> m_denm_wrapper;
 };
