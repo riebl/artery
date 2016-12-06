@@ -17,4 +17,7 @@ package artery.application;
 
 simple DenmService like ItsG5Service
 {
+    parameters:
+        @signal[DenmService.received](type=DenmObject);
+	bool assumeNonUrbanEnvironment = default(false);
 }
