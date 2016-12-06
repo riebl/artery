@@ -48,6 +48,7 @@ set(SOURCES
     application/ItsG5PromiscuousService.cc
     application/ItsG5Service.cc
     application/Timer.cc
+    application/TrafficJamUseCase.cc
     application/VehicleDataProvider.cc
     mac/CarrierSensing.cc
     mac/ChannelLoadMeasurements.cc

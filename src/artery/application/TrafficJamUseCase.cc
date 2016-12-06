@@ -1,0 +1,268 @@
+/*
+ * Artery V2X Simulation Framework
+ * Copyright 2016-2017 Raphael Riebl
+ * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
+ */
+
+#include "artery/application/TrafficJamUseCase.h"
+#include "artery/application/SampleBufferAlgorithm.h"
+#include <boost/units/base_units/metric/hour.hpp>
+#include <boost/units/systems/si/length.hpp>
+#include <boost/units/systems/si/time.hpp>
+#include <boost/units/systems/si/prefixes.hpp>
+#include <omnetpp/csimulation.h>
+#include <vanetza/units/acceleration.hpp>
+#include <vanetza/units/time.hpp>
+#include <vanetza/units/velocity.hpp>
+#include <algorithm>
+#include <numeric>
+
+static const auto hour = 3600.0 * boost::units::si::seconds;
+static const auto km_per_hour = boost::units::si::kilo * boost::units::si::meter / hour;
+
+using omnetpp::SIMTIME_S;
+using omnetpp::SIMTIME_MS;
+
+namespace artery
+{
+
+TrafficJamEndOfQueue::TrafficJamEndOfQueue(const VehicleDataProvider& vdp, const denm::Memory& memory) :
+    mVehicleDataProvider(vdp), mDenmMemory(memory), mNonUrbanEnvironment(false)
+{
+    setDetectionBlockingTime({60, SIMTIME_S});
+    mVelocitySampler.setDuration({10, SIMTIME_S});
+    mVelocitySampler.setInterval({100, SIMTIME_MS});
+}
+
+void TrafficJamEndOfQueue::update()
+{
+    mVelocitySampler.feed(mVehicleDataProvider.speed(), mVehicleDataProvider.simtime());
+}
+
+bool TrafficJamEndOfQueue::checkPreconditions()
+{
+    return mNonUrbanEnvironment;
+}
+
+bool TrafficJamEndOfQueue::checkConditions()
+{
+    const bool tc0 = checkEgoDeceleration();
+    const bool tc1 = false; // there are no passengers in ego vehicle enabling hazard lights, assume false
+    const bool tc2 = false; // so far no simulated vehicle enables hazard lights, assume false
+    const bool tc3 = checkEndOfQueueReceived();
+    const bool tc4 = checkJamAheadReceived();
+    const bool tc5 = false; // so far there are no emergency vehicles in simulation, assume false
+    const bool tc6 = false; // simulated vehicle has no on-board sensors for end of queue detection, assume false
+
+    return (tc1 && tc2) || (tc0 && (tc2 || tc3 || tc4 || tc5 || tc6));
+}
+
+bool TrafficJamEndOfQueue::checkEgoDeceleration() const
+{
+    using vanetza::units::Acceleration;
+    using vanetza::units::Duration;
+    using vanetza::units::Velocity;
+    using boost::units::si::seconds;
+    using boost::units::si::meter_per_second_squared;
+
+    static const Velocity targetVelocityThreshold { 30.0 * km_per_hour };
+    static const Velocity initialVelocityThreshold { 80.0 * km_per_hour };
+    static const Acceleration initialDecelThreshold { -0.1 * meter_per_second_squared };
+    static const Duration instantDecelDuration { 10.0 * seconds };
+    static const Acceleration instantDecelThreshold { -3.5 * meter_per_second_squared };
+
+    bool fulfilled = false;
+    const auto& velocitySamples = mVelocitySampler.buffer();
+
+    // current velocity shall not exceed target velocity
+    if (!velocitySamples.empty() && velocitySamples.latest().value <= targetVelocityThreshold) {
+        // find the newest sample above initial velocity threshold
+        auto initialVelocity = std::find_if(std::next(velocitySamples.begin()), velocitySamples.end(),
+                [](const Sample<Velocity>& s) { return s.value >= initialVelocityThreshold; });
+        // if initial and target velocity are found, then deceleration constraint is fulfilled (see explanation below)
+        fulfilled = initialVelocity != velocitySamples.end();
+
+        // If appropriate initial and target velocity samples exist in given deceleration window,
+        // then deceleration threshold is implicitly fulfilled, i.e. it has not to be checked explicitly.
+        assert(((initialVelocityThreshold - targetVelocityThreshold) / instantDecelDuration) < instantDecelThreshold);
+
+        // stored samples never exceed the deceleration duration contraint because of buffer size (safety check)
+        assert(!fulfilled || duration(velocitySamples.begin(), initialVelocity) <= instantDecelDuration);
+    }
+
+    return fulfilled;
+}
+
+bool TrafficJamEndOfQueue::checkEndOfQueueReceived() const
+{
+    // TODO relevance check for ego vehicle is missing
+    return mDenmMemory.count(denm::CauseCode::DangerousEndOfQueue) >= 1;
+}
+
+bool TrafficJamEndOfQueue::checkJamAheadReceived() const
+{
+    // TODO relevance check for ego vehicle is missing
+    return mDenmMemory.count(denm::CauseCode::TrafficCondition) >= 5;
+}
+
+void TrafficJamEndOfQueue::message(vanetza::asn1::Denm& msg)
+{
+    msg->denm.management.relevanceDistance = vanetza::asn1::allocate<RelevanceDistance_t>();
+    *msg->denm.management.relevanceDistance = RelevanceDistance_lessThan1000m;
+    msg->denm.management.relevanceTrafficDirection = vanetza::asn1::allocate<RelevanceTrafficDirection_t>();
+    *msg->denm.management.relevanceTrafficDirection = RelevanceTrafficDirection_upstreamTraffic;
+    msg->denm.management.validityDuration = vanetza::asn1::allocate<ValidityDuration_t>();
+    *msg->denm.management.validityDuration = 20;
+    msg->denm.management.stationType = StationType_unknown; // TODO retrieve type from SUMO
+
+    msg->denm.situation = vanetza::asn1::allocate<SituationContainer_t>();
+    msg->denm.situation->informationQuality = 1;
+    msg->denm.situation->eventType.causeCode = CauseCodeType_dangerousEndOfQueue;
+    msg->denm.situation->eventType.subCauseCode = 0;
+
+    // TODO set road type in Location container
+    // TODO set lane position in Alacarte container
+}
+
+void TrafficJamEndOfQueue::dissemination(vanetza::btp::DataRequestB& request)
+{
+    namespace geonet = vanetza::geonet;
+    using vanetza::units::si::seconds;
+    using vanetza::units::si::meter;
+
+    request.gn.traffic_class.tc_id(1);
+
+    geonet::DataRequest::Repetition repetition;
+    repetition.interval = 0.5 * seconds;
+    repetition.maximum = 20.0 * seconds;
+    request.gn.repetition = repetition;
+
+    geonet::Area destination;
+    geonet::Circle destination_shape;
+    destination_shape.r = 1000.0 * meter;
+    destination.shape = destination_shape;
+    destination.position.latitude = mVehicleDataProvider.latitude();
+    destination.position.longitude = mVehicleDataProvider.longitude();
+    request.gn.destination = destination;
+}
+
+TrafficJamAhead::TrafficJamAhead(const VehicleDataProvider& vdp, const denm::Memory& memory) :
+    mVehicleDataProvider(vdp), mDenmMemory(memory),
+    mNonUrbanEnvironment(false), mUpdateCounter(0)
+{
+    setDetectionBlockingTime({180, SIMTIME_S});
+    mVelocitySampler.setDuration({120, SIMTIME_S});
+    mVelocitySampler.setInterval({1, SIMTIME_S});
+}
+
+void TrafficJamAhead::update()
+{
+    mVelocitySampler.feed(mVehicleDataProvider.speed(), mVehicleDataProvider.simtime());
+}
+
+bool TrafficJamAhead::checkPreconditions()
+{
+    // TODO check for absence of stationary and special vehicle warnings
+    return mNonUrbanEnvironment;
+}
+
+bool TrafficJamAhead::checkConditions()
+{
+    const bool tc0 = checkLowAverageEgoVelocity();
+    const bool tc1 = checkStationaryEgo();
+    const bool tc2 = checkTrafficJamAheadReceived();
+    const bool tc3 = false; // no mobile radio equipment available (yet)
+    const bool tc4 = checkSlowVehiclesAheadByV2X();
+    const bool tc5 = false; // no on-board sensors available (yet)
+
+    return tc0 || (tc1 && (tc2 || tc3 || tc4 || tc5));
+}
+
+bool TrafficJamAhead::checkLowAverageEgoVelocity() const
+{
+    static const omnetpp::SimTime avgWindowMax {120, SIMTIME_S};
+    static const omnetpp::SimTime avgWindowMin {10, SIMTIME_S};
+    const auto now = omnetpp::simTime();
+    bool lowAvgEgoVelocity = false;
+
+    using vanetza::units::Velocity;
+    auto speedSamples = mVelocitySampler.buffer().not_before(now - avgWindowMax);
+    if (speedSamples.duration() >= avgWindowMin) {
+        static const Velocity zeroSpeed { 0.25 * km_per_hour }; // TODO set to zero with proper "StopEffect"
+        static const Velocity upperSpeed { 30.0 * km_per_hour };
+        const Velocity speedAvg = average(speedSamples);
+        lowAvgEgoVelocity = speedAvg <= upperSpeed && speedAvg > zeroSpeed;
+    }
+    return lowAvgEgoVelocity;
+}
+
+bool TrafficJamAhead::checkStationaryEgo() const
+{
+    using vanetza::units::Velocity;
+    static const omnetpp::SimTime maxWindow {30, SIMTIME_S};
+    static const omnetpp::SimTime minWindow {10, SIMTIME_S};
+    const auto now = omnetpp::simTime();
+    bool isStationary = false;
+    auto speedSamples = mVelocitySampler.buffer().not_before(now - maxWindow);
+    if (speedSamples.duration() >= minWindow) {
+        static const Velocity zeroSpeed { 0.25 * km_per_hour }; // TODO set to zero with "StopEffect"
+        const Velocity speedAvg = average(speedSamples);
+        isStationary = speedAvg <= zeroSpeed;
+    }
+    return isStationary;
+}
+
+bool TrafficJamAhead::checkTrafficJamAheadReceived() const
+{
+    // TODO relevance check is missing
+    return mDenmMemory.count(denm::CauseCode::TrafficCondition) >= 1;
+}
+
+bool TrafficJamAhead::checkSlowVehiclesAheadByV2X() const
+{
+    // TODO requires a kind of "CAM memory"
+    return false;
+}
+
+void TrafficJamAhead::message(vanetza::asn1::Denm& msg)
+{
+    msg->denm.management.relevanceDistance = vanetza::asn1::allocate<RelevanceDistance_t>();
+    *msg->denm.management.relevanceDistance = RelevanceDistance_lessThan1000m;
+    msg->denm.management.relevanceTrafficDirection = vanetza::asn1::allocate<RelevanceTrafficDirection_t>();
+    *msg->denm.management.relevanceTrafficDirection = RelevanceTrafficDirection_upstreamTraffic;
+    msg->denm.management.validityDuration = vanetza::asn1::allocate<ValidityDuration_t>();
+    *msg->denm.management.validityDuration = 60;
+    msg->denm.management.stationType = StationType_unknown; // TODO retrieve type from SUMO
+
+    msg->denm.situation = vanetza::asn1::allocate<SituationContainer_t>();
+    msg->denm.situation->informationQuality = 1;
+    msg->denm.situation->eventType.causeCode = CauseCodeType_trafficCondition;
+    msg->denm.situation->eventType.subCauseCode = 0;
+
+    // TODO set road type in Location container
+    // TODO set lane position in Alacarte container
+}
+
+void TrafficJamAhead::dissemination(vanetza::btp::DataRequestB& request)
+{
+    namespace geonet = vanetza::geonet;
+    using vanetza::units::si::seconds;
+    using vanetza::units::si::meter;
+
+    request.gn.traffic_class.tc_id(1);
+
+    geonet::DataRequest::Repetition repetition;
+    repetition.interval = 1.0 * seconds;
+    repetition.maximum = 60.0 * seconds;
+    request.gn.repetition = repetition;
+
+    geonet::Area destination;
+    geonet::Circle destination_shape;
+    destination_shape.r = 1000.0 * meter;
+    destination.shape = destination_shape;
+    destination.position.latitude = mVehicleDataProvider.latitude();
+    destination.position.longitude = mVehicleDataProvider.longitude();
+    request.gn.destination = destination;
+}
+
+} // namespace artery
