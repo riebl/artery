@@ -74,6 +74,7 @@ void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique
 	btp_header.destination_port_info = req.destination_port_info;
 	payload->layer(OsiLayer::Transport) = btp_header;
 
+	geonet::DataConfirm confirm;
 	switch (req.gn.transport_type) {
 		case geonet::TransportType::SHB: {
 			geonet::ShbDataRequest request(mGeoMib);
@@ -84,7 +85,7 @@ void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique
 			}
 			request.repetition = req.gn.repetition;
 			request.traffic_class = req.gn.traffic_class;
-			mGeoRouter->request(request, std::move(payload));
+			confirm = mGeoRouter->request(request, std::move(payload));
 		}
 			break;
 		case geonet::TransportType::GBC: {
@@ -97,12 +98,16 @@ void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique
 			}
 			request.repetition = req.gn.repetition;
 			request.traffic_class = req.gn.traffic_class;
-			mGeoRouter->request(request, std::move(payload));
+			confirm = mGeoRouter->request(request, std::move(payload));
 		}
 			break;
 		default:
 			throw cRuntimeError("Unknown or unimplemented transport type");
 			break;
+	}
+
+	if (confirm.rejected()) {
+		throw cRuntimeError("GN-Data.request rejected");
 	}
 
 	scheduleRuntime();
