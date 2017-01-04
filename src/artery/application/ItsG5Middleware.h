@@ -75,6 +75,7 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 		void initializeServices();
 		bool checkServiceFilterRules(const cXMLElement* filters) const;
 		void scheduleRuntime();
+		SimTime convertSimTime(vanetza::Clock::time_point tp) const;
 
 		Veins::TraCIMobility* mMobility;
 		VehicleDataProvider mVehicleDataProvider;

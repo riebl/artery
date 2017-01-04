@@ -375,13 +375,16 @@ void ItsG5Middleware::receiveSignal(cComponent* component, simsignal_t signal, c
 
 void ItsG5Middleware::scheduleRuntime()
 {
-	using namespace std::chrono;
-	const auto next_time_point = mRuntime.next();
 	cancelEvent(mUpdateRuntimeMessage);
-	if (next_time_point < vanetza::Clock::time_point::max()) {
-		const auto next_time_step = duration_cast<microseconds>(next_time_point - mRuntime.now());
-		const simtime_t update_step { next_time_step.count(), SIMTIME_US };
-		scheduleAt(simTime() + update_step, mUpdateRuntimeMessage);
+	auto next_time_point = mRuntime.next();
+	while (next_time_point < vanetza::Clock::time_point::max()) {
+		if (next_time_point > mRuntime.now()) {
+			scheduleAt(convertSimTime(next_time_point), mUpdateRuntimeMessage);
+			break;
+		} else {
+			mRuntime.trigger(mRuntime.now());
+			next_time_point = mRuntime.next();
+		}
 	}
 }
 
@@ -412,5 +415,12 @@ ItsG5Middleware::port_type ItsG5Middleware::getPortNumber(const ItsG5BaseService
 		port = it->second;
 	}
 	return port;
+}
+
+SimTime ItsG5Middleware::convertSimTime(vanetza::Clock::time_point tp) const
+{
+	using namespace std::chrono;
+	const auto d = duration_cast<microseconds>(tp - mRuntime.now());
+	return SimTime { simTime().inUnit(SIMTIME_US) + d.count(), SIMTIME_US };
 }
 
