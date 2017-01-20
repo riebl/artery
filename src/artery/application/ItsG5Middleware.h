@@ -30,7 +30,7 @@
 #include <vanetza/btp/port_dispatcher.hpp>
 #include <vanetza/common/clock.hpp>
 #include <vanetza/common/runtime.hpp>
-#include <vanetza/dcc/access_control.hpp>
+#include <vanetza/dcc/flow_control.hpp>
 #include <vanetza/dcc/scheduler.hpp>
 #include <vanetza/dcc/state_machine.hpp>
 #include <vanetza/geonet/packet.hpp>
@@ -82,7 +82,7 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 		vanetza::Runtime mRuntime;
 		vanetza::dcc::StateMachine mDccFsm;
 		vanetza::dcc::Scheduler mDccScheduler;
-		std::unique_ptr<vanetza::dcc::AccessControl> mDccControl;
+		std::unique_ptr<vanetza::dcc::FlowControl> mDccControl;
 		vanetza::geonet::MIB mGeoMib;
 		std::unique_ptr<vanetza::geonet::Router> mGeoRouter;
 		vanetza::btp::PortDispatcher mBtpPortDispatcher;

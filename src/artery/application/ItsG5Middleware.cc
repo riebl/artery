@@ -76,6 +76,7 @@ ItsG5Middleware::ItsG5Middleware() :
 		mDccScheduler(mDccFsm, mRuntime.now()),
 		mAdditionalHeaderBits(0)
 {
+
 }
 
 void ItsG5Middleware::request(const vanetza::access::DataRequest& req,
@@ -203,7 +204,7 @@ void ItsG5Middleware::initializeMiddleware()
 	gn_addr.mid(vanetza::create_mac_address(this->getId()));
 	mGeoRouter.reset(new vanetza::geonet::Router {mRuntime, mGeoMib});
 	mGeoRouter->set_address(gn_addr);
-	mDccControl.reset(new vanetza::dcc::AccessControl {mDccScheduler, *this});
+	mDccControl.reset(new vanetza::dcc::FlowControl {mRuntime, mDccScheduler, *this});
 	mGeoRouter->set_access_interface(mDccControl.get());
 	mGeoRouter->set_transport_handler(UpperProtocol::BTP_B, &mBtpPortDispatcher);
 }
