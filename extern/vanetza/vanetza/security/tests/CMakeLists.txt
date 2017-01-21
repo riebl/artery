@@ -1,5 +1,5 @@
 include(UseGTest)
-prepare_gtest(security
+add_library(security_test OBJECT
     check_basic_elements.cpp
     check_certificate.cpp
     check_encryption_parameter.cpp
@@ -15,7 +15,10 @@ prepare_gtest(security
     check_validity_restriction.cpp
     serialization.cpp
 )
-target_link_libraries(security_test INTERFACE common geonet)
+target_include_directories(security_test
+    PUBLIC $<TARGET_PROPERTY:security,INTERFACE_INCLUDE_DIRECTORIES>
+    PUBLIC ${GTest_INCLUDE_DIR})
+configure_gtest_directory(SOURCES $<TARGET_OBJECTS:security_test> LINK_LIBRARIES Boost::boost security)
 
 add_gtest(Certificate certificate.cpp)
 add_gtest(CertificateManager certificate_manager.cpp)
@@ -36,4 +39,3 @@ add_gtest(SubjectInfo subject_info.cpp)
 add_gtest(TrailerField trailer_field.cpp)
 add_gtest(ValidityRestriction validity_restriction.cpp)
 add_gtest(SecurityEntity security_entity.cpp)
-set_gtest_property(SecurityEntity COMPILE_DEFINITIONS ${VANETZA_BACKEND_COMPILE_DEFINITIONS})

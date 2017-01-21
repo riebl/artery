@@ -5,8 +5,8 @@ set(CXX_SOURCES
     port_dispatcher.cpp
 )
 
-vanetza_module(btp ${CXX_SOURCES})
-vanetza_intermodule_dependencies(btp geonet)
+add_vanetza_component(btp ${CXX_SOURCES})
+target_link_libraries(btp PUBLIC Boost::boost geonet)
 
 add_test_subdirectory(tests)
 

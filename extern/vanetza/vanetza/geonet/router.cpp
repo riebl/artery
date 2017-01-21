@@ -604,8 +604,8 @@ NextHop Router::next_hop_contention_based_forwarding(
             nh.state(NextHop::State::BUFFERED);
         } else {
             auto pv_se = m_location_table.get_position(sender);
-            if (pv_se && pv_se.get().position_accuracy_indicator) {
-                if (!inside_or_at_border(destination_area, pv_se.get().position())) {
+            if (pv_se && pv_se->position_accuracy_indicator) {
+                if (!inside_or_at_border(destination_area, pv_se->position())) {
                     nh = next_hop_greedy_forwarding(scf, std::move(pdu), std::move(payload));
                 } else {
                     nh.state(NextHop::State::DISCARDED);
@@ -676,8 +676,8 @@ NextHop Router::next_hop_gbc_advanced(
         }
     } else {
         auto pv_se = m_location_table.get_position(sender);
-        if (pv_se && pv_se.get().position_accuracy_indicator) {
-            if (!inside_or_at_border(destination_area, pv_se.get().position())) {
+        if (pv_se && pv_se->position_accuracy_indicator) {
+            if (!inside_or_at_border(destination_area, pv_se->position())) {
                 nh = next_hop_greedy_forwarding(scf, std::move(pdu), std::move(payload));
             } else {
                 nh.state(NextHop::State::DISCARDED);
@@ -762,8 +762,8 @@ units::Duration Router::timeout_cbf_gbc(const MacAddress& sender) const
 {
     units::Duration timeout = 0.0 * units::si::seconds;
     auto pv_se = m_location_table.get_position(sender);
-    if (pv_se && pv_se.get().position_accuracy_indicator) {
-        units::Length dist = distance(pv_se.get().position(), m_local_position_vector.position());
+    if (pv_se && pv_se->position_accuracy_indicator) {
+        units::Length dist = distance(pv_se->position(), m_local_position_vector.position());
         timeout = timeout_cbf_gbc(dist);
     } else {
         timeout = m_mib.itsGnGeoBroadcastCbfMaxTime;

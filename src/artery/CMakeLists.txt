@@ -43,23 +43,19 @@ set_property(TARGET artery PROPERTY NED_FOLDERS ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(artery PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(artery opp_interface)
 target_link_libraries(artery veins)
+target_link_libraries(artery Vanetza::vanetza)
 target_link_libraries(artery ${Boost_LIBRARIES})
 target_include_directories(artery PUBLIC ${Boost_INCLUDE_DIRS})
 
 if("${Vanetza_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/vanetza/build")
+    set(_make_command ${MAKE_COMMAND})
+    if(CMAKE_GENERATOR MATCHES "Makefiles")
+        set(_make_command \$\(MAKE\))
+    endif()
     add_custom_target(build_vanetza
-        COMMAND ${MAKE_COMMAND} ${MAKE_ARGUMENTS} vanetza
+        COMMAND ${_make_command} ${MAKE_ARGUMENTS} vanetza
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMENT "Building Vanetza (external dependency)"
         VERBATIM)
     add_dependencies(artery build_vanetza)
 endif()
-
-foreach (_vanetza_lib IN ITEMS asn1 btp geonet)
-    if(Vanetza_STATIC)
-        target_link_libraries(artery Vanetza::${_vanetza_lib}_static)
-    else()
-        target_link_libraries(artery Vanetza::${_vanetza_lib}_shared)
-    endif(Vanetza_STATIC)
-endforeach()
-

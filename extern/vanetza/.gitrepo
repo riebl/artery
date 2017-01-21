@@ -6,6 +6,6 @@
 [subrepo]
 	remote = https://github.com/riebl/vanetza
 	branch = master
-	commit = 4e84321209192ba66bf7fad29d8044665d6686a8
-	parent = ed9b5c9cc7a24fef1247058360e896a4d34a2311
+	commit = f5d90ad32775527ed057a2eca4d67440a3a72e80
+	parent = a946631b118033479ee0f4872369b7c8db9e90e1
 	cmdver = 0.3.0

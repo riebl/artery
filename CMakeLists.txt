@@ -8,8 +8,7 @@ include(cmake/ImportOppTarget.cmake)
 include(cmake/GetNedFolders.cmake)
 include(cmake/AddOppRun.cmake)
 
-find_package(Vanetza PATHS extern/vanetza/build REQUIRED NO_CMAKE_PACKAGE_REGISTRY)
-option(Vanetza_STATIC "Link with static Vanetza libraries" OFF)
+find_package(Vanetza CONFIG PATHS extern/vanetza/build REQUIRED NO_CMAKE_PACKAGE_REGISTRY)
 
 find_path(Veins_DIR NAMES src/veins/package.ned PATHS extern/veins DOC "Veins root directory")
 import_opp_target(veins ${Veins_DIR}/src/Makefile)

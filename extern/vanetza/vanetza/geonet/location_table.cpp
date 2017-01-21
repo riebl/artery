@@ -149,21 +149,23 @@ LocationTableEntry& LocationTable::get_entry(const Address& addr)
     return m_table.get_value(addr.mid());
 }
 
-boost::optional<const LongPositionVector&>
-LocationTable::get_position(const Address& addr) const
+const LocationTableEntry* LocationTable::get_entry(const Address& addr) const
+{
+    return m_table.get_value_ptr(addr.mid());
+}
+
+const LongPositionVector* LocationTable::get_position(const Address& addr) const
 {
     return get_position(addr.mid());
 }
 
-boost::optional<const LongPositionVector&>
-LocationTable::get_position(const MacAddress& mac) const
+const LongPositionVector* LocationTable::get_position(const MacAddress& mac) const
 {
-    boost::optional<const LongPositionVector&> position;
+    const LongPositionVector* position = nullptr;
     auto* entry = m_table.get_value_ptr(mac);
     if (entry) {
-        position = entry->position_vector;
+        position = &entry->position_vector;
     }
-
     return position;
 }
 

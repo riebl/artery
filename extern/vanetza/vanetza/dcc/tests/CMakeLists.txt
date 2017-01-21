@@ -1,5 +1,5 @@
 include(UseGTest)
-prepare_gtest(dcc)
+configure_gtest_directory(LINK_LIBRARIES dcc)
 
 add_gtest(AccessControl access_control.cpp)
 add_gtest(BurstBudget burst_budget.cpp)

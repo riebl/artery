@@ -94,8 +94,9 @@ public:
     LocationTable(const MIB&, Runtime&);
     bool has_entry(const Address&) const;
     LocationTableEntry& get_entry(const Address&);
-    boost::optional<const LongPositionVector&> get_position(const Address&) const;
-    boost::optional<const LongPositionVector&> get_position(const MacAddress&) const;
+    const LocationTableEntry* get_entry(const Address&) const;
+    const LongPositionVector* get_position(const Address&) const;
+    const LongPositionVector* get_position(const MacAddress&) const;
     bool has_neighbours() const;
     neighbour_range neighbours() const;
     bool is_duplicate_packet(const Address& source, SequenceNumber, Timestamp);

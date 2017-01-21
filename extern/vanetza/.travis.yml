@@ -47,7 +47,7 @@ install:
     make
     popd
   fi
-  export CMAKE_GEOGRAPHICLIB_FLAGS="-DGeographicLib_INCLUDE_DIR=${GEOGRAPHICLIB_ROOT}/include -DGeographicLib_LIBRARY=${GEOGRAPHICLIB_ROOT}/src/.libs/libGeographic.so"
+  export CMAKE_GEOGRAPHICLIB_FLAGS="-DGeographicLib_INCLUDE_DIR=${GEOGRAPHICLIB_ROOT}/include -DGeographicLib_LIBRARY_RELEASE=${GEOGRAPHICLIB_ROOT}/src/.libs/libGeographic.so"
   popd
 - |-
   # Crypto++ dependency
@@ -75,7 +75,7 @@ install:
 script:
 - mkdir -p "${HOME}/build"
 - pushd "${HOME}/build"
-- cmake -DENABLE_TESTS=ON ${CMAKE_GEOGRAPHICLIB_FLAGS} ${CMAKE_CRYPTOPP_FLAGS} ${TRAVIS_BUILD_DIR}
+- cmake -DBUILD_TESTS=ON ${CMAKE_GEOGRAPHICLIB_FLAGS} ${CMAKE_CRYPTOPP_FLAGS} ${TRAVIS_BUILD_DIR}
 - cmake --build .
 - ctest
 - popd

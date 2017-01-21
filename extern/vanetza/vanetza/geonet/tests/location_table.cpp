@@ -63,7 +63,7 @@ TEST_F(LocationTableTest, position_vector) {
 
     auto retrieved_pv = loct->get_position(a);
     ASSERT_TRUE(!!retrieved_pv);
-    EXPECT_EQ(pv, retrieved_pv.get());
+    EXPECT_EQ(pv, *retrieved_pv);
 }
 
 TEST_F(LocationTableTest, neighbourhood) {

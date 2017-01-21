@@ -1,11 +1,11 @@
 if(NOT VANETZA_NET_WITH_POSIX)
+    message(STATUS "Skip build of proxy_fake_feed. POSIX extension required.")
+    return()
+elseif(NOT TARGET Boost::system)
+    message(STATUS "Skip build of proxy_fake_feed. Boost::system dependency missing.")
     return()
 endif()
 
-find_package(Boost MODULE COMPONENTS system REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
-link_libraries(${Boost_SYSTEM_LIBRARY})
-
 add_executable(proxy_fake_feed fake_feed.cpp)
-target_link_libraries(proxy_fake_feed net)
+target_link_libraries(proxy_fake_feed Boost::system net)
 

@@ -1,5 +1,5 @@
 include(UseGTest)
-prepare_gtest(common)
+configure_gtest_directory(LINK_LIBRARIES common)
 
 add_gtest(BitNumber bit_number.cpp)
 add_gtest(ByteBuffer byte_buffer.cpp)

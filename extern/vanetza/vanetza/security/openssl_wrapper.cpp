@@ -26,19 +26,28 @@ Exception::Exception(code_type err) :
 {
 }
 
-BigNumber::BigNumber()
+BigNumber::BigNumber() : bignum(BN_new())
 {
-    BN_init(&bignum);
+    check(bignum != nullptr);
 }
 
 BigNumber::BigNumber(const uint8_t* arr, std::size_t len) : BigNumber()
 {
-    BN_bin2bn(arr, len, &bignum);
+    BN_bin2bn(arr, len, bignum);
+}
+
+BIGNUM* BigNumber::move()
+{
+    BIGNUM* ptr = nullptr;
+    std::swap(ptr, bignum);
+    return ptr;
 }
 
 BigNumber::~BigNumber()
 {
-    BN_clear_free(&bignum);
+    if (bignum) {
+        BN_clear_free(bignum);
+    }
 }
 
 BigNumberContext::BigNumberContext() : ctx(BN_CTX_new())
@@ -63,17 +72,24 @@ Point::~Point()
     EC_POINT_free(point);
 }
 
-Signature::Signature(ECDSA_SIG* sig) :
-    signature(sig)
+Signature::Signature(ECDSA_SIG* sig) : signature(sig)
 {
     check(signature);
 }
 
 Signature::Signature(const EcdsaSignature& ecdsa) : signature(ECDSA_SIG_new())
 {
+    check(signature);
+#if OPENSSL_API_COMPAT < 0x10100000L
     const ByteBuffer r = convert_for_signing(ecdsa.R);
     BN_bin2bn(r.data(), r.size(), signature->r);
     BN_bin2bn(ecdsa.s.data(), ecdsa.s.size(), signature->s);
+#else
+    BigNumber bn_r { convert_for_signing(ecdsa.R) };
+    BigNumber bn_s { ecdsa.s };
+    // ownership of big numbers is transfered by calling ECDSA_SIG_set0!
+    ECDSA_SIG_set0(signature, bn_r.move(), bn_s.move());
+#endif
 }
 
 Signature::~Signature()

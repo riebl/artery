@@ -1,5 +1,5 @@
 include(UseGTest)
-prepare_gtest(btp)
+configure_gtest_directory(LINK_LIBRARIES btp)
 
 add_gtest(BtpDataIndication data_indication.cpp)
 add_gtest(BtpHeader header.cpp)

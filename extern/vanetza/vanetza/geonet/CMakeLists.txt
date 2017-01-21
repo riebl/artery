@@ -1,6 +1,3 @@
-find_package(Boost 1.56 COMPONENTS date_time REQUIRED)
-find_package(GeographicLib 1.37 REQUIRED)
-
 set(CXX_SOURCES
     address.cpp
     areas.cpp
@@ -34,16 +31,9 @@ set(CXX_SOURCES
     variant_pdu.cpp
 )
 
-vanetza_module(geonet ${CXX_SOURCES})
-vanetza_intermodule_dependencies(geonet dcc net security)
-
-vanetza_module_property(geonet INCLUDE_DIRECTORIES
-    ${Boost_INCLUDE_DIRS}
-    ${GeographicLib_INCLUDE_DIR}
-)
-vanetza_module_link_libraries(geonet
-    ${Boost_DATE_TIME_LIBRARY}
-    ${GeographicLib_LIBRARY}
-)
+add_vanetza_component(geonet ${CXX_SOURCES})
+target_link_libraries(geonet PRIVATE GeographicLib::GeographicLib)
+target_link_libraries(geonet PUBLIC Boost::date_time)
+target_link_libraries(geonet PUBLIC dcc net security)
 
 add_test_subdirectory(tests)

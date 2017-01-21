@@ -44,18 +44,24 @@ public:
     BigNumber();
     ~BigNumber();
 
+    BigNumber(const ByteBuffer& buf) :
+        BigNumber(buf.data(), buf.size())
+    {
+    }
+
     template<std::size_t N>
     BigNumber(const std::array<uint8_t, N>& bin) :
         BigNumber(bin.data(), bin.size())
     {
     }
 
-    operator BIGNUM*() { return &bignum; }
+    operator BIGNUM*() { return bignum; }
+    BIGNUM* move();
 
 private:
     BigNumber(const uint8_t*, std::size_t);
 
-    BIGNUM bignum;
+    BIGNUM* bignum;
 };
 
 

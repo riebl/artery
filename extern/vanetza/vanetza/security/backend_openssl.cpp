@@ -15,7 +15,11 @@ namespace security
 
 BackendOpenSsl::BackendOpenSsl()
 {
+#if OPENSSL_API_COMPAT < 0x10100000L
     ERR_load_crypto_strings();
+#else
+    OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CRYPTO_STRINGS, nullptr);
+#endif
 }
 
 EcdsaSignature BackendOpenSsl::sign_data(const ecdsa256::PrivateKey& key, const ByteBuffer& data)
@@ -25,21 +29,30 @@ EcdsaSignature BackendOpenSsl::sign_data(const ecdsa256::PrivateKey& key, const 
 
     // sign message data represented by the digest
     openssl::Signature signature { ECDSA_do_sign(digest.data(), digest.size(), priv_key) };
+#if OPENSSL_API_COMPAT < 0x10100000L
+    const BIGNUM* sig_r = signature->r;
+    const BIGNUM* sig_s = signature->s;
+#else
+    const BIGNUM* sig_r = nullptr;
+    const BIGNUM* sig_s = nullptr;
+    ECDSA_SIG_get0(signature, &sig_r, &sig_s);
+#endif
 
     EcdsaSignature ecdsa_signature;
     X_Coordinate_Only coordinate;
 
-    if (signature) {
+    if (sig_r && sig_s) {
         const size_t len = field_size(PublicKeyAlgorithm::Ecdsa_Nistp256_With_Sha256);
-        const auto num_bytes_s = BN_num_bytes(signature->s);
+
+        const auto num_bytes_s = BN_num_bytes(sig_s);
         assert(len >= static_cast<size_t>(num_bytes_s));
         ecdsa_signature.s.resize(len, 0x00);
-        BN_bn2bin(signature->s, ecdsa_signature.s.data() + len - num_bytes_s);
+        BN_bn2bin(sig_s, ecdsa_signature.s.data() + len - num_bytes_s);
 
-        const auto num_bytes_r = BN_num_bytes(signature->r);
+        const auto num_bytes_r = BN_num_bytes(sig_r);
         assert(len >= static_cast<size_t>(num_bytes_r));
         coordinate.x.resize(len, 0x00);
-        BN_bn2bin(signature->r, coordinate.x.data() + len - num_bytes_r);
+        BN_bn2bin(sig_r, coordinate.x.data() + len - num_bytes_r);
     } else {
         throw openssl::Exception();
     }

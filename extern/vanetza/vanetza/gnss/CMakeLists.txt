@@ -1,5 +1,5 @@
-vanetza_module(gnss nmea.cpp)
-vanetza_module_property(gnss COMPILE_DEFINITIONS BOOST_DATE_TIME_NO_LIB)
+add_vanetza_component(gnss nmea.cpp)
+target_link_libraries(gnss Boost::date_time)
 
 add_test_subdirectory(tests)
 

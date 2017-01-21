@@ -1,6 +1,10 @@
 PYTHON ?= python
 VANETZA_DIR = extern/vanetza
+VANETZA_BUILD_TYPE ?= Release
+VANETZA_BUILD_DIR ?= $(VANETZA_DIR)/build
 VEINS_DIR = extern/veins
+
+all: vanetza veins
 
 $(VEINS_DIR)/src/Makefile: $(VEINS_DIR)/.gitrepo
 	cd $(VEINS_DIR) && $(PYTHON) configure
@@ -9,11 +13,11 @@ $(VEINS_DIR)/src/Makefile: $(VEINS_DIR)/.gitrepo
 veins: $(VEINS_DIR)/src/Makefile
 	$(MAKE) -C $(VEINS_DIR)
 
-$(VANETZA_DIR)/build:
-	mkdir $(VANETZA_DIR)/build
+$(VANETZA_BUILD_DIR):
+	mkdir -p $(VANETZA_BUILD_DIR)
 
-$(VANETZA_DIR)/build/CMakeCache.txt: $(VANETZA_DIR)/build
-	cd $< && cmake -DCMAKE_BUILD_TYPE=Release ..
+$(VANETZA_BUILD_DIR)/Makefile: $(VANETZA_BUILD_DIR)
+	cd $< && cmake -DCMAKE_BUILD_TYPE=$(VANETZA_BUILD_TYPE) -DBUILD_SHARED_LIBS=ON ..
 
-vanetza: $(VANETZA_DIR)/build/CMakeCache.txt
-	cmake --build $(VANETZA_DIR)/build
+vanetza: $(VANETZA_BUILD_DIR)/Makefile
+	$(MAKE) -C $(VANETZA_BUILD_DIR)

@@ -20,8 +20,8 @@ if(VANETZA_NET_WITH_POSIX)
     list(APPEND CXX_SOURCES ${CXX_SOURCES_POSIX})
 endif()
 
-vanetza_module(net ${CXX_SOURCES})
-vanetza_intermodule_dependencies(net common)
+add_vanetza_component(net ${CXX_SOURCES})
+target_link_libraries(net PUBLIC common)
 
 add_test_subdirectory(tests)
 

@@ -1,48 +1,61 @@
-# Prepare GTest environment and create MODULE_test interface library
-## MODULE module under test
-## SRCS... optional list of sources to link with each subsequent gtest
-macro(prepare_gtest MODULE)
-  add_library(${MODULE}_test INTERFACE)
-  target_link_libraries(${MODULE}_test INTERFACE ${MODULE})
-  set(VANETZA_GTEST_LINK_LIBRARIES ${MODULE}_test)
-  if("${ARGC}" GREATER "1")
-    add_library(${MODULE}_test_objs OBJECT ${ARGN})
-    get_target_property(_module_inc_dirs ${MODULE} INTERFACE_INCLUDE_DIRECTORIES)
-    target_include_directories(${MODULE}_test_objs PUBLIC ${_module_inc_dirs} ${GTest_INCLUDE_DIR})
-    set(VANETZA_GTEST_OBJECTS $<TARGET_OBJECTS:${MODULE}_test_objs>)
-  else()
-    set(VANETZA_GTEST_OBJECTS "")
+include(CMakeParseArguments)
+
+#
+# configure_gtest_directory(
+#   [SOURCES <srcs...>]
+#   [LINK_LIBRARIES <libs...>]
+#   [INCLUDE_DIRECTORIES <dirs...>]
+#   [COMPILE_DEFINITIONS <defs...>])
+#
+# Set GTest properties common for all unit test executables in current directory.
+#
+function(configure_gtest_directory)
+  cmake_parse_arguments(args "" "" "SOURCES;LINK_LIBRARIES;INCLUDE_DIRECTORIES;COMPILE_DEFINITIONS" ${ARGN})
+  if(args_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "unknown arguments given to configure_gtest_directory: ${args_UNPARSED_ARGUMENTS}")
   endif()
-endmacro()
 
-# Add a test case using Google Testing Framework
-## NAME name of the test case
-## SRCS... variable number of source files
-macro(add_gtest NAME)
-  add_executable(GTest_${NAME} ${ARGN} ${VANETZA_GTEST_OBJECTS})
-  set_target_properties(GTest_${NAME} PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
-  target_link_libraries(GTest_${NAME} ${GTest_MAIN_LIBRARY})
-  if(VANETZA_GTEST_LINK_LIBRARIES)
-      target_link_libraries(GTest_${NAME} ${VANETZA_GTEST_LINK_LIBRARIES})
+  set_property(DIRECTORY PROPERTY GTEST_SOURCES ${args_SOURCES})
+  set_property(DIRECTORY PROPERTY GTEST_LINK_LIBRARIES ${args_LINK_LIBRARIES})
+  set_property(DIRECTORY PROPERTY GTEST_INCLUDE_DIRECTORIES ${args_INCLUDE_DIRECTORIES})
+  set_property(DIRECTORY PROPERTY GTEST_COMPILE_DEFINITIONS ${args_COMPILE_DEFINITIONS})
+endfunction()
+
+#
+# add_gtest(<name>
+#   [SOURCES] <srcs...>
+#   [LINK_LIBRARIES <libs...>]
+#   [INCLUDE_DIRECTORIES <dirs...>]
+#   [COMPILE_DEFINITIONS <defs...>])
+#
+# Add a CTest unit test executable using Google Test.
+# The executable will be built as specified by given arguments and directory properties.
+#
+function(add_gtest name)
+  set(target GTest_${name})
+  cmake_parse_arguments(args "" "" "SOURCES;LINK_LIBRARIES;INCLUDE_DIRECTORIES;COMPILE_DEFINITIONS" ${ARGN})
+
+  get_directory_property(sources GTEST_SOURCES)
+  list(APPEND sources "${args_SOURCES}" "${args_UNPARSED_ARGUMENTS}")
+  get_directory_property(link_libraries GTEST_LINK_LIBRARIES)
+  list(APPEND link_libraries "${args_LINK_LIBRARIES}" ${GTest_MAIN_LIBRARY})
+  get_directory_property(include_directories GTEST_INCLUDE_DIRECTORIES)
+  list(APPEND include_directories "${args_INCLUDE_DIRECTORIES}" ${GTest_INCLUDE_DIR})
+  get_directory_property(compile_definitions GTEST_COMPILE_DEFINITIONS)
+  list(APPEND compile_definitions "${args_COMPILE_DEFINITIONS}")
+
+  if(NOT sources)
+    message(FATAL_ERROR "no sources given to add_gtest")
   endif()
-  add_test(NAME ${NAME}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-      COMMAND GTest_${NAME})
-endmacro(add_gtest)
 
-# Set target property for a GTest
-## NAME name of the test case
-## PROP property name
-## ARGS passed to set_property(TARGET) command
-macro(set_gtest_property NAME PROP)
-  set_property(TARGET GTest_${NAME} PROPERTY ${PROP} ${ARGN})
-endmacro(set_gtest_property)
-
-# Link libraries to a GTest
-## NAME name of the test case
-## LIBS... variable number of libraries
-macro(link_gtest NAME)
-  target_link_libraries(GTest_${NAME} ${ARGN})
-endmacro(link_gtest)
-
+  add_executable(${target} ${sources})
+  set_target_properties(${target} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/tests
+    FOLDER "GTest"
+    LINK_LIBRARIES "${link_libraries}"
+    INCLUDE_DIRECTORIES "${include_directories}"
+    COMPILE_DEFINITIONS "${compile_definitions}")
+  add_test(NAME ${name}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${target})
+endfunction()

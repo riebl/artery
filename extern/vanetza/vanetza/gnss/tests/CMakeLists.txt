@@ -1,5 +1,5 @@
 include(UseGTest)
-prepare_gtest(gnss)
+configure_gtest_directory(LINK_LIBRARIES gnss)
 
 add_gtest(NMEA nmea.cpp)
 

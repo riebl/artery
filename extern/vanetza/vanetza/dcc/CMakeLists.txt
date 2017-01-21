@@ -10,8 +10,8 @@ set(CXX_SOURCES
     state_machine.cpp
 )
 
-vanetza_module(dcc ${CXX_SOURCES})
-vanetza_intermodule_dependencies(dcc net)
+add_vanetza_component(dcc ${CXX_SOURCES})
+target_link_libraries(dcc PUBLIC net)
 
 add_test_subdirectory(tests)
 

@@ -7,19 +7,19 @@ class VanetzaConan(ConanFile):
     url = "https://github.com/riebl/vanetza"
     license = "GNU Lesser General Public License (LGPL) v3"
     settings = "os", "compiler", "build_type", "arch"
-    requires = "Boost/1.60.0@lasote/stable", "cryptopp/5.6.3@riebl/testing", "GeographicLib/1.46@riebl/testing"
+    requires = "Boost/1.60.0@lasote/stable", "OpenSSL/1.0.2j@lasote/stable", "cryptopp/5.6.5@riebl/testing", "GeographicLib/1.46@riebl/testing"
     generators = "cmake"
     exports = "cmake/*", "tools/*", "vanetza/*", "CMakeLists.txt"
     options = {"static": [True, False]}
-    default_options = "static=False"
+    default_options = "static=False", "OpenSSL:no_electric_fence=True", "OpenSSL:no_zlib=True"
 
     def build(self):
         cmake = CMake(self.settings)
-        build = "-DENABLE_CONAN=ON -DVANETZA_BUILD_SHARED=%s -DVANETZA_BUILD_STATIC=%s"
+        build = "-DBUILD_USING_CONAN=ON -DBUILD_SHARED_LIBS=%s"
         if self.options.static:
-            build = build % ('OFF', 'ON')
+            build = build % ('OFF')
         else:
-            build = build % ('ON', 'OFF')
+            build = build % ('ON')
         self.run('cmake "%s" %s %s' % (self.conanfile_directory, cmake.command_line, build))
         self.run('cmake --build . %s' % cmake.build_config)
 

@@ -1,5 +1,5 @@
 include(UseGTest)
-prepare_gtest(geonet)
+configure_gtest_directory(LINK_LIBRARIES geonet)
 
 add_gtest(Address address.cpp)
 add_gtest(Areas areas.cpp)
@@ -18,7 +18,7 @@ add_gtest(RouterIndicate router_indicate.cpp)
 add_gtest(SequenceNumber sequence_number.cpp)
 add_gtest(Timestamp timestamp.cpp)
 add_gtest(TrafficClass traffic_class.cpp)
-add_gtest(Routing network_topology.cpp routing.cpp)
-set_gtest_property(Routing INCLUDE_DIRECTORIES ${GeographicLib_INCLUDE_DIR})
-link_gtest(Routing ${GeographicLib_LIBRARY})
+add_gtest(Routing
+    SOURCES network_topology.cpp routing.cpp
+    LINK_LIBRARIES GeographicLib::GeographicLib)
 add_gtest(RouterRequest router_request)
