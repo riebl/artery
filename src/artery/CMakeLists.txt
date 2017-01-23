@@ -13,6 +13,13 @@ endmacro()
 generate_opp_msg(ChannelLoadReport)
 generate_opp_msg(GeoNetPacket)
 
+add_library(messages OBJECT
+    messages/ChannelLoadReport_m.cc
+    messages/GeoNetPacket_m.cc)
+set_target_properties(messages PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    INCLUDE_DIRECTORIES $<TARGET_PROPERTY:artery,INCLUDE_DIRECTORIES>)
+
 find_package(Boost COMPONENTS date_time REQUIRED)
 
 set(SOURCES
@@ -31,14 +38,12 @@ set(SOURCES
     mac/Edca.cc
     mac/EdcaQueue.cc
     mac/MacItsG5.cc
-    messages/ChannelLoadReport_m.cc
-    messages/GeoNetPacket_m.cc
     netw/GeoNetPacketWrapper.cc
     traci/TraCIArteryNodeManager.cc
     traci/TraCIScenarioManagerArtery.cc
 )
 
-add_library(artery SHARED ${SOURCES})
+add_library(artery SHARED ${SOURCES} $<TARGET_OBJECTS:messages>)
 set_property(TARGET artery PROPERTY NED_FOLDERS ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(artery PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(artery opp_interface)
