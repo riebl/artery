@@ -16,20 +16,25 @@
 #ifndef __ARTERY_ASN1PACKETVISITOR_H_
 #define __ARTERY_ASN1PACKETVISITOR_H_
 
+#include <vanetza/common/byte_buffer.hpp>
 #include <vanetza/common/byte_buffer_convertible.hpp>
 #include <vanetza/net/chunk_packet.hpp>
 #include <vanetza/net/cohesive_packet.hpp>
 #include <vanetza/net/osi_layer.hpp>
 #include <boost/variant/static_visitor.hpp>
-#include <omnetpp/cexception.h>
+#include <omnetpp/clog.h>
+#include <memory>
+#include <typeinfo>
 
 template<class T>
 struct Asn1PacketVisitor : public boost::static_visitor<const T*>
 {
     const T* operator()(vanetza::CohesivePacket& packet)
     {
-        throw omnetpp::cRuntimeError("ASN.1 packet deserialization is not yet implemented");
-        return nullptr;
+        const auto range = packet[vanetza::OsiLayer::Application];
+        vanetza::ByteBuffer buffer { range.begin(), range.end() };
+        deserialize(buffer);
+        return shared_wrapper.get();
     }
 
     const T* operator()(vanetza::ChunkPacket& packet)
@@ -43,8 +48,23 @@ struct Asn1PacketVisitor : public boost::static_visitor<const T*>
             shared_wrapper = impl->wrapper();
             return shared_wrapper.get();
         } else {
-            throw omnetpp::cRuntimeError("ChunkPacket doesn't contain requested ASN.1 structure");
-            return nullptr;
+            vanetza::ByteBuffer buffer;
+            packet[vanetza::OsiLayer::Application].convert(buffer);
+            deserialize(buffer);
+            return shared_wrapper.get();
+        }
+    }
+
+    void deserialize(const vanetza::ByteBuffer& buffer)
+    {
+        auto temp_wrapper = std::make_shared<T>();
+        bool decoded = temp_wrapper->decode(buffer);
+        if (decoded) {
+            shared_wrapper = temp_wrapper;
+        } else {
+            using namespace omnetpp;
+            const std::type_info& asn1_type = typeid(T);
+            EV_ERROR << "Decoding of " << asn1_type.name() << " failed";
         }
     }
 
