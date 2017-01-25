@@ -1,0 +1,76 @@
+====== inet-3.x ======
+
+2016-06-15  ------ inet-3.4.0 released ------
+
+2016-04-19  Levente Meszaros
+
+	Followed recent logging API changes.
+
+2016-06-01  ------ inet-3.3.0 released ------
+
+2016-04-06  ------ inet-3.2.4 released ------
+
+2016-03-16  ------ inet-3.2.3 released ------
+
+2016-03-11  ------ inet-3.2.2 released ------
+
+2016-01-21  ------ inet-3.2.1 released ------
+
+2015-12-16  ------ inet-3.2.0 released ------
+
+2015-11-12  Levente Meszaros
+
+	Radio: Added support for the simulation of separate signal parts.
+
+	The preamble, header and data parts can be optionally simulated
+	separately. This is results in more accurate simulation, because a
+	reception may be aborted before the data part is received.
+
+2015-10-26  ------ inet-3.1.1 released ------
+
+2015-10-15  ------ inet-3.1.0 released ------
+
+2015-06-22  ------ inet-3.0.0 released ------
+
+2015-05-13  ------ inet-2.99.1 released ------
+
+2015-04-15  Levente Meszaros
+
+	Radio: Added arrival parameter to computeReceptionPower.
+
+2015-04-03  Levente Meszaros
+
+	Radio: Added level parameter to printToStream functions.
+
+2015-03-16  Levente Meszaros
+
+	Consistently renamed packet level and bit level implementations into
+	separate subdirectories. Renamed analogmodel/layered to analogmodel/bitlevel.
+	Moved remaining analogmodel contents to analogmodel/packetlevel.
+
+2015-03-02  Levente Meszaros
+
+	Fixed memory managements bugs found by valgrind memcheck.
+
+2015-02-24  Levente Meszaros
+
+	Updated analog model to support layered radio.
+
+2015-01-21  Zoltan Bojthe
+
+	Applied C++ source code modernizer.
+
+2014-12-04  Florian Meier
+
+	Added Arrival to computeReception of IAnalogModel.
+
+2014-11-07  ------ inet-2.99.0 released ------
+
+2014-10-31  Levente Meszaros
+
+	Added initial implementation:
+	ScalarReception, ScalarTransmission, ScalarNoise, ScalarSNIR,
+	ScalarAttenuation, DimensionalReception, DimensionalTransmission,
+	DimensionalNoise, DimensionalSNIR, DimensionalAttenuation
+
+====== inet-2.x ======

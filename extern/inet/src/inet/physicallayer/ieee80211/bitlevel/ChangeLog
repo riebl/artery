@@ -1,0 +1,104 @@
+====== inet-3.x ======
+
+2016-06-15  ------ inet-3.4.0 released ------
+
+2016-04-19  Levente Meszaros
+
+	Followed recent logging API changes.
+
+2016-06-01  ------ inet-3.3.0 released ------
+
+2016-04-06  ------ inet-3.2.4 released ------
+
+2016-03-16  ------ inet-3.2.3 released ------
+
+2016-03-11  ------ inet-3.2.2 released ------
+
+2016-01-21  ------ inet-3.2.1 released ------
+
+2015-12-16  ------ inet-3.2.0 released ------
+
+2015-11-12  Levente Meszaros
+
+	Radio: Added support for the simulation of separate signal parts.
+
+	The preamble, header and data parts can be optionally simulated
+	separately. This is results in more accurate simulation, because a
+	reception may be aborted before the data part is received.
+
+2015-10-26  ------ inet-3.1.1 released ------
+
+2015-10-15  ------ inet-3.1.0 released ------
+
+2015-06-22  ------ inet-3.0.0 released ------
+
+2015-05-13  ------ inet-2.99.1 released ------
+
+2015-04-15  Levente Meszaros
+
+	Added snir parameter to computeReceptionDecision.
+
+2015-04-09  Levente Meszaros
+
+	Changed with isReceptionSuccessful to be true if all nested packets are free
+	of errrors. Replaced default 802.11 mode with the one received in the control
+	info.
+
+2015-04-03  Levente Meszaros
+
+	Added level parameter to printToStream functions.
+
+2015-04-02  Benjamin Seregi
+
+	Renamed Ieee80211Interleaver to Ieee80211OFDMInterleaver.
+
+2015-03-20  Benjamin Seregi
+
+	Ieee80211LayeredOFDMTransmitter: changed pad bitlength computation. The
+	previous version was also correct but this computation method is more
+	close to the standard.
+
+2015-03-19  Benjamin Seregi
+
+	Dropped dummy code from Ieee80211OFDMModulator and fixed polarity vector
+	indexing. Added support for 5/6 code rate to Ieee80211ConvolutionalCode.
+
+2015-03-16  Levente Meszaros
+
+	Consistently renamed packet level and bit level implementations into
+	separate subdirectories. Renamed ieee80211/layered to ieee80211/bitlevel.
+	Moved remaining ieee80211 contents to ieee80211/packetlevel.
+
+2015-02-25  Benjamin Seregi
+
+	Added a completely new layered radio (physical layer) implementation.
+
+	The term layered means that the radio is capable of simulating the
+	processing steps of the packet domain, bit domain, symbol domain, sample
+	domain, and analog domain in detail. The architecture supports setting
+	the level of detail independently of other parameters.
+
+	The new layered model contains the IEEE 802.11 OFDM physical layer packet
+	domain, bit domain, and symbol domain functions: including scrambling,
+	forward error correction, interleaving, and modulation.
+
+	There's also a simple hypothetical layered radio that makes the
+	understanding of the architecture easier.
+
+	Added a detail implementation for the IEEE 802.11 OFDM physical layer
+	according to the IEEE 802.11-2012 specification. The model supports various
+	packet domain, bit domain and symbol domain functions.
+
+	Added the following new classes:
+	Ieee80211OFDMTransmitter, Ieee80211OFDMReceiver
+	Ieee80211OFDMEncoder, Ieee80211OFDMEncoderModule,
+	Ieee80211OFDMDecoder, Ieee80211OFDMDecoderModule
+	Ieee80211ConvolutionalCode,
+	Ieee80211Interleaver, Ieee80211InterleaverModule, Ieee80211Interleaving
+	Ieee80211OFDMModulator, Ieee80211OFDMModulatorModule,
+	Ieee80211OFDMDemodulator, Ieee80211OFDMDemodulatorModule
+	Ieee80211OFDMSymbol, Ieee80211OFDMSymbolModel
+
+2014-11-07  ------ inet-2.99.0 released ------
+
+====== inet-2.x ======

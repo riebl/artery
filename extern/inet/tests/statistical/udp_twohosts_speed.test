@@ -1,0 +1,144 @@
+%description:
+Testing TCP communication speed
+    TCP
+    TCP_NSC
+%#--------------------------------------------------------------------------------------------------------------
+%testprog: opp_run
+%#--------------------------------------------------------------------------------------------------------------
+%file: test.ned
+
+import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
+import inet.node.inet.StandardHost;
+import ned.DatarateChannel;
+
+
+network UdpClientServer
+{
+    @display("bgb=232,193");
+    types:
+        channel C extends DatarateChannel
+        {
+            datarate = 10Mbps;
+            delay = 0.1us;
+        }
+    submodules:
+        host1: StandardHost {
+            parameters:
+                @display("p=53,67;i=device/pc3");
+        }
+        host2: StandardHost {
+            parameters:
+                @display("p=181,67;i=device/pc2");
+        }
+        host1snap: StandardHost {
+            parameters:
+                @display("p=53,67;i=device/pc3");
+        }
+        host2snap: StandardHost {
+            parameters:
+                @display("p=181,67;i=device/pc2");
+        }
+        configurator: IPv4NetworkConfigurator {
+            parameters:
+                @display("p=109,142");
+        }
+    connections:
+        host1.ethg++ <--> C <--> host2.ethg++;
+        host1snap.ethg++ <--> C <--> host2snap.ethg++;
+}
+
+%#--------------------------------------------------------------------------------------------------------------
+%inifile: omnetpp.ini
+
+[General]
+network = UdpClientServer
+total-stack = 7MiB
+tkenv-plugin-path = ../../../etc/plugins
+#debug-on-errors = true
+#record-eventlog = true
+#**.vector-recording = false
+
+sim-time-limit = 20s
+
+## UDP apps
+**.numUdpApps = 2
+**.udpApp[0].typename = "UDPBasicApp"
+**.udpApp[0].destPort = 1234
+#**.udpApp[0].sendInterval = 2ms
+#**.udpApp[0].stopTime = 20s
+**.host*snap.udpApp[0].sendInterval = 1.719ms   #etherframe with snap and gap: 1074 bytes, 2 packets (sent, echoed): 1074*8/10000000*2 = 17.184ms
+**.host*snap.udpApp[0].stopTime = 17.19s
+**.udpApp[0].sendInterval = 1.706ms   #etherframe and gap: 1066 bytes, 2 packets (sent, echoed): 1066*8/10000000*2 = 17.056ms
+**.udpApp[0].stopTime = 17.06s
+**.host1.udpApp[0].destAddresses = "host2"
+**.host2.udpApp[0].destAddresses = "host1"
+**.host1snap.udpApp[0].destAddresses = "host2snap"
+**.host2snap.udpApp[0].destAddresses = "host1snap"
+**.udpApp[0].messageLength = 1000 bytes
+**.udpApp[1].typename = "UDPEchoApp"
+**.udpApp[1].localPort = 1234
+
+**.host*snap.eth[*].useSNAP = true
+**.host*.eth[*].queue.frameCapacity = 1
+
+%#--------------------------------------------------------------------------------------------------------------
+%postrun-command: Rscript check.r
+%#--------------------------------------------------------------------------------------------------------------
+%file: check.r
+#!/usr/bin/env Rscript
+
+options(echo=FALSE)
+options(width=160)
+library("omnetpp", warn.conflicts=FALSE)
+
+#TEST parameters
+scafile <- 'results/General-0.sca'
+linecount <- 4
+sentPk   <- 10000
+echoedPk <- 10000
+
+# begin TEST:
+
+dataset <- loadDataset(scafile)
+
+cat("\nOMNETPP TEST RESULT:\n")
+
+udpApp <- dataset$scalars[grep("\\.host\\d\\w*\\.udpApp\\[\\d\\]$",dataset$scalars$module),]
+udpSent <- udpApp[udpApp$name == "sentPk:sum(packetBytes)",]
+udpRcvd <- udpApp[udpApp$name == "echoedPk:count",]
+
+cat("  UDP SPEED TEST RESULT:\n")
+
+#print(udpSent)
+cat("    UDP SENT ")
+if(length(udpSent$value) == linecount & min(udpSent$value) >= sentPk)
+{
+    cat("OK\n")
+} else {
+    cat("BAD:\n")
+    udpSent$rate = udpSent$value*100/sentPk
+    print(udpSent[udpSent$value < sentPk,])
+}
+
+#print(udpRcvd)
+cat("    UDP RCVD ")
+if(length(udpRcvd$value) == linecount & min(udpRcvd$value) >= echoedPk)
+{
+    cat("OK\n")
+} else {
+    cat("BAD:\n")
+    udpRcvd$rate = udpRcvd$value*100/sentPk
+    print(udpRcvd[udpRcvd$value < echoedPk,])
+}
+
+cat("\n")
+
+%#--------------------------------------------------------------------------------------------------------------
+%contains: postrun-command(1).out
+
+OMNETPP TEST RESULT:
+  UDP SPEED TEST RESULT:
+    UDP SENT OK
+    UDP RCVD OK
+
+%#--------------------------------------------------------------------------------------------------------------

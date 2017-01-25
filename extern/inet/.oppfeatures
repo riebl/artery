@@ -1,0 +1,1103 @@
+<features cppSourceRoots="src">
+    <feature
+        id="TCP_common"
+        name="TCP Common"
+        description = "The common part of TCP implementations"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.transportlayer.tcp_common
+                       inet.applications.tcpapp
+                       inet.common.serializer.tcp
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_TCP_COMMON"
+        linkerFlags = ""
+        />
+    <feature
+        id="TCP_INET"
+        name="TCP (INET)"
+        description = "TCP implementation (original INET implementation)"
+        initiallyEnabled = "true"
+        requires = "TCP_common"
+        labels = ""
+        nedPackages = "
+                       inet.transportlayer.tcp
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_TCP_INET"
+        linkerFlags = ""
+        />
+    <feature
+        id="TCP_lwIP"
+        name="TCP (lwIP)"
+        description = "TCP implementation based on lwIP (http://www.sics.se/~adam/lwip)"
+        initiallyEnabled = "false"
+        requires = "TCP_common"
+        labels = ""
+        nedPackages = "
+                       inet.transportlayer.tcp_lwip
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_TCP_LWIP -Iinet/transportlayer/tcp_lwip/lwip/include -Iinet/transportlayer/tcp_lwip/lwip/include/ipv4 -Iinet/transportlayer/tcp_lwip/lwip/include/ipv6"
+        linkerFlags = ""
+        />
+    <feature
+        id="TCP_NSC"
+        name="TCP (NSC)"
+        description = "TCP module based on Sam Jensen's Network Simulation Cradle
+                       (NSC, http://www.wand.net.nz/~stj2/nsc) that wraps real
+                       OS stacks: Linux, FreeBSD, OpenBSD and lwIP.
+                       NSC must be downloaded and installed separately; read
+                       inet/3rdparty/README for more information."
+        initiallyEnabled = "false"
+        requires = "TCP_common"
+        labels = ""
+        nedPackages = "
+                       inet.transportlayer.tcp_nsc
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_TCP_NSC"
+        linkerFlags = ""
+        />
+    <feature
+        id="IPv4"
+        name="IPv4 protocol"
+        description = "Basic IPv4 support"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.networklayer.ipv4
+                       inet.networklayer.configurator.ipv4
+                       inet.networklayer.arp.ipv4
+                       inet.common.serializer.ipv4
+                       inet.common.serializer.headerserializers.arp
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_IPv4"
+        linkerFlags = ""
+        />
+    <feature
+        id="INET_examples"
+        name="INET examples"
+        description = "Examples for basic internet protocols (IPv4, TCP, UDP)"
+        initiallyEnabled = "true"
+        requires = "IPv4 TCP_INET UDP Ethernet PPP"
+        labels = "protocols examples"
+        nedPackages = "
+                       inet.examples.inet
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="IPv6"
+        name="IPv6 protocol"
+        description = "Basic IPv6 support"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.networklayer.ipv6
+                       inet.networklayer.configurator.ipv6
+                       inet.networklayer.icmpv6
+                       inet.networklayer.ipv6tunneling
+                       inet.node.ipv6
+                       inet.common.serializer.ipv6
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_IPv6"
+        linkerFlags = ""
+        />
+    <feature
+        id="IPv6_examples"
+        name="IPv6 examples"
+        description = "Examples for Basic IPv6 support (IPv6)"
+        initiallyEnabled = "true"
+        requires = "IPv6 TCP_INET UDP Ethernet PPP"
+        labels = "protocols examples"
+        nedPackages = "
+                       inet.examples.ipv6
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="xMIPv6"
+        name="Mobile IPv6 protocol (xMIPv6)"
+        description = "Mobile IPv6 support with Tunneling"
+        initiallyEnabled = "true"
+        requires = "IPv6"
+        labels = "protocols"
+        nedPackages = "
+                       inet.networklayer.xmipv6
+                       inet.node.xmipv6
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_xMIPv6"
+        linkerFlags = ""
+        />
+    <feature
+        id="xMIPv6_examples"
+        name="xMIPv6 examples"
+        description = "Examples for Mobile IPv6 support (xMIPv6)"
+        initiallyEnabled = "true"
+        requires = "xMIPv6 TCP_INET UDP Ethernet PPP Ieee80211 mobility"
+        labels = "protocols examples"
+        nedPackages = "
+                       inet.examples.mobileipv6
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="Generic"
+        name="Generic network layer protocol"
+        description = "Basic Generic network layer support"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.networklayer.generic
+                       inet.networklayer.configurator.generic
+                       inet.networklayer.arp.generic
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_GENERIC"
+        linkerFlags = ""
+        />
+    <feature
+        id="MultiNet"
+        name="Multi network layer"
+        description = "Multi network layer support, e.g. IPv4/IPv6 dual stack"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.networklayer.multi
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="WiseRoute"
+        name="WiseRoute"
+        description = "Wiseroute is a simple loop-free routing algorithm that builds a routing tree from a central network point, designed for sensor networks and convergecast traffic."
+        initiallyEnabled = "true"
+        requires = "Generic"
+        labels = ""
+        nedPackages = "
+                       inet.networklayer.wiseroute
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="Flood"
+        name="Flood"
+        description = "Provides network layer support for deterministic and probabilistic flooding"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.networklayer.flood
+                       inet.networklayer.probabilistic
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_FLOOD"
+        linkerFlags = ""
+        />
+    <feature
+        id="UDP"
+        name="UDP protocol"
+        description = "UDP protocol"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.transportlayer.udp
+                       inet.applications.udpapp
+                       inet.common.serializer.udp
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_UDP"
+        linkerFlags = ""
+        />
+    <feature
+        id="RTP"
+        name="RTP"
+        description = "Real Time Protocol support"
+        initiallyEnabled = "true"
+        requires = "UDP IPv4"
+        labels = ""
+        nedPackages = "
+                       inet.applications.rtpapp
+                       inet.transportlayer.rtp
+                       inet.node.rtp
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_RTP"
+        linkerFlags = ""
+        />
+    <feature
+        id="RTP_examples"
+        name="RTP examples"
+        description = "Examples for Real Time Protocol support (RTP)"
+        initiallyEnabled = "true"
+        requires = "RTP"
+        labels = "protocols examples"
+        nedPackages = "
+                       inet.examples.rtp
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="SCTP"
+        name="SCTP"
+        description = "SCTP Protocol support"
+        initiallyEnabled = "true"
+        requires = "IPv4 IPv6"
+        labels = ""
+        nedPackages = "
+                       inet.applications.sctpapp
+                       inet.applications.sctpapp
+                       inet.transportlayer.sctp
+                       inet.common.serializer.sctp
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_SCTP"
+        linkerFlags = ""
+        />
+    <feature
+        id="SCTP_examples"
+        name="SCTP examples"
+        description = "Examples for SCTP"
+        initiallyEnabled = "true"
+        requires = "SCTP IPv4"
+        labels = "protocols examples"
+        nedPackages = "
+                       inet.examples.sctp
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="DHCP"
+        name="DHCP"
+        description = "DHCP protocol that can be installed as an UDP application"
+        initiallyEnabled = "true"
+        requires = "UDP IPv4"
+        labels = "protocols dhcp"
+        nedPackages = "
+                       inet.applications.dhcp
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_DHCP"
+        linkerFlags = ""
+        />
+    <feature
+        id="DHCP_examples"
+        name="DHCP examples (Ethernet)"
+        description = "examples for DHCP protocol"
+        initiallyEnabled = "true"
+        requires = "DHCP Ethernet mobility radio Ieee80211"
+        labels = "protocols dhcp"
+        nedPackages = "
+                       inet.examples.dhcp
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="Ethernet"
+        name="Ethernet"
+        description = "IEEE 802.3 models (MAC, LLC, Encap) with support for classic
+                       Ethernet (10Mbps), Fast Ethernet (100Mbps) and Gigabit Ethernet (1Gbps).
+                       Includes a switch model with various relay unit implementations,
+                       and also Ethernet-level traffic generators."
+        initiallyEnabled = "true"
+        requires = ""
+        labels = "protocols"
+        nedPackages = "
+                       inet.applications.ethernet
+                       inet.linklayer.ethernet
+                       inet.node.ethernet
+                       inet.common.serializer.headerserializers.ethernet
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_ETHERNET"
+        linkerFlags = ""
+        />
+    <feature
+        id="Ethernet_examples"
+        name="Ethernet examples"
+        description = "Examples for Ethernet"
+        requires = "Ethernet IPv4 TCP_INET"
+        labels = "protocols"
+        nedPackages = "
+                       inet.examples.ethernet
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="PPP"
+        name="PPP"
+        description = "PPP protocol"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = "protocols"
+        nedPackages = "
+                       inet.linklayer.ppp
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_PPP"
+        linkerFlags = ""
+        />
+    <feature
+        id="ExternalInterface"
+        name="Network emulation support"
+        description = "Support for connecting the simulation to a real network.
+                       The ExternalInterface module is responsible for sending/receiving
+                       packets on the network. This feature requires at least version 1.5.3
+                       of the libpcap-dev package."
+        initiallyEnabled = "false"
+        requires = "IPv4"
+        labels = "nic"
+        nedPackages = "
+                       inet.linklayer.ext
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_EXT_IF"
+        linkerFlags = "-lpcap"
+        />
+    <feature
+        id="ExternalInterface_examples"
+        name="Network emulation examples"
+        description = "Examples for network emulation"
+        initiallyEnabled = "false"
+        requires = "ExternalInterface Ethernet"
+        labels = "nic"
+        nedPackages = "
+                       inet.examples.emulation
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="MPLS"
+        name="MPLS support (incl. LDP and RSVP-TE)"
+        description = "MPLS support"
+        requires = "TCP_INET UDP IPv4"
+        labels = "routing"
+        nedPackages = "
+                       inet.networklayer.mpls inet.node.mpls
+                       inet.networklayer.ldp
+                       inet.networklayer.rsvp_te
+                       inet.networklayer.ted
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_MPLS"
+        linkerFlags = ""
+        />
+    <feature
+        id="MPLS_examples"
+        name="MPLS examples"
+        description = "Examples for MPLS support"
+        initiallyEnabled = "true"
+        requires = "MPLS Ethernet PPP"
+        labels = "routing examples"
+        nedPackages = "
+                       inet.examples.mpls
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="OSPFv2"
+        name="OSPFv2"
+        description = "OSPFv2 support"
+        initiallyEnabled = "true"
+        requires = "IPv4"
+        labels = "routing"
+        nedPackages = "
+                       inet.routing.ospfv2
+                       inet.node.ospfv2
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_OSPFv2"
+        linkerFlags = ""
+        />
+    <feature
+        id="OSPFv2_examples"
+        name="OSPFv2 examples"
+        description = "Examples for OSPFv2"
+        initiallyEnabled = "true"
+        requires = "OSPFv2 UDP IPv4 PPP Ethernet"
+        labels = "routing examples"
+        nedPackages = "
+                       inet.examples.ospfv2
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="BGPv4"
+        name="BGPv4"
+        description = "BGP support"
+        initiallyEnabled = "true"
+        requires = "IPv4 OSPFv2 TCP_INET"
+        labels = "routing"
+        nedPackages = "
+                       inet.routing.bgpv4
+                       inet.node.bgp
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_BGPv4"
+        linkerFlags = ""
+        />
+    <feature
+        id="BGPv4_examples"
+        name="BGPv4 examples"
+        description = "Examples for BGPv4"
+        initiallyEnabled = "true"
+        requires = "BGPv4 TCP_INET UDP IPv4 PPP Ethernet"
+        labels = "routing examples"
+        nedPackages = "
+                       inet.examples.bgpv4
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="PIM"
+        name="PIM"
+        description = "PIM support"
+        initiallyEnabled = "true"
+        requires = "IPv4"
+        labels = "routing"
+        nedPackages = "
+                       inet.routing.pim
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_PIM"
+        linkerFlags = ""
+        />
+    <feature
+        id="PIM_examples"
+        name="PIM examples"
+        description = "Examples for PIM"
+        initiallyEnabled = "true"
+        requires = "PIM PPP Ethernet"
+        labels = "routing examples"
+        nedPackages = "
+                       inet.examples.pim
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="DYMO"
+        name="DYMO"
+        description = "Dynamic MANET On-demand Routing"
+        initiallyEnabled = "true"
+        requires = "UDP IPv4 Ieee80211"
+        labels = "routing"
+        nedPackages = "
+                       inet.routing.dymo
+                       inet.node.dymo
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="AODV"
+        name="AODV"
+        description = "Ad hoc On-Demand Distance Vector (AODV) Routing"
+        initiallyEnabled = "true"
+        requires = "UDP IPv4 Ieee80211"
+        labels = "routing"
+        nedPackages = "
+                       inet.routing.aodv
+                       inet.node.aodv
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_AODV"
+        linkerFlags = ""
+        />
+    <feature
+        id="AODV_examples"
+        name="AODV examples"
+        description = "Ad hoc On-Demand Distance Vector (AODV) Routing examples"
+        initiallyEnabled = "true"
+        requires = "AODV"
+        labels = "routing examples"
+        nedPackages = "
+                       inet.examples.aodv
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="GPSR"
+        name="GPSR"
+        description = "Greedy Perimeter Stateless Routing for Wireless Networks"
+        initiallyEnabled = "true"
+        requires = "UDP IPv4"
+        labels = "routing"
+        nedPackages = "
+                       inet.routing.gpsr
+                       inet.node.gpsr
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="RIP"
+        name="RIP"
+        description = "Routing Information Protocol"
+        initiallyEnabled = "true"
+        requires = "UDP IPv4"
+        labels = "routing"
+        nedPackages = "
+                       inet.routing.rip
+                       inet.node.rip
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_RIP"
+        linkerFlags = ""
+        />
+    <feature
+        id="RIP_examples"
+        name="RIP examples"
+        description = "Routing Information Protocol examples"
+        initiallyEnabled = "true"
+        requires = "UDP IPv4 RIP"
+        labels = "routing examples"
+        nedPackages = "
+                       inet.examples.rip
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="MANET_examples"
+        name="MANET routing examples"
+        description = "Examples for the MANET routing protocols"
+        initiallyEnabled = "true"
+        requires = "TCP_INET UDP IPv4 DYMO GPSR"
+        labels = "routing manet examples"
+        nedPackages = "
+                       inet.examples.manetrouting
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="mobility"
+        name="Mobility"
+        description = "Mobility support for wireless simulations"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.mobility.base
+                       inet.mobility.group
+                       inet.mobility.single
+                       inet.mobility.static
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="mobility_examples"
+        name="Mobility examples"
+        description = "Examples for Mobility support"
+        initiallyEnabled = "true"
+        requires = "mobility"
+        labels = "examples"
+        nedPackages = "
+                       inet.examples.mobility
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="physicalenvironment"
+        name="Physical environment"
+        description = "Physical environment support"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.environment.common
+                       inet.environment.ground
+                       inet.environment.objectcache
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="physicalenvironment_examples"
+        name="Physical environment examples"
+        description = "Physical environment examples"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.examples.objectcache
+                       inet.examples.geometry
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="power"
+        name="Power"
+        description = "Provides energy generator, consumer and storage models such as batteries"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.power.base
+                       inet.power.consumer
+                       inet.power.generator
+                       inet.power.storage
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_POWER"
+        linkerFlags = ""
+        />
+    <feature
+        id="radio"
+        name="Radio"
+        description = "Radio support for wireless simulations"
+        requires = "power"
+        labels = ""
+        nedPackages = "
+                       inet.physicallayer.analogmodel
+                       inet.physicallayer.antenna
+                       inet.physicallayer.backgroundnoise
+                       inet.physicallayer.base
+                       inet.physicallayer.common
+                       inet.physicallayer.communicationcache
+                       inet.physicallayer.energyconsumer
+                       inet.physicallayer.errormodel
+                       inet.physicallayer.modulation
+                       inet.physicallayer.neighborcache
+                       inet.physicallayer.obstacleloss
+                       inet.physicallayer.pathloss
+                       inet.physicallayer.propagation
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_RADIO"
+        linkerFlags = ""
+        />
+    <feature
+        id="Ieee80211"
+        name="IEEE 802.11"
+        description = "Provides IEEE 802.11 (a/b/g/e/p/n) Ad-hoc and Infrastucture mode NICs"
+        initiallyEnabled = "true"
+        requires = "mobility radio idealwireless"
+        labels = "nic wireless"
+        nedPackages = "
+                       inet.linklayer.ieee80211
+                       inet.physicallayer.ieee80211
+                       inet.common.serializer.headerserializers.ieee80211
+                       inet.node.wireless
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_IEEE80211"
+        linkerFlags = ""
+        />
+    <feature
+        id="Ieee802154"
+        name="IEEE 802.15.4"
+        description = "Provides IEEE 802.15.4 Narrowband and Ultra-Wideband NICs"
+        initiallyEnabled = "true"
+        requires = "mobility radio CSMA"
+        labels = "nic wireless"
+        nedPackages = "
+                       inet.linklayer.ieee802154
+                       inet.physicallayer.ieee802154
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_IEEE802154"
+        linkerFlags = ""
+        />
+    <feature
+        id="apskradio"
+        name="APSK radio"
+        description = "Provides a hypothetical generic radio for APSK modulations"
+        requires = "mobility radio Ieee80211"
+        labels = ""
+        nedPackages = "
+                       inet.physicallayer.apskradio
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_APSKRADIO"
+        linkerFlags = ""
+        />
+    <feature
+        id="idealwireless"
+        name="Ideal Wireless"
+        description = "Provides a simple wireless interface that consists
+        	of a unit disk radio and no real MAC protocol. It offers simplicity
+        	for scenarios where Layer 1 and 2 effects can be completely ignored.
+        	Parts: IdealWirelessNic (IdealWirelessMac plus IdealRadio), and
+            IdealRadioMedium."
+        initiallyEnabled = "true"
+        requires = "mobility radio"
+        labels = "nic wireless"
+        nedPackages = "
+                       inet.linklayer.ideal
+                       inet.physicallayer.idealradio
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_IDEALWIRELESS"
+        linkerFlags = ""
+        />
+    <feature
+        id="wireless_examples"
+        name="Wireless examples"
+        description = "Provides various wireless examples"
+        initiallyEnabled = "true"
+        requires = "TCP_INET UDP IPv4 Ethernet Ieee80211 Ieee802154 apskradio idealwireless physicalenvironment AODV CSMA"
+        labels = "nic wireless"
+        nedPackages = "
+                       inet.examples.adhoc
+                       inet.examples.neighborcache
+                       inet.examples.wireless
+                       inet.tutorials.wireless
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="visualization"
+        name="Visualization"
+        description = "Provides network-level visualization features for physical layer,
+                       data link layer and network layer communications, and more.
+                       Supports both canvas (2D) and OSG (3D) graphics."
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.visualizer
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_VISUALIZERS"
+        linkerFlags = ""
+        />
+    <feature
+        id="visualization_examples"
+        name="Visualization examples"
+        description = "Provides examples for the various visualization modules."
+        initiallyEnabled = "true"
+        requires = "visualization physicalenvironment DYMO Ieee80211 IPv4 MultiNet Ethernet"
+        labels = ""
+        nedPackages = "
+                       inet.examples.visualization
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="VoIPStream"
+        name="VoIPStream"
+        description = "Voice over IP tool. Required external libraries: libavcodec libavformat libavresample libavutil"
+        initiallyEnabled = "false"
+        requires = "UDP"
+        labels = ""
+        nedPackages = "
+                       inet.applications.voipstream
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_VOIPSTREAM"
+        linkerFlags = ""
+        />
+    <feature
+        id="VoIPStream_examples"
+        name="VoIPStream examples"
+        description = "Example VoIP simulations"
+        initiallyEnabled = "false"
+        requires = "VoIPStream IPv4 Ethernet"
+        labels = "examples"
+        nedPackages = "
+                       inet.examples.voipstream
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="SimpleVoIP"
+        name="SimpleVoIP"
+        description = "A simplified VoIP model with MOS measurement capability"
+        initiallyEnabled = "true"
+        requires = "UDP"
+        labels = ""
+        nedPackages = "
+                       inet.applications.voip
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="SimpleVoIP_examples"
+        name="SimpleVoIP examples"
+        description = "Example VoIP simulations"
+        initiallyEnabled = "true"
+        requires = "SimpleVoIP IPv4 Ethernet InternetCloud"
+        labels = "examples"
+        nedPackages = "
+                       inet.examples.voip
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="HttpTools"
+        name="HttpTools"
+        description = "Components for web traffic simulation.
+                       This is a port of Kristjan Jonsson's HttpTools,
+                       see http://code.google.com/p/omnet-httptools/."
+        initiallyEnabled = "true"
+        requires = "TCP_common"
+        labels = "application http web"
+        nedPackages = "
+                       inet.applications.httptools
+                       inet.node.httptools
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="HttpTools_examples_direct"
+        name="HttpTools examples with direct sending"
+        description = "HttpTools examples that do not use underlying protocol layers"
+        initiallyEnabled = "true"
+        requires = "HttpTools"
+        labels = "examples http web"
+        nedPackages = "
+                       inet.examples.httptools.direct
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="HttpTools_examples_socket"
+        name="HttpTools examples with socket mode"
+        description = "HttpTools examples that include the simulation of TCP and lower layers as well"
+        initiallyEnabled = "true"
+        requires = "HttpTools IPv4 Ethernet TCP_INET"
+        labels = "examples http web"
+        nedPackages = "
+                       inet.examples.httptools.socket
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="DiffServ"
+        name="DiffServ"
+        description = "Components for implementing Differentiated Services"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.networklayer.diffserv
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="DiffServ_examples"
+        name="DiffServ examples"
+        description = "DiffServ examples"
+        initiallyEnabled = "true"
+        requires = "DiffServ PPP Ethernet IPv4 UDP"
+        labels = ""
+        nedPackages = "
+                       inet.examples.diffserv
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="InternetCloud"
+        name="Internet Cloud"
+        description = "Components for simulating internet cloud"
+        initiallyEnabled = "true"
+        requires = "IPv4"
+        labels = ""
+        nedPackages = "
+                       inet.networklayer.internetcloud
+                       inet.node.internetcloud
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="InternetCloud_examples"
+        name="Internet Cloud examples"
+        description = "Internet Cloud examples"
+        initiallyEnabled = "true"
+        requires = "InternetCloud PPP Ethernet"
+        labels = ""
+        nedPackages = "
+                       inet.examples.internetcloud
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+
+    <feature
+        id="Ieee8021d"
+        name="IEEE 802.1d"
+        description = "STP and RSTP (Spanning Tree Protocol, Rapid Spanning Tree Protocol)"
+        initiallyEnabled = "true"
+        requires = "Ethernet"
+        labels = ""
+        nedPackages = "
+                       inet.linklayer.ieee8021d
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_IEEE8021D"
+        linkerFlags = ""
+        />
+    <feature
+        id="Ieee8021d_examples"
+        name="IEEE 802.1d examples"
+        description = "STP and RSTP examples"
+        initiallyEnabled = "true"
+        requires = "Ethernet Ieee8021d"
+        labels = ""
+        nedPackages = "
+                       inet.examples.ieee8021d
+                      "
+        extraSourceFolders = ""
+        compileFlags = ""
+        linkerFlags = ""
+        />
+    <feature
+        id="TUN"
+        name="TUN"
+        description = "TUN/TAP virtual network interface"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.applications.tunapp
+                       inet.linklayer.tun
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_TUN"
+        linkerFlags = ""
+        />
+    <feature
+        id="packetdrill"
+        name="PacketDrill testing"
+        description = "PacketDrill testing application"
+        initiallyEnabled = "true"
+        requires = "TUN TCP_INET UDP SCTP IPv4"
+        labels = ""
+        nedPackages = "
+                       inet.applications.packetdrill
+                       inet.node.packetdrill
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_PACKETDRILL"
+        linkerFlags = ""
+        />
+    <feature
+        id="BMAC"
+        name="BMAC"
+        description = "B-MAC, also called the Berkeley MAC, a Low Power Listening (LPL) protocol"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.linklayer.bmac
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_BMAC"
+        linkerFlags = ""
+        />
+    <feature
+        id="LMAC"
+        name="LMAC"
+        description = "L-MAC, a lightweight MAC protocol for wireless sensor networks"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.linklayer.lmac
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_LMAC"
+        linkerFlags = ""
+        />
+    <feature
+        id="CSMA"
+        name="CSMA"
+        description = "A CSMA (Carrier Sense Multiple Access) MAC protocol, similar to 802.15.4"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.linklayer.csma
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_CSMA"
+        linkerFlags = ""
+        />
+    <feature
+        id="CsmaCaMac"
+        name="CSMA/CA"
+        description = "A CSMA/CA (Carrier Sense Multiple Access / Collision Avoidance) MAC protocol, similar to 802.11b"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.linklayer.csmaca
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_CSMACA"
+        linkerFlags = ""
+        />
+</features>

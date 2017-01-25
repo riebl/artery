@@ -1,0 +1,194 @@
+====== inet-3.x ======
+
+2016-06-15  ------ inet-3.4.0 released ------
+
+2016-05-10  Levente Meszaros
+
+	Radio: Added packetReceivedFromUpper and packetSentToUpper signals.
+
+2016-04-19  Levente Meszaros
+
+	Radio: Fixed abortTransmission() cleanup.
+
+2016-04-19  Levente Meszaros
+
+	Followed recent logging API changes.
+
+2016-04-19  Levente Meszaros
+
+	RadioMedium: Fixed removeNonInterferingTransmissions() cache handling.
+
+	The cached frame was not removed.
+
+2016-01-18  Levente Meszaros
+
+	Radio: Changed default value of display communication/interference range
+	parameter.
+
+2016-05-04  Levente Meszaros
+
+	RadioMedium: Renamed "environment" parameters and fields to "physicalEnvironment"
+
+2016-05-31  Levente Meszaros
+
+	RadioMedium: remove packetReceived() from listener API.
+
+2016-01-21  Levente Meszaros
+
+	Radio: Added listener interfaces to support independent visualization.
+
+2016-05-04  Levente Meszaros
+
+	All: Removed visualization from various modules. Visualization-related
+	code will be moved into separate modules under src/inet/visualization.
+
+2016-06-01  ------ inet-3.3.0 released ------
+
+2016-04-06  ------ inet-3.2.4 released ------
+
+2016-03-16  ------ inet-3.2.3 released ------
+
+2016-03-11  ------ inet-3.2.2 released ------
+
+2016-01-21  ------ inet-3.2.1 released ------
+
+2015-12-16  ------ inet-3.2.0 released ------
+
+2015-12-08  Levente Meszaros
+
+	Radio: Added some documentation and a few missing overrides.
+
+2015-11-12  Levente Meszaros
+
+	Radio: Added support for the simulation of separate signal parts.
+
+	The preamble, header and data parts can be optionally simulated
+	separately. This is results in more accurate simulation, because a
+	reception may be aborted before the data part is received.
+
+2015-11-27  Zoltan Bojthe
+
+	Made the code compile with OMNeT++ 5.0b3
+
+2015-10-26  ------ inet-3.1.1 released ------
+
+2015-10-15  ------ inet-3.1.0 released ------
+
+2015-06-22  ------ inet-3.0.0 released ------
+
+2015-05-13  ------ inet-2.99.1 released ------
+
+2015-04-23  Levente Meszaros
+
+	Added radio medium lookup based on module parameter. Added snir parameter to
+	computeReceptionDecision.
+
+2015-04-13  Levente Meszaros
+
+	Deleted duplicated code used in communication range computation.
+
+2015-04-09  Levente Meszaros
+
+	Moved setting the biterror from the medium to the decision. This is needed
+	by the bitlevel model that computes biterrors in the deserializer.
+
+	Added communication heat map to MediumVisualizer.
+	Extracted MediumVisualizer from RadioMedium.
+
+2015-04-03  Levente Meszaros
+
+	Added level parameter to printToStream functions.
+
+2015-03-30  Levente Meszaros
+
+	Extracted MediumLimitCache from RadioMedium.
+
+2015-03-24  Levente Meszaros
+
+	Refactored the computation of communication figures. The new code simply
+	computes the transformation matrix. Changed various line widths to unscaled.
+
+2015-03-20  Levente Meszaros
+
+	Extracted separate CommunicationLog class.
+
+2015-03-18  Levente Meszaros
+
+	Replaced the default communication cache. Fixed computation of medium limits
+	during initialization.
+
+2015-03-16  Levente Meszaros
+
+	Consistently renamed packet level and bit level implementations into
+	separate subdirectories. Renamed common/layered to common/bitlevel. Moved
+	remaining common contents to common/packetlevel.
+
+2015-03-02  Levente Meszaros
+
+	Fixed memory managements bugs found by valgrind memcheck.
+
+2015-02-25  Levente Meszaros
+
+	Deleted obsolete ModulationClass, CodeRate, and ModulationType.
+	Moved BPSKModulation, QPSKModulation, QAM16Modulation, QAM64Modulation and
+	QAM256Modulation to modulation subdirectory and refactored them.
+
+	Extended RadioMedium and ReceptionDecision to support optional PHY frames
+	for the layered implementation.
+
+	Moved classes related to the layered implementation into the corresponding
+	layered directory: ConvolutionalCoder
+
+2015-02-24  Levente Meszaros
+
+	Refactored transmitPacket/receivePacket to support layered radio.
+	Added separate and optional PHY frame representation.
+
+2015-02-23  Levente Meszaros
+
+	Fixed deleting interval entries from the interval tree.
+	This bug caused the heap to grow indefinitely with the number of
+	transmissions. Reported by Raphael Riebl <raphael.riebl@thi.de>
+
+2015-01-21  Zoltan Bojthe
+
+	Applied C++ source code modernizer.
+
+2015-01-19  Levente Meszaros
+
+	Fixed removing dynamic radios.
+
+2015-01-12  Zoltan Bojthe
+
+	Fixed defects found by static code analyzer (Coverity).
+
+2014-11-26  Levente Meszaros
+
+	Renamed classes to TransmissionRequest and ReceptionIndication.
+	Moved them under the inet::physicallayer namespace.
+
+2014-11-19  Levente Meszaros
+
+	Added IntervalTree cache for efficiently computing arrivals.
+	This drastically increases physical layer performance for large networks.
+
+2014-11-17  Levente Meszaros
+
+	Added noise and SNIR cache counters.
+
+2014-11-12  Levente Meszaros
+
+	Ignore incoming reception messages when down. Ignore aborting ongoing
+	transmission when switching radio mode. Changed to switch radio mode
+	immediately during startup/shudown/crash ignoring switching times.
+
+2014-11-07  ------ inet-2.99.0 released ------
+
+2014-10-31  Levente Meszaros
+
+	Added initial implementation:
+	Arrival, BandListening, ConvolutionalCoder, FlatErrorModel, Interference,
+	ListeningDecision, Modulation, ModulationType, Radio, RadioFrame,
+	RadioMedium, ReceptionDecision
+
+====== inet-2.x ======

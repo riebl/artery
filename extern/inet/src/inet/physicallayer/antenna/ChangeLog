@@ -1,0 +1,52 @@
+====== inet-3.x ======
+
+2016-06-15  ------ inet-3.4.0 released ------
+
+2016-04-19  Levente Meszaros
+
+	Followed recent logging API changes.
+
+2016-06-01  ------ inet-3.3.0 released ------
+
+2016-04-06  ------ inet-3.2.4 released ------
+
+2016-03-16  ------ inet-3.2.3 released ------
+
+2016-03-11  ------ inet-3.2.2 released ------
+
+2016-01-21  ------ inet-3.2.1 released ------
+
+2015-12-16  ------ inet-3.2.0 released ------
+
+2015-10-26  ------ inet-3.1.1 released ------
+
+2015-10-15  ------ inet-3.1.0 released ------
+
+2015-06-22  ------ inet-3.0.0 released ------
+
+2015-05-13  ------ inet-2.99.1 released ------
+
+2015-05-12  Levente Meszaros
+
+	Added CosineAntenna and ParabolicAntenna.
+
+2015-04-03  Levente Meszaros
+
+	Added level parameter to printToStream functions.
+
+2015-01-21  Zoltan Bojthe
+
+	Applied C++ source code modernizer.
+
+2014-12-16  Levente Meszaros
+
+	Added mobilityModule parameter to antenna models.
+
+2014-11-07  ------ inet-2.99.0 released ------
+
+2014-10-31  Levente Meszaros
+
+	Added initial implementation:
+	ConstantGainAntenna, DipoleAntenna, InterpolatingAntenna, IsotropicAntenna
+
+====== inet-2.x ======

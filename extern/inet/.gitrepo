@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/inet-framework/inet.git
+	branch = v3.4.0
+	commit = bb8393fa8030a2b6bf282f66033251b2ab6db589
+	parent = 5a4a65b2ffb8ed05e47582a2dba32c61e8246a2d
+	cmdver = 0.3.0

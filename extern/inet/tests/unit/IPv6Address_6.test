@@ -1,0 +1,36 @@
+%description:
+Test parsing IPv6 addresses with prefix
+
+%includes:
+#include "inet/networklayer/contract/ipv6/IPv6Address.h"
+
+%global:
+
+using namespace inet;
+
+static void parseAddr(const char *s)
+{
+    IPv6Address a;
+    int prefixLen;
+    if (!a.tryParseAddrWithPrefix(s,prefixLen))
+        EV << "BAD ";
+    uint32 *d = a.words();
+    EV << s << " --> " << a.str() << "/" << prefixLen << "\n";
+}
+
+%activity:
+parseAddr("::0/0");
+parseAddr("::0/128");
+parseAddr("::0/129");
+parseAddr("::1/64");
+parseAddr("12:34:56::aa:bb:cc/56");
+EV << ".\n";
+
+%contains: stdout
+::0/0 --> <unspec>/0
+::0/128 --> <unspec>/128
+BAD ::0/129 --> <unspec>/129
+::1/64 --> ::1/64
+12:34:56::aa:bb:cc/56 --> 12:34:56::aa:bb:cc/56
+.
+

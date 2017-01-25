@@ -1,0 +1,47 @@
+%description:
+
+Test for one host pinging another.
+
+%inifile: omnetpp.ini
+
+[General]
+network = Test
+tkenv-plugin-path = ../../../etc/plugins
+ned-path = .;../../../../src;../../lib
+cmdenv-express-mode = false
+
+*.host*.numPingApps = 1
+*.hostSource.pingApp[0].startTime = 0.1s
+*.hostSource.pingApp[0].stopTime = 10s
+*.hostSource.pingApp[0].destAddr = "hostDestination"
+*.hostSource.pingApp[0].printPing = true
+
+%file: test.ned
+
+import inet.node.ethernet.Eth10M;
+import inet.node.inet.StandardHost;
+import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
+
+network Test
+{
+    submodules:
+        hostSource: StandardHost;
+        hostDestination: StandardHost;
+        configurator: IPv4NetworkConfigurator;
+    connections:
+        hostSource.ethg++ <--> Eth10M <--> hostDestination.ethg++;
+}
+
+%#--------------------------------------------------------------------------------------------------------------
+%contains-regex: stdout
+--------------------------------------------------------
+sent: 10   received: 10   loss rate \(%\): 0
+round-trip min/avg/max \(ms\): 0\.1761/0\.18763/0\.2914
+stddev \(ms\): 0\.0364611   variance:1\.32941e-00?9
+--------------------------------------------------------
+%#--------------------------------------------------------------------------------------------------------------
+%not-contains: stdout
+undisposed object:
+%not-contains: stdout
+-- check module destructor
+%#--------------------------------------------------------------------------------------------------------------

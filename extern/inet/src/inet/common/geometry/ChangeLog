@@ -1,0 +1,80 @@
+====== inet-3.x ======
+
+2016-06-15  ------ inet-3.4.0 released ------
+
+2016-04-19  Levente Meszaros
+
+	Common: Added coordinate axes as predefined values to Coord.
+
+2016-01-04  Levente Meszaros
+
+	Common: Fixed bounding box computation.
+
+2016-01-04  Levente Meszaros
+
+	Common: Added getSize and getCenter to Box.
+
+2016-05-31  Levente Meszaros
+
+	Visualizer: Added separate visualizer modules in a new toplevel folder.
+
+	Added separate visualizers for scene, network node, physical environment,
+	mobility, radio medium, connectivity, links, routes, obstacle loss, and
+	statistic. Added 3 visualizer modules for each model, one for cCanvas,
+	another one for OSG, and a combined variant. Also added integrated
+	visualizers that combine all known visualizers into a single module.
+
+	Also added "visualization" feature to .oppfeatures
+
+2016-01-04  Levente Meszaros
+
+	Added geographic coordinate systems:
+
+	* module interface IGeographicCoordinateSystem, and modules
+	  SimpleGeographicCoordinateSystem and OsgGeographicCoordinateSystem.
+
+	* C++ interface IGeographicCoordinateSystem, and GeoCoord (latitude+
+	  longitude+altitude)
+
+2016-06-01  ------ inet-3.3.0 released ------
+
+2016-04-06  ------ inet-3.2.4 released ------
+
+2016-03-16  ------ inet-3.2.3 released ------
+
+2016-03-11  ------ inet-3.2.2 released ------
+
+2016-01-21  ------ inet-3.2.1 released ------
+
+2015-12-16  ------ inet-3.2.0 released ------
+
+2015-09-29  Levente Meszaros
+
+	Geometry: Added some getters.
+
+2015-10-26  ------ inet-3.1.1 released ------
+
+2015-10-15  ------ inet-3.1.0 released ------
+
+2015-06-22  ------ inet-3.0.0 released ------
+
+2015-05-13  ------ inet-2.99.1 released ------
+
+2015-01-21  Zoltan Bojthe
+
+	Applied C++ source code modernizer.
+
+2014-12-18  Zoltan Bojthe
+
+	Fixed defects found by static code analyzer (Coverity).
+
+2014-11-07  ------ inet-2.99.0 released ------
+
+2014-10-31  Benjamin Seregi & Levente Meszaros
+
+	Added initial implementation:
+	EulerAngles, Quaternion, Rotation,
+	ShapeBase, GeometricObjectBase,
+	BVHTree, QuadTree, SpatialGrid,
+	Box, LineSegment, Plane, Polygon,
+	Sphere, Cuboid, Prism, Polyhedron

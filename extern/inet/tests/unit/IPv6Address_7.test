@@ -1,0 +1,27 @@
+%description:
+Test formLinkLocalAddress()
+
+%includes:
+#include "inet/networklayer/contract/ipv6/IPv6Address.h"
+#include "inet/networklayer/common/InterfaceToken.h"
+
+%global:
+
+using namespace inet;
+
+#define P(X)  EV << #X << "-->" << IPv6Address::formLinkLocalAddress(X) << "\n"
+
+%activity:
+P(InterfaceToken(1,2,64));
+P(InterfaceToken(0x11112222,0x33334444,64));
+P(InterfaceToken(0x11112222,0x33334444,48));
+P(InterfaceToken(0x11112222,0x33334444,20));
+EV << ".\n";
+
+%contains: stdout
+InterfaceToken(1,2,64)-->fe80::2:0:1
+InterfaceToken(0x11112222,0x33334444,64)-->fe80::3333:4444:1111:2222
+InterfaceToken(0x11112222,0x33334444,48)-->fe80::4444:1111:2222
+InterfaceToken(0x11112222,0x33334444,20)-->fe80::1:2222
+.
+

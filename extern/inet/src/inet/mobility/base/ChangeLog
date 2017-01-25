@@ -1,0 +1,63 @@
+====== inet-3.x ======
+
+2016-06-15  ------ inet-3.4.0 released ------
+
+2016-05-31  Levente Meszaros
+
+	Mobility: Use initialZ parameter even if initialized from display string.
+
+2016-04-19  Levente Meszaros
+
+	Resurrected default visualization without a visualizer.
+
+	MobilityBase: added support for geographic positioning: added the
+	coordinateSystemModule, visualizeMobility and visualRepresentation
+	parameters.
+
+2015-10-14  Levente Meszaros
+
+	Mobility: Added facing towards movement: added getCurrentAngular-
+	Position() to MovingMobilityBase. Now all mobile nodes face (i.e.
+	set the  orientation to) the direction of movement. This affects
+	radio reception when direction antenna is used.
+
+2016-05-04  Levente Meszaros
+
+	All: Removed visualization from various modules. Visualization-related
+	code will be moved into separate modules under src/inet/visualization.
+
+2016-06-01  ------ inet-3.3.0 released ------
+
+2016-04-06  ------ inet-3.2.4 released ------
+
+2016-03-16  ------ inet-3.2.3 released ------
+
+2016-03-11  ------ inet-3.2.2 released ------
+
+2016-01-21  ------ inet-3.2.1 released ------
+
+2015-12-16  ------ inet-3.2.0 released ------
+
+2015-10-14  Levente Meszaros
+
+	Mobility: Fixed call to base class.
+
+2015-10-26  ------ inet-3.1.1 released ------
+
+2015-10-15  ------ inet-3.1.0 released ------
+
+2015-06-22  ------ inet-3.0.0 released ------
+
+2015-05-13  ------ inet-2.99.1 released ------
+
+2015-03-26  Levente Meszaros
+
+	Changed movement trail visualization to be based on lastSpeed. Ported
+	floating point position fix from master branch.
+
+2015-03-24  Levente Meszaros
+
+	Added good colors to movement trails. Added fade out support to TrailFigure.
+	Changed various line widths to unscaled.
+
+====== inet-2.x ======

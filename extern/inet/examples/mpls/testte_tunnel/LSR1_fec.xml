@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<fectable>
+	<fecentry>
+		<id>1</id>
+		<destination>host3</destination>
+		<label>1</label>
+	</fecentry>
+	<fecentry>
+		<id>2</id>
+		<destination>host4</destination>
+		<label>2</label>
+	</fecentry>
+</fectable>

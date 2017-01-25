@@ -1,0 +1,58 @@
+#
+# TCP implementaion using the Network Simulation Cradle (TCP_NSC feature)
+#
+
+WITH_TCP_NSC := $(shell (cd .. && ./inet_featuretool -q isenabled TCP_NSC && echo enabled) )
+ifeq ($(WITH_TCP_NSC), enabled)
+  NSC_VERSION= $(shell ls -d ../3rdparty/nsc* 2>/dev/null | sed 's/^.*-//')
+  ifneq ($(NSC_VERSION),)
+    CFLAGS += -I../3rdparty/nsc-$(NSC_VERSION)/sim -DHAVE_NSC
+    LIBS += -Wl,-rpath,`abspath ../3rdparty/nsc-$(NSC_VERSION)`
+  endif
+endif
+
+#
+# pkg-config:
+#
+HAVE_PKGCFG := $(shell pkg-config --version 2>/dev/null)
+ifeq ($(strip $(HAVE_PKGCFG)),)
+  HAVE_PKGCFG := no
+else
+  HAVE_PKGCFG := yes
+  PKGCFG := $(shell which pkg-config)
+endif
+
+#
+# VoipStream feature:
+#
+WITH_VOIPSTREAM := $(shell (cd .. && ./inet_featuretool -q isenabled VoIPStream && echo enabled) )
+ifeq ($(WITH_VOIPSTREAM), enabled)
+  ifeq ($(HAVE_PKGCFG), yes)
+    HAVE_FFMPEG := $(shell $(PKGCFG) --exists libavcodec libavformat libavutil && echo yes || echo no)
+    ifeq ($(HAVE_FFMPEG), yes)
+      LIBS += $(shell $(PKGCFG) --libs libavcodec libavformat libavutil)
+      CFLAGS += $(shell $(PKGCFG) --cflags libavcodec libavformat libavutil) -DHAVE_FFMPEG
+    endif
+    HAVE_FFMPEG_AVRESAMPLE := $(shell $(PKGCFG) --exists libavresample && echo yes || echo no)
+    ifeq ($(HAVE_FFMPEG_AVRESAMPLE), yes)
+      LIBS += $(shell $(PKGCFG) --libs libavresample)
+      CFLAGS += $(shell $(PKGCFG) --cflags libavresample) -DHAVE_FFMPEG_AVRESAMPLE
+    endif
+  endif
+endif
+
+#
+# visualization feature requires (optionally) some extra osg and osgEarth libraries
+#
+WITH_VISUALIZERS := $(shell (cd .. && ./inet_featuretool -q isenabled visualization && echo enabled) )
+ifeq ($(WITH_VISUALIZERS), enabled)
+  ifeq ($(WITH_OSG), yes)
+      LIBS += -lOpenThreads -losg -losgText -losgDB -losgEarth -losgEarthUtil
+  endif
+endif
+
+# uncomment this if you want to run the NS3 vs INET 802.11 cross validation tests in the 'tests/misc/ns3' folder.
+# CFLAGS += -DNS3_VALIDATION
+
+# disable anoying "... hides overloaded virtual function" warning
+CFLAGS += -Wno-overloaded-virtual

@@ -1,0 +1,164 @@
+%description:
+Testing Ethernet communication between host pairs.
+All hosts use EtherMAC implementation with half duplex mode.
+Both hosts in pair have same ethernet configurations.
+Both hosts in pair are source and sink, too.
+
+variations:
+ - speed: 10Mbps / 100Mbps / 1Gbps
+
+checks:
+ - the idle state of rx is less than or equals to 2% in all hosts
+ - the utilization state of rx is more than or equals to 98% in all hosts
+
+%#--------------------------------------------------------------------------------------------------------------
+%testprog: opp_run
+
+%#--------------------------------------------------------------------------------------------------------------
+%file: test.ned
+
+import ned.DatarateChannel;
+import inet.node.ethernet.EtherHost;
+
+module EtherHostQ extends EtherHost
+{
+    parameters:
+        queueType = "DropTailQueue";
+        macType = "EtherMAC";
+        mac.duplexMode = false;
+}
+
+network SpeedTest
+{
+    types:
+        channel C10 extends DatarateChannel
+        {
+            delay = 0s;
+            datarate = 10Mbps;
+        }
+        channel C100 extends DatarateChannel
+        {
+            delay = 0s;
+            datarate = 100Mbps;
+        }
+        channel C1000 extends DatarateChannel
+        {
+            delay = 0s;
+            datarate = 1000Mbps;
+        }
+    submodules:
+        host_10_H_A: EtherHostQ {
+            parameters:
+                @display("p=70,70");
+        }
+        host_10_H_B: EtherHostQ {
+            parameters:
+                @display("p=210,70");
+        }
+        host_100_H_A: EtherHostQ {
+            parameters:
+                @display("p=70,210");
+        }
+        host_100_H_B: EtherHostQ {
+            parameters:
+                @display("p=210,210");
+        }
+        host_1000_H_A: EtherHostQ {
+            parameters:
+                @display("p=70,350");
+        }
+        host_1000_H_B: EtherHostQ {
+            parameters:
+                @display("p=210,350");
+        }
+    connections:
+        host_10_H_A.ethg <--> C10 <--> host_10_H_B.ethg;
+        host_100_H_A.ethg <--> C100 <--> host_100_H_B.ethg;
+        host_1000_H_A.ethg <--> C1000 <--> host_1000_H_B.ethg;
+}
+
+%#--------------------------------------------------------------------------------------------------------------
+%inifile: omnetpp.ini
+
+[General]
+sim-time-limit = 10s
+
+tkenv-plugin-path = ../../../etc/plugins
+#record-eventlog = true
+**.vector-recording = false
+
+network = SpeedTest
+
+*.host_10_H_A.cli.destAddress = "host_10_H_B"
+*.host_10_H_B.cli.destAddress = "host_10_H_A"
+
+*.host_100_H_A.cli.destAddress = "host_100_H_B"
+*.host_100_H_B.cli.destAddress = "host_100_H_A"
+
+*.host_1000_H_A.cli.destAddress = "host_1000_H_B"
+*.host_1000_H_B.cli.destAddress = "host_1000_H_A"
+
+**.cli.reqLength = 1250B       # 10.000 bit
+**.cli.respLength = 0B      # no response
+
+*.host_*.cli.startTime = 0s
+
+
+*.host_1000_H_*.cli.sendInterval = 0.010ms       # 10.000 / speed [ / 2 when halfduplex]
+*.host_100_H_*.cli.sendInterval  = 0.10ms        # 10.000 / speed [ / 2 when halfduplex]
+*.host_10_H_*.cli.sendInterval   = 1.0ms            # 10.000 / speed [ / 2 when halfduplex]
+
+**.mac.address = "auto"
+**.queue.dataQueue.frameCapacity = 1000
+
+%#--------------------------------------------------------------------------------------------------------------
+%postrun-command: Rscript check.r
+%#--------------------------------------------------------------------------------------------------------------
+%file: check.r
+#!/usr/bin/env Rscript
+
+options(echo=FALSE)
+options(width=160)
+library("omnetpp", warn.conflicts=FALSE)
+
+#TEST parameters
+scafile <- 'results/General-0.sca'
+linecount <- 6
+idlelimit <- 2.0
+usedlimit <- 98.0
+
+# begin TEST:
+
+idle <- loadDataset(scafile, add(type='scalar', select='name("rx channel idle *")'))
+used <- loadDataset(scafile, add(type='scalar', select='name("rx channel utilization *")'))
+
+cat("\nOMNETPP TEST RESULT: ")
+
+if(length(idle$scalars$value) == linecount & max(idle$scalars$value) <= idlelimit)
+{
+    cat("IDLE OK\n")
+} else {
+    cat("IDLE BAD:\n")
+    print(idle$scalars[idle$scalars$value > idlelimit,])
+}
+
+cat("\nOMNETPP TEST RESULT: ")
+
+if(length(used$scalars$value) == linecount & min(used$scalars$value) >= usedlimit)
+{
+    cat("USED OK\n")
+} else {
+    cat("USED BAD:\n")
+    print(used$scalars[used$scalars$value < usedlimit,])
+}
+
+cat("\n")
+
+%#--------------------------------------------------------------------------------------------------------------
+%contains: postrun-command(1).out
+
+OMNETPP TEST RESULT: IDLE OK
+
+OMNETPP TEST RESULT: USED OK
+
+%#--------------------------------------------------------------------------------------------------------------

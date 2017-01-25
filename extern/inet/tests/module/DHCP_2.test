@@ -1,0 +1,135 @@
+%description:
+Testing DHCP protocol
+
+%#--------------------------------------------------------------------------------------------------------------
+%file: test.ned
+
+import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
+import inet.node.inet.StandardHost;
+import ned.DatarateChannel;
+
+network Dhcptest
+{
+    types:
+        channel C extends DatarateChannel
+        {
+            delay = 0.1us;
+            datarate = 10Mbps;
+        }
+    submodules:
+        configurator: IPv4NetworkConfigurator {
+            parameters:
+                config = xml("<config><interface hosts='dhcpServer' address='192.168.1.1' netmask='255.255.255.0' /></config>");
+        }
+        dhcpClient: StandardHost {
+            parameters:
+                numUdpApps = 1;
+                udpApp[0].typename = "DHCPClient";
+                @display("p=66,76");
+        }
+        dhcpServer: StandardHost {
+            parameters:
+                numUdpApps = 1;
+                udpApp[0].typename = "DHCPServer";
+                @display("p=277,76");
+        }
+    connections:
+        dhcpClient.pppg++ <--> C <--> dhcpServer.pppg++;
+}
+
+%#--------------------------------------------------------------------------------------------------------------
+%inifile: omnetpp.ini
+
+[General]
+
+tkenv-plugin-path = ../../../etc/plugins
+ned-path = .;../../../../src;../../lib
+
+network = Dhcptest
+
+sim-time-limit = 10500s
+cmdenv-express-mode = false
+
+**.dhcpServer.udpApp[0].typename = "DHCPServer"
+**.dhcpServer.udpApp[0].subnetMask = "255.255.255.0"        # netmask to assign
+**.dhcpServer.udpApp[0].ipAddressStart = "192.168.1.100"    # ip to start to lease
+**.dhcpServer.udpApp[0].maxNumClients = 100     # number of ip to lease
+**.dhcpServer.udpApp[0].gateway = "192.168.1.1"     # gateway to assign
+**.dhcpServer.udpApp[0].dns = ""         # dns to assign
+**.dhcpServer.udpApp[0].leaseTime = 1000s     # lease time in seconds
+
+%#--------------------------------------------------------------------------------------------------------------
+%#--------------------------------------------------------------------------------------------------------------
+%contains-regex: stdout
+
+Running simulation\.\.\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+.*
+The requested IP 192\.168\.1\.100/255\.255\.255\.0 is available\. Assigning it to dhcpClient\.
+DHCPACK message arrived in RENEWING state\. The renewing process was successful\.
+\*\* Event
+
+%#--------------------------------------------------------------------------------------------------------------
+%not-contains: stdout
+undisposed object:
+%not-contains: stdout
+-- check module destructor
+%#--------------------------------------------------------------------------------------------------------------

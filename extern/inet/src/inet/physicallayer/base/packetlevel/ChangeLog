@@ -1,0 +1,131 @@
+====== inet-3.x ======
+
+2016-06-15  ------ inet-3.4.0 released ------
+
+2016-05-31  Levente Meszaros
+
+	Extracted TracingObstacleLossBase module and renamed TracingObstacleLoss
+	to DielectricObstacleLoss.
+
+	TracingObstacleLossBase: Changed obstaclePenetrated to use a signal
+	instead of a listener.
+
+2016-04-19  Levente Meszaros
+
+	Followed recent logging API changes.
+
+2016-05-09  Levente Meszaros
+
+	Added PathLossBase.
+
+2016-05-04  Levente Meszaros
+
+	All: Removed visualization from various modules. Visualization-related
+	code will be moved into separate modules under src/inet/visualization.
+
+2016-06-01  ------ inet-3.3.0 released ------
+
+2016-04-06  ------ inet-3.2.4 released ------
+
+2016-03-16  ------ inet-3.2.3 released ------
+
+2016-03-11  ------ inet-3.2.2 released ------
+
+2016-01-21  ------ inet-3.2.1 released ------
+
+2015-12-16  ------ inet-3.2.0 released ------
+
+2015-12-08  Levente Meszaros
+
+	Radio: Fixed PER computation in NetworkConfiguratorBase.
+
+	Added computeReceptionIndication to IReceiver interface.
+
+2015-12-08  Levente Meszaros
+
+	Radio: Added some documentation and a few missing overrides.
+
+2015-11-12  Levente Meszaros
+
+	Radio: Added support for the simulation of separate signal parts.
+
+	The preamble, header and data parts can be optionally simulated
+	separately. This is results in more accurate simulation, because a
+	reception may be aborted before the data part is received.
+
+2015-11-12  Levente Meszaros
+
+	Radio: Added separate preambleDuration parameters to transmitters.
+
+2015-10-26  ------ inet-3.1.1 released ------
+
+2015-10-15  ------ inet-3.1.0 released ------
+
+2015-06-22  ------ inet-3.0.0 released ------
+
+2015-05-13  ------ inet-2.99.1 released ------
+
+2015-04-15  Levente Meszaros
+
+	Added snir parameter to computeIsReceptionSuccessful. Added snir parameter
+	to computeReceptionDecision. Added arrival parameter to computeReceptionPower.
+
+2015-04-03  Levente Meszaros
+
+	Added basic antenna array support. Added level parameter to printToStream
+	functions.
+
+2015-03-18  Levente Meszaros
+
+	Fixed memory management by delaying allocation.
+
+2015-03-16  Levente Meszaros
+
+	Extracted DimensionalTransmitterBase class. This change fixes compilation
+	with individual radio features turned off.
+
+2015-03-16  Levente Meszaros
+
+	Consistently renamed packet level and bit level implementations into
+	separate subdirectories. Renamed base/layered to base/bitlevel. Moved
+	remaining base contents to base/packetlevel.
+
+2015-02-25  Levente Meszaros
+
+	Added modulation base classes:
+	APSKModulationBase, DPSKModulationBase, GFSKModulationBase, MQAMModulationBase, PPMModulationBase
+
+2015-02-24  Levente Meszaros
+
+	Extracted classes from narrowband radio: FlatRadioBase, FlatTransmitterBase,
+	FlatTransmissionBase, FlatReceiverBase, FlatReceptionBase
+	Fixed initstages for transmitters/receivers.
+
+2015-02-04  Levente Meszaros
+
+	Refactored the interface and implementation of modulations.
+
+	Modulations now support the calculation of BER and SER. Added a number of
+	new base classes, interfaces and various implementations. Some
+	implementations are still incomplete.
+
+2015-01-21  Zoltan Bojthe
+
+	Applied C++ source code modernizer.
+
+2014-12-02  Florian Meier
+
+	Copied DSSS-OQPSK-16 modulation from MiXiM.
+
+2014-11-07  ------ inet-2.99.0 released ------
+
+2014-10-31  Levente Meszaros
+
+	Added initial implementation:
+	AntennaBase, AttenuationBase, ErrorModelBase, FlatNoiseBase,
+	FlatReceiverBase, FlatReceptionBase, FlatTransmissionBase,
+	FlatTransmitterBase, ListeningBase, NoiseBase, PhysicalLayerBase,
+	PropagationBase, ReceiverBase, ReceptionBase, SNIRBase, SNIRReceiverBase,
+	TransmissionBase, TransmitterBase
+
+====== inet-2.x ======
