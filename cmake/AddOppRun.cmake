@@ -3,6 +3,7 @@ find_program(OMNETPP_RUN NAMES opp_run opp_run_release PATHS ${OMNETPP_ROOT}/bin
 macro(add_opp_run _name _config _target)
     get_ned_folders(${_target} _list_ned_folders)
     list(APPEND _list_ned_folders ${ARGN})
+    set(_ned_folders "")
     foreach(_ned_folder IN LISTS _list_ned_folders)
         set(_ned_folders "${_ned_folders}:${_ned_folder}")
     endforeach()
