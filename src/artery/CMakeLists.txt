@@ -48,12 +48,6 @@ set(SOURCES
     utility/AsioTask.cc
 )
 
-if(TARGET transfusion)
-    message(STATUS "Append transfusion to Artery")
-    list(APPEND SOURCES $<TARGET_OBJECTS:transfusion>)
-    add_dependencies(transfusion messages)
-endif()
-
 add_library(artery SHARED ${SOURCES} $<TARGET_OBJECTS:messages>)
 set_property(TARGET artery PROPERTY NED_FOLDERS ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(artery PUBLIC ${PROJECT_SOURCE_DIR}/src)
@@ -62,6 +56,11 @@ target_link_libraries(artery veins)
 target_link_libraries(artery Vanetza::vanetza)
 target_link_libraries(artery ${Boost_LIBRARIES})
 target_include_directories(artery PUBLIC ${Boost_INCLUDE_DIRS})
+
+if(TARGET transfusion)
+    target_link_libraries(artery transfusion)
+    add_dependencies(transfusion messages)
+endif()
 
 if("${Vanetza_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/vanetza/build")
     set(_make_command ${MAKE_COMMAND})
