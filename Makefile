@@ -6,6 +6,10 @@ VEINS_DIR = extern/veins
 
 all: vanetza veins
 
+clean:
+	$(MAKE) -C $(VEINS_DIR) cleanall
+	rm -rf $(VANETZA_BUILD_DIR)
+
 $(VEINS_DIR)/src/Makefile: $(VEINS_DIR)/.gitrepo
 	cd $(VEINS_DIR) && $(PYTHON) configure
 	$(MAKE) -C $(VEINS_DIR)/src depend
