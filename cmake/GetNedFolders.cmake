@@ -1,4 +1,5 @@
 macro(get_ned_folders _target _output)
+    set(${_output} "")
     get_target_property(_target_type ${_target} TYPE)
     if(NOT ${_target_type} STREQUAL "INTERFACE_LIBRARY")
         get_target_property(_target_ned_folders ${_target} NED_FOLDERS)
