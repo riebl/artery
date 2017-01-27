@@ -94,7 +94,6 @@ class ItsG5Middleware :
 		std::unique_ptr<vanetza::geonet::Router> mGeoRouter;
 		vanetza::btp::PortDispatcher mBtpPortDispatcher;
 		boost::posix_time::ptime mTimebase;
-		unsigned mAdditionalHeaderBits;
 		simtime_t mUpdateInterval;
 		cMessage* mUpdateMessage;
 		cMessage* mUpdateRuntimeMessage;

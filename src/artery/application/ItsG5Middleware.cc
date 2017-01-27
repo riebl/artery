@@ -47,8 +47,7 @@ const simsignalwrap_t cMobilityStateChangedSignal(MIXIM_SIGNAL_MOBILITY_CHANGE_N
 
 ItsG5Middleware::ItsG5Middleware() :
 		mRadioDriver(nullptr), mRadioDriverIn(nullptr), mRadioDriverOut(nullptr),
-		mDccScheduler(mDccFsm, mRuntime.now()),
-		mAdditionalHeaderBits(0)
+		mDccScheduler(mDccFsm, mRuntime.now())
 {
 }
 
@@ -64,7 +63,6 @@ void ItsG5Middleware::request(const vanetza::access::DataRequest& req,
 	net->setByteLength(payload->size());
 	net->setPayload(GeoNetPacketWrapper(std::move(payload)));
 	net->setControlInfo(new GeoNetRequest(req));
-	net->addBitLength(mAdditionalHeaderBits);
 
 	send(net, mRadioDriverOut);
 }
@@ -157,7 +155,6 @@ void ItsG5Middleware::initializeMiddleware()
 	mFacilities.register_mutable(&mDccScheduler);
 	mFacilities.register_const(&mTimer);
 
-	mAdditionalHeaderBits = par("headerLength");
 	mRuntime.reset(mTimer.getCurrentTime());
 	mUpdateInterval = par("updateInterval").doubleValue();
 	mUpdateMessage = new cMessage("middleware update");
