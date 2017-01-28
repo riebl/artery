@@ -41,12 +41,14 @@
 // forward declarations
 namespace Veins { class TraCIMobility; }
 class ItsG5BaseService;
+class RadioDriverBase;
 
 /**
  * Middleware providing a runtime context for services.
- * It can be plugged in wherever a IBaseApplLayer implementation is required.
  */
-class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface, public vanetza::btp::RequestInterface
+class ItsG5Middleware :
+    public cSimpleModule, public cListener,
+    public vanetza::access::Interface, public vanetza::btp::RequestInterface
 {
 	public:
 		typedef uint16_t port_type;
@@ -62,12 +64,13 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 		int numInitStages() const override;
 		void finish() override;
 		void handleMessage(cMessage *msg) override;
-		void handleSelfMsg(cMessage *sg) override;
-		void handleLowerMsg(cMessage *msg) override;
-		void handleLowerControl(cMessage *msg) override;
+		virtual void handleSelfMsg(cMessage *msg);
+		virtual void handleLowerMsg(cMessage *msg);
 		void receiveSignal(cComponent*, simsignal_t, cObject*, cObject*) override;
+		void receiveSignal(cComponent*, simsignal_t, double, cObject*) override;
 
 	private:
+		cModule* findHost();
 		void update();
 		void updatePosition();
 		void updateServices();
@@ -78,6 +81,9 @@ class ItsG5Middleware : public BaseApplLayer, public vanetza::access::Interface,
 		SimTime convertSimTime(vanetza::Clock::time_point tp) const;
 
 		Veins::TraCIMobility* mMobility;
+		RadioDriverBase* mRadioDriver;
+		cGate* mRadioDriverIn;
+		cGate* mRadioDriverOut;
 		VehicleDataProvider mVehicleDataProvider;
 		Timer mTimer;
 		vanetza::Runtime mRuntime;

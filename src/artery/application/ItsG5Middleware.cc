@@ -21,12 +21,13 @@
 #include "artery/application/ItsG5Service.h"
 #include "artery/mac/AccessCategories.h"
 #include "artery/mac/AccessCategoriesVanetza.h"
-#include "artery/mac/MacToGeoNetControlInfo.h"
-#include "artery/messages/ChannelLoadReport_m.h"
 #include "artery/messages/GeoNetPacket_m.h"
-#include "artery/netw/GeoNetToMacControlInfo.h"
+#include "artery/netw/GeoNetIndication.h"
+#include "artery/netw/GeoNetRequest.h"
+#include "artery/nic/RadioDriverBase.h"
 #include "veins/base/connectionManager/ChannelAccess.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
+#include "inet/common/ModuleAccess.h"
 #include <vanetza/btp/header.hpp>
 #include <vanetza/btp/header_conversion.hpp>
 #include <vanetza/btp/ports.hpp>
@@ -44,51 +45,17 @@ Define_Module(ItsG5Middleware);
 
 const simsignalwrap_t cMobilityStateChangedSignal(MIXIM_SIGNAL_MOBILITY_CHANGE_NAME);
 
-LAddress::L2Type convertToL2Type(const vanetza::MacAddress& mac)
-{
-	if (mac == vanetza::cBroadcastMacAddress) {
-		return LAddress::L2BROADCAST();
-	} else {
-		LAddress::L2Type result = 0;
-		for (unsigned i = 0; i < mac.octets.size(); ++i) {
-			result <<= 8;
-			result |= mac.octets[i];
-		}
-		return result;
-	}
-}
-
-vanetza::MacAddress convertToMacAddress(const LAddress::L2Type& addr)
-{
-	if (LAddress::isL2Broadcast(addr)) {
-		return vanetza::cBroadcastMacAddress;
-	} else {
-		LAddress::L2Type tmp = addr;
-		vanetza::MacAddress mac;
-		for (unsigned i = mac.octets.size(); i > 0; --i) {
-			mac.octets[i - 1] = tmp & 0xff;
-			tmp >>= 8;
-		}
-		return mac;
-	}
-}
-
 ItsG5Middleware::ItsG5Middleware() :
+		mRadioDriver(nullptr), mRadioDriverIn(nullptr), mRadioDriverOut(nullptr),
 		mDccScheduler(mDccFsm, mRuntime.now()),
 		mAdditionalHeaderBits(0)
 {
-
 }
 
 void ItsG5Middleware::request(const vanetza::access::DataRequest& req,
 		std::unique_ptr<vanetza::geonet::DownPacket> payload)
 {
 	Enter_Method_Silent();
-	GeoNetToMacControlInfo* macCtrlInfo = new GeoNetToMacControlInfo();
-	macCtrlInfo->access_category = edca::map(req.access_category);
-	macCtrlInfo->destination_addr = convertToL2Type(req.destination_addr);
-	macCtrlInfo->source_addr = convertToL2Type(req.source_addr);
-
 	if ((*payload)[vanetza::OsiLayer::Network].ptr() == nullptr) {
 		throw cRuntimeError("Missing network layer payload in middleware request");
 	}
@@ -96,10 +63,10 @@ void ItsG5Middleware::request(const vanetza::access::DataRequest& req,
 	GeoNetPacket* net = new GeoNetPacket("GeoNet packet");
 	net->setByteLength(payload->size());
 	net->setPayload(GeoNetPacketWrapper(std::move(payload)));
-	net->setControlInfo(macCtrlInfo);
+	net->setControlInfo(new GeoNetRequest(req));
 	net->addBitLength(mAdditionalHeaderBits);
 
-	sendDown(net);
+	send(net, mRadioDriverOut);
 }
 
 void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique_ptr<vanetza::DownPacket> payload)
@@ -147,12 +114,11 @@ void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique
 
 int ItsG5Middleware::numInitStages() const
 {
-	return std::max(BaseApplLayer::numInitStages(), 3);
+	return 3;
 }
 
 void ItsG5Middleware::initialize(int stage)
 {
-	BaseApplLayer::initialize(stage);
 	switch (stage) {
 		case 0:
 			initializeMiddleware();
@@ -175,7 +141,13 @@ void ItsG5Middleware::initialize(int stage)
 void ItsG5Middleware::initializeMiddleware()
 {
 	mTimer.setTimebase(par("datetime"));
-	mMobility = Veins::TraCIMobilityAccess().get(getParentModule());
+
+	mRadioDriver = inet::findModuleFromPar<RadioDriverBase>(par("radioDriverModule"), this);
+	mRadioDriverIn = gate("radioDriverIn");
+	mRadioDriverOut = gate("radioDriverOut");
+	mRadioDriver->subscribe(RadioDriverBase::ChannelLoadSignal, this);
+
+	mMobility = Veins::TraCIMobilityAccess().get(findHost());
 	if (mMobility == nullptr) {
 		throw cRuntimeError("Mobility not found");
 	}
@@ -202,7 +174,7 @@ void ItsG5Middleware::initializeMiddleware()
 	gn_addr.is_manually_configured(true);
 	gn_addr.station_type(vanetza::geonet::StationType::PASSENGER_CAR);
 	gn_addr.country_code(0);
-	gn_addr.mid(vanetza::create_mac_address(this->getId()));
+	gn_addr.mid(mRadioDriver->getMacAddress());
 	mGeoRouter.reset(new vanetza::geonet::Router {mRuntime, mGeoMib});
 	mGeoRouter->set_address(gn_addr);
 	mDccControl.reset(new vanetza::dcc::FlowControl {mRuntime, mDccScheduler, *this});
@@ -317,7 +289,6 @@ void ItsG5Middleware::finish()
 	cancelAndDelete(mUpdateMessage);
 	cancelAndDelete(mUpdateRuntimeMessage);
 	findHost()->unsubscribe(cMobilityStateChangedSignal, this);
-	BaseApplLayer::finish();
 }
 
 void ItsG5Middleware::handleMessage(cMessage *msg)
@@ -325,8 +296,12 @@ void ItsG5Middleware::handleMessage(cMessage *msg)
 	// Update clock before anything else is executed (which might read the clock)
 	mRuntime.trigger(mTimer.getCurrentTime());
 
-	// Don't forget to dispatch message properly
-	BaseApplLayer::handleMessage(msg);
+	if (msg->isSelfMessage()) {
+		handleSelfMsg(msg);
+	} else {
+		ASSERT(msg->getArrivalGate() == mRadioDriverIn);
+		handleLowerMsg(msg);
+	}
 }
 
 void ItsG5Middleware::handleSelfMsg(cMessage *msg)
@@ -342,27 +317,17 @@ void ItsG5Middleware::handleSelfMsg(cMessage *msg)
 
 void ItsG5Middleware::handleLowerMsg(cMessage *msg)
 {
-	auto* packet = dynamic_cast<GeoNetPacket*>(msg);
-	assert(packet);
+	auto* packet = check_and_cast<GeoNetPacket*>(msg);
 	auto& wrapper = packet->getPayload();
-	auto* info = dynamic_cast<MacToGeoNetControlInfo*>(packet->getControlInfo());
-	assert(info);
-	vanetza::MacAddress sender = convertToMacAddress(info->source_addr);
-	vanetza::MacAddress destination = convertToMacAddress(info->destination_addr);
-	mGeoRouter->indicate(wrapper.extract_up_packet(), sender, destination);
+	auto* indication = check_and_cast<GeoNetIndication*>(packet->getControlInfo());
+	mGeoRouter->indicate(wrapper.extract_up_packet(), indication->source, indication->destination);
 	scheduleRuntime();
 	delete msg;
 }
 
-void ItsG5Middleware::handleLowerControl(cMessage *msg)
+cModule* ItsG5Middleware::findHost()
 {
-	auto* channel_load_msg = dynamic_cast<ChannelLoadReport*>(msg);
-	if (nullptr != channel_load_msg) {
-		mDccFsm.update(channel_load_msg->getChannelLoad());
-	} else {
-		throw cRuntimeError("Unknown lower control message");
-	}
-	delete msg;
+	return inet::getContainingNode(this);
 }
 
 void ItsG5Middleware::update()
@@ -374,9 +339,19 @@ void ItsG5Middleware::update()
 
 void ItsG5Middleware::receiveSignal(cComponent* component, simsignal_t signal, cObject* obj, cObject* details)
 {
-	BaseApplLayer::receiveSignal(component, signal, obj, details);
 	if (signal == cMobilityStateChangedSignal) {
 		mVehicleDataProvider.update(mMobility);
+	}
+}
+
+void ItsG5Middleware::receiveSignal(cComponent* component, simsignal_t signal, double value, cObject* details)
+{
+	if (signal == RadioDriverBase::ChannelLoadSignal) {
+		ASSERT(value >= 0.0 && value <= 1.0);
+		unsigned busy_samples = 12500.0 * value;
+		vanetza::dcc::ChannelLoad cl { busy_samples, 12500 };
+		ASSERT(abs(channel_load.fraction() - value) < 1.0e-6);
+		mDccFsm.update(cl);
 	}
 }
 

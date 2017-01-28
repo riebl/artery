@@ -15,12 +15,11 @@
 
 package artery.application;
 
-import org.car2x.veins.base.modules.IBaseApplLayer;
-
 // Middleware for ITS G5 services
-simple ItsG5Middleware like IBaseApplLayer
+simple ItsG5Middleware
 {
 	parameters:
+		string radioDriverModule;
 		int headerLength = default(0) @unit(bit);
 		double updateInterval = default(0.1s) @unit(s);
 		string datetime;
@@ -31,8 +30,6 @@ simple ItsG5Middleware like IBaseApplLayer
 		int vanetzaDccQueueLength = default(2);
 
 	gates:
-		input lowerLayerIn;
-		output lowerLayerOut;
-		input lowerControlIn;
-		output lowerControlOut;
+		input radioDriverIn;
+		output radioDriverOut;
 }

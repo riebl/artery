@@ -42,6 +42,8 @@ set(SOURCES
     mac/EdcaQueue.cc
     mac/MacItsG5.cc
     netw/GeoNetPacketWrapper.cc
+    nic/RadioDriverBase.cc
+    nic/VeinsRadioDriver.cc
     traci/TraCIArteryNodeManager.cc
     traci/TraCISimpleNodeManager.cc
     traci/TraCIScenarioManagerArtery.cc
