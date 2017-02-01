@@ -75,9 +75,9 @@ void ExampleService::trigger()
 	request(req, packet);
 }
 
-void ExampleService::receiveSignal(cComponent* source, simsignal_t signal, bool valid, cObject*)
+void ExampleService::receiveSignal(cComponent* source, simsignal_t signal, cObject*, cObject*)
 {
-	if (signal == scSignalCamReceived && valid) {
+	if (signal == scSignalCamReceived) {
 		auto& vehicle = getFacilities().get_const<traci::VehicleController>();
 		EV << "Vehicle " << vehicle.getVehicleId() << " received a CAM in sibling serivce\n";
 	}

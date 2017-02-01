@@ -25,7 +25,7 @@ class ExampleService : public ItsG5Service
 
         void indicate(const vanetza::btp::DataIndication&, cPacket*) override;
         void trigger() override;
-        void receiveSignal(cComponent*, simsignal_t, bool, cObject*) override;
+        void receiveSignal(cComponent*, simsignal_t, cObject*, cObject*) override;
 
     protected:
         void initialize() override;

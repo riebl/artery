@@ -36,6 +36,7 @@ set_target_properties(messages PROPERTIES
 find_package(Boost COMPONENTS date_time system REQUIRED)
 
 add_library(artery SHARED
+    application/CaObject.cc
     application/CaService.cc
     application/ExampleService.cc
     application/Facilities.cc

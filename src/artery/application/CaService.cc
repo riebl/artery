@@ -1,3 +1,4 @@
+#include "artery/application/CaObject.h"
 #include "artery/application/CaService.h"
 #include "artery/application/Asn1PacketVisitor.h"
 #include "artery/application/VehicleDataProvider.h"
@@ -80,9 +81,9 @@ void CaService::indicate(const vanetza::btp::DataIndication& ind, std::unique_pt
 {
 	Asn1PacketVisitor<vanetza::asn1::Cam> visitor;
 	const vanetza::asn1::Cam* cam = boost::apply_visitor(visitor, *packet);
-	if (cam) {
-		// TODO: collect statistic data
-		emit(scSignalCamReceived, cam->validate());
+	if (cam && cam->validate()) {
+		CaObject obj = visitor.shared_wrapper;
+		emit(scSignalCamReceived, &obj);
 		mLocalDynamicMap->updateAwareness(*cam);
 	}
 }
