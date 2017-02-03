@@ -41,6 +41,10 @@ Similarly, you can simply call `make vanetza` in the root directory and it will 
 Of course, you need to install Vanetza's dependencies first.
 See the Vanetza [Readme](extern/vanetza/README.md) for details.
 
+### INET
+As the next step, you need to build INET. For this purpose, yet another dedicated target, called inet, has to be built. Make sure you are in the root directory of Artery and simly call `make inet`.
+Similarly to vanetza, make sure that all required dependencies of inet are installed, which can be found in the INET [Install manual](extern/inet/INSTALL).
+
 ### Artery
 Are you still with us? Congratulations, you are almost done!
 
