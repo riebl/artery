@@ -24,6 +24,7 @@ You might obtain more recent versions from their upstream repositories:
 Veins and Vanetza need to be built before Artery itself.
 For this purpose, a *Makefile* is located in Artery's root directory.
 The following steps assume you have cloned the Artery repository on your (preferably Linux) machine and you have moved your terminal to this clone's directory.
+You can build all of these external project dependencies at once via the default `make all` target.
 
 ### Veins
 Please make sure you have all dependencies of Veins installed and set up OMNeT++ beforehand.
@@ -42,8 +43,8 @@ Of course, you need to install Vanetza's dependencies first.
 See the Vanetza [Readme](extern/vanetza/README.md) for details.
 
 ### INET
-As the next step, you need to build INET. For this purpose, yet another dedicated target, called inet, has to be built. Make sure you are in the root directory of Artery and simly call `make inet`.
-Similarly to vanetza, make sure that all required dependencies of inet are installed, which can be found in the INET [Install manual](extern/inet/INSTALL).
+As the next step, you need to build INET. Make sure you are in the root directory of Artery and simply call `make inet` there.
+INET's build dependencies are listed in the INET [Install manual](extern/inet/INSTALL).
 
 ### Artery
 Are you still with us? Congratulations, you are almost done!
