@@ -8,10 +8,10 @@ print ("demo.py successfully imported...")
 
 def createStories():
 	# Create coordinates needed for the PolygonCondition
-	coord0 = storyboard.Coord(0.0, 0.0, 0.0)
-	coord1 = storyboard.Coord(3000.0, 0.0, 0.0)
-	coord2 = storyboard.Coord(3000.0, 1600.0, 0.0)
-	coord3 = storyboard.Coord(0.0, 1600.0, 0.0)
+	coord0 = storyboard.Coord(0.0, 0.0)
+	coord1 = storyboard.Coord(3000.0, 0.0)
+	coord2 = storyboard.Coord(3000.0, 1600.0)
+	coord3 = storyboard.Coord(0.0, 1600.0)
 
 	# Create PolygonCondition
 	cond0 = storyboard.PolygonCondition([coord0, coord1, coord2, coord3])

@@ -1,11 +1,8 @@
 #ifndef EFFECT_H_
 #define EFFECT_H_
 
-namespace Veins
-{
-class TraCIMobility;
-}
 class Story;
+namespace traci { class VehicleController; }
 
 /**
  * Effect Interface
@@ -13,17 +10,17 @@ class Story;
 class Effect
 {
 public:
-    Effect(Story* story, Veins::TraCIMobility& car);
+    Effect(Story* story, traci::VehicleController& car);
     virtual ~Effect() = default;
     virtual void applyEffect() = 0;
     virtual void reapplyEffect() = 0;
     virtual void removeEffect() = 0;
     Story* getStory();
-    Veins::TraCIMobility* getCar();
+    traci::VehicleController* getCar();
 
 private:
     Story* m_story;
-    Veins::TraCIMobility* m_car;
+    traci::VehicleController* m_car;
 };
 
 #endif /* EFFECT_H_ */

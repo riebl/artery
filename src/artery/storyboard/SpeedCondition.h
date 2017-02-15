@@ -2,8 +2,8 @@
 #define SPEEDCONDITION_H_
 
 #include "artery/storyboard/Condition.h"
-#include "artery/application/ItsG5Middleware.h"
-#include "veins/modules/mobility/traci/TraCIMobility.h"
+#include <boost/units/quantity.hpp>
+#include <boost/units/systems/si/velocity.hpp>
 #include <functional>
 #include <omnetpp.h>
 
@@ -21,7 +21,7 @@ public:
     }
 
 private:
-    vanetza::units::Velocity m_speed;
+    boost::units::quantity<boost::units::si::velocity> m_speed;
     const COMP m_comp;
 };
 

@@ -11,11 +11,7 @@
 class Effect;
 class Story;
 
-namespace Veins
-{
-class TraCIMobility;
-class TraCIScenarioManager;
-}
+namespace traci { class VehicleController; }
 
 class Storyboard : public cSimpleModule, public cListener
 {
@@ -36,10 +32,9 @@ private:
     void receiveSignal(cComponent* source, simsignal_t, const char*, cObject*) override;
     void receiveSignal(cComponent* source, simsignal_t, const simtime_t&, cObject*) override;
 
-    Veins::TraCIScenarioManager* manager;
     boost::python::object module;
     std::vector<std::shared_ptr<Story>> m_stories;
-    std::map<Veins::TraCIMobility*, EffectStack> m_affectedCars;
+    std::map<traci::VehicleController*, EffectStack> m_affectedCars;
     std::map<std::string, Vehicle> m_vehicles;
 
 public:
@@ -63,26 +58,26 @@ public:
 
     /**
      * Removes all Effects from one car related to one Story
-     * \param TraciMobility: car from which the Effects should be removed
+     * \param Vehicle from which the Effects should be removed
      * \param Story to remove
      */
-    void removeStory(Veins::TraCIMobility*, const Story*);
+    void removeStory(traci::VehicleController*, const Story*);
 
     /**
      * Checks if a specific Story is already applied on a TraCIMobility
-     * \param TraCIMobility which should be tested
+     * \param Vehicle which should be tested
      * \param Story that should be tested
      */
-    bool storyApplied(Veins::TraCIMobility*, const Story*);
+    bool storyApplied(traci::VehicleController*, const Story*);
 
     /**
      * Checks if the story has to be applied or removed
      * Is called from Storyboard::update()
-     * param: Veins::TraCIMobility which should be tested if the story is already applied
+     * param: Vehicle which should be tested if the story is already applied
      * param: bool result of condition test
      * param: Story which was tested in the update function
      */
-    void checkCar(Veins::TraCIMobility&, bool, Story*);
+    void checkCar(traci::VehicleController&, bool, Story*);
 };
 
 #endif /* STORYBOARD_H_ */

@@ -9,6 +9,7 @@
 #include "artery/storyboard/OrCondition.h"
 #include "artery/storyboard/PolygonCondition.h"
 #include "artery/storyboard/TimeCondition.h"
+#include "artery/utility/Geometry.h"
 #include <boost/python.hpp>
 #include <boost/python/stl_iterator.hpp>
 
@@ -77,7 +78,7 @@ struct iterable_converter
  */
 struct EffectWrap : Effect, python::wrapper<Effect>
 {
-    EffectWrap(Story* story, Veins::TraCIMobility* car) :
+    EffectWrap(Story* story, traci::VehicleController* car) :
         Effect(story, *car)
     {
     }
@@ -101,7 +102,7 @@ struct EffectWrap : Effect, python::wrapper<Effect>
  */
 struct EffectFactoryWrap : EffectFactory, python::wrapper<EffectFactory>
 {
-    std::shared_ptr<Effect> create(Veins::TraCIMobility&, Story*)
+    std::shared_ptr<Effect> create(traci::VehicleController&, Story*)
     {
         return this->get_override("create") ();
     }
@@ -133,14 +134,14 @@ BOOST_PYTHON_MODULE(storyboard) {
     .from_python<std::vector<Condition*> >()
     .from_python<std::vector<EffectFactory*> >()
     .from_python<std::set<std::string> >()
-    .from_python<std::vector<Coord> >();
+    .from_python<std::vector<Position> >();
 
     /**
      * Condition related classes
      */
     python::class_<ConditionWrap, ConditionWrap*, boost::noncopyable>("Condition");
 
-    python::class_<PolygonCondition, PolygonCondition*, python::bases<Condition> >("PolygonCondition", python::init<std::vector<Coord> >());
+    python::class_<PolygonCondition, PolygonCondition*, python::bases<Condition> >("PolygonCondition", python::init<std::vector<Position> >());
 
     python::class_<TimeCondition, TimeCondition*, python::bases<Condition> >("TimeCondition", python::init<SimTime, SimTime>())
     .def(python::init<SimTime>());
@@ -157,7 +158,7 @@ BOOST_PYTHON_MODULE(storyboard) {
     /**
      * Effect related classes
      */
-    python::class_<EffectWrap, EffectWrap*, boost::noncopyable>("Effect", python::init<Story*, Veins::TraCIMobility*>());
+    python::class_<EffectWrap, EffectWrap*, boost::noncopyable>("Effect", python::init<Story*, traci::VehicleController*>());
 
     python::class_<EffectFactoryWrap, EffectFactoryWrap*, boost::noncopyable>("EffectFactory");
 
@@ -171,7 +172,7 @@ BOOST_PYTHON_MODULE(storyboard) {
     /**
      * Miscellaneous classes
      */
-    python::class_<Coord>("Coord", python::init<double, double, double>());
+    python::class_<Position>("Coord", python::init<double, double>());
 
     python::class_<SimTime>("SimTime", python::init<double>());
 

@@ -3,8 +3,9 @@ package artery.storyboard;
 simple Storyboard
 {
     parameters:
-        @display("p=240,0;i=misc/sun");
+        @display("i=block/blackboard;is=s");
         @class(Storyboard);
         string python = default("storyboard");
         string middlewareModule = default(".middleware");
+        string traciModule = default("^.traci");
 }

@@ -1,18 +1,23 @@
 #include "artery/storyboard/SpeedEffect.h"
-#include "veins/modules/mobility/traci/TraCICommandInterface.h"
-#include "veins/modules/mobility/traci/TraCIMobility.h"
+#include "artery/traci/VehicleController.h"
+#include <boost/units/io.hpp>
+#include <omnetpp/clog.h>
 
 void SpeedEffect::applyEffect()
 {
-    m_current = getCar()->getVehicleCommandInterface()->getMaxSpeed();
-    getCar()->getVehicleCommandInterface()->setMaxSpeed(m_speed);
-    EV << "SpeedEffect applied: " << getCar()->getExternalId() << ": MaxSpeed set to: " << getCar()->getVehicleCommandInterface()->getMaxSpeed() << "\n";
+    m_current = getCar()->getMaxSpeed() / boost::units::si::meter_per_second;
+    getCar()->setMaxSpeed(m_speed * boost::units::si::meter_per_second);
+
+    EV_STATICCONTEXT;
+    EV_DEBUG << "SpeedEffect applied to " << getCar()->getVehicleId() << ": MaxSpeed = " << getCar()->getMaxSpeed() << "\n";
 }
 
 void SpeedEffect::removeEffect()
 {
-    getCar()->getVehicleCommandInterface()->setMaxSpeed(m_current);
-    EV << "SpeedEffect removed: " << getCar()->getExternalId() << ": MaxSpeed set to: " << getCar()->getVehicleCommandInterface()->getMaxSpeed() << "\n";
+    getCar()->setMaxSpeed(m_current * boost::units::si::meter_per_second);
+
+    EV_STATICCONTEXT;
+    EV_DEBUG << "SpeedEffect removed from " << getCar()->getVehicleId() << ": MaxSpeed = " << getCar()->getMaxSpeed() << "\n";
 }
 
 void SpeedEffect::reapplyEffect()

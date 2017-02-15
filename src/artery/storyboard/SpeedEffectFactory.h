@@ -3,6 +3,7 @@
 
 #include "artery/storyboard/Effect.h"
 #include "artery/storyboard/EffectFactory.h"
+#include "artery/traci/VehicleController.h"
 #include <memory>
 
 /**
@@ -18,11 +19,11 @@ public:
 
     /**
      * Creates a new Effect for a TraCIMobility
-     * \param TraCIMobility which should be affected from the Effect
+     * \param Vehicle which should be affected from the Effect
      * \param Story from which the Effect should be created
      * \return Effect to add on the EffectStack from the TraCIMobility
      */
-    std::shared_ptr<Effect> create(Veins::TraCIMobility&, Story*);
+    std::shared_ptr<Effect> create(traci::VehicleController&, Story*) override;
 
 private:
     double m_speed;

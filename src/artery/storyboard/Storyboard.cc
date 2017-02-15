@@ -2,26 +2,35 @@
 #include "artery/storyboard/PythonModule.h"
 #include "artery/storyboard/Story.h"
 #include "artery/storyboard/Effect.h"
-#include "artery/traci/TraCIScenarioManagerArtery.h"
-#include "artery/traci/TraCIArteryNodeManager.h"
-#include "veins/modules/mobility/traci/TraCIScenarioManager.h"
+#include "artery/traci/VehicleController.h"
 #include "inet/common/ModuleAccess.h"
+#include <omnetpp/ccomponent.h>
 #include <omnetpp/cexception.h>
 
 using omnetpp::cRuntimeError;
 
 Define_Module(Storyboard);
 
+namespace
+{
+
+const auto traciAddNodeSignal = omnetpp::cComponent::registerSignal("traci.node.add");
+const auto traciRemoveNodeSignal = omnetpp::cComponent::registerSignal("traci.node.remove");
+const auto traciStepSignal = omnetpp::cComponent::registerSignal("traci.step");
+
+}
+
 void Storyboard::initialize(int stage)
 {
     // Get TraCiScenarioManager
-    manager = dynamic_cast<Veins::TraCIScenarioManager*>(this->getModuleByPath("^.manager"));
-    assert(manager);
+    cModule* traci = getModuleByPath(par("traciModule").stringValue());
+    if (!traci) {
+        throw cRuntimeError("No TraCI module found for signal subscription at %s", par("traciModule").stringValue());
+    }
 
-    manager->subscribe(TraCIArteryNodeManager::signalAddNode, this);
-    manager->subscribe(TraCIArteryNodeManager::signalRemoveNode, this);
-    manager->subscribe(TraCIArteryNodeManager::signalUpdateNode, this);
-    manager->subscribe(TraCIScenarioManagerArtery::signalUpdateStep, this);
+    traci->subscribe(traciAddNodeSignal, this);
+    traci->subscribe(traciRemoveNodeSignal, this);
+    traci->subscribe(traciStepSignal, this);
 
     // Import staticly linked modules
 #   if PY_VERSION_HEX >= 0x03000000
@@ -59,24 +68,28 @@ void Storyboard::handleMessage(cMessage * msg)
     EV << "Message arrived \n";
 }
 
-void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const char* nodeId, cObject*)
+void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const char* nodeId, cObject* node)
 {
-    if (signalId == TraCIArteryNodeManager::signalAddNode) {
-        cModule* node = manager->getModule(nodeId);
-        ItsG5Middleware* appl = inet::findModuleFromPar<ItsG5Middleware>(par("middlewareModule"), node);
-        Facilities* fac = appl->getFacilities();
-        m_vehicles.emplace(nodeId, Vehicle { fac->getMobility(), fac->getVehicleDataProvider() });
+    if (signalId == traciAddNodeSignal) {
+        cModule* nodeModule = dynamic_cast<cModule*>(node);
+        ItsG5Middleware* appl = inet::findModuleFromPar<ItsG5Middleware>(par("middlewareModule"), nodeModule, false);
+        if (appl) {
+            Facilities* fac = appl->getFacilities();
+            auto& controller = fac->get_mutable<traci::VehicleController>();
+            auto& vdp = fac->get_const<VehicleDataProvider>();
+            m_vehicles.emplace(nodeId, Vehicle { controller, vdp });
+        } else {
+            EV_DEBUG << "Node " << nodeId << " is not equipped with middleware module, skipped by Storyboard" << endl;
+        }
     }
-    else if (signalId == TraCIArteryNodeManager::signalRemoveNode) {
+    else if (signalId == traciRemoveNodeSignal) {
         m_vehicles.erase(nodeId);
-    }
-    else if (signalId == TraCIArteryNodeManager::signalUpdateNode) {
     }
 }
 
 void Storyboard::receiveSignal(cComponent*, simsignal_t signalId, const simtime_t&, cObject*)
 {
-    if (signalId == TraCIScenarioManagerArtery::signalUpdateStep) {
+    if (signalId == traciStepSignal) {
         updateStoryboard();
     }
 }
@@ -89,12 +102,12 @@ void Storyboard::updateStoryboard()
         for (auto& story : m_stories) {
             bool conditionTest = story->testCondition(car.second);
             // check if the story has to be applied or removed
-            checkCar(car.second.mobility, conditionTest, story.get());
+            checkCar(car.second.controller, conditionTest, story.get());
         }
     }
 }
 
-void Storyboard::checkCar(Veins::TraCIMobility& car, bool conditionsPassed, Story* story)
+void Storyboard::checkCar(traci::VehicleController& car, bool conditionsPassed, Story* story)
 {
     // If the Story is already applied on this car and the condition test is not passed
     // remove Story from EffectStack, because the car left the affected area
@@ -109,7 +122,7 @@ void Storyboard::checkCar(Veins::TraCIMobility& car, bool conditionsPassed, Stor
         if (conditionsPassed) {
             std::vector<std::shared_ptr<Effect>> effects;
             for (auto factory : story->getEffectFactories()) {
-                effects.push_back(std::move(factory->create(car, story)));
+                effects.push_back(factory->create(car, story));
             }
             addEffect(effects);
         }
@@ -121,7 +134,7 @@ void Storyboard::registerStory(std::shared_ptr<Story> story)
     m_stories.push_back(story);
 }
 
-bool Storyboard::storyApplied(Veins::TraCIMobility* car, const Story* story)
+bool Storyboard::storyApplied(traci::VehicleController* car, const Story* story)
 {
     if (m_affectedCars.count(car) == 0) {
         return false;
@@ -133,13 +146,13 @@ bool Storyboard::storyApplied(Veins::TraCIMobility* car, const Story* story)
 
 void Storyboard::addEffect(const std::vector<std::shared_ptr<Effect>>& effects)
 {
-    Veins::TraCIMobility* car = effects.begin()->get()->getCar();
+    traci::VehicleController* car = effects.begin()->get()->getCar();
     // No EffectStack found for this car or the story is not applied yet
     // apply effect
     if (m_affectedCars.count(car) == 0 || !m_affectedCars[car].isStoryOnStack(effects.begin()->get()->getStory()) ) {
         for(auto effect : effects) {
             m_affectedCars[car].addEffect(std::move(effect));
-            EV << "Effect added for: " << car->getExternalId() << "\n";
+            EV << "Effect added for: " << car->getVehicleId() << "\n";
         }
     }
     // Effect is already on Stack -> should never happen
@@ -148,7 +161,7 @@ void Storyboard::addEffect(const std::vector<std::shared_ptr<Effect>>& effects)
     }
 }
 
-void Storyboard::removeStory(Veins::TraCIMobility* car, const Story* story)
+void Storyboard::removeStory(traci::VehicleController* car, const Story* story)
 {
     m_affectedCars[car].removeEffectsByStory(story);
 }

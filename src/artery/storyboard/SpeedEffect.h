@@ -3,11 +3,8 @@
 
 #include "artery/storyboard/Effect.h"
 
-namespace Veins
-{
-class TraCIMobility;
-}
 class Story;
+namespace traci { class VehicleController; }
 
 /**
  * SpeedEffect
@@ -23,7 +20,7 @@ public:
      * \param Speed in m/s
      * \param Story from which the Effect is created
      */
-    SpeedEffect(Veins::TraCIMobility& car, double speed, Story* story) :
+    SpeedEffect(traci::VehicleController& car, double speed, Story* story) :
         Effect(story, car), m_speed(speed)
     {
     }

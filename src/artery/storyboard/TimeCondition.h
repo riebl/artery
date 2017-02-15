@@ -1,9 +1,8 @@
 #ifndef TIMECONDITION_H_
 #define TIMECONDITION_H_
 
-namespace Veins {
-    class TraCIMobility;
-}
+#include "artery/storyboard/Condition.h"
+#include <omnetpp/simtime.h>
 
 /**
  * Condition: Time
@@ -12,12 +11,11 @@ namespace Veins {
 class TimeCondition : public Condition
 {
 public:
-
     /**
      * Creates a time interval between begin and end
      * begin and end are given in SimTime seconds, limits included
      */
-    TimeCondition(SimTime begin, SimTime end) :
+    TimeCondition(omnetpp::SimTime begin, omnetpp::SimTime end) :
         m_begin(begin), m_end(end)
     {
     }
@@ -26,8 +24,8 @@ public:
      * Creates a time interval between begin and the end of the simulation
      * begin and end are given in SimTime seconds, limits included
      */
-    TimeCondition(SimTime begin) :
-        m_begin(begin), m_end(SimTime::getMaxTime())
+    TimeCondition(omnetpp::SimTime begin) :
+        m_begin(begin), m_end(omnetpp::SimTime::getMaxTime())
     {
     }
 
@@ -39,8 +37,8 @@ public:
     bool testCondition(const Vehicle& car);
 
 private:
-    SimTime m_begin = 0;
-    SimTime m_end = 0;
+    omnetpp::SimTime m_begin;
+    omnetpp::SimTime m_end;
 };
 
 #endif
