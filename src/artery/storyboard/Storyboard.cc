@@ -5,6 +5,7 @@
 #include "artery/traci/TraCIScenarioManagerArtery.h"
 #include "artery/traci/TraCIArteryNodeManager.h"
 #include "veins/modules/mobility/traci/TraCIScenarioManager.h"
+#include "inet/common/ModuleAccess.h"
 #include <omnetpp/cexception.h>
 
 using omnetpp::cRuntimeError;
@@ -62,10 +63,7 @@ void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const c
 {
     if (signalId == TraCIArteryNodeManager::signalAddNode) {
         cModule* node = manager->getModule(nodeId);
-        ItsG5Middleware* appl = dynamic_cast<ItsG5Middleware*>(node->getSubmodule("appl"));
-        if (appl == nullptr) {
-            throw cRuntimeError("Could not find ItsG5Middleware submodule");
-        }
+        ItsG5Middleware* appl = inet::findModuleFromPar<ItsG5Middleware>(par("middlewareModule"), node);
         Facilities* fac = appl->getFacilities();
         m_vehicles.emplace(nodeId, Vehicle { fac->getMobility(), fac->getVehicleDataProvider() });
     }
