@@ -588,11 +588,11 @@ public:
         void subscribe(int domID, const std::string& objID, SUMOTime beginTime, SUMOTime endTime, const std::vector<int>& vars) const;
         void subscribeContext(int domID, const std::string& objID, SUMOTime beginTime, SUMOTime endTime, int domain, SUMOReal range, const std::vector<int>& vars) const;
 
-        SubscribedValues getSubscriptionResults();
-        TraCIValues getSubscriptionResults(const std::string& objID);
+        const SubscribedValues& getSubscriptionResults() const;
+        const TraCIValues& getSubscriptionResults(const std::string& objID) const;
 
-        SubscribedContextValues getContextSubscriptionResults();
-        SubscribedValues getContextSubscriptionResults(const std::string& objID);
+        const SubscribedContextValues& getContextSubscriptionResults() const;
+        const SubscribedValues& getContextSubscriptionResults(const std::string& objID) const;
 
     private:
         /// @brief invalidated copy constructor

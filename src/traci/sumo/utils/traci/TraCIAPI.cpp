@@ -1426,14 +1426,14 @@ TraCIAPI::SimulationScope::subscribeContext(int domID, const std::string& objID,
     myParent.readContextSubscription(inMsg);
 }
 
-TraCIAPI::SubscribedValues
-TraCIAPI::SimulationScope::getSubscriptionResults() {
+const TraCIAPI::SubscribedValues&
+TraCIAPI::SimulationScope::getSubscriptionResults() const {
     return myParent.mySubscribedValues;
 }
 
 
-TraCIAPI::TraCIValues
-TraCIAPI::SimulationScope::getSubscriptionResults(const std::string& objID) {
+const TraCIAPI::TraCIValues&
+TraCIAPI::SimulationScope::getSubscriptionResults(const std::string& objID) const {
     if (myParent.mySubscribedValues.find(objID) != myParent.mySubscribedValues.end()) {
         return myParent.mySubscribedValues[objID];
     } else {
@@ -1442,14 +1442,14 @@ TraCIAPI::SimulationScope::getSubscriptionResults(const std::string& objID) {
 }
 
 
-TraCIAPI::SubscribedContextValues
-TraCIAPI::SimulationScope::getContextSubscriptionResults() {
+const TraCIAPI::SubscribedContextValues&
+TraCIAPI::SimulationScope::getContextSubscriptionResults() const {
     return myParent.mySubscribedContextValues;
 }
 
 
-TraCIAPI::SubscribedValues
-TraCIAPI::SimulationScope::getContextSubscriptionResults(const std::string& objID) {
+const TraCIAPI::SubscribedValues&
+TraCIAPI::SimulationScope::getContextSubscriptionResults(const std::string& objID) const {
     if (myParent.mySubscribedContextValues.find(objID) != myParent.mySubscribedContextValues.end()) {
         return myParent.mySubscribedContextValues[objID];
     } else {
