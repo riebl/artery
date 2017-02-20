@@ -1418,8 +1418,10 @@ TraCIAPI::SimulationScope::subscribe(int domID, const std::string& objID, SUMOTi
     myParent.send_commandSubscribeObjectVariable(domID, objID, beginTime, endTime, vars);
     tcpip::Storage inMsg;
     myParent.check_resultState(inMsg, domID);
-    myParent.check_commandGetResult(inMsg, domID);
-    myParent.readVariableSubscription(inMsg);
+    if (vars.size() > 0) {
+        myParent.check_commandGetResult(inMsg, domID);
+        myParent.readVariableSubscription(inMsg);
+    }
 }
 
 void
