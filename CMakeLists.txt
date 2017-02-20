@@ -72,6 +72,7 @@ endif()
 if(WITH_TRANSFUSION)
     add_subdirectory(src/artery/transfusion)
 endif()
+add_subdirectory(src/traci)
 add_subdirectory(src/artery)
 add_subdirectory(scenarios)
 

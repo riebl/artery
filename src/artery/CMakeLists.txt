@@ -79,6 +79,8 @@ if(TARGET INET)
     target_link_libraries(artery INET)
 endif()
 
+target_link_libraries(artery traci)
+
 if("${Vanetza_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/vanetza/build")
     set(_make_command ${MAKE_COMMAND})
     if(CMAKE_GENERATOR MATCHES "Makefiles")
