@@ -98,6 +98,7 @@ public:
             TraCIColor color;
         };
         std::string string;
+        std::vector<std::string> stringList;
     };
 
     class TraCIPhase {

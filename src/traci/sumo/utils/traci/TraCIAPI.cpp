@@ -497,6 +497,12 @@ TraCIAPI::readVariables(tcpip::Storage& inMsg, const std::string& objectID, int 
                 case TYPE_INTEGER:
                     v.scalar = inMsg.readInt();
                     break;
+                case TYPE_STRINGLIST: {
+                    int n = inMsg.readInt();
+                    for (int i = 0; i < n; ++i) {
+                        v.stringList.push_back(inMsg.readString());
+                    }}
+                    break;
 
                 // TODO Other data types
 
