@@ -58,7 +58,7 @@ if(TARGET INET)
     message(STATUS "Enable INET integration")
     list(APPEND SOURCES
         inet/InetRadioDriver.cc
-        inet/InetTraCIMobility.cc
+        inet/InetMobility.cc
         inet/VanetRx.cc
     )
 endif()

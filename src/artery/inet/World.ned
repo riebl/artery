@@ -1,32 +1,31 @@
 package artery.inet;
 
-import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
+import artery.storyboard.Storyboard;
 import inet.physicallayer.contract.packetlevel.IRadioMedium;
-import org.car2x.veins.base.modules.BaseWorldUtility;
-import org.car2x.veins.modules.mobility.traci.ITraCIScenarioManager;
+import traci.Manager;
 
 network World
 {
     parameters:
-        double playgroundSizeX @unit(m); // x size of the area the nodes are in (in meters)
-        double playgroundSizeY @unit(m); // y size of the area the nodes are in (in meters)
-        double playgroundSizeZ @unit(m); // z size of the area the nodes are in (in meters)
-        @display("bgb=$playgroundSizeX,$playgroundSizeY");
+        bool withStoryboard = default(false);
+        traci.mapper.vehicleType = default("artery.inet.Car");
+        traci.nodes.vehicleSinkModule = default(".mobility");
+        storyboard.middlewareModule = default(".middleware");
 
     submodules:
+        traci: Manager {
+            parameters:
+                @display("p=20,20");
+        }
+
         radioMedium: <default("Ieee80211ScalarRadioMedium")> like IRadioMedium {
             parameters:
+                @display("p=60,20");
                 mediumLimitCache.carrierFrequency = 5.9GHz;
         }
 
-        traciManager: <default("TraCIScenarioManagerArtery")> like ITraCIScenarioManager {
-        }
-
-        world: BaseWorldUtility {
+        storyboard: Storyboard if withStoryboard {
             parameters:
-                playgroundSizeX = playgroundSizeX;
-                playgroundSizeY = playgroundSizeY;
-                playgroundSizeZ = playgroundSizeZ;
-                @display("p=30,0;i=misc/globe");
+                @display("p=100,20");
         }
 }

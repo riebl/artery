@@ -11,11 +11,12 @@ import inet.networklayer.common.InterfaceTable;
 module Car like INetworkNode
 {
     parameters:
-        @display("bgb=,448");
+        @display("i=block/wrxtx;is=vs");
         @networkNode;
         @labels(node,ethernet-node,wireless-node);
         int numRadios = default(1);
         *.interfaceTableModule = default(absPath(".interfaceTable"));
+        mobility.visualRepresentation = "^";
 
     gates:
         input radioIn[numRadios] @directIn;
@@ -33,7 +34,7 @@ module Car like INetworkNode
                 @display("p=216,406,row,60;q=queue");
         }
 
-        mobility: <default("InetTraCIMobility")> like IMobility {
+        mobility: <default("artery.inet.Mobility")> like IMobility {
             parameters:
                 @display("p=53,200");
         }
@@ -45,7 +46,8 @@ module Car like INetworkNode
 
         middleware: ItsG5Middleware {
             parameters:
-                radioDriverModule = "^.radioDriver[0]";
+                radioDriverModule = ".radioDriver[0]";
+                mobilityModule = ".mobility";
         }
 
     connections:
