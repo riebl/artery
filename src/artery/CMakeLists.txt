@@ -49,6 +49,7 @@ set(SOURCES
     traci/TraCIScenarioManagerArtery.cc
     utility/AsioScheduler.cc
     utility/AsioTask.cc
+    utility/Geometry.cc
 )
 
 if(TARGET INET)
