@@ -27,6 +27,28 @@ API::Version API::getVersion() const
     return v;
 }
 
+TraCIGeoPosition API::convertGeo(const TraCIPosition& pos) const
+{
+    using namespace constants;
+
+    tcpip::Storage addParams;
+    addParams.writeUnsignedByte(TYPE_COMPOUND);
+    addParams.writeInt(2);
+    addParams.writeUnsignedByte(POSITION_2D);
+    addParams.writeDouble(pos.x);
+    addParams.writeDouble(pos.y);
+    addParams.writeUnsignedByte(TYPE_UBYTE);
+    addParams.writeUnsignedByte(POSITION_LON_LAT);
+    send_commandGetVariable(CMD_GET_SIM_VARIABLE, POSITION_CONVERSION, "", &addParams);
+
+    tcpip::Storage inMsg;
+    processGET(inMsg, CMD_GET_SIM_VARIABLE, POSITION_LON_LAT);
+    TraCIGeoPosition geo;
+    geo.longitude = inMsg.readDouble();
+    geo.latitude = inMsg.readDouble();
+    return geo;
+}
+
 void API::connect(const ServerEndpoint& endpoint)
 {
     const unsigned max_tries = endpoint.retry ? 10 : 0;

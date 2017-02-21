@@ -11,6 +11,8 @@ class LiteAPI
 public:
     LiteAPI(API& api) : m_api(api) {}
 
+    TraCIGeoPosition convertGeo(const TraCIPosition& pos) const { return m_api.convertGeo(pos); }
+
     API::EdgeScope& edge() { return m_api.edge; }
     API::GUIScope& gui() { return m_api.gui; }
     API::InductionLoopScope& inductionloop() { return m_api.inductionloop; }
