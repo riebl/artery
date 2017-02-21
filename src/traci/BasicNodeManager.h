@@ -20,6 +20,10 @@ class VehicleSink;
 class BasicNodeManager : public NodeManager, public Listener, public omnetpp::cSimpleModule
 {
 public:
+    static const omnetpp::simsignal_t addNodeSignal;
+    static const omnetpp::simsignal_t updateNodeSignal;
+    static const omnetpp::simsignal_t removeNodeSignal;
+
     LiteAPI* getLiteAPI() override { return m_api; }
     std::size_t getNumberOfNodes() const override;
 

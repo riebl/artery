@@ -12,6 +12,10 @@ namespace traci
 
 Define_Module(BasicNodeManager)
 
+const simsignal_t BasicNodeManager::addNodeSignal = cComponent::registerSignal("traci.node.add");
+const simsignal_t BasicNodeManager::updateNodeSignal = cComponent::registerSignal("traci.node.update");
+const simsignal_t BasicNodeManager::removeNodeSignal = cComponent::registerSignal("traci.node.remove");
+
 void BasicNodeManager::initialize()
 {
     Core* core = inet::getModuleFromPar<Core>(par("coreModule"), this);
@@ -64,6 +68,7 @@ void BasicNodeManager::traciStep()
     }
 
     for (auto& node : m_nodes) {
+        emit(updateNodeSignal, node.first.c_str(), node.second);
     }
 }
 
@@ -120,6 +125,7 @@ cModule* BasicNodeManager::addNodeModule(const std::string& id, cModuleType* typ
     init(module);
     module->scheduleStart(simTime());
     module->callInitialize();
+    emit(addNodeSignal, id.c_str(), module);
 
     return module;
 }
@@ -128,6 +134,7 @@ void BasicNodeManager::removeNodeModule(const std::string& id)
 {
     cModule* module = getNodeModule(id);
     if (module) {
+        emit(removeNodeSignal, id.c_str(), module);
         module->callFinish();
         module->deleteModule();
         m_nodes.erase(id);
