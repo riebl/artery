@@ -724,6 +724,7 @@ public:
         std::vector<std::string> getIDList() const;
         int getIDCount() const;
         SUMOReal getSpeed(const std::string& vehicleID) const;
+        SUMOReal getMaxSpeed(const std::string& vehicleID) const;
         TraCIPosition getPosition(const std::string& vehicleID) const;
         SUMOReal getAngle(const std::string& vehicleID) const;
         std::string getRoadID(const std::string& vehicleID) const;
@@ -764,7 +765,6 @@ public:
         int getBestLanes(const std::string& vehicleID) const;
         int getStopState(const std::string& vehicleID) const;
         SUMOReal getLength(const std::string& vehicleID) const;
-        SUMOReal getMaxSpeed(const std::string& vehicleID) const;
         SUMOReal getAccel(const std::string& vehicleID) const;
         SUMOReal getDecel(const std::string& vehicleID) const;
         SUMOReal getTau(const std::string& vehicleID) const;

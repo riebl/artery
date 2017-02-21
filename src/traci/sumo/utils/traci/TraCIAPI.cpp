@@ -1902,6 +1902,11 @@ TraCIAPI::VehicleScope::getSpeed(const std::string& vehicleID) const {
     return myParent.getDouble(CMD_GET_VEHICLE_VARIABLE, VAR_SPEED, vehicleID);
 }
 
+SUMOReal
+TraCIAPI::VehicleScope::getMaxSpeed(const std::string& vehicleID) const {
+    return myParent.getDouble(CMD_GET_VEHICLE_VARIABLE, VAR_MAXSPEED, vehicleID);
+}
+
 TraCIAPI::TraCIPosition
 TraCIAPI::VehicleScope::getPosition(const std::string& vehicleID) const {
     return myParent.getPosition(CMD_GET_VEHICLE_VARIABLE, VAR_POSITION, vehicleID);
