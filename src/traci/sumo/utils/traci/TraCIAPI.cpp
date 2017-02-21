@@ -2190,6 +2190,16 @@ TraCIAPI::VehicleScope::setSpeed(const std::string& vehicleID, SUMOReal speed) c
 }
 
 void
+TraCIAPI::VehicleScope::setMaxSpeed(const std::string& vehicleID, SUMOReal speed) const {
+    tcpip::Storage content;
+    content.writeUnsignedByte(TYPE_DOUBLE);
+    content.writeDouble(speed);
+    myParent.send_commandSetValue(CMD_SET_VEHICLE_VARIABLE, VAR_MAXSPEED, vehicleID, content);
+    tcpip::Storage inMsg;
+    myParent.check_resultState(inMsg, CMD_SET_VEHICLE_VARIABLE);
+}
+
+void
 TraCIAPI::VehicleScope::setColor(const std::string& vehicleID, const TraCIColor& c) const {
     tcpip::Storage content;
     content.writeUnsignedByte(TYPE_COLOR);

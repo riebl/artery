@@ -796,6 +796,7 @@ public:
         void moveToXY(const std::string& vehicleID, const std::string& edgeID, const int lane, const SUMOReal x, const SUMOReal y, const SUMOReal angle, const int keepRoute) const;
         void slowDown(const std::string& vehicleID, SUMOReal speed, int duration) const;
         void setSpeed(const std::string& vehicleID, SUMOReal speed) const;
+        void setMaxSpeed(const std::string& vehicleID, SUMOReal speed) const;
         void remove(const std::string& vehicleID, char reason = REMOVE_VAPORIZED) const;
         void setColor(const std::string& vehicleID, const TraCIColor& c) const;
         void setLine(const std::string& vehicleID, const std::string& line) const;
