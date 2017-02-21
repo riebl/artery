@@ -20,6 +20,7 @@ simple ItsG5Middleware
 {
 	parameters:
 		string radioDriverModule;
+		string mobilityModule;
 		double updateInterval = default(0.1s) @unit(s);
 		string datetime;
 		xml services;

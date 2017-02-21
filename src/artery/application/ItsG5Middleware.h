@@ -39,9 +39,9 @@
 #include <memory>
 
 // forward declarations
-namespace Veins { class TraCIMobility; }
 class ItsG5BaseService;
 class RadioDriverBase;
+namespace traci { class VehicleController; }
 
 /**
  * Middleware providing a runtime context for services.
@@ -76,14 +76,16 @@ class ItsG5Middleware :
 		void updateServices();
 		void initializeMiddleware();
 		void initializeServices();
+		void initializeVehicleController();
 		bool checkServiceFilterRules(const cXMLElement* filters) const;
 		void scheduleRuntime();
 		SimTime convertSimTime(vanetza::Clock::time_point tp) const;
 
-		Veins::TraCIMobility* mMobility;
+		//Veins::TraCIMobility* mMobility;
 		RadioDriverBase* mRadioDriver;
 		cGate* mRadioDriverIn;
 		cGate* mRadioDriverOut;
+		traci::VehicleController* mVehicleController;
 		VehicleDataProvider mVehicleDataProvider;
 		Timer mTimer;
 		vanetza::Runtime mRuntime;

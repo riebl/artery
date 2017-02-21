@@ -20,7 +20,7 @@
 #define CASERVICE_H_
 
 #include "artery/application/ItsG5BaseService.h"
-#include "veins/base/utils/Coord.h"
+#include "artery/utility/Geometry.h"
 #include <vanetza/asn1/cam.hpp>
 #include <vanetza/btp/data_interface.hpp>
 #include <vanetza/units/angle.hpp>
@@ -48,7 +48,7 @@ class CaService : public ItsG5BaseService
 		simtime_t mGenCam;
 		unsigned mGenCamLowDynamicsCounter;
 		unsigned mGenCamLowDynamicsLimit;
-		Coord mLastCamPosition;
+		Position mLastCamPosition;
 		vanetza::units::Velocity mLastCamSpeed;
 		vanetza::units::Angle mLastCamHeading;
 		simtime_t mLastCamTimestamp;

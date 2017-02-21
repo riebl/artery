@@ -14,7 +14,7 @@
 // 
 
 #include "ExampleService.h"
-#include "veins/modules/mobility/traci/TraCIMobility.h"
+#include "artery/traci/VehicleController.h"
 #include <vanetza/btp/data_request.hpp>
 #include <vanetza/dcc/profile.hpp>
 #include <vanetza/geonet/interface.hpp>
@@ -81,6 +81,7 @@ void ExampleService::trigger()
 void ExampleService::receiveSignal(cComponent* source, simsignal_t signal, bool valid, cObject*)
 {
 	if (signal == scSignalCamReceived && valid) {
-		EV << "Vehicle " << getFacilities().getMobility().getExternalId() << " received a CAM in sibling serivce\n";
+		auto& vehicle = getFacilities().get_const<traci::VehicleController>();
+		EV << "Vehicle " << vehicle.getVehicleId() << " received a CAM in sibling serivce\n";
 	}
 }

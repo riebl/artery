@@ -25,9 +25,9 @@
 #include "artery/netw/GeoNetIndication.h"
 #include "artery/netw/GeoNetRequest.h"
 #include "artery/nic/RadioDriverBase.h"
-#include "veins/base/connectionManager/ChannelAccess.h"
-#include "veins/modules/mobility/traci/TraCIMobility.h"
+#include "artery/traci/ControllableVehicle.h"
 #include "inet/common/ModuleAccess.h"
+#include "inet/mobility/contract/IMobility.h"
 #include <vanetza/btp/header.hpp>
 #include <vanetza/btp/header_conversion.hpp>
 #include <vanetza/btp/ports.hpp>
@@ -42,8 +42,6 @@
 #include <string>
 
 Define_Module(ItsG5Middleware);
-
-const simsignalwrap_t cMobilityStateChangedSignal(MIXIM_SIGNAL_MOBILITY_CHANGE_NAME);
 
 ItsG5Middleware::ItsG5Middleware() :
 		mRadioDriver(nullptr), mRadioDriverIn(nullptr), mRadioDriverOut(nullptr),
@@ -140,17 +138,14 @@ void ItsG5Middleware::initializeMiddleware()
 {
 	mTimer.setTimebase(par("datetime"));
 
-	mRadioDriver = inet::findModuleFromPar<RadioDriverBase>(par("radioDriverModule"), this);
+	mRadioDriver = inet::findModuleFromPar<RadioDriverBase>(par("radioDriverModule"), findHost());
 	mRadioDriverIn = gate("radioDriverIn");
 	mRadioDriverOut = gate("radioDriverOut");
 	mRadioDriver->subscribe(RadioDriverBase::ChannelLoadSignal, this);
 
-	mMobility = Veins::TraCIMobilityAccess().get(findHost());
-	if (mMobility == nullptr) {
-		throw cRuntimeError("Mobility not found");
-	}
+	initializeVehicleController();
+	mFacilities.register_mutable(mVehicleController);
 	mFacilities.register_const(&mVehicleDataProvider);
-	mFacilities.register_mutable(mMobility);
 	mFacilities.register_const(&mDccFsm);
 	mFacilities.register_mutable(&mDccScheduler);
 	mFacilities.register_const(&mTimer);
@@ -159,7 +154,7 @@ void ItsG5Middleware::initializeMiddleware()
 	mUpdateInterval = par("updateInterval").doubleValue();
 	mUpdateMessage = new cMessage("middleware update");
 	mUpdateRuntimeMessage = new cMessage("runtime update");
-	findHost()->subscribe(cMobilityStateChangedSignal, this);
+	findHost()->subscribe(inet::IMobility::mobilityStateChangedSignal, this);
 
 	mGeoMib.itsGnDefaultTrafficClass.tc_id(3); // send BEACONs with DP3
 	mGeoMib.itsGnSecurity = par("vanetzaEnableSecurity").boolValue();
@@ -178,6 +173,13 @@ void ItsG5Middleware::initializeMiddleware()
 	mDccControl->queue_length(par("vanetzaDccQueueLength"));
 	mGeoRouter->set_access_interface(mDccControl.get());
 	mGeoRouter->set_transport_handler(UpperProtocol::BTP_B, &mBtpPortDispatcher);
+}
+
+void ItsG5Middleware::initializeVehicleController()
+{
+	auto mobility = inet::getModuleFromPar<ControllableVehicle>(par("mobilityModule"), findHost());
+	mVehicleController = mobility->getVehicleController();
+	ASSERT(mVehicleController);
 }
 
 void ItsG5Middleware::initializeServices()
@@ -236,7 +238,8 @@ bool ItsG5Middleware::checkServiceFilterRules(const cXMLElement* filter_cfg) con
 			} else {
 				std::regex name_regex(name_pattern);
 				filter_fn name_filter = [this, name_regex, inverse]() {
-					return std::regex_match(this->mMobility->getExternalId(), name_regex) ^ inverse;
+					const traci::VehicleController* vehicle = this->mVehicleController;
+					return std::regex_match(vehicle->getVehicleId(), name_regex) ^ inverse;
 				};
 				filters.emplace_back(std::move(name_filter));
 			}
@@ -285,7 +288,7 @@ void ItsG5Middleware::finish()
 {
 	cancelAndDelete(mUpdateMessage);
 	cancelAndDelete(mUpdateRuntimeMessage);
-	findHost()->unsubscribe(cMobilityStateChangedSignal, this);
+	findHost()->unsubscribe(inet::IMobility::mobilityStateChangedSignal, this);
 }
 
 void ItsG5Middleware::handleMessage(cMessage *msg)
@@ -336,8 +339,8 @@ void ItsG5Middleware::update()
 
 void ItsG5Middleware::receiveSignal(cComponent* component, simsignal_t signal, cObject* obj, cObject* details)
 {
-	if (signal == cMobilityStateChangedSignal) {
-		mVehicleDataProvider.update(mMobility);
+	if (signal == inet::IMobility::mobilityStateChangedSignal) {
+		mVehicleDataProvider.update(mVehicleController);
 	}
 }
 

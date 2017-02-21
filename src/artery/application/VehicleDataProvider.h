@@ -19,7 +19,8 @@
 #ifndef VEHICLEDATAPROVIDER_H_
 #define VEHICLEDATAPROVIDER_H_
 
-#include "veins/base/utils/Coord.h"
+#include "artery/traci/VehicleController.h"
+#include "artery/utility/Geometry.h"
 #include <omnetpp/simtime.h>
 #include <boost/circular_buffer.hpp>
 #include <boost/units/systems/si/angular_acceleration.hpp>
@@ -31,19 +32,17 @@
 #include <cstdint>
 #include <map>
 
-namespace Veins { class TraCIMobility; }
-
 class VehicleDataProvider
 {
 	public:
 		VehicleDataProvider();
-		void update(const Veins::TraCIMobility*);
+		void update(const traci::VehicleController*);
 
 		uint32_t station_id() const { return mStationId; }
-		const simtime_t& simtime() const { return mLastUpdate; }
-		const Coord& position() const { return mPosition; }
-		vanetza::units::GeoAngle longitude() const { return mLon; } // positive for east
-		vanetza::units::GeoAngle latitude() const { return mLat; } // positive for north
+		const omnetpp::SimTime& simtime() const { return mLastUpdate; }
+		const Position& position() const { return mPosition; }
+		vanetza::units::GeoAngle longitude() const { return mGeoPosition.longitude; } // positive for east
+		vanetza::units::GeoAngle latitude() const { return mGeoPosition.latitude; } // positive for north
 		vanetza::units::Velocity speed() const { return mSpeed; }
 		vanetza::units::Acceleration acceleration() const { return mAccel; }
 		vanetza::units::Angle heading() const { return mHeading; } // degree from north, clockwise
@@ -58,16 +57,15 @@ class VehicleDataProvider
 		double mapOntoConfidence(AngularAcceleration) const;
 
 		uint32_t mStationId;
-		vanetza::units::GeoAngle mLon;
-		vanetza::units::GeoAngle mLat;
+		Position mPosition;
+		GeoPosition mGeoPosition;
 		vanetza::units::Velocity mSpeed;
 		vanetza::units::Acceleration mAccel;
 		vanetza::units::Angle mHeading;
 		vanetza::units::AngularVelocity mYawRate;
 		vanetza::units::Curvature mCurvature;
 		double mConfidence;
-		Coord mPosition;
-		simtime_t mLastUpdate;
+		omnetpp::SimTime mLastUpdate;
 		boost::circular_buffer<vanetza::units::Curvature> mCurvatureOutput;
 		boost::circular_buffer<AngularAcceleration> mCurvatureConfidenceOutput;
 		vanetza::units::AngularVelocity mCurvatureConfidenceInput;

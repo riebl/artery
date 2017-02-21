@@ -17,11 +17,10 @@
 //
 
 #include "artery/application/VehicleDataProvider.h"
-#include "veins/modules/mobility/traci/TraCIMobility.h"
-#undef ev
 #include <boost/math/constants/constants.hpp>
 #include <boost/units/cmath.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
+#include <omnetpp/csimulation.h>
 #include <vanetza/units/frequency.hpp>
 #include <vanetza/units/time.hpp>
 #include <vanetza/units/angle.hpp>
@@ -49,25 +48,25 @@ const std::map<VehicleDataProvider::AngularAcceleration, double> VehicleDataProv
     { AngularAcceleration(std::numeric_limits<double>::infinity() * degree_per_second_squared), 0.0 }
 };
 
-vanetza::units::Angle convertMobilityAngle(vanetza::units::Angle angle)
+vanetza::units::Angle convertMobilityAngle(Angle angle)
 {
 	using vanetza::units::si::radians;
-	assert(angle >= -pi * radians);
-	assert(angle < pi * radians);
+	assert(angle.value >= -pi * radians);
+	assert(angle.value < pi * radians);
 	// change rotation ccw -> cw
-	angle *= -1.0;
+	angle.value *= -1.0;
 	// rotate zero from east to north
 	// adjust [-pi; pi[ to [0; 2pi[
-	angle += 2.5 * pi * radians;
-	angle = boost::units::fmod(angle, 2.0 * pi * radians);
+	angle.value += 2.5 * pi * radians;
+	angle.value = boost::units::fmod(angle.value, 2.0 * pi * radians);
 
-	assert(angle >= 0.0 * radians);
-	assert(angle < 2.0 * pi * radians);
-	return angle;
+	assert(angle.value >= 0.0 * radians);
+	assert(angle.value < 2.0 * pi * radians);
+	return angle.value;
 }
 
 VehicleDataProvider::VehicleDataProvider() :
-	mStationId(rand()), mConfidence(0.0), mLastUpdate(simTime()),
+	mStationId(rand()), mConfidence(0.0), mLastUpdate(omnetpp::simTime()),
 	mCurvatureOutput(2), mCurvatureConfidenceOutput(2)
 {
 	while (!mCurvatureConfidenceOutput.full()) {
@@ -134,8 +133,9 @@ void VehicleDataProvider::calculateCurvatureConfidence()
 	mConfidence = mapOntoConfidence(abs(filter));
 }
 
-void VehicleDataProvider::update(const Veins::TraCIMobility* mob)
+void VehicleDataProvider::update(const traci::VehicleController* controller)
 {
+	using namespace omnetpp;
 	using namespace vanetza::units::si;
 	using boost::units::si::milli;
 	const vanetza::units::Duration delta {
@@ -143,15 +143,15 @@ void VehicleDataProvider::update(const Veins::TraCIMobility* mob)
 	};
 
 	if (delta <= 0.0 * seconds) {
-		mSpeed = mob->getSpeed() * meter_per_second;
-		mHeading = convertMobilityAngle(mob->getAngleRad() * radians);
+		mSpeed = controller->getSpeed();
+		mHeading = convertMobilityAngle(controller->getHeading());
 	} else {
 		using boost::units::abs;
-		auto new_speed = mob->getSpeed() * meter_per_second;
+		auto new_speed = controller->getSpeed();
 		mAccel = (new_speed - mSpeed) / delta;
 		mSpeed = new_speed;
 
-		auto new_heading = convertMobilityAngle(mob->getAngleRad() * radians);
+		auto new_heading = convertMobilityAngle(controller->getHeading());
 		auto diff_heading = mHeading - new_heading; // left turn positive
 		if (diff_heading > pi * radian) {
 			diff_heading -= 2.0 * pi * radians;
@@ -163,10 +163,8 @@ void VehicleDataProvider::update(const Veins::TraCIMobility* mob)
 		mHeading = new_heading;
 	}
 
-	mPosition = mob->getCurrentPosition();
-	std::pair<double, double> posLonLat = mob->getCommandInterface()->getLonLat(mPosition);
-	mLat = posLonLat.second * vanetza::units::degree;
-	mLon = posLonLat.first * vanetza::units::degree;
+	mPosition = controller->getPosition();
+	mGeoPosition = controller->getGeoPosition();
 	mLastUpdate = simTime();
 
 	calculateCurvature();

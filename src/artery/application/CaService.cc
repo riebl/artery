@@ -25,10 +25,10 @@ bool checkHeadingDelta(vanetza::units::Angle& prev, vanetza::units::Angle now)
 	return abs(prev - now) > scHeadingDelta;
 }
 
-bool checkPositionDelta(const Coord& prev, const Coord& now)
+bool checkPositionDelta(const Position& prev, const Position& now)
 {
-	static const double scPositionDeltaMeter = 4.0;
-	return (prev.distance(now) > scPositionDeltaMeter);
+	static const vanetza::units::Length scPositionDelta { 4.0 * vanetza::units::si::meter };
+	return (distance(prev, now) > scPositionDelta);
 }
 
 bool checkSpeedDelta(vanetza::units::Velocity prev, vanetza::units::Velocity now)
