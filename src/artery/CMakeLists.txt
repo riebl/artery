@@ -53,6 +53,8 @@ set(SOURCES
     utility/AsioScheduler.cc
     utility/AsioTask.cc
     utility/Geometry.cc
+    veins/VeinsMobility.cc
+    veins/VeinsObstacleControl.cc
 )
 
 if(TARGET INET)

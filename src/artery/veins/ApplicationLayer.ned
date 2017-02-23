@@ -22,8 +22,6 @@ module ApplicationLayer like IBaseApplLayer
 		}
 
 		middleware : ItsG5Middleware {
-			parameters:
-				radioDriverModule = "^.radioDriver";
 		}
 
 	connections allowunconnected:
