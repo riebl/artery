@@ -2,7 +2,7 @@ package artery.inet;
 
 import inet.mobility.contract.IMobility;
 
-simple Mobility like IMobility
+simple Mobility like IMobility, artery.traci.Mobility
 {
     parameters:
         @class(InetMobility);

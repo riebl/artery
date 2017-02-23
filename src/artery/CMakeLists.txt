@@ -47,6 +47,7 @@ set(SOURCES
     traci/TraCIArteryNodeManager.cc
     traci/TraCISimpleNodeManager.cc
     traci/TraCIScenarioManagerArtery.cc
+    traci/MobilityBase.cc
     traci/VehicleController.cc
     traci/VehicleType.cc
     utility/AsioScheduler.cc

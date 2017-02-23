@@ -3,59 +3,32 @@
 #include <inet/common/ModuleAccess.h>
 #include <inet/common/geometry/common/CanvasProjection.h>
 #include <inet/visualizer/mobility/MobilityCanvasVisualizer.h>
+#include <cmath>
 
 Define_Module(InetMobility);
 
-using namespace traci;
+
+int InetMobility::numInitStages() const
+{
+    return inet::INITSTAGE_PHYSICAL_ENVIRONMENT_2 + 1;
+}
 
 void InetMobility::initialize(int stage)
 {
-    cSimpleModule::initialize(stage);
-
     if (stage == inet::INITSTAGE_LOCAL) {
-        m_visualRepresentation = inet::getModuleFromPar<cModule>(par("visualRepresentation"), this, false);
-        m_antennaHeight = par("antennaHeight");
-        WATCH(m_id);
-        WATCH(m_position);
-        WATCH(m_speed);
-        WATCH(m_orientation);
+        mVisualRepresentation = inet::getModuleFromPar<cModule>(par("visualRepresentation"), this, false);
+        mAntennaHeight = par("antennaHeight");
+        WATCH(mVehicleId);
+        WATCH(mPosition);
+        WATCH(mSpeed);
+        WATCH(mOrientation);
     } else if (stage == inet::INITSTAGE_PHYSICAL_ENVIRONMENT_2) {
-        if (m_visualRepresentation) {
-            auto visualizationTarget = m_visualRepresentation->getParentModule();
-            m_canvasProjection = inet::CanvasProjection::getCanvasProjection(visualizationTarget->getCanvas());
+        if (mVisualRepresentation) {
+            auto visualizationTarget = mVisualRepresentation->getParentModule();
+            mCanvasProjection = inet::CanvasProjection::getCanvasProjection(visualizationTarget->getCanvas());
         }
         updateVisualRepresentation();
     }
-}
-
-void InetMobility::initializeVehicle(LiteAPI* api, const std::string& id, const TraCIBoundary& boundary)
-{
-    ASSERT(api);
-    m_traci = api;
-    m_id = id;
-    m_boundary = boundary;
-    m_controller.reset(new VehicleController(id, *api));
-}
-
-void InetMobility::updateVehicle(const TraCIPosition& traci_pos, TraCIAngle traci_heading, double traci_speed)
-{
-    using boost::units::si::meter;
-    const auto opp_pos = position_cast(m_boundary, traci_pos);
-    const auto opp_angle = angle_cast(traci_heading);
-    const double rad = opp_angle.radian();
-    const inet::Coord direction { cos(rad), -sin(rad) };
-    m_position = inet::Coord { opp_pos.x / meter, opp_pos.y / meter, m_antennaHeight };
-    m_speed = direction * traci_speed;
-    m_orientation.alpha = -rad;
-
-    emit(inet::IMobility::mobilityStateChangedSignal, this);
-    updateVisualRepresentation();
-}
-
-VehicleController* InetMobility::getVehicleController()
-{
-    ASSERT(m_controller);
-    return m_controller.get();
 }
 
 double InetMobility::getMaxSpeed() const
@@ -65,17 +38,17 @@ double InetMobility::getMaxSpeed() const
 
 inet::Coord InetMobility::getCurrentPosition()
 {
-    return m_position;
+    return mPosition;
 }
 
 inet::Coord InetMobility::getCurrentSpeed()
 {
-    return m_speed;
+    return mSpeed;
 }
 
 inet::EulerAngles InetMobility::getCurrentAngularPosition()
 {
-    return m_orientation;
+    return mOrientation;
 }
 
 inet::EulerAngles InetMobility::getCurrentAngularSpeed()
@@ -85,18 +58,31 @@ inet::EulerAngles InetMobility::getCurrentAngularSpeed()
 
 inet::Coord InetMobility::getConstraintAreaMax() const
 {
-    return inet::Coord { m_boundary.xMax, m_boundary.yMax, m_boundary.zMax };
+    return inet::Coord { mNetBoundary.xMax, mNetBoundary.yMax, mNetBoundary.zMax };
 }
 
 inet::Coord InetMobility::getConstraintAreaMin() const
 {
-    return inet::Coord { m_boundary.xMin, m_boundary.yMin, m_boundary.zMin };
+    return inet::Coord { mNetBoundary.xMin, mNetBoundary.yMin, mNetBoundary.zMin };
+}
+
+void InetMobility::update(const Position& pos, Angle heading, double speed)
+{
+    using boost::units::si::meter;
+    const double rad = heading.radian();
+    const inet::Coord direction { cos(rad), -sin(rad) };
+    mPosition = inet::Coord { pos.x / meter, pos.y / meter, mAntennaHeight };
+    mSpeed = direction * speed;
+    mOrientation.alpha = -rad;
+
+    emit(inet::IMobility::mobilityStateChangedSignal, this);
+    updateVisualRepresentation();
 }
 
 void InetMobility::updateVisualRepresentation()
 {
-    if (hasGUI() && m_visualRepresentation) {
+    if (hasGUI() && mVisualRepresentation) {
         using inet::visualizer::MobilityCanvasVisualizer;
-        MobilityCanvasVisualizer::setPosition(m_visualRepresentation, m_canvasProjection->computeCanvasPoint(getCurrentPosition()));
+        MobilityCanvasVisualizer::setPosition(mVisualRepresentation, mCanvasProjection->computeCanvasPoint(getCurrentPosition()));
     }
 }
