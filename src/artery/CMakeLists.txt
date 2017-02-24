@@ -44,9 +44,6 @@ set(SOURCES
     netw/GeoNetPacketWrapper.cc
     nic/RadioDriverBase.cc
     nic/VeinsRadioDriver.cc
-    traci/TraCIArteryNodeManager.cc
-    traci/TraCISimpleNodeManager.cc
-    traci/TraCIScenarioManagerArtery.cc
     traci/MobilityBase.cc
     traci/VehicleController.cc
     traci/VehicleType.cc
