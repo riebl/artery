@@ -51,11 +51,6 @@ class TraCIScenarioManagerLaunchd : public TraCIScenarioManager
 		virtual void initialize(int stage);
 		virtual void finish();
 
-		static void prepareLaunchConfig(cXMLElement* config, int seed);
-		static void prepareSeed(int& seed);
-		static void checkLaunchdCompatibility(TraCICommandInterface&);
-		static void sendFileCommand(TraCIConnection&, cXMLElement* config);
-
 	protected:
 
 		cXMLElement* launchConfig; /**< launch configuration to send to sumo-launchd */

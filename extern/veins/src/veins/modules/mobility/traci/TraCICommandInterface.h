@@ -5,7 +5,6 @@
 #include <string>
 #include <stdint.h>
 
-#include "veins/modules/mobility/traci/TraCIBoundary.h"
 #include "veins/modules/mobility/traci/TraCIColor.h"
 #include "veins/base/utils/Coord.h"
 
@@ -40,7 +39,6 @@ class TraCICommandInterface
 
 				void setSpeedMode(int32_t bitset);
 				void setSpeed(double speed);
-				void setMaxSpeed(double speed);
 				void setColor(const TraCIColor& color);
 				void slowDown(double speed, int time);
 				void newRoute(std::string roadId);
@@ -48,7 +46,6 @@ class TraCICommandInterface
 				std::string getRoadId();
 				std::string getCurrentRoadOnRoute();
 				std::string getLaneId();
-				double getMaxSpeed();
 				double getLanePosition();
 				std::list<std::string> getPlannedRoadIds();
 				std::string getRouteId();
@@ -232,11 +229,9 @@ class TraCICommandInterface
 			return GuiView(this, viewId);
 		}
 
-		TraCIBoundary& netBoundary() { return netbounds; }
 
 	private:
 		TraCIConnection& connection;
-		TraCIBoundary netbounds;
 
 		std::string genericGetString(uint8_t commandId, std::string objectId, uint8_t variableId, uint8_t responseId);
 		Coord genericGetCoord(uint8_t commandId, std::string objectId, uint8_t variableId, uint8_t responseId);

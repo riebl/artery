@@ -33,11 +33,17 @@
  * @ingroup macLayer
  */
 class WaveAppToMac1609_4Interface {
-	public:
+    public:
 
-		virtual void changeServiceChannel(int channelNumber) = 0;
+        virtual bool isChannelSwitchingActive() = 0;
 
-		virtual ~WaveAppToMac1609_4Interface() {} ;
+        virtual simtime_t getSwitchingInterval() =  0;
+
+        virtual bool isCurrentChannelCCH() = 0;
+
+        virtual void changeServiceChannel(int channelNumber) = 0;
+
+        virtual ~WaveAppToMac1609_4Interface() {} ;
 };
 
 #endif /* ___WAVEAPPTOMAC1609_4INTERFACE_H_ */
