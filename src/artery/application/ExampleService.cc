@@ -29,10 +29,6 @@ ExampleService::ExampleService()
 {
 }
 
-ExampleService::~ExampleService()
-{
-}
-
 void ExampleService::indicate(const btp::DataIndication& ind, cPacket* packet)
 {
 	if (packet->getByteLength() == 42) {
@@ -44,7 +40,7 @@ void ExampleService::indicate(const btp::DataIndication& ind, cPacket* packet)
 
 void ExampleService::initialize()
 {
-	ItsG5BaseService::initialize();
+	ItsG5Service::initialize();
 	m_self_msg = new cMessage("Example Service");
 	subscribe(scSignalCamReceived);
 
@@ -54,6 +50,7 @@ void ExampleService::initialize()
 void ExampleService::finish()
 {
 	cancelAndDelete(m_self_msg);
+	ItsG5Service::finish();
 }
 
 void ExampleService::handleMessage(cMessage* msg)
