@@ -3,6 +3,7 @@
 
 #include "traci/ModuleMapper.h"
 #include <omnetpp/csimplemodule.h>
+#include <omnetpp/crng.h>
 
 namespace traci
 {
@@ -11,10 +12,14 @@ class BasicModuleMapper : public ModuleMapper, public omnetpp::cSimpleModule
 {
 public:
     void initialize() override;
-    omnetpp::cModuleType* vehicle(NodeManager&, const std::string&);
+    omnetpp::cModuleType* vehicle(NodeManager&, const std::string&) override;
 
 private:
+    virtual bool equipVehicle();
+
     omnetpp::cModuleType* m_type;
+    omnetpp::cRNG* m_rng;
+    double m_penetration;
 };
 
 } // namespace traci

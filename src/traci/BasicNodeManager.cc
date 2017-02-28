@@ -89,7 +89,9 @@ void BasicNodeManager::addVehicle(const std::string& id)
 
     subscribeVehicle(id);
     cModuleType* type = m_mapper->vehicle(*this, id);
-    cModule* module = addNodeModule(id, type, init);
+    if (type != nullptr) {
+        addNodeModule(id, type, init);
+    }
 }
 
 void BasicNodeManager::removeVehicle(const std::string& id)
