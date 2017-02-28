@@ -63,6 +63,11 @@ void ItsG5BaseService::initialize()
 	m_middleware = middleware;
 }
 
+void ItsG5BaseService::finish()
+{
+	cSimpleModule::finish();
+}
+
 void ItsG5BaseService::subscribe(const simsignal_t& signal)
 {
 	assert(m_middleware);

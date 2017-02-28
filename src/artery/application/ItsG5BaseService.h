@@ -40,6 +40,7 @@ class ItsG5BaseService :
 
 	protected:
 		void initialize() override;
+		void finish() override;
 		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::DownPacket>);
 		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::UpPacket>) override;
 		Facilities& getFacilities();
