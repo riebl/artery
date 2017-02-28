@@ -52,6 +52,9 @@ ServerEndpoint PosixLauncher::launch()
     if (m_pid < 0) {
         throw omnetpp::cRuntimeError("fork() failed: %s", std::strerror(errno));
     } else if (m_pid == 0) {
+        // ignore signal so SUMO does not quit when user interrupts in gdb
+        ::signal(SIGINT, SIG_IGN);
+
         if (::execl("/bin/sh", "sh", "-c", command().c_str(), NULL)  == -1) {
             throw omnetpp::cRuntimeError("Starting TraCI server failed: %s", std::strerror(errno));
         }
