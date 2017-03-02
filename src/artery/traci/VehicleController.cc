@@ -60,4 +60,14 @@ void VehicleController::setMaxSpeed(Velocity v)
     m_api.vehicle().setMaxSpeed(m_id, v / si::meter_per_second);
 }
 
+auto VehicleController::getLength() const -> Length
+{
+    return m_type.getLength();
+}
+
+auto VehicleController::getWidth() const -> Length
+{
+    return m_type.getWidth();
+}
+
 } // namespace traci

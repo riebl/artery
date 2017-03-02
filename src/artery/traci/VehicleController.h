@@ -6,6 +6,7 @@
 #include "traci/LiteAPI.h"
 #include <vanetza/units/acceleration.hpp>
 #include <vanetza/units/angle.hpp>
+#include <vanetza/units/length.hpp>
 #include <vanetza/units/velocity.hpp>
 #include <string>
 
@@ -16,6 +17,7 @@ class VehicleController
 {
 public:
     using Acceleration = vanetza::units::Acceleration;
+    using Length = vanetza::units::Length;
     using Velocity = vanetza::units::Velocity;
 
     VehicleController(const std::string& id, traci::LiteAPI&);
@@ -29,6 +31,9 @@ public:
     Velocity getSpeed() const;
     Velocity getMaxSpeed() const;
     void setMaxSpeed(Velocity);
+
+    Length getLength() const;
+    Length getWidth() const;
 
     Acceleration getMaxAcceleration() const;
     Acceleration getMaxDeceleration() const;
