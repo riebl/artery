@@ -163,9 +163,9 @@ BOOST_PYTHON_MODULE(storyboard) {
 
     python::class_<EffectFactoryWrap, EffectFactoryWrap*, boost::noncopyable>("EffectFactory");
 
-    python::class_<SpeedEffectFactory, python::bases<EffectFactory> >("SpeedEffectFactory", python::init<double>());
+    python::class_<SpeedEffectFactory, python::bases<EffectFactory> >("SpeedEffect", python::init<double>());
 
-    python::class_<StopEffectFactory, python::bases<EffectFactory> >("StopEffectFactory");
+    python::class_<StopEffectFactory, python::bases<EffectFactory> >("StopEffect");
 
     /**
      * Story related classes

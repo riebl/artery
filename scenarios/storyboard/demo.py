@@ -22,8 +22,8 @@ def createStories():
 	# Create CarSetCondition
 	cond2 = storyboard.CarSetCondition(["flow1.0", "flow0.1", "flow0.2"])
 
-	# Create SpeedEffectFactory
-	effectFactory0 = storyboard.SpeedEffectFactory(2.44)
+	# Create SpeedEffect
+	effect0 = storyboard.SpeedEffect(2.44)
 
 	# Create AndConditions
 	and0 = storyboard.AndCondition(cond0, cond1)
@@ -34,26 +34,26 @@ def createStories():
 	or0 = storyboard.OrCondition(cond3, and1)
 
 	# Create Story
-	story = storyboard.Story(or0, [effectFactory0])
+	story = storyboard.Story(or0, [effect0])
 
 	# Create Story 2
 	cond4 = storyboard.TimeCondition(timeline.seconds(50), timeline.seconds(60))
-	effectFactory1 = storyboard.SpeedEffectFactory(2.44)
-	story1 = storyboard.Story(cond4, [effectFactory1])
+	effect1 = storyboard.SpeedEffect(2.44)
+	story1 = storyboard.Story(cond4, [effect1])
 
 	# Create Story 3, overlapping story0
 	cond5 = storyboard.TimeCondition(timeline.seconds(200), timeline.seconds(210))
 	cond6 = storyboard.CarSetCondition(["flow0.0", "flow0.1"])
 	and2 = storyboard.AndCondition(cond5, cond6)
-	effectFactory2 = storyboard.SpeedEffectFactory(0.1)
-	story2 = storyboard.Story(and2, [effectFactory2])
+	effect2 = storyboard.SpeedEffect(0.1)
+	story2 = storyboard.Story(and2, [effect2])
 
 	# Create Story 4, SpeedConditionGreater
 	cond7 = storyboard.SpeedConditionGreater(4.0)
 	cond8 = storyboard.TimeCondition(timeline.seconds(20), timeline.seconds(30))
 	and3 = storyboard.AndCondition(cond7, cond8)
-	effectFactory3 = storyboard.SpeedEffectFactory(1.0)
-	story3 = storyboard.Story(and3, [effectFactory3])
+	effect3 = storyboard.SpeedEffect(1.0)
+	story3 = storyboard.Story(and3, [effect3])
 
 	# Register Stories at the Storyboard
 	board.registerStory(story)
