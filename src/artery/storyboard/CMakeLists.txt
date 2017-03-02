@@ -10,6 +10,8 @@ set(STORYBOARD_SOURCES
     PolygonCondition.cc
     SpeedEffect.cc
     SpeedEffectFactory.cc
+    StopEffect.cc
+    StopEffectFactory.cc
     Storyboard.cc
     Story.cc
     TimeCondition.cc

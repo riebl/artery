@@ -5,6 +5,7 @@
 #include "artery/storyboard/CarSetCondition.h"
 #include "artery/storyboard/SpeedCondition.h"
 #include "artery/storyboard/SpeedEffectFactory.h"
+#include "artery/storyboard/StopEffectFactory.h"
 #include "artery/storyboard/Story.h"
 #include "artery/storyboard/OrCondition.h"
 #include "artery/storyboard/PolygonCondition.h"
@@ -163,6 +164,8 @@ BOOST_PYTHON_MODULE(storyboard) {
     python::class_<EffectFactoryWrap, EffectFactoryWrap*, boost::noncopyable>("EffectFactory");
 
     python::class_<SpeedEffectFactory, python::bases<EffectFactory> >("SpeedEffectFactory", python::init<double>());
+
+    python::class_<StopEffectFactory, python::bases<EffectFactory> >("StopEffectFactory");
 
     /**
      * Story related classes
