@@ -33,6 +33,9 @@ struct Position
         x(px * boost::units::si::meter),
         y(py * boost::units::si::meter) {}
 
+    Position (value_type px , value_type py):
+        x(px), y(py) {}
+
     value_type x;
     value_type y;
 };
