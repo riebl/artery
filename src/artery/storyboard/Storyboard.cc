@@ -22,43 +22,51 @@ const auto traciStepSignal = omnetpp::cComponent::registerSignal("traci.step");
 
 void Storyboard::initialize(int stage)
 {
-    // Get TraCiScenarioManager
-    cModule* traci = getModuleByPath(par("traciModule").stringValue());
-    if (!traci) {
-        throw cRuntimeError("No TraCI module found for signal subscription at %s", par("traciModule").stringValue());
+    if(stage == 0) {
+        // Get TraCiScenarioManager
+        cModule* traci = getModuleByPath(par("traciModule").stringValue());
+        if (!traci) {
+            throw cRuntimeError("No TraCI module found for signal subscription at %s", par("traciModule").stringValue());
+        }
+
+        traci->subscribe(traciAddNodeSignal, this);
+        traci->subscribe(traciRemoveNodeSignal, this);
+        traci->subscribe(traciStepSignal, this);
+
+        // Import staticly linked modules
+#       if PY_VERSION_HEX >= 0x03000000
+        PyImport_AppendInittab("storyboard", &PyInit_storyboard);
+        PyImport_AppendInittab("timeline", &PyInit_timeline);
+#       else
+        PyImport_AppendInittab("storyboard", &initstoryboard);
+        PyImport_AppendInittab("timeline", &inittimeline);
+#       endif
+
+        // Initialize python
+        Py_Initialize();
+
+        try {
+            // Append directory containing omnetpp.ini to Python import path
+            const auto& netConfigEntry = getEnvir()->getConfig()->getConfigEntry("network");
+            const char* simBaseDir = netConfigEntry.getBaseDirectory();
+            assert(simBaseDir);
+            python::import("sys").attr("path").attr("append")(simBaseDir);
+            EV << "Appended " << simBaseDir << " to Python system path";
+
+            // Load module containing storyboard description
+            module = python::import(par("python").stringValue());
+            module.attr("board") = boost::cref(*this);
+            module.attr("createStories") ();
+
+        } catch (const python::error_already_set&) {
+            PyErr_Print();
+        }
+
+        // Par visualisation flag from ned
+        mDrawConditions = par("drawConditions");
     }
-
-    traci->subscribe(traciAddNodeSignal, this);
-    traci->subscribe(traciRemoveNodeSignal, this);
-    traci->subscribe(traciStepSignal, this);
-
-    // Import staticly linked modules
-#   if PY_VERSION_HEX >= 0x03000000
-    PyImport_AppendInittab("storyboard", &PyInit_storyboard);
-    PyImport_AppendInittab("timeline", &PyInit_timeline);
-#   else
-    PyImport_AppendInittab("storyboard", &initstoryboard);
-    PyImport_AppendInittab("timeline", &inittimeline);
-#   endif
-
-    // Initialize python
-    Py_Initialize();
-
-    try {
-        // Append directory containing omnetpp.ini to Python import path
-        const auto& netConfigEntry = getEnvir()->getConfig()->getConfigEntry("network");
-        const char* simBaseDir = netConfigEntry.getBaseDirectory();
-        assert(simBaseDir);
-        python::import("sys").attr("path").attr("append")(simBaseDir);
-        EV << "Appended " << simBaseDir << " to Python system path";
-
-        // Load module containing storyboard description
-        module = python::import(par("python").stringValue());
-        module.attr("board") = boost::cref(*this);
-        module.attr("createStories") ();
-
-    } catch (const python::error_already_set&) {
-        PyErr_Print();
+    if(stage == 1){
+        mCanvas = getModuleByPath("World")->getCanvas();
     }
 }
 
@@ -91,6 +99,9 @@ void Storyboard::receiveSignal(cComponent*, simsignal_t signalId, const simtime_
 {
     if (signalId == traciStepSignal) {
         updateStoryboard();
+        if(mDrawConditions) {
+            drawConditions();
+        }
     }
 }
 
@@ -106,6 +117,16 @@ void Storyboard::updateStoryboard()
         }
     }
 }
+
+void Storyboard::drawConditions()
+{
+    if (mCanvas != nullptr) {
+        for (auto& story : m_stories) {
+            story->getCondition()->drawCondition(mCanvas);
+        }
+    }
+}
+
 
 void Storyboard::checkCar(traci::VehicleController& car, bool conditionsPassed, Story* story)
 {
@@ -164,4 +185,9 @@ void Storyboard::addEffect(const std::vector<std::shared_ptr<Effect>>& effects)
 void Storyboard::removeStory(traci::VehicleController* car, const Story* story)
 {
     m_affectedCars[car].removeEffectsByStory(story);
+}
+
+int Storyboard::numInitStages() const
+{
+    return 2;
 }

@@ -30,6 +30,8 @@ public:
      */
     std::vector<EffectFactory*> getEffectFactories();
 
+    Condition* getCondition() { return m_condition; }
+
 private:
     Condition* m_condition;
     std::vector<EffectFactory*> m_factories;

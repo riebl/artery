@@ -32,10 +32,14 @@ private:
     void receiveSignal(cComponent* source, simsignal_t, const char*, cObject*) override;
     void receiveSignal(cComponent* source, simsignal_t, const simtime_t&, cObject*) override;
 
+    void drawConditions();
+
     boost::python::object module;
     std::vector<std::shared_ptr<Story>> m_stories;
     std::map<traci::VehicleController*, EffectStack> m_affectedCars;
     std::map<std::string, Vehicle> m_vehicles;
+    bool mDrawConditions;
+    cCanvas* mCanvas = nullptr;
 
 public:
     /**
@@ -78,6 +82,8 @@ public:
      * param: Story which was tested in the update function
      */
     void checkCar(traci::VehicleController&, bool, Story*);
+
+    int numInitStages() const override;
 };
 
 #endif /* STORYBOARD_H_ */

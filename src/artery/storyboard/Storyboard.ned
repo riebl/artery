@@ -8,4 +8,5 @@ simple Storyboard
         string python = default("storyboard");
         string middlewareModule = default(".middleware");
         string traciModule = default("^.traci");
+        bool drawConditions = default(true);
 }
