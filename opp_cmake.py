@@ -98,9 +98,9 @@ class CMakeTarget:
     @property
     def target(self):
         target = {
-            'executable': "add_executable({} IMPORTED)",
-            'shared': "add_library({} SHARED IMPORTED)",
-            'static': "add_library({} STATIC IMPORTED)"
+            'executable': "add_executable({} IMPORTED GLOBAL)",
+            'shared': "add_library({} SHARED IMPORTED GLOBAL)",
+            'static': "add_library({} STATIC IMPORTED GLOBAL)"
         }
 
         return target[self._project.binary].format(self._project.name)
