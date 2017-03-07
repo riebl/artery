@@ -11,7 +11,7 @@ module VanetNic extends Ieee80211Nic
         bitrate = 6 Mbps;
         mac.rx.typename = "VanetRx";
         mac.rateSelection.modeSet = "p";
-        mac.rateSeletcion.dataBitrate = 6 Mbps;
+        mac.rateSelection.dataBitrate = 6 Mbps;
         mac.rateSelection.multicastBitrate = 6 Mbps;
         radio.bandName = "5 GHz";
         radio.bandwidth = 10 MHz;
