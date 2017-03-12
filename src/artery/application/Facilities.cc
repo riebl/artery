@@ -27,11 +27,6 @@ const VehicleDataProvider& Facilities::getVehicleDataProvider() const
 	return get_const<VehicleDataProvider>();
 }
 
-Veins::TraCIMobility& Facilities::getMobility()
-{
-	return get_mutable<Veins::TraCIMobility>();
-}
-
 vanetza::dcc::Scheduler& Facilities::getDccScheduler()
 {
 	return get_mutable<vanetza::dcc::Scheduler>();

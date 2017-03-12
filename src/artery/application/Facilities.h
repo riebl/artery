@@ -104,7 +104,6 @@ class Facilities
 
 		// these (deprecated) getters are only provided for compatibility reasons
 		const VehicleDataProvider& getVehicleDataProvider() const;
-		Veins::TraCIMobility& getMobility();
 		vanetza::dcc::Scheduler& getDccScheduler();
 		const vanetza::dcc::StateMachine& getDccStateMachine() const;
 
