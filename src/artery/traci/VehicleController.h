@@ -24,6 +24,7 @@ public:
 
     const std::string& getVehicleId() const;
     std::string getTypeId() const;
+    const VehicleType& getVehicleType() const;
 
     Position getPosition() const;
     GeoPosition getGeoPosition() const;

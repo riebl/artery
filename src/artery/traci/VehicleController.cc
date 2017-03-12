@@ -24,6 +24,11 @@ std::string VehicleController::getTypeId() const
     return m_api.vehicle().getTypeID(m_id);
 }
 
+const VehicleType& VehicleController::getVehicleType() const
+{
+    return m_type;
+}
+
 Position VehicleController::getPosition() const
 {
     return traci::position_cast(m_boundary, m_api.vehicle().getPosition(m_id));
