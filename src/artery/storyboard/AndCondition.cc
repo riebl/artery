@@ -5,9 +5,43 @@ AndCondition::AndCondition(Condition* left, Condition* right) :
 {
 }
 
-bool AndCondition::testCondition(const Vehicle& car)
+ConditionResult AndCondition::ResultVisitor::operator()(bool lhs, bool rhs) const
 {
-    return(m_left->testCondition(car) && m_right->testCondition(car));
+    return (lhs && rhs);
+}
+
+ConditionResult AndCondition::ResultVisitor::operator()(std::set<Vehicle*> lhs, bool rhs) const
+{
+    if(!rhs) {
+        return false;
+    } else {
+        return lhs;
+    }
+}
+
+ConditionResult AndCondition::ResultVisitor::operator()(bool lhs, std::set<Vehicle*> rhs) const
+{
+    if(!lhs) {
+        return false;
+    } else {
+        return rhs;
+    }
+}
+
+ConditionResult AndCondition::ResultVisitor::operator()(std::set<Vehicle*> lhs, std::set<Vehicle*> rhs) const
+{
+     std::set<Vehicle*> intersect;
+     std::set_intersection(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), std::inserter(intersect, intersect.begin()));
+     return intersect;
+}
+
+
+ConditionResult AndCondition::testCondition(const Vehicle& car)
+{
+    ConditionResult lhs = m_left->testCondition(car);
+    ConditionResult rhs = m_right->testCondition(car);
+
+    return boost::apply_visitor(AndCondition::ResultVisitor(), lhs, rhs);
 }
 
 void AndCondition::drawCondition(omnetpp::cCanvas* canvas)

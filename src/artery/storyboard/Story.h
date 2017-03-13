@@ -23,7 +23,7 @@ public:
      * \param car to test
      * \return result of the test
      */
-    bool testCondition(const Vehicle&);
+    ConditionResult testCondition(const Vehicle&);
 
     /**
      * Returns vector containing all EffectFactories

@@ -20,6 +20,16 @@ const auto traciStepSignal = omnetpp::cComponent::registerSignal("traci.step");
 
 }
 
+bool Storyboard::ResultVisitor::operator()(std::set<Vehicle*> vehicleSet) const
+{
+    return !vehicleSet.empty();
+}
+
+bool Storyboard::ResultVisitor::operator()(bool b) const
+{
+    return b;
+}
+
 void Storyboard::initialize(int stage)
 {
     if(stage == 0) {
@@ -111,7 +121,7 @@ void Storyboard::updateStoryboard()
     for (auto& car : m_vehicles) {
         // test all story conditions for each story
         for (auto& story : m_stories) {
-            bool conditionTest = story->testCondition(car.second);
+            ConditionResult conditionTest = story->testCondition(car.second);
             // check if the story has to be applied or removed
             checkCar(car.second.controller, conditionTest, story.get());
         }
@@ -128,22 +138,22 @@ void Storyboard::drawConditions()
 }
 
 
-void Storyboard::checkCar(traci::VehicleController& car, bool conditionsPassed, Story* story)
+void Storyboard::checkCar(traci::VehicleController& car, ConditionResult& conditionResult, Story* story)
 {
     // If the Story is already applied on this car and the condition test is not passed
     // remove Story from EffectStack, because the car left the affected area
     if (storyApplied(&car, story)) {
-        if (!conditionsPassed) {
+        if (!boost::apply_visitor(Storyboard::ResultVisitor(), conditionResult)) {
             removeStory(&car, story);
         }
     }
     // Story was not applied on this car and condition test is passed
     // results in adding all effects from the Story to the car
     else {
-        if (conditionsPassed) {
+        if (boost::apply_visitor(Storyboard::ResultVisitor(), conditionResult)) {
             std::vector<std::shared_ptr<Effect>> effects;
             for (auto factory : story->getEffectFactories()) {
-                effects.push_back(factory->create(car, story));
+                effects.push_back(factory->create(car, story, conditionResult));
             }
             addEffect(effects);
         }

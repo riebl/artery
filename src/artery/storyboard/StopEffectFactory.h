@@ -18,7 +18,7 @@ public:
      * \param Story from which the effect is created
      * \return Effect to add on the TraCIMobility's EffectStack
      */
-    std::shared_ptr<Effect> create(traci::VehicleController&, Story*) override;
+    std::shared_ptr<Effect> create(traci::VehicleController&, Story*, ConditionResult&) override;
 };
 
 #endif /* SRC_ARTERY_STORYBOARD_STOPEFFECTFACTORY_H_ */

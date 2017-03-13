@@ -15,7 +15,7 @@ public:
     {
     }
 
-    bool testCondition(const Vehicle& car)
+    ConditionResult testCondition(const Vehicle& car)
     {
         return m_comp(car.vdp.speed(), m_speed);
     }

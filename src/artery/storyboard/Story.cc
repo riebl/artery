@@ -6,7 +6,7 @@ Story::Story(Condition* condition, std::vector<EffectFactory*> factories) :
 {
 }
 
-bool Story::testCondition(const Vehicle& car)
+ConditionResult Story::testCondition(const Vehicle& car)
 {
     return (m_condition->testCondition(car));
 }

@@ -5,6 +5,7 @@
 #include <map>
 #include <omnetpp.h>
 #include "artery/application/ItsG5Middleware.h"
+#include "artery/storyboard/Condition.h"
 #include "artery/storyboard/EffectStack.h"
 #include "artery/storyboard/Vehicle.h"
 
@@ -42,6 +43,14 @@ private:
     cCanvas* mCanvas = nullptr;
 
 public:
+
+    class ResultVisitor : public boost::static_visitor<bool>
+    {
+    public:
+        bool operator()(bool b) const;
+        bool operator()(std::set<Vehicle*>) const;
+    };
+
     /**
      * Updates the storyboard by checking all stories
      * Is called each time TraCIScenarioManager processes one omnet step
@@ -81,7 +90,7 @@ public:
      * param: bool result of condition test
      * param: Story which was tested in the update function
      */
-    void checkCar(traci::VehicleController&, bool, Story*);
+    void checkCar(traci::VehicleController&, ConditionResult&, Story*);
 
     int numInitStages() const override;
 };

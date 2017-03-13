@@ -20,7 +20,7 @@ public:
      * \param Vehicle to check if its inside
      * \return result of the performed check
      */
-    bool testCondition(const Vehicle& car);
+    ConditionResult testCondition(const Vehicle& car);
 
 private:
     std::vector<Position> m_vertices;

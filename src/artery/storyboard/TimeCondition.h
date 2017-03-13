@@ -34,7 +34,7 @@ public:
      * \param TraciMobility to test
      * \return result of the performed test
      */
-    bool testCondition(const Vehicle& car);
+    ConditionResult testCondition(const Vehicle& car);
 
 private:
     omnetpp::SimTime m_begin;

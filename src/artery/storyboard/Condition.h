@@ -2,8 +2,12 @@
 #define _CONDITION_H_
 
 #include "artery/storyboard/Vehicle.h"
+#include <boost/variant.hpp>
+#include <set>
 
 namespace omnetpp { class cCanvas; }
+
+typedef boost::variant<bool, std::set<Vehicle*>> ConditionResult;
 
 /**
  * Condition Interface
@@ -12,7 +16,7 @@ class Condition
 {
 public:
     virtual ~Condition() = default;
-    virtual bool testCondition(const Vehicle& car) = 0;
+    virtual ConditionResult testCondition(const Vehicle& car) = 0;
     virtual void drawCondition(omnetpp::cCanvas*) {};
 };
 

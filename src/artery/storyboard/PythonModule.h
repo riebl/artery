@@ -103,7 +103,7 @@ struct EffectWrap : Effect, python::wrapper<Effect>
  */
 struct EffectFactoryWrap : EffectFactory, python::wrapper<EffectFactory>
 {
-    std::shared_ptr<Effect> create(traci::VehicleController&, Story*)
+    std::shared_ptr<Effect> create(traci::VehicleController&, Story*, ConditionResult&)
     {
         return this->get_override("create") ();
     }
@@ -114,9 +114,9 @@ struct EffectFactoryWrap : EffectFactory, python::wrapper<EffectFactory>
  */
 struct ConditionWrap : Condition, python::wrapper<Condition>
 {
-    bool testCondition(const Vehicle& car)
+    ConditionResult testCondition(const Vehicle& car)
     {
-        return this->get_override("testCondition") ();
+        return boost::python::call<ConditionResult>(this->get_override("testCondition")());
     }
 };
 
