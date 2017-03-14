@@ -8,6 +8,7 @@ set(STORYBOARD_SOURCES
     EffectStack.cc
     OrCondition.cc
     PolygonCondition.cc
+    SpeedDifferenceCondition.cc
     SpeedEffect.cc
     SpeedEffectFactory.cc
     StopEffect.cc

@@ -4,6 +4,7 @@
 #include "artery/storyboard/AndCondition.h"
 #include "artery/storyboard/CarSetCondition.h"
 #include "artery/storyboard/SpeedCondition.h"
+#include "artery/storyboard/SpeedDifferenceCondition.h"
 #include "artery/storyboard/SpeedEffectFactory.h"
 #include "artery/storyboard/StopEffectFactory.h"
 #include "artery/storyboard/Story.h"
@@ -121,6 +122,22 @@ struct ConditionWrap : Condition, python::wrapper<Condition>
     }
 };
 
+/**
+ * Python Wrapper for SpeedDifferenceCondition
+ */
+
+struct SpeedDifferenceConditionWrap : SpeedDifferenceCondition, python::wrapper<SpeedDifferenceCondition>
+{
+    SpeedDifferenceConditionWrap(double difference) : SpeedDifferenceCondition(difference)
+    {
+    }
+
+    ConditionResult testCondition(const Vehicle& car)
+    {
+        return boost::python::call<ConditionResult>(this->get_override("testCondition")());
+    }
+};
+
 BOOST_PYTHON_MODULE(storyboard) {
 
     /**
@@ -156,6 +173,10 @@ BOOST_PYTHON_MODULE(storyboard) {
 
     python::class_<SpeedCondition<std::less<vanetza::units::Velocity>>, SpeedCondition<std::less<vanetza::units::Velocity>>* , python::bases<Condition>>("SpeedConditionLess", python::init<double> ());
     python::class_<SpeedCondition<std::greater<vanetza::units::Velocity>>, SpeedCondition<std::greater<vanetza::units::Velocity>>* , python::bases<Condition>>("SpeedConditionGreater", python::init<double> ());
+
+    python::class_<SpeedDifferenceConditionWrap, SpeedDifferenceConditionWrap*, python::bases<Condition>, boost::noncopyable>("SpeedDifferenceCondition", python::init<double>());
+    python::class_<SpeedDifferenceConditionFaster, SpeedDifferenceConditionFaster*, python::bases<SpeedDifferenceCondition> >("SpeedDifferenceConditionFaster", python::init<double>());
+    python::class_<SpeedDifferenceConditionSlower, SpeedDifferenceConditionSlower*, python::bases<SpeedDifferenceCondition> >("SpeedDifferenceConditionSlower", python::init<double>());
 
     python::class_<TtcCondition, TtcCondition*, python::bases<Condition> >("TtcCondition", python::init<double>())
     .def(python::init<double, double>());
