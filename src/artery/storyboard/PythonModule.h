@@ -3,6 +3,7 @@
 
 #include "artery/storyboard/AndCondition.h"
 #include "artery/storyboard/CarSetCondition.h"
+#include "artery/storyboard/SignalEffectFactory.h"
 #include "artery/storyboard/SpeedCondition.h"
 #include "artery/storyboard/SpeedDifferenceCondition.h"
 #include "artery/storyboard/SpeedEffectFactory.h"
@@ -191,6 +192,8 @@ BOOST_PYTHON_MODULE(storyboard) {
     python::class_<SpeedEffectFactory, python::bases<EffectFactory> >("SpeedEffect", python::init<double>());
 
     python::class_<StopEffectFactory, python::bases<EffectFactory> >("StopEffect");
+
+    python::class_<SignalEffectFactory, python::bases<EffectFactory> >("SignalEffect", python::init<std::string>());
 
     /**
      * Story related classes
