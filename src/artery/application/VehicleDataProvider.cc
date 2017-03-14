@@ -65,8 +65,12 @@ vanetza::units::Angle convertMobilityAngle(Angle angle)
 	return angle.value;
 }
 
-VehicleDataProvider::VehicleDataProvider() :
-	mStationId(rand()), mConfidence(0.0), mLastUpdate(omnetpp::simTime()),
+VehicleDataProvider::VehicleDataProvider() : VehicleDataProvider(rand())
+{
+}
+
+VehicleDataProvider::VehicleDataProvider(uint32_t id) :
+	mStationId(id), mConfidence(0.0), mLastUpdate(omnetpp::simTime()),
 	mCurvatureOutput(2), mCurvatureConfidenceOutput(2)
 {
 	while (!mCurvatureConfidenceOutput.full()) {

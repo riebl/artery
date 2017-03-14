@@ -36,6 +36,7 @@ class VehicleDataProvider
 {
 	public:
 		VehicleDataProvider();
+		VehicleDataProvider(uint32_t id);
 		void update(const traci::VehicleController*);
 
 		uint32_t station_id() const { return mStationId; }
