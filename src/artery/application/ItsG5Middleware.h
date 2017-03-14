@@ -23,6 +23,7 @@
 #include "artery/application/LocalDynamicMap.h"
 #include "artery/application/Timer.h"
 #include "artery/application/VehicleDataProvider.h"
+#include "artery/utility/Identity.h"
 #include "veins/base/modules/BaseApplLayer.h"
 #include <omnetpp.h>
 #include <vanetza/access/data_request.hpp>
@@ -89,6 +90,7 @@ class ItsG5Middleware :
 		traci::VehicleController* mVehicleController;
 		VehicleDataProvider mVehicleDataProvider;
 		Timer mTimer;
+		artery::Identity mIdentity;
 		artery::LocalDynamicMap mLocalDynamicMap;
 		vanetza::Runtime mRuntime;
 		vanetza::dcc::StateMachine mDccFsm;

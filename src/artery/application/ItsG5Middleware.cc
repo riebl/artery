@@ -26,6 +26,7 @@
 #include "artery/netw/GeoNetRequest.h"
 #include "artery/nic/RadioDriverBase.h"
 #include "artery/traci/ControllableVehicle.h"
+#include "artery/utility/IdentityRegistry.h"
 #include "inet/common/ModuleAccess.h"
 #include "inet/mobility/contract/IMobility.h"
 #include <vanetza/btp/header.hpp>
@@ -166,6 +167,11 @@ void ItsG5Middleware::initializeMiddleware()
 	mDccControl->queue_length(par("vanetzaDccQueueLength"));
 	mGeoRouter->set_access_interface(mDccControl.get());
 	mGeoRouter->set_transport_handler(UpperProtocol::BTP_B, &mBtpPortDispatcher);
+
+	mIdentity.traci = mVehicleController->getVehicleId();
+	mIdentity.application = mVehicleDataProvider.station_id();
+	mIdentity.geonet = gn_addr;
+	emit(artery::IdentityRegistry::updateSignal, &mIdentity);
 }
 
 void ItsG5Middleware::initializeVehicleController()
@@ -282,6 +288,7 @@ void ItsG5Middleware::finish()
 	cancelAndDelete(mUpdateMessage);
 	cancelAndDelete(mUpdateRuntimeMessage);
 	findHost()->unsubscribe(inet::IMobility::mobilityStateChangedSignal, this);
+	emit(artery::IdentityRegistry::removeSignal, &mIdentity);
 }
 
 void ItsG5Middleware::handleMessage(cMessage *msg)

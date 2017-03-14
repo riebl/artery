@@ -60,6 +60,7 @@ add_library(artery SHARED
     traci/VehicleType.cc
     utility/AsioScheduler.cc
     utility/AsioTask.cc
+    utility/IdentityRegistry.cc
     utility/Geometry.cc
     veins/VeinsMobility.cc
     veins/VeinsObstacleControl.cc

@@ -19,6 +19,8 @@ package artery.application;
 simple ItsG5Middleware
 {
 	parameters:
+		@signal[Identity.update](type=artery::Identity);
+		@signal[Identity.remove](type=artery::Identity);
 		@signal[StoryboardSignal](type=StoryboardSignal);
 
 		string radioDriverModule;
