@@ -142,7 +142,7 @@ vanetza::asn1::Denm DenmService::createDenm(artery::denm::UseCase& uc)
     message->denm.management.actionID.originatingStationID = vdp.station_id();
     message->denm.management.actionID.sequenceNumber = ++mSequenceNumber;
     int ret = 0;
-    const auto taiTime = countTaiMilliseconds(mTimer->getTimeFor(vdp.simtime()));
+    const auto taiTime = countTaiMilliseconds(mTimer->getTimeFor(vdp.updated()));
     ret += asn_long2INTEGER(&message->denm.management.detectionTime, taiTime);
     ret += asn_long2INTEGER(&message->denm.management.referenceTime, taiTime);
     assert(ret == 0);

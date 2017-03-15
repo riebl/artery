@@ -38,7 +38,7 @@ TrafficJamEndOfQueue::TrafficJamEndOfQueue(const VehicleDataProvider& vdp, const
 
 void TrafficJamEndOfQueue::update()
 {
-    mVelocitySampler.feed(mVehicleDataProvider.speed(), mVehicleDataProvider.simtime());
+    mVelocitySampler.feed(mVehicleDataProvider.speed(), mVehicleDataProvider.updated());
 }
 
 bool TrafficJamEndOfQueue::checkPreconditions()
@@ -158,7 +158,7 @@ TrafficJamAhead::TrafficJamAhead(
 
 void TrafficJamAhead::update()
 {
-    mVelocitySampler.feed(mVehicleDataProvider.speed(), mVehicleDataProvider.simtime());
+    mVelocitySampler.feed(mVehicleDataProvider.speed(), mVehicleDataProvider.updated());
 }
 
 bool TrafficJamAhead::checkPreconditions()
