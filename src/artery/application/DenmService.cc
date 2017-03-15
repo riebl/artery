@@ -14,11 +14,13 @@
 #include "artery/storyboard/StoryboardSignal.h"
 #include <boost/units/base_units/metric/hour.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
+#include <omnetpp/checkandcast.h>
 #include <vanetza/asn1/denm.hpp>
 #include <vanetza/btp/ports.hpp>
 
 // TODO wrap all Artery classes by namespace
 using namespace artery;
+using namespace omnetpp;
 
 Define_Module(DenmService)
 

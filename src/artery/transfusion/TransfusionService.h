@@ -37,7 +37,7 @@ class TransfusionService : public ItsG5PromiscuousService
 
     protected:
         void initialize() override;
-        void handleMessage(cMessage*) override;
+        void handleMessage(omnetpp::cMessage*) override;
 
     private:
         void processMessage(const Transfusion::TransfusionMsg&);

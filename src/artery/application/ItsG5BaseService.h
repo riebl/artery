@@ -27,7 +27,7 @@
 #include "ItsG5Middleware.h"
 
 class ItsG5BaseService :
-	public cSimpleModule, public cListener,
+	public omnetpp::cSimpleModule, public omnetpp::cListener,
 	public vanetza::btp::IndicationInterface
 {
 	public:
@@ -45,9 +45,9 @@ class ItsG5BaseService :
 		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::UpPacket>) override;
 		Facilities& getFacilities();
 		port_type getPortNumber() const;
-		cModule* findHost();
-		void subscribe(const simsignal_t&);
-		void unsubscribe(const simsignal_t&);
+		omnetpp::cModule* findHost();
+		void subscribe(const omnetpp::simsignal_t&);
+		void unsubscribe(const omnetpp::simsignal_t&);
 
 	private:
 		Facilities* m_facilities;

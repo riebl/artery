@@ -1,10 +1,11 @@
 #ifndef STORYBOARD_H_
 #define STORYBOARD_H_
 
-#include <boost/python.hpp>
 #include <map>
-#include <omnetpp.h>
-#include "artery/application/ItsG5Middleware.h"
+#include <boost/python.hpp>
+#include <omnetpp/ccanvas.h>
+#include <omnetpp/clistener.h>
+#include <omnetpp/csimplemodule.h>
 #include "artery/storyboard/Condition.h"
 #include "artery/storyboard/EffectStack.h"
 #include "artery/storyboard/Vehicle.h"
@@ -13,7 +14,7 @@ class Effect;
 class Story;
 class Vehicle;
 
-class Storyboard : public cSimpleModule, public cListener
+class Storyboard : public omnetpp::cSimpleModule, public omnetpp::cListener
 {
 private:
 
@@ -27,10 +28,10 @@ private:
      * Recieves messages, sent to the Storyboard
      * Handled by Omnet++
      */
-    virtual void handleMessage(cMessage * msg);
+    virtual void handleMessage(omnetpp::cMessage * msg);
 
-    void receiveSignal(cComponent* source, simsignal_t, const char*, cObject*) override;
-    void receiveSignal(cComponent* source, simsignal_t, const simtime_t&, cObject*) override;
+    void receiveSignal(cComponent* source, omnetpp::simsignal_t, const char*, cObject*) override;
+    void receiveSignal(cComponent* source, omnetpp::simsignal_t, const omnetpp::SimTime&, cObject*) override;
 
     void drawConditions();
 
@@ -39,7 +40,7 @@ private:
     std::map<Vehicle*, EffectStack> m_affectedCars;
     std::map<std::string, Vehicle> m_vehicles;
     bool mDrawConditions;
-    cCanvas* mCanvas = nullptr;
+    omnetpp::cCanvas* mCanvas = nullptr;
 
 public:
     /**

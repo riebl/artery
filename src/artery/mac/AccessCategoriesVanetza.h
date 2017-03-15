@@ -20,6 +20,7 @@
 #define EDCA_ACCESS_CATEGORIES_VANETZA_H_KGCFGNQA
 
 #include "AccessCategories.h"
+#include <omnetpp/cexception.h>
 #include <vanetza/net/access_category.hpp>
 
 namespace edca
@@ -44,7 +45,7 @@ inline AccessCategory map(vanetza::AccessCategory ac)
 			result = AC_BK;
 			break;
 		default:
-			throw cRuntimeError("AC mapping failure");
+			throw omnetpp::cRuntimeError("AC mapping failure");
 			break;
 	}
 
@@ -70,7 +71,7 @@ inline vanetza::AccessCategory map(AccessCategory ac)
 			result = AC::BK;
 			break;
 		default:
-			throw cRuntimeError("AC mapping failure");
+			throw omnetpp::cRuntimeError("AC mapping failure");
 			break;
 	}
 

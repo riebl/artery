@@ -7,7 +7,7 @@
 #include <omnetpp/ccomponent.h>
 #include <omnetpp/cexception.h>
 
-using omnetpp::cRuntimeError;
+using namespace omnetpp;
 
 Define_Module(Storyboard)
 

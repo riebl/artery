@@ -25,6 +25,8 @@
 #include <vanetza/common/byte_view.hpp>
 #include <sstream>
 
+using namespace omnetpp;
+
 Define_Module(TransfusionService)
 
 void TransfusionService::initialize()

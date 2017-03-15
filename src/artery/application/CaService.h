@@ -37,23 +37,23 @@ class CaService : public ItsG5BaseService
 		void trigger() override;
 
 	private:
-		void checkTriggeringConditions(const simtime_t&);
-		void sendCam(const simtime_t&);
-		simtime_t genCamDcc();
+		void checkTriggeringConditions(const omnetpp::SimTime&);
+		void sendCam(const omnetpp::SimTime&);
+		omnetpp::SimTime genCamDcc();
 
 		const VehicleDataProvider* mVehicleDataProvider;
 		const Timer* mTimer;
 		artery::LocalDynamicMap* mLocalDynamicMap;
-		const simtime_t mGenCamMin;
-		const simtime_t mGenCamMax;
-		simtime_t mGenCam;
+		const omnetpp::SimTime mGenCamMin;
+		const omnetpp::SimTime mGenCamMax;
+		omnetpp::SimTime mGenCam;
 		unsigned mGenCamLowDynamicsCounter;
 		unsigned mGenCamLowDynamicsLimit;
 		Position mLastCamPosition;
 		vanetza::units::Velocity mLastCamSpeed;
 		vanetza::units::Angle mLastCamHeading;
-		simtime_t mLastCamTimestamp;
-		simtime_t mLastLowCamTimestamp;
+		omnetpp::SimTime mLastCamTimestamp;
+		omnetpp::SimTime mLastLowCamTimestamp;
 };
 
 vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider&, uint16_t genDeltaTime);

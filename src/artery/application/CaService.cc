@@ -10,6 +10,8 @@
 #include <vanetza/btp/ports.hpp>
 #include <chrono>
 
+using namespace omnetpp;
+
 auto microdegree = vanetza::units::degree * boost::units::si::micro;
 auto decidegree = vanetza::units::degree * boost::units::si::deci;
 auto degree_per_second = vanetza::units::degree / vanetza::units::si::second;
@@ -88,14 +90,14 @@ void CaService::indicate(const vanetza::btp::DataIndication& ind, std::unique_pt
 	}
 }
 
-void CaService::checkTriggeringConditions(const simtime_t& T_now)
+void CaService::checkTriggeringConditions(const SimTime& T_now)
 {
 	// provide variables named like in EN 302 637-2 V1.3.2 (section 6.1.3)
-	simtime_t& T_GenCam = mGenCam;
-	const simtime_t& T_GenCamMin = mGenCamMin;
-	const simtime_t& T_GenCamMax = mGenCamMax;
-	const simtime_t T_GenCamDcc = genCamDcc();
-	const simtime_t T_elapsed = T_now - mLastCamTimestamp;
+	SimTime& T_GenCam = mGenCam;
+	const SimTime& T_GenCamMin = mGenCamMin;
+	const SimTime& T_GenCamMax = mGenCamMax;
+	const SimTime T_GenCamDcc = genCamDcc();
+	const SimTime T_elapsed = T_now - mLastCamTimestamp;
 
 	if (T_elapsed >= T_GenCamDcc) {
 		if (checkHeadingDelta(mLastCamHeading, mVehicleDataProvider->heading()) ||
@@ -113,7 +115,7 @@ void CaService::checkTriggeringConditions(const simtime_t& T_now)
 	}
 }
 
-void CaService::sendCam(const simtime_t& T_now)
+void CaService::sendCam(const SimTime& T_now)
 {
 	uint16_t genDeltaTimeMod = countTaiMilliseconds(mTimer->getTimeFor(mVehicleDataProvider->simtime()));
 	auto cam = createCooperativeAwarenessMessage(*mVehicleDataProvider, genDeltaTimeMod);
@@ -143,10 +145,10 @@ void CaService::sendCam(const simtime_t& T_now)
 	emit(scSignalCamSent, payload_length);
 }
 
-simtime_t CaService::genCamDcc()
+SimTime CaService::genCamDcc()
 {
 	vanetza::Clock::duration delay = getFacilities().getDccScheduler().delay(vanetza::dcc::Profile::DP2);
-	simtime_t dcc { std::chrono::duration_cast<std::chrono::milliseconds>(delay).count(), SIMTIME_MS };
+	SimTime dcc { std::chrono::duration_cast<std::chrono::milliseconds>(delay).count(), SIMTIME_MS };
 	return std::min(mGenCamMax, std::max(mGenCamMin, dcc));
 }
 

@@ -15,15 +15,17 @@
 
 #include "ExampleService.h"
 #include "artery/traci/VehicleController.h"
+#include <omnetpp/cpacket.h>
 #include <vanetza/btp/data_request.hpp>
 #include <vanetza/dcc/profile.hpp>
 #include <vanetza/geonet/interface.hpp>
 
+using namespace omnetpp;
+using namespace vanetza;
+
 static const simsignal_t scSignalCamReceived = cComponent::registerSignal("CaService.received");
 
 Define_Module(ExampleService)
-
-using namespace vanetza;
 
 ExampleService::ExampleService()
 {

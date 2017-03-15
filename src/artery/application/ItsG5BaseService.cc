@@ -21,6 +21,8 @@
 #include "veins/base/utils/FindModule.h"
 #include <cassert>
 
+using namespace omnetpp;
+
 ItsG5BaseService::ItsG5BaseService() :
 		m_facilities(nullptr), m_middleware(nullptr)
 {

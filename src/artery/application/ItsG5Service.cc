@@ -20,6 +20,8 @@
 #include "cpacket_byte_buffer_convertible.h"
 #include <boost/variant/static_visitor.hpp>
 
+using namespace omnetpp;
+
 ItsG5Service::ItsG5Service()
 {
 }

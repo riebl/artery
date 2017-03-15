@@ -23,17 +23,17 @@ class ExampleService : public ItsG5Service
     public:
         ExampleService();
 
-        void indicate(const vanetza::btp::DataIndication&, cPacket*) override;
+        void indicate(const vanetza::btp::DataIndication&, omnetpp::cPacket*) override;
         void trigger() override;
-        void receiveSignal(cComponent*, simsignal_t, cObject*, cObject*) override;
+        void receiveSignal(cComponent*, omnetpp::simsignal_t, cObject*, cObject*) override;
 
     protected:
         void initialize() override;
         void finish() override;
-        void handleMessage(cMessage*) override;
+        void handleMessage(omnetpp::cMessage*) override;
 
     private:
-        cMessage* m_self_msg;
+        omnetpp::cMessage* m_self_msg;
 };
 
 #endif /* EXAMPLESERVICE_H_ */

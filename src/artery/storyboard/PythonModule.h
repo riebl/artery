@@ -17,6 +17,7 @@
 #include "artery/storyboard/TtcCondition.h"
 #include <boost/python.hpp>
 #include <boost/python/stl_iterator.hpp>
+#include <omnetpp/simtime.h>
 
 namespace python = boost::python;
 
@@ -164,8 +165,8 @@ BOOST_PYTHON_MODULE(storyboard) {
 
     python::class_<PolygonCondition, PolygonCondition*, python::bases<Condition> >("PolygonCondition", python::init<std::vector<Position> >());
 
-    python::class_<TimeCondition, TimeCondition*, python::bases<Condition> >("TimeCondition", python::init<SimTime, SimTime>())
-    .def(python::init<SimTime>());
+    python::class_<TimeCondition, TimeCondition*, python::bases<Condition> >("TimeCondition", python::init<omnetpp::SimTime, omnetpp::SimTime>())
+    .def(python::init<omnetpp::SimTime>());
 
     python::class_<CarSetCondition, CarSetCondition*, python::bases<Condition> >("CarSetCondition", python::init<std::set<std::string> >())
     .def(python::init<std::string>());
@@ -208,7 +209,7 @@ BOOST_PYTHON_MODULE(storyboard) {
      */
     python::class_<Position>("Coord", python::init<double, double>());
 
-    python::class_<SimTime>("SimTime", python::init<double>());
+    python::class_<omnetpp::SimTime>("SimTime", python::init<double>());
 
 }
 
@@ -217,8 +218,8 @@ BOOST_PYTHON_MODULE(storyboard) {
  * \param seconds
  * \return SimTime, unit: seconds
  */
-SimTime timelineSeconds(double time) {
-    return SimTime(time, SimTimeUnit::SIMTIME_S);
+omnetpp::SimTime timelineSeconds(double time) {
+    return omnetpp::SimTime(time, omnetpp::SimTimeUnit::SIMTIME_S);
 }
 
 /**
@@ -226,8 +227,8 @@ SimTime timelineSeconds(double time) {
  * \param milliseconds
  * \return SimTime, unit: milliseconds
  */
-SimTime timelineMilliseconds(double time) {
-    return SimTime(time, SimTimeUnit::SIMTIME_MS);
+omnetpp::SimTime timelineMilliseconds(double time) {
+    return omnetpp::SimTime(time, omnetpp::SimTimeUnit::SIMTIME_MS);
 }
 
 /**

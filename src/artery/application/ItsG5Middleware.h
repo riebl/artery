@@ -24,8 +24,9 @@
 #include "artery/application/Timer.h"
 #include "artery/application/VehicleDataProvider.h"
 #include "artery/utility/Identity.h"
-#include "veins/base/modules/BaseApplLayer.h"
-#include <omnetpp.h>
+#include <omnetpp/clistener.h>
+#include <omnetpp/csimplemodule.h>
+#include <omnetpp/simtime.h>
 #include <vanetza/access/data_request.hpp>
 #include <vanetza/access/interface.hpp>
 #include <vanetza/btp/data_interface.hpp>
@@ -49,7 +50,7 @@ namespace traci { class VehicleController; }
  * Middleware providing a runtime context for services.
  */
 class ItsG5Middleware :
-    public cSimpleModule, public cListener,
+    public omnetpp::cSimpleModule, public omnetpp::cListener,
     public vanetza::access::Interface, public vanetza::btp::RequestInterface
 {
 	public:
@@ -65,14 +66,14 @@ class ItsG5Middleware :
 		void initialize(int stage) override;
 		int numInitStages() const override;
 		void finish() override;
-		void handleMessage(cMessage *msg) override;
-		virtual void handleSelfMsg(cMessage *msg);
-		virtual void handleLowerMsg(cMessage *msg);
-		void receiveSignal(cComponent*, simsignal_t, cObject*, cObject*) override;
-		void receiveSignal(cComponent*, simsignal_t, double, cObject*) override;
+		void handleMessage(omnetpp::cMessage* msg) override;
+		virtual void handleSelfMsg(omnetpp::cMessage* msg);
+		virtual void handleLowerMsg(omnetpp::cMessage* msg);
+		void receiveSignal(cComponent*, omnetpp::simsignal_t, cObject*, cObject*) override;
+		void receiveSignal(cComponent*, omnetpp::simsignal_t, double, cObject*) override;
 
 	private:
-		cModule* findHost();
+		omnetpp::cModule* findHost();
 		void update();
 		void updatePosition();
 		void updateServices();
@@ -80,12 +81,11 @@ class ItsG5Middleware :
 		void initializeServices();
 		void initializeVehicleController();
 		void scheduleRuntime();
-		SimTime convertSimTime(vanetza::Clock::time_point tp) const;
+		omnetpp::SimTime convertSimTime(vanetza::Clock::time_point tp) const;
 
-		//Veins::TraCIMobility* mMobility;
 		RadioDriverBase* mRadioDriver;
-		cGate* mRadioDriverIn;
-		cGate* mRadioDriverOut;
+		omnetpp::cGate* mRadioDriverIn;
+		omnetpp::cGate* mRadioDriverOut;
 		traci::VehicleController* mVehicleController;
 		VehicleDataProvider mVehicleDataProvider;
 		Timer mTimer;
@@ -99,9 +99,9 @@ class ItsG5Middleware :
 		std::unique_ptr<vanetza::geonet::Router> mGeoRouter;
 		vanetza::btp::PortDispatcher mBtpPortDispatcher;
 		boost::posix_time::ptime mTimebase;
-		simtime_t mUpdateInterval;
-		cMessage* mUpdateMessage;
-		cMessage* mUpdateRuntimeMessage;
+		omnetpp::SimTime mUpdateInterval;
+		omnetpp::cMessage* mUpdateMessage;
+		omnetpp::cMessage* mUpdateRuntimeMessage;
 		Facilities mFacilities;
 		std::map<ItsG5BaseService*, port_type> mServices;
 };

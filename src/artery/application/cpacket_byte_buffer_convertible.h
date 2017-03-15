@@ -19,8 +19,8 @@
 #ifndef CPACKET_BYTE_BUFFER_CONVERTIBLE_H_
 #define CPACKET_BYTE_BUFFER_CONVERTIBLE_H_
 
-#include <omnetpp/cmessage.h>
 #include <omnetpp/cobject.h>
+#include <omnetpp/cpacket.h>
 #include <vanetza/common/byte_buffer_convertible.hpp>
 #include <cassert>
 #include <memory>
@@ -29,10 +29,10 @@ namespace vanetza {
 namespace convertible {
 
 template<>
-class byte_buffer_impl<cPacket*> : public byte_buffer, public omnetpp::cObject
+class byte_buffer_impl<omnetpp::cPacket*> : public byte_buffer, public omnetpp::cObject
 {
 	public:
-		byte_buffer_impl(cPacket* packet) : m_packet(packet)
+		byte_buffer_impl(omnetpp::cPacket* packet) : m_packet(packet)
 		{
 			assert(packet);
 			take(m_packet.get());
@@ -58,11 +58,11 @@ class byte_buffer_impl<cPacket*> : public byte_buffer, public omnetpp::cObject
 		std::unique_ptr<byte_buffer> duplicate() const override
 		{
 			return std::unique_ptr<byte_buffer> {
-				new byte_buffer_impl<cPacket*>(m_packet->dup())
+				new byte_buffer_impl<omnetpp::cPacket*>(m_packet->dup())
 			};
 		}
 
-		cPacket* consume()
+		omnetpp::cPacket* consume()
 		{
 			drop_packet();
 			return m_packet.release();
@@ -76,7 +76,7 @@ class byte_buffer_impl<cPacket*> : public byte_buffer, public omnetpp::cObject
 			}
 		}
 
-		std::unique_ptr<cPacket> m_packet;
+		std::unique_ptr<omnetpp::cPacket> m_packet;
 };
 
 }

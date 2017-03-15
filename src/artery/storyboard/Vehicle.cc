@@ -2,6 +2,8 @@
 #include "artery/storyboard/StoryboardSignal.h"
 #include <omnetpp/ccomponent.h>
 
+using namespace omnetpp;
+
 static const simsignal_t signalStoryboard = cComponent::registerSignal("StoryboardSignal");
 
 Vehicle::Vehicle(ItsG5Middleware& mw, std::map<std::string, Vehicle>& vs) :
