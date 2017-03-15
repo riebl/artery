@@ -61,6 +61,7 @@ add_library(artery SHARED
     utility/AsioScheduler.cc
     utility/AsioTask.cc
     utility/IdentityRegistry.cc
+    utility/FilterRules.cc
     utility/Geometry.cc
     veins/VeinsMobility.cc
     veins/VeinsObstacleControl.cc

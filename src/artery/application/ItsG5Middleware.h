@@ -79,7 +79,6 @@ class ItsG5Middleware :
 		void initializeMiddleware();
 		void initializeServices();
 		void initializeVehicleController();
-		bool checkServiceFilterRules(const cXMLElement* filters) const;
 		void scheduleRuntime();
 		SimTime convertSimTime(vanetza::Clock::time_point tp) const;
 

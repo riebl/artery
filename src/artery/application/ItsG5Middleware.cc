@@ -27,6 +27,7 @@
 #include "artery/nic/RadioDriverBase.h"
 #include "artery/traci/ControllableVehicle.h"
 #include "artery/utility/IdentityRegistry.h"
+#include "artery/utility/FilterRules.h"
 #include "inet/common/ModuleAccess.h"
 #include "inet/mobility/contract/IMobility.h"
 #include <vanetza/btp/header.hpp>
@@ -36,10 +37,8 @@
 #include <vanetza/geonet/packet.hpp>
 #include <vanetza/geonet/position_vector.hpp>
 #include <vanetza/net/mac_address.hpp>
-#include <boost/lexical_cast.hpp>
 #include <algorithm>
 #include <chrono>
-#include <regex>
 #include <string>
 
 Define_Module(ItsG5Middleware)
@@ -190,13 +189,19 @@ void ItsG5Middleware::initializeServices()
 				service_cfg->getAttribute("name") :
 				service_cfg->getAttribute("type");
 
-		if (checkServiceFilterRules(service_cfg->getFirstChildWithTag("filters"))) {
+		cXMLElement* service_filters = service_cfg->getFirstChildWithTag("filters");
+		bool service_applicable = true;
+		if (service_filters) {
+			ASSERT(mVehicleController);
+			artery::FilterRules rules(getRNG(0), *mVehicleController);
+			service_applicable = rules.applyFilterConfig(*service_filters);
+		}
+
+		if (service_applicable) {
 			cModule* module = module_type->createScheduleInit(service_name, this);
 			ItsG5BaseService* service = dynamic_cast<ItsG5BaseService*>(module);
 
-			if (service == nullptr) {
-				throw cRuntimeError("%s is not of type ItsG5BaseService", module_type->getFullName());
-			} else {
+			if (service) {
 				cXMLElement* listener = service_cfg->getFirstChildWithTag("listener");
 				if (listener && listener->getAttribute("port")) {
 					port_type port = boost::lexical_cast<port_type>(listener->getAttribute("port"));
@@ -213,74 +218,11 @@ void ItsG5Middleware::initializeServices()
 						throw cRuntimeError("No listener port defined for %s", service_name);
 					}
 				}
+			} else {
+				throw cRuntimeError("%s is not of type ItsG5BaseService", module_type->getFullName());
 			}
 		}
 	}
-}
-
-bool ItsG5Middleware::checkServiceFilterRules(const cXMLElement* filter_cfg) const
-{
-	bool add_service = true;
-
-	if (filter_cfg) {
-		using filter_fn = std::function<bool(void)>;
-		std::list<filter_fn> filters;
-
-		// add name pattern filter
-		cXMLElement* name_filter_cfg = filter_cfg->getFirstChildWithTag("name");
-		if (name_filter_cfg) {
-			const char* name_pattern = name_filter_cfg->getAttribute("pattern");
-			const char* name_match = name_filter_cfg->getAttribute("match");
-			bool inverse = name_match && strcmp(name_match, "inverse") == 0;
-			if (!name_pattern) {
-				throw cRuntimeError("Required pattern attribute is missing for name filter");
-			} else {
-				std::regex name_regex(name_pattern);
-				filter_fn name_filter = [this, name_regex, inverse]() {
-					const traci::VehicleController* vehicle = this->mVehicleController;
-					return std::regex_match(vehicle->getVehicleId(), name_regex) ^ inverse;
-				};
-				filters.emplace_back(std::move(name_filter));
-			}
-		}
-
-		// add penetration rate filter
-		cXMLElement* penetration_filter_cfg = filter_cfg->getFirstChildWithTag("penetration");
-		if (penetration_filter_cfg) {
-			const char* penetration_rate_str = penetration_filter_cfg->getAttribute("rate");
-			if (!penetration_rate_str) {
-				throw cRuntimeError("Required rate attribute is missing for penetration filter");
-			}
-
-			float penetration_rate = boost::lexical_cast<float>(penetration_rate_str);
-			if (penetration_rate > 1.0 || penetration_rate < 0.0) {
-				throw cRuntimeError("Penetration rate is out of range [0.0, 1.0]");
-			}
-
-			filter_fn penetration_filter = [this, penetration_rate]() {
-				return penetration_rate >= uniform(0.0f, 1.0f);
-			};
-			filters.emplace_back(std::move(penetration_filter));
-		}
-
-		// apply filter rules
-		std::string filter_operator = filter_cfg->getAttribute("operator") ?
-				filter_cfg->getAttribute("operator") : "or";
-		auto filter_executor = [](filter_fn f) { return f(); };
-		if (filter_operator == "or") {
-			if (!filters.empty()) {
-				add_service = std::any_of(filters.begin(), filters.end(), filter_executor);
-			} else {
-				add_service = true;
-			}
-		} else if (filter_operator == "and") {
-			add_service = std::all_of(filters.begin(), filters.end(), filter_executor);
-		} else {
-			throw cRuntimeError("Unsupported filter operator: %s", filter_operator.c_str());
-		}
-	}
-
-	return add_service;
 }
 
 void ItsG5Middleware::finish()
