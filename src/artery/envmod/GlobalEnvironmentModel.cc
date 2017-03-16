@@ -154,6 +154,11 @@ SensorDetection GlobalEnvironmentModel::detectObjects(const SensorConfigRadar& c
             const auto& object = getObject(objectId);
             for (const auto& objectPoint : object->getOutline())
             {
+                // skip objects points outside of sensor cone
+                if (!bg::covered_by(objectPoint, detection.sensorCone)) {
+                    continue;
+                }
+
                 LineOfSight lineOfSight;
                 lineOfSight[0] = egoPointPosition;
                 lineOfSight[1] = objectPoint;
