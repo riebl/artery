@@ -1,20 +1,11 @@
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-// 
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+/*
+ * Artery V2X Simulation Framework
+ * Copyright 2016-2017 Raphael Riebl
+ * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
+ */
 
-#ifndef __ARTERY_DENMOBJECT_H_
-#define __ARTERY_DENMOBJECT_H_
+#ifndef ARTERY_DENMOBJECT_H_
+#define ARTERY_DENMOBJECT_H_
 
 #include <omnetpp/cobject.h>
 #include <boost/optional.hpp>
@@ -77,4 +68,4 @@ bool operator&(const DenmObject&, denm::CauseCode);
 
 } // namespace artery
 
-#endif /* __ARTERY_DENMOBJECT_H_ */
+#endif /* ARTERY_DENMOBJECT_H_ */
