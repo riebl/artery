@@ -11,6 +11,7 @@
 #include "artery/storyboard/PolygonCondition.h"
 #include "artery/storyboard/TimeCondition.h"
 #include "artery/utility/Geometry.h"
+#include "artery/storyboard/TtcCondition.h"
 #include <boost/python.hpp>
 #include <boost/python/stl_iterator.hpp>
 
@@ -155,6 +156,9 @@ BOOST_PYTHON_MODULE(storyboard) {
 
     python::class_<SpeedCondition<std::less<vanetza::units::Velocity>>, SpeedCondition<std::less<vanetza::units::Velocity>>* , python::bases<Condition>>("SpeedConditionLess", python::init<double> ());
     python::class_<SpeedCondition<std::greater<vanetza::units::Velocity>>, SpeedCondition<std::greater<vanetza::units::Velocity>>* , python::bases<Condition>>("SpeedConditionGreater", python::init<double> ());
+
+    python::class_<TtcCondition, TtcCondition*, python::bases<Condition> >("TtcCondition", python::init<double>())
+    .def(python::init<double, double>());
 
     /**
      * Effect related classes

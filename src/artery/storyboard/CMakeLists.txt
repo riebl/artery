@@ -15,6 +15,7 @@ set(STORYBOARD_SOURCES
     Storyboard.cc
     Story.cc
     TimeCondition.cc
+    TtcCondition.cc
 )
 
 add_library(storyboard SHARED ${STORYBOARD_SOURCES})
