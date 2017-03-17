@@ -18,6 +18,8 @@ public:
      */
     bool testCondition(const Vehicle& car);
 
+    void drawCondition(omnetpp::cCanvas*) override;
+
 private:
     Condition* m_left;
     Condition* m_right;
