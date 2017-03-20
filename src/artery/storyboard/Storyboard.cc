@@ -69,6 +69,7 @@ void Storyboard::initialize(int stage)
 
         } catch (const python::error_already_set&) {
             PyErr_Print();
+            throw;
         }
 
         // Par visualisation flag from ned
