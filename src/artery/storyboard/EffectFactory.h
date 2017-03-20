@@ -13,7 +13,7 @@ class EffectFactory
 public:
     virtual ~EffectFactory() = default;
 
-    virtual std::shared_ptr<Effect> create(traci::VehicleController&, Story*, ConditionResult&) = 0;
+    virtual std::shared_ptr<Effect> create(Vehicle&, Story&, ConditionResult&) = 0;
 };
 
 #endif /* EFFECTFACTORY_H_ */

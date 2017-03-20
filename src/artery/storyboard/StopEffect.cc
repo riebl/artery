@@ -1,9 +1,10 @@
 #include "artery/storyboard/StopEffect.h"
+#include "artery/storyboard/Vehicle.h"
 #include "artery/traci/VehicleController.h"
 
 void StopEffect::applyEffect()
 {
-    getCar()->setSpeed(0 * boost::units::si::meter_per_second);
+    getCar().getController().setSpeed(0.0 * boost::units::si::meter_per_second);
 }
 
 void StopEffect::reapplyEffect()
@@ -13,5 +14,5 @@ void StopEffect::reapplyEffect()
 
 void StopEffect::removeEffect()
 {
-    getCar()->setSpeed(-1 * boost::units::si::meter_per_second);
+    getCar().getController().setSpeed(-1.0 * boost::units::si::meter_per_second);
 }

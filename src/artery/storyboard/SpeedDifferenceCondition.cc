@@ -2,9 +2,9 @@
 
 ConditionResult SpeedDifferenceConditionFaster::testCondition(const Vehicle& car)
 {
-    std::set<Vehicle*> affected;
-    for (auto& other : car.vehicles) {
-        if ((car.controller.getSpeed() - other.second.controller.getSpeed()) > mSpeedDifference) {
+    std::set<const Vehicle*> affected;
+    for (auto& other : car.getVehicles()) {
+        if ((car.getController().getSpeed() - other.second.getController().getSpeed()) > mSpeedDifference) {
             affected.insert(&other.second);
         }
     }
@@ -14,9 +14,9 @@ ConditionResult SpeedDifferenceConditionFaster::testCondition(const Vehicle& car
 
 ConditionResult SpeedDifferenceConditionSlower::testCondition(const Vehicle& car)
 {
-    std::set<Vehicle*> affected;
-    for (auto& other : car.vehicles) {
-        if ((other.second.controller.getSpeed() - car.controller.getSpeed()) > mSpeedDifference) {
+    std::set<const Vehicle*> affected;
+    for (auto& other : car.getVehicles()) {
+        if ((other.second.getController().getSpeed() - car.getController().getSpeed()) > mSpeedDifference) {
             affected.insert(&other.second);
         }
     }

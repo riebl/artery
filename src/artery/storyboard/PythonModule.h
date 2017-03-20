@@ -82,8 +82,8 @@ struct iterable_converter
  */
 struct EffectWrap : Effect, python::wrapper<Effect>
 {
-    EffectWrap(Story* story, traci::VehicleController* car) :
-        Effect(story, *car)
+    EffectWrap(Story& story, Vehicle& car) :
+        Effect(story, car)
     {
     }
 
@@ -106,7 +106,7 @@ struct EffectWrap : Effect, python::wrapper<Effect>
  */
 struct EffectFactoryWrap : EffectFactory, python::wrapper<EffectFactory>
 {
-    std::shared_ptr<Effect> create(traci::VehicleController&, Story*, ConditionResult&)
+    std::shared_ptr<Effect> create(Vehicle&, Story&, ConditionResult&)
     {
         return this->get_override("create") ();
     }
@@ -185,7 +185,7 @@ BOOST_PYTHON_MODULE(storyboard) {
     /**
      * Effect related classes
      */
-    python::class_<EffectWrap, EffectWrap*, boost::noncopyable>("Effect", python::init<Story*, traci::VehicleController*>());
+    python::class_<EffectWrap, EffectWrap*, boost::noncopyable>("Effect", python::init<Story&, Vehicle&>());
 
     python::class_<EffectFactoryWrap, EffectFactoryWrap*, boost::noncopyable>("EffectFactory");
 

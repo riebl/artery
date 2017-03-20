@@ -12,7 +12,7 @@
 class SignalEffect : public Effect
 {
 public:
-    SignalEffect(traci::VehicleController& car, std::string cause, Story* story, ConditionResult& result) :
+    SignalEffect(Vehicle& car, std::string cause, Story& story, ConditionResult& result) :
         Effect(story, car), mTriggerCause(cause), mResult(result)
     {
     }

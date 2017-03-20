@@ -7,7 +7,7 @@
 
 namespace omnetpp { class cCanvas; }
 
-typedef boost::variant<bool, std::set<Vehicle*>> ConditionResult;
+typedef boost::variant<bool, std::set<const Vehicle*>> ConditionResult;
 
 /**
  * Condition Interface

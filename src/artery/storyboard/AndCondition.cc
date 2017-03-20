@@ -10,7 +10,7 @@ ConditionResult AndCondition::ResultVisitor::operator()(bool lhs, bool rhs) cons
     return (lhs && rhs);
 }
 
-ConditionResult AndCondition::ResultVisitor::operator()(std::set<Vehicle*> lhs, bool rhs) const
+ConditionResult AndCondition::ResultVisitor::operator()(std::set<const Vehicle*> lhs, bool rhs) const
 {
     if(!rhs) {
         return false;
@@ -19,7 +19,7 @@ ConditionResult AndCondition::ResultVisitor::operator()(std::set<Vehicle*> lhs, 
     }
 }
 
-ConditionResult AndCondition::ResultVisitor::operator()(bool lhs, std::set<Vehicle*> rhs) const
+ConditionResult AndCondition::ResultVisitor::operator()(bool lhs, std::set<const Vehicle*> rhs) const
 {
     if(!lhs) {
         return false;
@@ -28,9 +28,9 @@ ConditionResult AndCondition::ResultVisitor::operator()(bool lhs, std::set<Vehic
     }
 }
 
-ConditionResult AndCondition::ResultVisitor::operator()(std::set<Vehicle*> lhs, std::set<Vehicle*> rhs) const
+ConditionResult AndCondition::ResultVisitor::operator()(std::set<const Vehicle*> lhs, std::set<const Vehicle*> rhs) const
 {
-     std::set<Vehicle*> intersect;
+     std::set<const Vehicle*> intersect;
      std::set_intersection(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), std::inserter(intersect, intersect.begin()));
      return intersect;
 }

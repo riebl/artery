@@ -47,10 +47,12 @@ TtcCondition::CarShape TtcCondition::getShape(Position pos, double angle, double
 TtcCondition::Route TtcCondition::calculateRoute(const Vehicle& car, int steps, double dt) const
 {
     std::vector<CarShape> shapes;
-    const double width = car.controller.getWidth() / boost::units::si::meters;
-    const double length = car.controller.getLength() / boost::units::si::meters;
-    auto carHeading = car.vdp.heading();
-    const auto carPosition = car.controller.getPosition();
+    auto& controller = car.getController();
+    auto& vdp = car.get<VehicleDataProvider>();
+    const double width = controller.getWidth() / boost::units::si::meters;
+    const double length = controller.getLength() / boost::units::si::meters;
+    auto carHeading = car.get<VehicleDataProvider>().heading();
+    const auto carPosition = controller.getPosition();
 
     // Calculate carCenter because controller.getPosition() returns the front middle position of the car
     Position carCenter;
@@ -58,12 +60,12 @@ TtcCondition::Route TtcCondition::calculateRoute(const Vehicle& car, int steps, 
     carCenter.y = sin(M_PI / 2 - carHeading.value()) * length / 2 * boost::units::si::meters + carPosition.y;
 
     // Calculate car positions following the expected movement of the car while not driving straight
-    if (boost::units::abs(car.vdp.curvature()) > 0 * vanetza::units::reciprocal_metre) {
-        auto radius = 1.0 / car.vdp.curvature();
+    if (boost::units::abs(vdp.curvature()) > 0 * vanetza::units::reciprocal_metre) {
+        auto radius = 1.0 / vdp.curvature();
         Position curveCenter;
         curveCenter.x = -radius * boost::units::cos(carHeading) + carCenter.x;
         curveCenter.y = -radius * boost::units::sin(carHeading) + carCenter.y;
-        const auto angleG = car.vdp.yaw_rate() * dt * boost::units::si::seconds;
+        const auto angleG = vdp.yaw_rate() * dt * boost::units::si::seconds;
 
         for (int i = 1; i <= steps; i++) {
             Position nextPosition;
@@ -76,14 +78,14 @@ TtcCondition::Route TtcCondition::calculateRoute(const Vehicle& car, int steps, 
         }
     // Calculations for strait driving car
     } else {
-        const auto heading = M_PI / 2 * boost::units::si::radians - car.vdp.heading();
+        const auto heading = M_PI / 2 * boost::units::si::radians - vdp.heading();
         const double sinH = boost::units::sin(heading);
         const double cosH = boost::units::cos(heading);
 
         for (int i = 1; i <= steps; i++) {
-            auto distance = car.vdp.speed() * dt * boost::units::si::seconds;
+            auto distance = vdp.speed() * dt * boost::units::si::seconds;
             Position m((cosH * i * distance + carCenter.x), (-sinH * i * distance+ carCenter.y));
-            shapes.push_back(getShape(m, car.vdp.heading() / boost::units::si::radians, length, width));
+            shapes.push_back(getShape(m, vdp.heading() / boost::units::si::radians, length, width));
         }
     }
 
@@ -92,8 +94,10 @@ TtcCondition::Route TtcCondition::calculateRoute(const Vehicle& car, int steps, 
 
 double TtcCondition::calculateTimeDelta(const Vehicle& car1, const Vehicle& car2) const
 {
-    const double dT1 = (car1.controller.getLength() / boost::units::si::meters) / (car1.vdp.speed() / boost::units::si::meter_per_second);
-    const double dT2 = (car2.controller.getLength() / boost::units::si::meters) / (car2.vdp.speed() / boost::units::si::meter_per_second);
+    auto& vdp1 = car1.get<VehicleDataProvider>();
+    auto& vdp2 = car2.get<VehicleDataProvider>();
+    const double dT1 = (car1.getController().getLength() / boost::units::si::meters) / (vdp1.speed() / boost::units::si::meter_per_second);
+    const double dT2 = (car2.getController().getLength() / boost::units::si::meters) / (vdp2.speed() / boost::units::si::meter_per_second);
 
     // return time delta calculated by the faster car to avoid gaps between vehicle shapes
     return std::min(dT1, dT2);
@@ -113,7 +117,7 @@ bool TtcCondition::calculateIntersect(const CarShape& shape1, const CarShape& sh
 bool TtcCondition::intersect(const Vehicle& car1, const Vehicle& car2)
 {
     bool no_intersection = true;
-    if (boost::geometry::distance(car1.controller.getPosition(), car2.controller.getPosition()) <= m_ttcDistanceThreshold) {
+    if (boost::geometry::distance(car1.getController().getPosition(), car2.getController().getPosition()) <= m_ttcDistanceThreshold) {
         const double dt = calculateTimeDelta(car1, car2);
         int steps = ceil(m_ttc / dt);
 
@@ -133,9 +137,9 @@ ConditionResult TtcCondition::testCondition(const Vehicle& car)
 {
     mEgoRoute.clear();
     mOthersRoute.clear();
-    std::set<Vehicle*> affected;
-    for (auto& testCar : car.vehicles) {
-        if (testCar.first != car.controller.getVehicleId()) {
+    std::set<const Vehicle*> affected;
+    for (auto& testCar : car.getVehicles()) {
+        if (testCar.first != car.getId()) {
             if (intersect(car, testCar.second)) {
                 affected.insert(&testCar.second);
             }

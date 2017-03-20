@@ -3,8 +3,6 @@
 
 #include "artery/storyboard/Effect.h"
 
-namespace traci { class VehicleController; }
-
 /**
  * StopEffect
  * Changes the current speed of the car to 0
@@ -14,7 +12,7 @@ namespace traci { class VehicleController; }
 class StopEffect : public Effect
 {
 public:
-    StopEffect(traci::VehicleController& car, Story* story) :
+    StopEffect(Vehicle& car, Story& story) :
         Effect(story, car)
     {
     }

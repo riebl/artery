@@ -17,7 +17,7 @@ public:
 
     ConditionResult testCondition(const Vehicle& car)
     {
-        return m_comp(car.vdp.speed(), m_speed);
+        return m_comp(car.get<VehicleDataProvider>().speed(), m_speed);
     }
 
 private:

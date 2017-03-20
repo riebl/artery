@@ -20,6 +20,7 @@ set(STORYBOARD_SOURCES
     Story.cc
     TimeCondition.cc
     TtcCondition.cc
+    Vehicle.cc
 )
 
 add_library(storyboard SHARED ${STORYBOARD_SOURCES})

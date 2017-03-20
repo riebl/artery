@@ -12,13 +12,13 @@ class AndCondition : public Condition
 public:
     AndCondition(Condition*, Condition*);
 
-    class ResultVisitor : public boost::static_visitor<boost::variant<bool, std::set<Vehicle*>>>
+    class ResultVisitor : public boost::static_visitor<ConditionResult>
     {
     public:
-        boost::variant<bool, std::set<Vehicle*>> operator()(bool lhs, bool rhs) const;
-        boost::variant<bool, std::set<Vehicle*>> operator()(std::set<Vehicle*> lhs, bool rhs) const;
-        boost::variant<bool, std::set<Vehicle*>> operator()(bool lhs, std::set<Vehicle*> rhs) const;
-        boost::variant<bool, std::set<Vehicle*>> operator()(std::set<Vehicle*> lhs, std::set<Vehicle*> rhs) const;
+        ConditionResult operator()(bool lhs, bool rhs) const;
+        ConditionResult operator()(std::set<const Vehicle*> lhs, bool rhs) const;
+        ConditionResult operator()(bool lhs, std::set<const Vehicle*> rhs) const;
+        ConditionResult operator()(std::set<const Vehicle*> lhs, std::set<const Vehicle*> rhs) const;
     };
 
     /**
@@ -26,7 +26,7 @@ public:
      * \param Car to test
      * \return true if both condition tests are passed
      */
-    ConditionResult testCondition(const Vehicle& car);
+    ConditionResult testCondition(const Vehicle& car) override;
 
     void drawCondition(omnetpp::cCanvas*) override;
 

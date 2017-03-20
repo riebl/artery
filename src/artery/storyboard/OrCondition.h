@@ -11,13 +11,13 @@ class OrCondition : public Condition
 public:
     OrCondition(Condition*, Condition*);
 
-    class ResultVisitor : public boost::static_visitor<boost::variant<bool, std::set<Vehicle*>>>
+    class ResultVisitor : public boost::static_visitor<ConditionResult>
     {
     public:
         ConditionResult operator()(bool lhs, bool rhs) const;
-        ConditionResult operator()(std::set<Vehicle*> lhs, bool rhs) const;
-        ConditionResult operator()(bool lhs, std::set<Vehicle*> rhs) const;
-        ConditionResult operator()(std::set<Vehicle*> lhs, std::set<Vehicle*> rhs) const;
+        ConditionResult operator()(std::set<const Vehicle*> lhs, bool rhs) const;
+        ConditionResult operator()(bool lhs, std::set<const Vehicle*> rhs) const;
+        ConditionResult operator()(std::set<const Vehicle*> lhs, std::set<const Vehicle*> rhs) const;
     };
 
     /**
@@ -25,7 +25,7 @@ public:
      * \param Car to test
      * \return true if condition test for left or right is passed
      */
-    boost::variant<bool, std::set<Vehicle*>> testCondition(const Vehicle& car);
+    ConditionResult testCondition(const Vehicle& car) override;
 
     void drawCondition(omnetpp::cCanvas*) override;
 

@@ -2,7 +2,7 @@
 #define EFFECT_H_
 
 class Story;
-namespace traci { class VehicleController; }
+class Vehicle;
 
 /**
  * Effect Interface
@@ -10,17 +10,17 @@ namespace traci { class VehicleController; }
 class Effect
 {
 public:
-    Effect(Story* story, traci::VehicleController& car);
+    Effect(Story& story, Vehicle& car);
     virtual ~Effect() = default;
     virtual void applyEffect() = 0;
     virtual void reapplyEffect() = 0;
     virtual void removeEffect() = 0;
-    Story* getStory();
-    traci::VehicleController* getCar();
+    Story& getStory();
+    Vehicle& getCar();
 
 private:
-    Story* m_story;
-    traci::VehicleController* m_car;
+    Story& m_story;
+    Vehicle& m_car;
 };
 
 #endif /* EFFECT_H_ */

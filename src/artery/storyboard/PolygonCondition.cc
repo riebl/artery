@@ -22,7 +22,7 @@ PolygonCondition::PolygonCondition(const std::vector<Position>& vertices) :
 
 ConditionResult PolygonCondition::testCondition(const Vehicle& car)
 {
-    const auto& point = car.controller.getPosition();
+    const auto& point = car.getController().getPosition();
     return boost::geometry::within(point, m_vertices);
 }
 

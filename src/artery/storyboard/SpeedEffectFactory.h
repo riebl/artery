@@ -23,7 +23,7 @@ public:
      * \param Story from which the Effect should be created
      * \return Effect to add on the EffectStack from the TraCIMobility
      */
-    std::shared_ptr<Effect> create(traci::VehicleController&, Story*, ConditionResult&) override;
+    std::shared_ptr<Effect> create(Vehicle&, Story&, ConditionResult&) override;
 
 private:
     double m_speed;

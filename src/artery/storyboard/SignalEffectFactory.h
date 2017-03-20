@@ -23,7 +23,7 @@ public:
      * \param ConditionResult result of the condition test
      * \return Effect to add on the EffectStack
      */
-    std::shared_ptr<Effect> create(traci::VehicleController&, Story*, ConditionResult&) override;
+    std::shared_ptr<Effect> create(Vehicle&, Story&, ConditionResult&) override;
 
 private:
     std::string mTriggerCause;

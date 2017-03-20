@@ -11,8 +11,7 @@
 
 class Effect;
 class Story;
-
-namespace traci { class VehicleController; }
+class Vehicle;
 
 class Storyboard : public cSimpleModule, public cListener
 {
@@ -37,20 +36,12 @@ private:
 
     boost::python::object module;
     std::vector<std::shared_ptr<Story>> m_stories;
-    std::map<traci::VehicleController*, EffectStack> m_affectedCars;
+    std::map<Vehicle*, EffectStack> m_affectedCars;
     std::map<std::string, Vehicle> m_vehicles;
     bool mDrawConditions;
     cCanvas* mCanvas = nullptr;
 
 public:
-
-    class ResultVisitor : public boost::static_visitor<bool>
-    {
-    public:
-        bool operator()(bool b) const;
-        bool operator()(std::set<Vehicle*>) const;
-    };
-
     /**
      * Updates the storyboard by checking all stories
      * Is called each time TraCIScenarioManager processes one omnet step
@@ -74,14 +65,14 @@ public:
      * \param Vehicle from which the Effects should be removed
      * \param Story to remove
      */
-    void removeStory(traci::VehicleController*, const Story*);
+    void removeStory(Vehicle*, const Story*);
 
     /**
      * Checks if a specific Story is already applied on a TraCIMobility
      * \param Vehicle which should be tested
      * \param Story that should be tested
      */
-    bool storyApplied(traci::VehicleController*, const Story*);
+    bool storyApplied(Vehicle*, const Story*);
 
     /**
      * Checks if the story has to be applied or removed
@@ -90,7 +81,7 @@ public:
      * param: bool result of condition test
      * param: Story which was tested in the update function
      */
-    void checkCar(traci::VehicleController&, ConditionResult&, Story*);
+    void checkCar(Vehicle&, ConditionResult&, Story*);
 
     int numInitStages() const override;
 };

@@ -10,7 +10,7 @@ ConditionResult OrCondition::ResultVisitor::operator()(bool lhs, bool rhs) const
     return (lhs || rhs);
 }
 
-ConditionResult OrCondition::ResultVisitor::operator()(std::set<Vehicle*> lhs, bool rhs) const
+ConditionResult OrCondition::ResultVisitor::operator()(std::set<const Vehicle*> lhs, bool rhs) const
 {
     if (lhs.empty()) {
         return rhs;
@@ -19,7 +19,7 @@ ConditionResult OrCondition::ResultVisitor::operator()(std::set<Vehicle*> lhs, b
     }
 }
 
-ConditionResult OrCondition::ResultVisitor::operator()(bool lhs, std::set<Vehicle*> rhs) const
+ConditionResult OrCondition::ResultVisitor::operator()(bool lhs, std::set<const Vehicle*> rhs) const
 {
     if (rhs.empty()) {
         return lhs;
@@ -28,9 +28,9 @@ ConditionResult OrCondition::ResultVisitor::operator()(bool lhs, std::set<Vehicl
     }
 }
 
-ConditionResult OrCondition::ResultVisitor::operator()(std::set<Vehicle*> lhs, std::set<Vehicle*> rhs) const
+ConditionResult OrCondition::ResultVisitor::operator()(std::set<const Vehicle*> lhs, std::set<const Vehicle*> rhs) const
 {
-    std::set<Vehicle*> unite;
+    std::set<const Vehicle*> unite;
     std::set_union(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), std::inserter(unite , unite.begin()));
     return unite;
 }

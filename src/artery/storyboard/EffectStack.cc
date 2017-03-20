@@ -53,7 +53,7 @@ void EffectStack::removeEffectsByStory(const Story* story)
     std::vector<Effect*> tmp;
     // Add all Effects related to a Story in a tmp vector
     for (auto effect : m_effects) {
-        if (effect->getStory() == story) {
+        if (&effect->getStory() == story) {
             tmp.push_back(effect.get());
         }
     }
@@ -67,7 +67,7 @@ void EffectStack::removeEffectsByStory(const Story* story)
 bool EffectStack::isStoryOnStack(const Story* story)
 {
     for (auto effect : m_effects) {
-        if (effect->getStory() == story) {
+        if (&effect->getStory() == story) {
             return true;
         }
     }

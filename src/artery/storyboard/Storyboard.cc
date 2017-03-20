@@ -20,15 +20,14 @@ const auto traciStepSignal = omnetpp::cComponent::registerSignal("traci.step");
 
 }
 
-bool Storyboard::ResultVisitor::operator()(std::set<Vehicle*> vehicleSet) const
-{
-    return !vehicleSet.empty();
-}
 
-bool Storyboard::ResultVisitor::operator()(bool b) const
+class ResultVisitor : public boost::static_visitor<bool>
 {
-    return b;
-}
+public:
+    bool operator()(bool b) const { return b; }
+    bool operator()(std::set<const Vehicle*> set) const { return !set.empty(); }
+};
+
 
 void Storyboard::initialize(int stage)
 {
@@ -92,10 +91,7 @@ void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const c
         cModule* nodeModule = dynamic_cast<cModule*>(node);
         ItsG5Middleware* appl = inet::findModuleFromPar<ItsG5Middleware>(par("middlewareModule"), nodeModule, false);
         if (appl) {
-            Facilities* fac = appl->getFacilities();
-            auto& controller = fac->get_mutable<traci::VehicleController>();
-            auto& vdp = fac->get_const<VehicleDataProvider>();
-            m_vehicles.emplace(nodeId, Vehicle { controller, vdp, m_vehicles });
+            m_vehicles.emplace(nodeId, Vehicle { *appl, m_vehicles });
         } else {
             EV_DEBUG << "Node " << nodeId << " is not equipped with middleware module, skipped by Storyboard" << endl;
         }
@@ -123,7 +119,7 @@ void Storyboard::updateStoryboard()
         for (auto& story : m_stories) {
             ConditionResult conditionTest = story->testCondition(car.second);
             // check if the story has to be applied or removed
-            checkCar(car.second.controller, conditionTest, story.get());
+            checkCar(car.second, conditionTest, story.get());
         }
     }
 }
@@ -138,22 +134,22 @@ void Storyboard::drawConditions()
 }
 
 
-void Storyboard::checkCar(traci::VehicleController& car, ConditionResult& conditionResult, Story* story)
+void Storyboard::checkCar(Vehicle& car, ConditionResult& conditionResult, Story* story)
 {
     // If the Story is already applied on this car and the condition test is not passed
     // remove Story from EffectStack, because the car left the affected area
     if (storyApplied(&car, story)) {
-        if (!boost::apply_visitor(Storyboard::ResultVisitor(), conditionResult)) {
+        if (!boost::apply_visitor(ResultVisitor(), conditionResult)) {
             removeStory(&car, story);
         }
     }
     // Story was not applied on this car and condition test is passed
     // results in adding all effects from the Story to the car
     else {
-        if (boost::apply_visitor(Storyboard::ResultVisitor(), conditionResult)) {
+        if (boost::apply_visitor(ResultVisitor(), conditionResult)) {
             std::vector<std::shared_ptr<Effect>> effects;
             for (auto factory : story->getEffectFactories()) {
-                effects.push_back(factory->create(car, story, conditionResult));
+                effects.push_back(factory->create(car, *story, conditionResult));
             }
             addEffect(effects);
         }
@@ -165,7 +161,7 @@ void Storyboard::registerStory(std::shared_ptr<Story> story)
     m_stories.push_back(story);
 }
 
-bool Storyboard::storyApplied(traci::VehicleController* car, const Story* story)
+bool Storyboard::storyApplied(Vehicle* car, const Story* story)
 {
     if (m_affectedCars.count(car) == 0) {
         return false;
@@ -177,13 +173,14 @@ bool Storyboard::storyApplied(traci::VehicleController* car, const Story* story)
 
 void Storyboard::addEffect(const std::vector<std::shared_ptr<Effect>>& effects)
 {
-    traci::VehicleController* car = effects.begin()->get()->getCar();
+    Vehicle& car = effects.front()->getCar();
+    Story& story = effects.front()->getStory();
     // No EffectStack found for this car or the story is not applied yet
     // apply effect
-    if (m_affectedCars.count(car) == 0 || !m_affectedCars[car].isStoryOnStack(effects.begin()->get()->getStory()) ) {
+    if (m_affectedCars.count(&car) == 0 || !m_affectedCars[&car].isStoryOnStack(&story) ) {
         for(auto effect : effects) {
-            m_affectedCars[car].addEffect(std::move(effect));
-            EV << "Effect added for: " << car->getVehicleId() << "\n";
+            m_affectedCars[&car].addEffect(std::move(effect));
+            EV << "Effect added for: " << car.getId() << "\n";
         }
     }
     // Effect is already on Stack -> should never happen
@@ -192,7 +189,7 @@ void Storyboard::addEffect(const std::vector<std::shared_ptr<Effect>>& effects)
     }
 }
 
-void Storyboard::removeStory(traci::VehicleController* car, const Story* story)
+void Storyboard::removeStory(Vehicle* car, const Story* story)
 {
     m_affectedCars[car].removeEffectsByStory(story);
 }

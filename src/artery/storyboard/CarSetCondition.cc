@@ -13,6 +13,6 @@ CarSetCondition::CarSetCondition(const std::set<std::string>& carNames) :
 
 ConditionResult CarSetCondition::testCondition(const Vehicle& car)
 {
-    auto result = std::find(m_cars.begin(), m_cars.end(), car.controller.getVehicleId());
+    auto result = std::find(m_cars.begin(), m_cars.end(), car.getId());
     return (result != m_cars.end());
 }

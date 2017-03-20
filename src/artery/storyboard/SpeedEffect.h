@@ -3,9 +3,6 @@
 
 #include "artery/storyboard/Effect.h"
 
-class Story;
-namespace traci { class VehicleController; }
-
 /**
  * SpeedEffect
  * Changes the cars speed according to m_speed
@@ -16,11 +13,11 @@ class SpeedEffect : public Effect
 public:
     /**
      * Creates a new Speed Effect
-     * \param TraCIMobility which is affected from the Effect
+     * \param car Affected vehicle
      * \param Speed in m/s
      * \param Story from which the Effect is created
      */
-    SpeedEffect(traci::VehicleController& car, double speed, Story* story) :
+    SpeedEffect(Vehicle& car, double speed, Story& story) :
         Effect(story, car), m_speed(speed)
     {
     }
@@ -39,6 +36,7 @@ public:
      * Calls apply Effect
      */
     void reapplyEffect();
+
 private:
     double m_speed;
     double m_current;
