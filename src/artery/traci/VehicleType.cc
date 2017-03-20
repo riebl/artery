@@ -13,42 +13,42 @@ VehicleType::VehicleType(const std::string& type_id, traci::LiteAPI& api) :
 {
 }
 
-const std::string& VehicleType::getTypeId()
+const std::string& VehicleType::getTypeId() const
 {
     return m_id;
 }
 
-std::string VehicleType::getVehicleClass()
+std::string VehicleType::getVehicleClass() const
 {
     return m_api.getVehicleClass(m_id);
 }
 
-auto VehicleType::getMaxSpeed() -> Velocity
+auto VehicleType::getMaxSpeed() const -> Velocity
 {
     return m_api.getMaxSpeed(m_id) * si::meter_per_second;
 }
 
-auto VehicleType::getMaxAcceleration() -> Acceleration
+auto VehicleType::getMaxAcceleration() const -> Acceleration
 {
     return m_api.getAccel(m_id) * si::meter_per_second_squared;
 }
 
-auto VehicleType::getMaxDeceleration() -> Acceleration
+auto VehicleType::getMaxDeceleration() const -> Acceleration
 {
     return m_api.getDecel(m_id) * si::meter_per_second_squared;
 }
 
-auto VehicleType::getLength() -> Length
+auto VehicleType::getLength() const -> Length
 {
     return m_api.getLength(m_id) * si::meter;
 }
 
-auto VehicleType::getWidth() -> Length
+auto VehicleType::getWidth() const -> Length
 {
     return m_api.getWidth(m_id) * si::meter;
 }
 
-auto VehicleType::getHeight() -> Length
+auto VehicleType::getHeight() const -> Length
 {
     return m_api.getHeight(m_id) * si::meter;
 }

@@ -20,14 +20,14 @@ public:
 
     VehicleType(const std::string& type_id, traci::LiteAPI&);
 
-    const std::string& getTypeId();
-    std::string getVehicleClass();
-    Velocity getMaxSpeed();
-    Acceleration getMaxAcceleration();
-    Acceleration getMaxDeceleration();
-    Length getLength();
-    Length getWidth();
-    Length getHeight();
+    const std::string& getTypeId() const;
+    std::string getVehicleClass() const;
+    Velocity getMaxSpeed() const;
+    Acceleration getMaxAcceleration() const;
+    Acceleration getMaxDeceleration() const;
+    Length getLength() const;
+    Length getWidth() const;
+    Length getHeight() const;
 
 private:
     std::string m_id;
