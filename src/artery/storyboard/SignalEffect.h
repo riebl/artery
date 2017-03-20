@@ -3,7 +3,6 @@
 
 #include "artery/storyboard/Effect.h"
 #include "artery/storyboard/Condition.h"
-#include "omnetpp/cobject.h"
 
 /*
  * SignalEffect
@@ -40,14 +39,6 @@ public:
 private:
     std::string mTriggerCause;
     ConditionResult& mResult;
-};
-
-struct StoryboardSignal : public omnetpp::cObject
-{
-    ConditionResult result;
-    traci::VehicleController* car;
-    std::string cause;
-    Story* story;
 };
 
 #endif /* SIGNALEFFECT_H */

@@ -16,6 +16,7 @@ set(STORYBOARD_SOURCES
     StopEffect.cc
     StopEffectFactory.cc
     Storyboard.cc
+    StoryboardSignal.cc
     Story.cc
     TimeCondition.cc
     TtcCondition.cc

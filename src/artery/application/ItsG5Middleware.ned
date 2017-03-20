@@ -19,6 +19,8 @@ package artery.application;
 simple ItsG5Middleware
 {
 	parameters:
+		@signal[StoryboardSignal](type=StoryboardSignal);
+
 		string radioDriverModule;
 		string mobilityModule;
 		double updateInterval = default(0.1s) @unit(s);
