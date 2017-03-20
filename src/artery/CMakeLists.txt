@@ -83,6 +83,10 @@ target_link_libraries(artery Vanetza::vanetza)
 target_link_libraries(artery ${Boost_LIBRARIES})
 target_include_directories(artery PUBLIC ${Boost_INCLUDE_DIRS})
 
+if(TARGET storyboard)
+    target_link_libraries(artery storyboard)
+endif()
+
 if(TARGET transfusion)
     target_link_libraries(artery transfusion)
     add_dependencies(transfusion messages)

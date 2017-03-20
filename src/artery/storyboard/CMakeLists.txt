@@ -16,6 +16,6 @@ set(STORYBOARD_SOURCES
 )
 
 add_library(storyboard SHARED ${STORYBOARD_SOURCES})
-target_link_libraries(storyboard PUBLIC artery)
-target_link_libraries(storyboard PUBLIC ${Boost_PYTHON_LIBRARY} ${PYTHON_LIBRARIES})
+target_include_directories(storyboard PUBLIC $<TARGET_PROPERTY:artery,INCLUDE_DIRECTORIES>)
 target_include_directories(storyboard PUBLIC ${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
+target_link_libraries(storyboard PUBLIC ${Boost_PYTHON_LIBRARY} ${PYTHON_LIBRARIES})
