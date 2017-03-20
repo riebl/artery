@@ -60,7 +60,7 @@ void Storyboard::initialize(int stage)
             const char* simBaseDir = netConfigEntry.getBaseDirectory();
             assert(simBaseDir);
             python::import("sys").attr("path").attr("append")(simBaseDir);
-            EV << "Appended " << simBaseDir << " to Python system path";
+            EV_INFO << "Appended " << simBaseDir << " to Python system path" << endl;
 
             // Load module containing storyboard description
             module = python::import(par("python").stringValue());
@@ -82,7 +82,6 @@ void Storyboard::initialize(int stage)
 void Storyboard::handleMessage(cMessage * msg)
 {
     // Storyboard does not expect any messages at the moment
-    EV << "Message arrived \n";
 }
 
 void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const char* nodeId, cObject* node)
@@ -180,7 +179,7 @@ void Storyboard::addEffect(const std::vector<std::shared_ptr<Effect>>& effects)
     if (m_affectedCars.count(&car) == 0 || !m_affectedCars[&car].isStoryOnStack(&story) ) {
         for(auto effect : effects) {
             m_affectedCars[&car].addEffect(std::move(effect));
-            EV << "Effect added for: " << car.getId() << "\n";
+            EV_DEBUG << "Effect added for: " << car.getId() << endl;
         }
     }
     // Effect is already on Stack -> should never happen
