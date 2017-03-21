@@ -16,6 +16,14 @@ import_opp_target(veins ${Veins_DIR}/src/Makefile)
 find_path(INET_DIR NAMES src/inet/package.ned PATHS extern/inet DOC "INET root directory")
 import_opp_target(INET ${INET_DIR}/src/Makefile)
 
+find_path(SimuLTE_DIR NAMES src/package.ned PATHS extern/simulte DOC "SimuLTE root directory")
+if(SimuLTE_DIR)
+    # SimuLTE is an optional dependency
+    import_opp_target(lte ${SimuLTE_DIR}/src/Makefile)
+else()
+    message(STATUS "Skipping SimuLTE integration")
+endif()
+
 find_program(MAKE_COMMAND NAMES make gmake HINTS ${CMAKE_MAKE_COMMAND} DOC "Makefile processor")
 set(MAKE_ARGUMENTS "" CACHE STRING "Additional arguments passed to Makefile processor")
 string(REPLACE " " ";" MAKE_ARGUMENTS "${MAKE_ARGUMENTS}")
@@ -69,6 +77,25 @@ if("${INET_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/inet")
         COMMENT "Building INET (external dependency)"
         VERBATIM)
     add_dependencies(INET build_inet)
+endif()
+
+if("${SimuLTE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/simulte")
+    set(_simulte_mode "release")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(_simulte_mode "debug")
+    endif()
+
+    set(_make_command ${MAKE_COMMAND})
+    if(CMAKE_GENERATOR MATCHES "Makefiles")
+        set(_make_command \$\(MAKE\))
+    endif()
+
+    add_custom_target(build_simulte
+        COMMAND ${_make_command} ${MAKE_ARGUMENTS} simulte MODE=${_simulte_mode}
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMENT "Building SimuLTE (external dependency)"
+        VERBATIM)
+    add_dependencies(lte build_simulte)
 endif()
 
 option(WITH_ENVMOD "Build Artery with environment model feature" ON)
