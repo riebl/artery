@@ -24,10 +24,12 @@ class DenmService : public ItsG5BaseService
     public:
         DenmService();
         void initialize() override;
+        void receiveSignal(cComponent*, omnetpp::simsignal_t, cObject*, cObject*) override;
         void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::UpPacket>) override;
         void trigger() override;
 
     private:
+        void sendDenm(artery::denm::UseCase&);
         vanetza::btp::DataRequestB createRequest(artery::denm::UseCase&);
         vanetza::asn1::Denm createDenm(artery::denm::UseCase&);
 

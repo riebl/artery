@@ -43,6 +43,7 @@ set(SOURCES
     application/DenmService.cc
     application/ExampleService.cc
     application/Facilities.cc
+    application/ImpactReductionUseCase.cc
     application/ItsG5BaseService.cc
     application/ItsG5Middleware.cc
     application/ItsG5PromiscuousService.cc

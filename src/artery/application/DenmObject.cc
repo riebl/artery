@@ -10,6 +10,8 @@
 
 using Denm = vanetza::asn1::Denm;
 
+Register_Abstract_Class(artery::DenmObject);
+
 namespace artery
 {
 namespace denm
@@ -22,8 +24,6 @@ CauseCode convert(const CauseCodeType_t& type)
 
 } // namespace denm
 
-
-Register_Abstract_Class(DenmObject);
 
 DenmObject::DenmObject(Denm&& denm) :
     m_denm_wrapper(std::make_shared<Denm>(std::move(denm)))

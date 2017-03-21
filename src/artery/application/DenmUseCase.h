@@ -12,6 +12,9 @@
 #include <vanetza/asn1/denm.hpp>
 #include <vanetza/btp/data_request.hpp>
 
+class StoryboardSignal;
+
+
 namespace artery
 {
 namespace denm
@@ -37,10 +40,25 @@ public:
 
     /**
      * Fill given BTP data request with use case specific data
-     * \note General request data element are set by Denmservice afterwards!
+     * \note General request data elements are set by DenmService afterwards!
      * \param request empty BTP data request
      */
     virtual void dissemination(vanetza::btp::DataRequestB&) = 0;
+
+    /**
+     * React immediately on reception of another DEN message
+     * \param obj DENM message object
+     * \return true if DENM creation shall be invoked
+     */
+    virtual bool handleMessageReception(const DenmObject&) { return false; }
+
+    /**
+     * Process signals triggered by storyboard
+     * \note Storyboard emits signals for all vehicles at the same time. Simultaneous DENM
+     *       transmissions are prevented by deferring DENM creation until check() therefore.
+     * \param signal A signal emitted by storyboard for this vehicle
+     */
+    virtual void handleStoryboardTrigger(const StoryboardSignal&) {}
 
     virtual ~UseCase() = default;
 

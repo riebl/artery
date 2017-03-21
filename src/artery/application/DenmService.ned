@@ -18,6 +18,6 @@ package artery.application;
 simple DenmService like ItsG5Service
 {
     parameters:
-        @signal[DenmService.received](type=DenmObject);
+        @signal[DenmService.received](type=artery::DenmObject);
 	bool assumeNonUrbanEnvironment = default(false);
 }

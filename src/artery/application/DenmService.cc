@@ -8,7 +8,9 @@
 #include "artery/application/DenmObject.h"
 #include "artery/application/DenmService.h"
 #include "artery/application/Timer.h"
+#include "artery/application/ImpactReductionUseCase.h"
 #include "artery/application/TrafficJamUseCase.h"
+#include "artery/storyboard/StoryboardSignal.h"
 #include <boost/units/base_units/metric/hour.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
 #include <vanetza/asn1/denm.hpp>
@@ -20,6 +22,7 @@ using namespace artery;
 Define_Module(DenmService);
 
 static const simsignal_t denmReceivedSignal = cComponent::registerSignal("DenmService.received");
+static const simsignal_t storyboardSignal = cComponent::registerSignal("StoryboardSignal");
 
 static const auto microdegree = vanetza::units::degree * boost::units::si::micro;
 static const auto decidegree = vanetza::units::degree * boost::units::si::deci;
@@ -36,6 +39,8 @@ void DenmService::initialize()
     mTimer = &getFacilities().get_const<Timer>();
     mDenmMemory.reset(new artery::denm::Memory(*mTimer));
 
+    subscribe(storyboardSignal);
+
     const VehicleDataProvider& vdp = getFacilities().get_const<VehicleDataProvider>();
     std::unique_ptr<TrafficJamEndOfQueue> endOfQueue { new TrafficJamEndOfQueue(vdp, *mDenmMemory) };
     endOfQueue->setNonUrbanEnvironment(par("assumeNonUrbanEnvironment").boolValue());
@@ -44,6 +49,19 @@ void DenmService::initialize()
     std::unique_ptr<TrafficJamAhead> jamAhead { new TrafficJamAhead(vdp, *mDenmMemory) };
     jamAhead->setNonUrbanEnvironment(par("assumeNonUrbanEnvironment").boolValue());
     mUseCases.push_front(jamAhead.release());
+
+    std::unique_ptr<ImpactReductionContainerExchange> irc { new ImpactReductionContainerExchange(vdp) };
+    mUseCases.push_front(irc.release());
+}
+
+void DenmService::receiveSignal(cComponent*, simsignal_t signal, cObject* obj, cObject*)
+{
+    if (signal == storyboardSignal) {
+        StoryboardSignal* storyboardSignalObj = check_and_cast<StoryboardSignal*>(obj);
+        for (auto& use_case : mUseCases) {
+            use_case.handleStoryboardTrigger(*storyboardSignalObj);
+        }
+    }
 }
 
 void DenmService::indicate(const vanetza::btp::DataIndication& indication, std::unique_ptr<vanetza::UpPacket> packet)
@@ -54,6 +72,12 @@ void DenmService::indicate(const vanetza::btp::DataIndication& indication, std::
         DenmObject obj = visitor.shared_wrapper;
         mDenmMemory->received(obj);
         emit(denmReceivedSignal, &obj);
+
+        for (auto& use_case : mUseCases) {
+            if (use_case.handleMessageReception(obj)) {
+                sendDenm(use_case);
+            }
+        }
     }
 }
 
@@ -63,15 +87,20 @@ void DenmService::trigger()
 
     for (auto& use_case : mUseCases) {
         if (use_case.check()) {
-            auto denm = createDenm(use_case);
-            auto request = createRequest(use_case);
-
-            using namespace vanetza;
-            std::unique_ptr<geonet::DownPacket> payload { new geonet::DownPacket };
-            payload->layer(OsiLayer::Application) = std::move(denm);
-            this->request(request, std::move(payload));
+            sendDenm(use_case);
         }
     }
+}
+
+void DenmService::sendDenm(artery::denm::UseCase& use_case)
+{
+    auto denm = createDenm(use_case);
+    auto request = createRequest(use_case);
+
+    using namespace vanetza;
+    std::unique_ptr<geonet::DownPacket> payload { new geonet::DownPacket };
+    payload->layer(OsiLayer::Application) = std::move(denm);
+    this->request(request, std::move(payload));
 }
 
 vanetza::btp::DataRequestB DenmService::createRequest(artery::denm::UseCase& uc)

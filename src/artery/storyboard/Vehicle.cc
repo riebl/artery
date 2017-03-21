@@ -1,4 +1,5 @@
 #include "artery/storyboard/Vehicle.h"
+#include "artery/storyboard/StoryboardSignal.h"
 #include <omnetpp/ccomponent.h>
 
 static const simsignal_t signalStoryboard = cComponent::registerSignal("StoryboardSignal");
@@ -30,5 +31,6 @@ const std::map<std::string, Vehicle>& Vehicle::getVehicles() const
 
 void Vehicle::emit(const StoryboardSignal& signal) const
 {
-    mMiddleware.emit(signalStoryboard, &signal);
+    const omnetpp::cObject* obj = &signal;
+    mMiddleware.emit(signalStoryboard, obj);
 }
