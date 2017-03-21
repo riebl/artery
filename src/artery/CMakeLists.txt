@@ -35,7 +35,7 @@ set_target_properties(messages PROPERTIES
 
 find_package(Boost COMPONENTS date_time system REQUIRED)
 
-set(SOURCES
+add_library(artery SHARED
     application/CaService.cc
     application/DenmMemory.cc
     application/DenmObject.cc
@@ -67,40 +67,43 @@ set(SOURCES
     utility/Geometry.cc
     veins/VeinsMobility.cc
     veins/VeinsObstacleControl.cc
+    $<TARGET_OBJECTS:messages>
 )
+
+set_property(TARGET artery PROPERTY NED_FOLDERS ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(artery PUBLIC ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(artery PUBLIC ${Boost_INCLUDE_DIRS})
+target_link_libraries(artery PUBLIC ${Boost_LIBRARIES})
+target_link_libraries(artery PUBLIC opp_interface)
+target_link_libraries(artery PUBLIC traci)
+target_link_libraries(artery PUBLIC veins)
+target_link_libraries(artery PUBLIC Vanetza::vanetza)
 
 if(TARGET INET)
     message(STATUS "Enable INET integration")
-    list(APPEND SOURCES
+    set_property(TARGET artery APPEND PROPERTY SOURCES
         inet/InetRadioDriver.cc
         inet/InetMobility.cc
-        inet/VanetRx.cc
-    )
+        inet/VanetRx.cc)
+    target_link_libraries(artery PUBLIC INET)
 endif()
 
-add_library(artery SHARED ${SOURCES} $<TARGET_OBJECTS:messages>)
-set_property(TARGET artery PROPERTY NED_FOLDERS ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(artery PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(artery opp_interface)
-target_link_libraries(artery veins)
-target_link_libraries(artery Vanetza::vanetza)
-target_link_libraries(artery ${Boost_LIBRARIES})
-target_include_directories(artery PUBLIC ${Boost_INCLUDE_DIRS})
+macro(add_artery_feature name)
+    add_library(${name} SHARED ${ARGN})
+    set_target_properties(${name} PROPERTIES
+        INCLUDE_DIRECTORIES $<TARGET_PROPERTY:artery,INCLUDE_DIRECTORIES>)
+endmacro()
 
-if(TARGET storyboard)
-    target_link_libraries(artery storyboard)
+if(WITH_STORYBOARD)
+    add_subdirectory(storyboard)
+    target_link_libraries(artery PRIVATE storyboard)
 endif()
 
-if(TARGET transfusion)
-    target_link_libraries(artery transfusion)
-    add_dependencies(transfusion messages)
+if(WITH_TRANSFUSION)
+    add_subdirectory(transfusion)
+    target_link_libraries(artery PRIVATE transfusion)
 endif()
 
-if(TARGET INET)
-    target_link_libraries(artery INET)
-endif()
-
-target_link_libraries(artery traci)
 
 if("${Vanetza_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/vanetza/build")
     set(_make_command ${MAKE_COMMAND})
