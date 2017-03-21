@@ -12,10 +12,12 @@ class OmnetProject:
     def __init__(self, makefile):
         self.name = ""
         self.makefile = makefile
+        self.makefile_defines = {}
         self.root_directory = self.lookup_project_directory()
         self.output_directory = "out"
         self.deep_include = True
         self.include_directories = []
+        self.include_directories_deep = []
         self.library_directories = []
         self.link_libraries = []
         self.compile_definitions = []
@@ -42,12 +44,12 @@ class OmnetProject:
 class CMakeTarget:
 
     def __init__(self, project, toolchain='gcc'):
-        if project.deep_include:
-            raise NotImplementedError("Deep includes are not supported")
 
         self._project = project
         self._toolchain = toolchain
         self.include_directories = [self._make_absolute_path(self._makefile_path(), d) for d in self._project.include_directories]
+        for dd in self._project.include_directories_deep:
+            self.include_directories.append(dd)
         self.library_directories = [self._make_absolute_path(self._makefile_path(), d) for d in self._project.library_directories]
         self.ned_folders = [self._make_absolute_path(self.root_directory, d) for d in self._project.ned_folders]
 
@@ -161,7 +163,9 @@ class FlagsHandler:
             "-D": self.compile_definition,
             "--define": self.compile_definition,
             "-P": self.project_directory,
-            "--projectdir": self.project_directory
+            "--projectdir": self.project_directory,
+            "-K": self.makefile_define,
+            "--makefile-define": self.makefile_define
         }
         self._project = OmnetProject(makefile)
         self._configfile = configfile
@@ -173,6 +177,15 @@ class FlagsHandler:
                 self._options[flag]()
             else:
                 raise RuntimeError("Unknown flag", flag)
+
+        for key, value in self._project.makefile_defines.items():
+            key_pattern = "$(" + key + ")"
+            self._project.include_directories = [incdir.replace(key_pattern, value) for incdir
+                                                 in self._project.include_directories]
+            self._project.library_directories = [libdir.replace(key_pattern, value) for libdir
+                                                 in self._project.library_directories]
+            self._project.link_libraries = [lnklib.replace(key_pattern, value) for lnklib
+                                            in self._project.link_libraries]
 
     def target(self):
         self._project.read_ned_folders()
@@ -191,6 +204,13 @@ class FlagsHandler:
         self._project.binary = binary
 
     def deep_include(self, go_deep):
+        if go_deep:
+            self._project.include_directories_deep.append(os.path.dirname(self._project.makefile))
+            for subdir, dirs, files in os.walk(os.path.dirname(self._project.makefile)):
+                for dir in dirs:
+                    self._project.include_directories_deep.append(os.path.normpath(os.path.join(subdir, dir)))
+        else:
+            self._project.include_directories_deep = []
         self._project.deep_include = go_deep
 
     def project_name(self):
@@ -216,6 +236,10 @@ class FlagsHandler:
 
     def project_directory(self):
         self._project.root_directory = self.fetch()
+
+    def makefile_define(self):
+        (name, value) = self.fetch().split('=', maxsplit=1)
+        self._project.makefile_defines[name] = value
 
 
 def find_opp_configfile():
