@@ -124,8 +124,8 @@ class CMakeTarget:
                 include_dirs = ';'.join(self.include_directories)
                 props.append("  INTERFACE_INCLUDE_DIRECTORIES \"{}\"".format(include_dirs))
             if self.link_libraries:
-                library_dirs = ';'.join(self.library_directories)
-                props.append("  INTERFACE_LINK_LIBRARIES \"{}\"".format(library_dirs))
+                link_libraries = ';'.join(self.link_libraries)
+                props.append("  INTERFACE_LINK_LIBRARIES \"{}\"".format(link_libraries))
             if self.compile_definitions:
                 compile_defs = ';'.join(self.compile_definitions)
                 props.append("  INTERFACE_COMPILE_DEFINITIONS \"{}\"".format(compile_defs))
