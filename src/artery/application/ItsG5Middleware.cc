@@ -78,26 +78,13 @@ void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique
 	switch (req.gn.transport_type) {
 		case geonet::TransportType::SHB: {
 			geonet::ShbDataRequest request(mGeoMib);
-			request.upper_protocol = geonet::UpperProtocol::BTP_B;
-			request.communication_profile = req.gn.communication_profile;
-			if (req.gn.maximum_lifetime) {
-				request.maximum_lifetime = req.gn.maximum_lifetime.get();
-			}
-			request.repetition = req.gn.repetition;
-			request.traffic_class = req.gn.traffic_class;
+			copy_request_parameters(req, request);
 			confirm = mGeoRouter->request(request, std::move(payload));
 		}
 			break;
 		case geonet::TransportType::GBC: {
 			geonet::GbcDataRequest request(mGeoMib);
-			request.destination = boost::get<geonet::Area>(req.gn.destination);
-			request.upper_protocol = geonet::UpperProtocol::BTP_B;
-			request.communication_profile = req.gn.communication_profile;
-			if (req.gn.maximum_lifetime) {
-				request.maximum_lifetime = req.gn.maximum_lifetime.get();
-			}
-			request.repetition = req.gn.repetition;
-			request.traffic_class = req.gn.traffic_class;
+			copy_request_parameters(req, request);
 			confirm = mGeoRouter->request(request, std::move(payload));
 		}
 			break;
