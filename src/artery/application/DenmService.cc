@@ -68,7 +68,8 @@ void DenmService::indicate(const vanetza::btp::DataIndication& indication, std::
 {
     Asn1PacketVisitor<vanetza::asn1::Denm> visitor;
     const vanetza::asn1::Denm* denm = boost::apply_visitor(visitor, *packet);
-    if (denm) {
+    const VehicleDataProvider& vdp = getFacilities().getVehicleDataProvider();
+    if (denm && (*denm)->header.stationID != vdp.station_id()) {
         DenmObject obj = visitor.shared_wrapper;
         mDenmMemory->received(obj);
         emit(denmReceivedSignal, &obj);
