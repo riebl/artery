@@ -19,6 +19,8 @@ PolygonCondition::PolygonCondition(const std::vector<Position>& vertices) :
         throw cRuntimeError("PolygonCondition vector must contain at least 3 points");
     }
 
+    boost::geometry::correct(m_vertices);
+
     mDraw = true;
 }
 
