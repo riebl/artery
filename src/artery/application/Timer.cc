@@ -25,6 +25,13 @@ vanetza::Clock::time_point Timer::getTimeFor(SimTime simtime) const
 	return mTimebase + std::chrono::microseconds(simtime.inUnit(SIMTIME_US));
 }
 
+omnetpp::SimTime Timer::getTimeFor(vanetza::Clock::time_point tai) const
+{
+        std::chrono::microseconds diff = tai - mTimebase;
+        SimTime sim = diff.count() < 0 ? SimTime::ZERO : SimTime { diff.count(), SIMTIME_US };
+        return sim;
+}
+
 uint64_t countTaiMilliseconds(vanetza::Clock::time_point tp)
 {
     using namespace std::chrono;

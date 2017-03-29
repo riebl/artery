@@ -34,10 +34,19 @@ class Timer
 		 */
 		vanetza::Clock::time_point getTimeFor(omnetpp::SimTime simtime) const;
 
+		/**
+		 * Get simulation time for TAI time point
+		 * \param tai time point
+		 * \return corresponding simulation time
+		 */
+		omnetpp::SimTime getTimeFor(vanetza::Clock::time_point) const;
+
 	private:
 		vanetza::Clock::time_point mTimebase;
 };
 
 uint64_t countTaiMilliseconds(vanetza::Clock::time_point);
+
+
 
 #endif /* ARTERY_TIMER_H_EQBBXFD0 */
