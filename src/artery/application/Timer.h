@@ -41,12 +41,17 @@ class Timer
 		 */
 		omnetpp::SimTime getTimeFor(vanetza::Clock::time_point) const;
 
+		/**
+		 * Reconstruct time point from a MOD 2^16 time stamp with millisecond granuality
+		 * \param ms time stamp
+		 * \return reconstructed time point
+		 */
+		vanetza::Clock::time_point reconstructMilliseconds(uint16_t ms) const;
+
 	private:
 		vanetza::Clock::time_point mTimebase;
 };
 
 uint64_t countTaiMilliseconds(vanetza::Clock::time_point);
-
-
 
 #endif /* ARTERY_TIMER_H_EQBBXFD0 */

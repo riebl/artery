@@ -32,6 +32,23 @@ omnetpp::SimTime Timer::getTimeFor(vanetza::Clock::time_point tai) const
         return sim;
 }
 
+vanetza::Clock::time_point Timer::reconstructMilliseconds(uint16_t ms16) const
+{
+    const uint64_t tai_now = countTaiMilliseconds(getCurrentTime());
+    const uint64_t tai_now_msb = tai_now & ~0xffff;
+    uint64_t tai_rec = tai_now_msb | ms16;
+
+    if (tai_now > tai_rec + 0x7fff) {
+        tai_rec += 0x10000;
+        assert(tai_rec - tai_now <= 0x7fff);
+    } else if (tai_now + 0x7fff < tai_rec) {
+        tai_rec -= 0x10000;
+        assert(tai_now - tai_rec <= 0x7fff);
+    }
+
+    return vanetza::Clock::time_point { std::chrono::milliseconds(tai_rec) };
+}
+
 uint64_t countTaiMilliseconds(vanetza::Clock::time_point tp)
 {
     using namespace std::chrono;
