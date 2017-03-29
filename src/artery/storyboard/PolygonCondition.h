@@ -3,6 +3,7 @@
 
 #include "artery/storyboard/Condition.h"
 #include "artery/utility/Geometry.h"
+#include <omnetpp/ccanvas.h>
 #include <vector>
 
 class PolygonCondition : public Condition
@@ -22,9 +23,11 @@ public:
      */
     ConditionResult testCondition(const Vehicle& car);
 
+    virtual void drawCondition(omnetpp::cCanvas*) override;
+
 private:
     std::vector<Position> m_vertices;
-
+    bool mDraw;
     int edges() const;
 };
 
