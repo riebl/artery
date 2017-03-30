@@ -4,6 +4,7 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
+#include "artery/application/LocalDynamicMap.h"
 #include "artery/application/TrafficJamUseCase.h"
 #include "artery/application/SampleBufferAlgorithm.h"
 #include <boost/units/base_units/metric/hour.hpp>
@@ -11,6 +12,7 @@
 #include <boost/units/systems/si/time.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
 #include <omnetpp/csimulation.h>
+#include <vanetza/facilities/cam_functions.hpp>
 #include <vanetza/units/acceleration.hpp>
 #include <vanetza/units/time.hpp>
 #include <vanetza/units/velocity.hpp>
@@ -146,8 +148,11 @@ void TrafficJamEndOfQueue::dissemination(vanetza::btp::DataRequestB& request)
     request.gn.destination = destination;
 }
 
-TrafficJamAhead::TrafficJamAhead(const VehicleDataProvider& vdp, const denm::Memory& memory) :
-    mVehicleDataProvider(vdp), mDenmMemory(memory),
+TrafficJamAhead::TrafficJamAhead(
+        const VehicleDataProvider& vdp,
+        const denm::Memory& memory,
+        const LocalDynamicMap& ldm) :
+    mVehicleDataProvider(vdp), mDenmMemory(memory), mLocalDynamicMap(ldm),
     mNonUrbanEnvironment(false), mUpdateCounter(0)
 {
     setDetectionBlockingTime({180, SIMTIME_S});
@@ -220,8 +225,36 @@ bool TrafficJamAhead::checkTrafficJamAheadReceived() const
 
 bool TrafficJamAhead::checkSlowVehiclesAheadByV2X() const
 {
-    // TODO requires a kind of "CAM memory"
-    return false;
+    using vanetza::facilities::distance;
+    using vanetza::facilities::similar_heading;
+
+    LocalDynamicMap::CamPredicate slowVehicles = [&](const LocalDynamicMap::Cam& msg) {
+        bool result = true;
+        // less than 30 km/h, same driving direction and at most 100m distance
+        const SpeedValue_t speedLimit = 833; // 833 cm/s are 29.988 km/h
+        const vanetza::units::Angle headingLimit { 10.0 * vanetza::units::degree };
+        const vanetza::units::Length distLimit { 100.0 * vanetza::units::si::meter };
+
+        const auto& bc = msg->cam.camParameters.basicContainer;
+        const auto& hfc = msg->cam.camParameters.highFrequencyContainer;
+        if (hfc.present == HighFrequencyContainer_PR_basicVehicleContainerHighFrequency) {
+            const auto& bvc = hfc.choice.basicVehicleContainerHighFrequency;
+            const auto& vdp = mVehicleDataProvider;
+            if (bvc.speed.speedValue == SpeedValue_unavailable ||
+                bvc.speed.speedValue > speedLimit * SpeedValue_oneCentimeterPerSec) {
+                result = false;
+            } else if (!similar_heading(bvc.heading, vdp.heading(), headingLimit)) {
+                result = false;
+            } else if (distance(bc.referencePosition, vdp.latitude(), vdp.longitude()) > distLimit) {
+                return false;
+            }
+        } else {
+            result = false;
+        }
+
+        return result;
+    };
+    return mLocalDynamicMap.count(slowVehicles) >= 5;
 }
 
 void TrafficJamAhead::message(vanetza::asn1::Denm& msg)

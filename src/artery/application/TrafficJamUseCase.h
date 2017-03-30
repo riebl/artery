@@ -16,6 +16,10 @@
 namespace artery
 {
 
+// forward declaration
+class LocalDynamicMap;
+
+
 /**
  * Check triggering conditions for "Dangerous End Of Queue" use case.
  * See release 1.1.0 of C2C-CC Triggering Conditions "Traffic Jam" (Version 3.3.0)
@@ -53,7 +57,7 @@ private:
 class TrafficJamAhead : public denm::UseCase
 {
 public:
-    TrafficJamAhead(const VehicleDataProvider&, const denm::Memory&);
+    TrafficJamAhead(const VehicleDataProvider&, const denm::Memory&, const LocalDynamicMap&);
 
     /**
      * Switch if on-board map or camera sensor shall report a "non-urban environment".
@@ -77,6 +81,7 @@ protected:
 private:
     const VehicleDataProvider& mVehicleDataProvider;
     const denm::Memory& mDenmMemory;
+    const LocalDynamicMap& mLocalDynamicMap;
     bool mNonUrbanEnvironment;
     unsigned mUpdateCounter;
     SkipEarlySampler<vanetza::units::Velocity> mVelocitySampler;

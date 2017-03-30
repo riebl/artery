@@ -7,6 +7,7 @@
 #include "artery/application/Asn1PacketVisitor.h"
 #include "artery/application/DenmObject.h"
 #include "artery/application/DenmService.h"
+#include "artery/application/LocalDynamicMap.h"
 #include "artery/application/Timer.h"
 #include "artery/application/ImpactReductionUseCase.h"
 #include "artery/application/TrafficJamUseCase.h"
@@ -46,7 +47,8 @@ void DenmService::initialize()
     endOfQueue->setNonUrbanEnvironment(par("assumeNonUrbanEnvironment").boolValue());
     mUseCases.push_front(endOfQueue.release());
 
-    std::unique_ptr<TrafficJamAhead> jamAhead { new TrafficJamAhead(vdp, *mDenmMemory) };
+    auto& ldm = getFacilities().get_const<artery::LocalDynamicMap>();
+    std::unique_ptr<TrafficJamAhead> jamAhead { new TrafficJamAhead(vdp, *mDenmMemory, ldm) };
     jamAhead->setNonUrbanEnvironment(par("assumeNonUrbanEnvironment").boolValue());
     mUseCases.push_front(jamAhead.release());
 
