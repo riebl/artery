@@ -45,7 +45,7 @@ Define_Module(ItsG5Middleware);
 
 ItsG5Middleware::ItsG5Middleware() :
 		mRadioDriver(nullptr), mRadioDriverIn(nullptr), mRadioDriverOut(nullptr),
-		mDccScheduler(mDccFsm, mRuntime.now())
+		mLocalDynamicMap(mTimer), mDccScheduler(mDccFsm, mRuntime.now())
 {
 }
 
@@ -141,6 +141,7 @@ void ItsG5Middleware::initializeMiddleware()
 	mFacilities.register_const(&mDccFsm);
 	mFacilities.register_mutable(&mDccScheduler);
 	mFacilities.register_const(&mTimer);
+	mFacilities.register_mutable(&mLocalDynamicMap);
 
 	mRuntime.reset(mTimer.getCurrentTime());
 	mUpdateInterval = par("updateInterval").doubleValue();
@@ -376,6 +377,7 @@ void ItsG5Middleware::updatePosition()
 
 void ItsG5Middleware::updateServices()
 {
+	mLocalDynamicMap.dropExpired();
 	for (auto& kv : mServices) {
 		kv.first->trigger();
 	}

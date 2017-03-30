@@ -43,6 +43,7 @@ class CaService : public ItsG5BaseService
 
 		const VehicleDataProvider* mVehicleDataProvider;
 		const Timer* mTimer;
+		artery::LocalDynamicMap* mLocalDynamicMap;
 		const simtime_t mGenCamMin;
 		const simtime_t mGenCamMax;
 		simtime_t mGenCam;

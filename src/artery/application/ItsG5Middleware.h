@@ -20,6 +20,7 @@
 #define ITSG5MIDDLEWARE_H_
 
 #include "artery/application/Facilities.h"
+#include "artery/application/LocalDynamicMap.h"
 #include "artery/application/Timer.h"
 #include "artery/application/VehicleDataProvider.h"
 #include "veins/base/modules/BaseApplLayer.h"
@@ -88,6 +89,7 @@ class ItsG5Middleware :
 		traci::VehicleController* mVehicleController;
 		VehicleDataProvider mVehicleDataProvider;
 		Timer mTimer;
+		artery::LocalDynamicMap mLocalDynamicMap;
 		vanetza::Runtime mRuntime;
 		vanetza::dcc::StateMachine mDccFsm;
 		vanetza::dcc::Scheduler mDccScheduler;

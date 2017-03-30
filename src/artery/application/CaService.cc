@@ -61,6 +61,7 @@ void CaService::initialize()
 	mLastCamTimestamp = simTime();
 	// first generated CAM shall include the low frequency container
 	mLastLowCamTimestamp = mLastCamTimestamp - artery::simtime_cast(scLowFrequencyContainerInterval);
+	mLocalDynamicMap = &getFacilities().get_mutable<artery::LocalDynamicMap>();
 }
 
 void CaService::trigger()
@@ -75,6 +76,7 @@ void CaService::indicate(const vanetza::btp::DataIndication& ind, std::unique_pt
 	if (cam) {
 		// TODO: collect statistic data
 		emit(scSignalCamReceived, cam->validate());
+		mLocalDynamicMap->updateAwareness(*cam);
 	}
 }
 
