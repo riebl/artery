@@ -40,6 +40,13 @@ bool checkSpeedDelta(vanetza::units::Velocity prev, vanetza::units::Velocity now
 
 static const auto scLowFrequencyContainerInterval = std::chrono::milliseconds(500);
 
+template<typename T, typename U>
+long round(const boost::units::quantity<T>& q, const U& u)
+{
+	boost::units::quantity<U> v { q };
+	return std::round(v.value());
+}
+
 
 CaService::CaService() :
 		mVehicleDataProvider(nullptr),
@@ -159,8 +166,8 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 	basic.stationType = StationType_passengerCar;
 	basic.referencePosition.altitude.altitudeValue = AltitudeValue_unavailable;
 	basic.referencePosition.altitude.altitudeConfidence = AltitudeConfidence_unavailable;
-	basic.referencePosition.longitude = (vdp.longitude() / microdegree).value() * Longitude_oneMicrodegreeEast;
-	basic.referencePosition.latitude = (vdp.latitude() / microdegree).value() * Latitude_oneMicrodegreeNorth;
+	basic.referencePosition.longitude = round(vdp.longitude(), microdegree) * Longitude_oneMicrodegreeEast;
+	basic.referencePosition.latitude = round(vdp.latitude(), microdegree) * Latitude_oneMicrodegreeNorth;
 	basic.referencePosition.positionConfidenceEllipse.semiMajorOrientation = HeadingValue_unavailable;
 	basic.referencePosition.positionConfidenceEllipse.semiMajorConfidence =
 			SemiAxisLength_unavailable;
@@ -169,9 +176,9 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 
 	hfc.present = HighFrequencyContainer_PR_basicVehicleContainerHighFrequency;
 	BasicVehicleContainerHighFrequency& bvc = hfc.choice.basicVehicleContainerHighFrequency;
-	bvc.heading.headingValue = (vdp.heading() / decidegree).value();
+	bvc.heading.headingValue = round(vdp.heading(), decidegree);
 	bvc.heading.headingConfidence = HeadingConfidence_equalOrWithinOneDegree;
-	bvc.speed.speedValue = abs(vdp.speed() / centimeter_per_second).value() * SpeedValue_oneCentimeterPerSec;
+	bvc.speed.speedValue = round(vdp.speed(), centimeter_per_second) * SpeedValue_oneCentimeterPerSec;
 	bvc.speed.speedConfidence = SpeedConfidence_equalOrWithinOneCentimeterPerSec * 3;
 	bvc.driveDirection = vdp.speed().value() >= 0.0 ?
 			DriveDirection_forward : DriveDirection_backward;
@@ -187,7 +194,7 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 			CurvatureValue_reciprocalOf1MeterRadiusToLeft;
 	bvc.curvature.curvatureConfidence = CurvatureConfidence_unavailable;
 	bvc.curvatureCalculationMode = CurvatureCalculationMode_yawRateUsed;
-	bvc.yawRate.yawRateValue = (vdp.yaw_rate() / degree_per_second).value() *
+	bvc.yawRate.yawRateValue = round(vdp.yaw_rate(), degree_per_second) *
 			YawRateValue_degSec_000_01ToLeft * 100.0;
 	bvc.vehicleLength.vehicleLengthValue = VehicleLengthValue_unavailable;
 	bvc.vehicleLength.vehicleLengthConfidenceIndication =
