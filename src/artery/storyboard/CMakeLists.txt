@@ -4,6 +4,7 @@ find_package(PythonLibs REQUIRED)
 add_artery_feature(storyboard
     AndCondition.cc
     CarSetCondition.cc
+    ConditionResult.cc
     Effect.cc
     EffectStack.cc
     OrCondition.cc

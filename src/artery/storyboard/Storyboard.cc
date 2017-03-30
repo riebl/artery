@@ -21,14 +21,6 @@ const auto traciStepSignal = omnetpp::cComponent::registerSignal("traci.step");
 }
 
 
-class ResultVisitor : public boost::static_visitor<bool>
-{
-public:
-    bool operator()(bool b) const { return b; }
-    bool operator()(std::set<const Vehicle*> set) const { return !set.empty(); }
-};
-
-
 void Storyboard::initialize(int stage)
 {
     if(stage == 0) {
@@ -137,26 +129,23 @@ void Storyboard::drawConditions()
     }
 }
 
-
 void Storyboard::checkCar(Vehicle& car, ConditionResult& conditionResult, Story* story)
 {
     // If the Story is already applied on this car and the condition test is not passed
     // remove Story from EffectStack, because the car left the affected area
     if (storyApplied(&car, story)) {
-        if (!boost::apply_visitor(ResultVisitor(), conditionResult)) {
+        if (!is_true(conditionResult)) {
             removeStory(&car, story);
         }
     }
     // Story was not applied on this car and condition test is passed
     // results in adding all effects from the Story to the car
-    else {
-        if (boost::apply_visitor(ResultVisitor(), conditionResult)) {
-            std::vector<std::shared_ptr<Effect>> effects;
-            for (auto factory : story->getEffectFactories()) {
-                effects.push_back(factory->create(car, *story, conditionResult));
-            }
-            addEffect(effects);
+    else if (is_true(conditionResult)) {
+        std::vector<std::shared_ptr<Effect>> effects;
+        for (auto factory : story->getEffectFactories()) {
+            effects.push_back(factory->create(car, *story, conditionResult));
         }
+        addEffect(effects);
     }
 }
 

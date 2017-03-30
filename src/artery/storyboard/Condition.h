@@ -1,13 +1,10 @@
 #ifndef _CONDITION_H_
 #define _CONDITION_H_
 
+#include "artery/storyboard/ConditionResult.h"
 #include "artery/storyboard/Vehicle.h"
-#include <boost/variant.hpp>
-#include <set>
 
 namespace omnetpp { class cCanvas; }
-
-typedef boost::variant<bool, std::set<const Vehicle*>> ConditionResult;
 
 /**
  * Condition Interface
