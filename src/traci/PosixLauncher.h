@@ -15,6 +15,8 @@ public:
     PosixLauncher();
     ~PosixLauncher();
     ServerEndpoint launch() override;
+
+protected:
     void initialize() override;
     void finish() override;
 
