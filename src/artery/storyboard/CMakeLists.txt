@@ -7,6 +7,7 @@ add_artery_feature(storyboard
     ConditionResult.cc
     Effect.cc
     EffectStack.cc
+    LimitCondition.cc
     OrCondition.cc
     PolygonCondition.cc
     SignalEffect.cc

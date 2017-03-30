@@ -9,6 +9,7 @@
 #include "artery/storyboard/SpeedEffectFactory.h"
 #include "artery/storyboard/StopEffectFactory.h"
 #include "artery/storyboard/Story.h"
+#include "artery/storyboard/LimitCondition.h"
 #include "artery/storyboard/OrCondition.h"
 #include "artery/storyboard/PolygonCondition.h"
 #include "artery/storyboard/TimeCondition.h"
@@ -168,6 +169,8 @@ BOOST_PYTHON_MODULE(storyboard) {
 
     python::class_<CarSetCondition, CarSetCondition*, python::bases<Condition> >("CarSetCondition", python::init<std::set<std::string> >())
     .def(python::init<std::string>());
+
+    python::class_<LimitCondition, LimitCondition*, python::bases<Condition> >("LimitCondition", python::init<unsigned>());
 
     python::class_<AndCondition, AndCondition*, python::bases<Condition> >("AndCondition", python::init<Condition*, Condition*>());
     python::class_<OrCondition, OrCondition*, python::bases<Condition> >("OrCondition", python::init<Condition*, Condition*>());
