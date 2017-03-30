@@ -18,8 +18,7 @@ class Core : public omnetpp::cSimpleModule
 public:
     Core();
 
-    int numInitStages() const override;
-    void initialize(int stage) override;
+    void initialize() override;
     void finish() override;
     void handleMessage(omnetpp::cMessage*) override;
     LiteAPI& getLiteAPI();
@@ -28,6 +27,7 @@ protected:
     virtual void checkVersion();
 
 private:
+    omnetpp::cMessage* m_connectEvent;
     omnetpp::cMessage* m_updateEvent;
     omnetpp::SimTime m_updateInterval;
 

@@ -20,31 +20,20 @@ Core::Core() : m_traci(new API()), m_lite(new LiteAPI(*m_traci))
 {
 }
 
-int Core::numInitStages() const
+void Core::initialize()
 {
-    return 3;
-}
-
-void Core::initialize(int stage)
-{
-    if (stage == 0) {
-        m_updateEvent = new omnetpp::cMessage("TraCI step");
-        omnetpp::cModule* manager = getParentModule();
-        m_launcher = inet::getModuleFromPar<Launcher>(par("launcherModule"), manager);
-        m_stopping = par("selfStopping");
-    } else if (stage == 1) {
-        m_traci->connect(m_launcher->launch());
-        checkVersion();
-        emit(initSignal, simTime());
-    } else if (stage == 2) {
-        m_updateInterval = time_cast(m_traci->simulation.getDeltaT());
-        scheduleAt(simTime() + m_updateInterval, m_updateEvent);
-    }
+    m_connectEvent = new omnetpp::cMessage("connect TraCI");
+    m_updateEvent = new omnetpp::cMessage("TraCI step");
+    omnetpp::cModule* manager = getParentModule();
+    m_launcher = inet::getModuleFromPar<Launcher>(par("launcherModule"), manager);
+    m_stopping = par("selfStopping");
+    scheduleAt(par("startTime"), m_connectEvent);
 }
 
 void Core::finish()
 {
     emit(closeSignal, simTime());
+    cancelAndDelete(m_connectEvent);
     cancelAndDelete(m_updateEvent);
     m_traci->close();
 }
@@ -58,6 +47,12 @@ void Core::handleMessage(omnetpp::cMessage* msg)
         if (!m_stopping || m_traci->simulation.getMinExpectedNumber() > 0) {
             scheduleAt(simTime() + m_updateInterval, m_updateEvent);
         }
+    } else if (msg = m_connectEvent) {
+        m_traci->connect(m_launcher->launch());
+        checkVersion();
+        emit(initSignal, simTime());
+        m_updateInterval = time_cast(m_traci->simulation.getDeltaT());
+        scheduleAt(simTime() + m_updateInterval, m_updateEvent);
     }
 }
 
