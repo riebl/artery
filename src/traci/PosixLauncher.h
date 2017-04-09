@@ -23,6 +23,7 @@ private:
     std::string command();
     int lookupPort();
 
+    std::string m_executable;
     std::string m_command;
     std::string m_sumocfg;
     int m_port;

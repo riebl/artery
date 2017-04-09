@@ -26,6 +26,7 @@ PosixLauncher::~PosixLauncher()
 
 void PosixLauncher::initialize()
 {
+    m_executable = par("sumo").stringValue();
     m_command = par("command").stringValue();
     m_sumocfg = par("sumocfg").stringValue();
     m_port = par("port");
@@ -76,6 +77,7 @@ void PosixLauncher::kill()
 
 std::string PosixLauncher::command()
 {
+    std::regex executable("%SUMO%");
     std::regex sumocfg("%SUMOCFG%");
     std::regex port("%PORT%");
     std::regex seed("%SEED%");
@@ -84,6 +86,7 @@ std::string PosixLauncher::command()
     const auto run_number = getSimulation()->getEnvir()->getConfigEx()->getVariable(CFGVAR_RUNNUMBER);
 
     std::string command = m_command;
+    command = std::regex_replace(command, executable, m_executable);
     command = std::regex_replace(command, sumocfg, m_sumocfg);
     command = std::regex_replace(command, port, std::to_string(m_port));
     command = std::regex_replace(command, seed, std::to_string(m_seed));
