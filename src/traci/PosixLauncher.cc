@@ -15,6 +15,42 @@ namespace traci
 
 Define_Module(PosixLauncher)
 
+namespace {
+
+/**
+ * Block process signals during object lifetime
+ */
+class BlockSignal
+{
+public:
+    BlockSignal(std::initializer_list<int> block_signals);
+    ~BlockSignal();
+
+    // no copy
+    BlockSignal(const BlockSignal&) = delete;
+    BlockSignal& operator=(const BlockSignal&) = delete;
+
+private:
+    sigset_t block_mask;
+};
+
+BlockSignal::BlockSignal(std::initializer_list<int> block_signals)
+{
+    ::sigemptyset(&block_mask);
+    for (int block_signal : block_signals) {
+        ::sigaddset(&block_mask, block_signal);
+    }
+    ::pthread_sigmask(SIG_BLOCK, &block_mask, nullptr);
+}
+
+BlockSignal::~BlockSignal()
+{
+    ::pthread_sigmask(SIG_UNBLOCK, &block_mask, nullptr);
+}
+
+}
+
+
 PosixLauncher::PosixLauncher() : m_pid(0)
 {
 }
@@ -49,6 +85,9 @@ ServerEndpoint PosixLauncher::launch()
     endpoint.port = m_port;
     endpoint.retry = true;
 
+    // temporarily block SIGINT during fork sequence
+    BlockSignal block_sigint({ SIGINT });
+
     m_pid = ::fork();
     if (m_pid < 0) {
         throw omnetpp::cRuntimeError("fork() failed: %s", std::strerror(errno));
@@ -56,10 +95,18 @@ ServerEndpoint PosixLauncher::launch()
         // ignore signal so SUMO does not quit when user interrupts in gdb
         ::signal(SIGINT, SIG_IGN);
 
+        // sumo-gui resets SIGINT handler: move process to own process group
+        ::setpgid(0, 0);
+
         if (::execl("/bin/sh", "sh", "-c", command().c_str(), NULL)  == -1) {
             throw omnetpp::cRuntimeError("Starting TraCI server failed: %s", std::strerror(errno));
         }
         ::_exit(1);
+    } else {
+        // race between parent and child (see setpgid RATIONALE)
+        if (::setpgid(m_pid, m_pid) != 0 && errno != EACCES) {
+            throw omnetpp::cRuntimeError("setpgid() failed: %s", std::strerror(errno));
+        }
     }
 
     return endpoint;
