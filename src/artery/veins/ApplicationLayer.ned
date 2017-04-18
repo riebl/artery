@@ -18,7 +18,7 @@ module ApplicationLayer like IBaseApplLayer
 		output lowerControlOut;
 
 	submodules:
-		radioDriver : <default("VeinsRadioDriver")> like IRadioDriver {
+		radioDriver : VeinsRadioDriver {
 		}
 
 		middleware : ItsG5Middleware {
