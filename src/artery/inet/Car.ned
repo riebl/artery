@@ -1,7 +1,6 @@
 package artery.inet;
 
 import artery.application.ItsG5Middleware;
-import artery.inet.InetTraCIMobility;
 import artery.nic.IRadioDriver;
 import inet.node.inet.INetworkNode;
 import inet.linklayer.contract.IWirelessNic;
@@ -39,7 +38,7 @@ module Car like INetworkNode
                 @display("p=53,200");
         }
 
-        radioDriver[numRadios]: <default("InetRadioDriver")> like IRadioDriver {
+        radioDriver[numRadios]: InetRadioDriver {
             parameters:
                 macModule = ".wlan[" + string(index) + "].mac";
         }
