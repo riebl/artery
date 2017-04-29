@@ -79,10 +79,6 @@ void CaService::checkTriggeringConditions(const simtime_t& T_now)
 	const simtime_t T_GenCamDcc = genCamDcc();
 	const simtime_t T_elapsed = T_now - mLastCamTimestamp;
 
-	if (T_GenCamDcc < T_GenCamMin || T_GenCamDcc > T_GenCamMax) {
-		throw cRuntimeError("T_GenCamDcc is out of bounds");
-	}
-
 	if (T_elapsed >= T_GenCamDcc) {
 		if (checkHeadingDelta(mLastCamHeading, mVehicleDataProvider->heading()) ||
 			checkPositionDelta(mLastCamPosition, mVehicleDataProvider->position()) ||
@@ -133,7 +129,7 @@ simtime_t CaService::genCamDcc()
 {
 	vanetza::Clock::duration delay = getFacilities().getDccScheduler().delay(vanetza::dcc::Profile::DP2);
 	simtime_t dcc { std::chrono::duration_cast<std::chrono::milliseconds>(delay).count(), SIMTIME_MS };
-	return std::max(mGenCamMin, dcc);
+	return std::min(mGenCamMax, std::max(mGenCamMin, dcc));
 }
 
 vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& vdp, uint16_t genDeltaTime)
