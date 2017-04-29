@@ -9,8 +9,9 @@ VEINS_DIR = extern/veins
 all: inet vanetza veins
 
 clean:
-	$(MAKE) -C $(VEINS_DIR) cleanall
-	rm -rf $(VANETZA_BUILD_DIR)
+	-$(MAKE) -C $(INET_DIR) cleanall
+	-$(MAKE) -C $(VEINS_DIR) cleanall
+	-rm -rf $(VANETZA_BUILD_DIR)
 
 $(INET_DIR)/src/Makefile: $(INET_DIR)/.gitrepo
 	cd $(INET_DIR) && $(PYTHON) inet_featuretool disable $(INET_DISABLE_FEATURES)
