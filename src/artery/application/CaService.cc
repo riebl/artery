@@ -1,6 +1,7 @@
 #include "artery/application/CaService.h"
 #include "artery/application/Asn1PacketVisitor.h"
 #include "artery/application/VehicleDataProvider.h"
+#include "artery/utility/simtime_cast.h"
 #include "veins/base/utils/Coord.h"
 #include <boost/units/cmath.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
@@ -37,6 +38,8 @@ bool checkSpeedDelta(vanetza::units::Velocity prev, vanetza::units::Velocity now
 	return abs(prev - now) > scSpeedDelta;
 }
 
+static const auto scLowFrequencyContainerInterval = std::chrono::milliseconds(500);
+
 
 CaService::CaService() :
 		mVehicleDataProvider(nullptr),
@@ -54,6 +57,10 @@ void CaService::initialize()
 	ItsG5BaseService::initialize();
 	mVehicleDataProvider = &getFacilities().get_const<VehicleDataProvider>();
 	mTimer = &getFacilities().get_const<Timer>();
+	// avoid unreasonable high elapsed time values for newly inserted vehicles
+	mLastCamTimestamp = simTime();
+	// first generated CAM shall include the low frequency container
+	mLastLowCamTimestamp = mLastCamTimestamp - artery::simtime_cast(scLowFrequencyContainerInterval);
 }
 
 void CaService::trigger()
@@ -73,6 +80,7 @@ void CaService::indicate(const vanetza::btp::DataIndication& ind, std::unique_pt
 
 void CaService::checkTriggeringConditions(const simtime_t& T_now)
 {
+	// provide variables named like in EN 302 637-2 V1.3.2 (section 6.1.3)
 	simtime_t& T_GenCam = mGenCam;
 	const simtime_t& T_GenCamMin = mGenCamMin;
 	const simtime_t& T_GenCamMax = mGenCamMax;
@@ -84,7 +92,7 @@ void CaService::checkTriggeringConditions(const simtime_t& T_now)
 			checkPositionDelta(mLastCamPosition, mVehicleDataProvider->position()) ||
 			checkSpeedDelta(mLastCamSpeed, mVehicleDataProvider->speed())) {
 			sendCam(T_now);
-			T_GenCam = T_elapsed;
+			T_GenCam = std::min(T_elapsed, T_GenCamMax); /*< if middleware update interval is too long */
 			mGenCamLowDynamicsCounter = 0;
 		} else if (T_elapsed >= T_GenCam) {
 			sendCam(T_now);
@@ -104,7 +112,7 @@ void CaService::sendCam(const simtime_t& T_now)
 	mLastCamSpeed = mVehicleDataProvider->speed();
 	mLastCamHeading = mVehicleDataProvider->heading();
 	mLastCamTimestamp = T_now;
-	if (T_now - mLastLowCamTimestamp >= simtime_t { 500, SIMTIME_MS }) {
+	if (T_now - mLastLowCamTimestamp >= artery::simtime_cast(scLowFrequencyContainerInterval)) {
 		addLowFrequencyContainer(cam);
 		mLastLowCamTimestamp = T_now;
 	}
