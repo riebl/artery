@@ -1,18 +1,29 @@
 # generate sources for messages via opp_msgc
-macro(generate_opp_msg _msg)
-    set(_msg_input ${CMAKE_CURRENT_SOURCE_DIR}/messages/${_msg}.msg)
-    set(_msg_output ${CMAKE_CURRENT_SOURCE_DIR}/messages/${_msg}_m.cc)
+macro(generate_opp_message _msg)
+    set(_msg_input messages/${_msg}.msg)
+    set(_msg_output
+        ${CMAKE_CURRENT_SOURCE_DIR}/messages/${_msg}_m.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/messages/${_msg}_m.h)
     set(_msg_include ${PROJECT_SOURCE_DIR}/src/artery)
     add_custom_command(OUTPUT ${_msg_output}
-        COMMAND ${OMNETPP_MSGC} -s _m.cc -I${_msg_include} ${_msg_input}
+        COMMAND ${OMNETPP_MSGC} ARGS -s _m.cc -I${_msg_include} ${_msg_input}
         DEPENDS ${_msg_input}
-        VERBATIM
-    )
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        VERBATIM)
+    set_property(DIRECTORY APPEND PROPERTY GENERATED_OPP_MESSAGES ${_msg})
 endmacro()
 
-generate_opp_msg(AsioData)
-generate_opp_msg(ChannelLoadReport)
-generate_opp_msg(GeoNetPacket)
+macro(clean_generated_opp_messages)
+    get_property(_generated_messages DIRECTORY PROPERTY GENERATED_OPP_MESSAGES)
+    foreach(_message IN LISTS _generated_messages)
+        file(REMOVE messages/${_message}_m.cc messages/${_message}_m.h)
+    endforeach()
+endmacro()
+variable_watch(OMNETPP_MSGC clean_generated_opp_messages)
+
+generate_opp_message(AsioData)
+generate_opp_message(ChannelLoadReport)
+generate_opp_message(GeoNetPacket)
 
 add_library(messages OBJECT
     messages/AsioData_m.cc
