@@ -9,7 +9,7 @@ Please refer to its [documentation](http://veins.car2x.org/documentation) for de
 ## Requirements
 You need a C++ Compiler with C++11 support, Boost and Vanetza libraries for building Artery along with Veins.
 Artery and Veins build upon the discrete event simulator [OMNeT++](https://omnetpp.org), which you need to obtain as well.
-We have tested Artery with OMNeT++ 5.0, GNU GCC 5.4 and Boost 1.60 successfully.
+We have tested Artery with OMNeT++ 5.1, GNU GCC 6.3 and Boost 1.62 successfully.
 Only [CMake](http://www.cmake.org) is the officially supported way for building Artery.
 
 Compatible versions of Veins and Vanetza are part of the Artery repository, see the *extern* subdirectory.
@@ -59,11 +59,14 @@ These steps create a *build* directory for Artery, configure the build directory
 ## Running Artery
 
 When you have finished building Artery, you can give the shipped example a try to see if everything runs smoothly.
-First, start Veins' *sumo-launchd* script.
-You can do this either manually or simply use the integrated **launch_sumo** target, e.g. when you have used CMake's default Makefile generator:
+With current Artery versions there is no need to start Veins' *sumo-launchd* script any more.
+Instead, Artery will start a SUMO instance on its own with appropriate parameters.
+You can start the example scenario of Artery (located in *scenarios/artery*) simply by calling the **run_example** target from Artery's root directory:
 
-    cd build
-    make launch_sumo
+    cmake --build build --target run_example
 
-You are only required to start the SUMO launcher once because it keeps running in the background.
-The **run_example** target starts the Artery example scenario located in *scenarios/artery*.
+Please make sure that *sumo* can be executed within in your environment because this is the default SUMO executable used by Artery.
+You can, however, specify which SUMO executable shall be used explicilty.
+If you want Artery to start SUMO with a graphical user interface, you can put the following line in your *omnetpp.ini*:
+
+    *.traci.launcher.sumo = "sumo-gui"
