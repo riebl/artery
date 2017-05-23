@@ -19,6 +19,8 @@
 
 #include "inet/linklayer/ethernet/EtherEncap.h"
 
+#include "inet/common/INETUtils.h"
+#include "inet/common/ModuleAccess.h"
 #include "inet/linklayer/ethernet/EtherFrame.h"
 #include "inet/networklayer/contract/IInterfaceTable.h"
 #include "inet/linklayer/common/Ieee802Ctrl.h"
@@ -31,17 +33,22 @@ simsignal_t EtherEncap::encapPkSignal = registerSignal("encapPk");
 simsignal_t EtherEncap::decapPkSignal = registerSignal("decapPk");
 simsignal_t EtherEncap::pauseSentSignal = registerSignal("pauseSent");
 
-void EtherEncap::initialize()
+void EtherEncap::initialize(int stage)
 {
-    seqNum = 0;
-    WATCH(seqNum);
-
-    totalFromHigherLayer = totalFromMAC = totalPauseSent = 0;
-    useSNAP = par("useSNAP").boolValue();
-
-    WATCH(totalFromHigherLayer);
-    WATCH(totalFromMAC);
-    WATCH(totalPauseSent);
+    if (stage == INITSTAGE_LOCAL) {
+        seqNum = 0;
+        WATCH(seqNum);
+        totalFromHigherLayer = totalFromMAC = totalPauseSent = 0;
+        useSNAP = par("useSNAP").boolValue();
+        WATCH(totalFromHigherLayer);
+        WATCH(totalFromMAC);
+        WATCH(totalPauseSent);
+    }
+    else if (stage == INITSTAGE_LINK_LAYER_2) {
+        IInterfaceTable *ift = findModuleFromPar<IInterfaceTable>(par("interfaceTableModule"), this);
+        InterfaceEntry *myIface = ift != nullptr ? ift->getInterfaceByName(utils::stripnonalnum(findModuleUnderContainingNode(this)->getFullName()).c_str()) : nullptr;
+        interfaceId = (myIface != nullptr) ? myIface->getInterfaceId() : -1;
+    }
 }
 
 void EtherEncap::handleMessage(cMessage *msg)
@@ -68,12 +75,9 @@ void EtherEncap::handleMessage(cMessage *msg)
                 throw cRuntimeError("Received message `%s' with unknown message kind %d", msg->getName(), msg->getKind());
         }
     }
-
-    if (hasGUI())
-        updateDisplayString();
 }
 
-void EtherEncap::updateDisplayString()
+void EtherEncap::refreshDisplay() const
 {
     char buf[80];
     sprintf(buf, "passed up: %ld\nsent: %ld", totalFromMAC, totalFromHigherLayer);
@@ -138,6 +142,7 @@ void EtherEncap::processFrameFromMAC(EtherFrame *frame)
     Ieee802Ctrl *etherctrl = new Ieee802Ctrl();
     etherctrl->setSrc(frame->getSrc());
     etherctrl->setDest(frame->getDest());
+    etherctrl->setInterfaceId(interfaceId);
     if (dynamic_cast<EthernetIIFrame *>(frame) != nullptr)
         etherctrl->setEtherType(((EthernetIIFrame *)frame)->getEtherType());
     else if (dynamic_cast<EtherFrameWithSNAP *>(frame) != nullptr)

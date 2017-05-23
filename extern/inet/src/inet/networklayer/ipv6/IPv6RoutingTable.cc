@@ -118,8 +118,6 @@ void IPv6RoutingTable::initialize(int stage)
 
             }
         }
-
-        updateDisplayString();
     }
 }
 
@@ -160,11 +158,8 @@ void IPv6RoutingTable::parseXMLConfigFile()
     }
 }
 
-void IPv6RoutingTable::updateDisplayString()
+void IPv6RoutingTable::refreshDisplay() const
 {
-    if (!hasGUI())
-        return;
-
     std::stringstream os;
 
     os << getNumRoutes() << " routes\n" << destCache.size() << " destcache entries";
@@ -176,7 +171,7 @@ void IPv6RoutingTable::handleMessage(cMessage *msg)
     throw cRuntimeError("This module doesn't process messages");
 }
 
-void IPv6RoutingTable::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj DETAILS_ARG)
+void IPv6RoutingTable::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details)
 {
     if (getSimulation()->getContextType() == CTX_INITIALIZE)
         return; // ignore notifications during initialize
@@ -219,7 +214,6 @@ void IPv6RoutingTable::routeChanged(IPv6Route *entry, int fieldCode)
         internalAddRoute(entry);
 
         // invalidateCache();
-        updateDisplayString();
     }
     emit(NF_ROUTE_CHANGED, entry);    // TODO include fieldCode in the notification
 }
@@ -406,7 +400,7 @@ void IPv6RoutingTable::configureTunnelFromXML(cXMLElement *cfg)
     }
 }
 
-InterfaceEntry *IPv6RoutingTable::getInterfaceByAddress(const IPv6Address& addr)
+InterfaceEntry *IPv6RoutingTable::getInterfaceByAddress(const IPv6Address& addr) const
 {
     Enter_Method("getInterfaceByAddress(%s)=?", addr.str().c_str());
 
@@ -419,6 +413,11 @@ InterfaceEntry *IPv6RoutingTable::getInterfaceByAddress(const IPv6Address& addr)
             return ie;
     }
     return nullptr;
+}
+
+InterfaceEntry *IPv6RoutingTable::getInterfaceByAddress(const L3Address& address) const
+{
+    return getInterfaceByAddress(address.toIPv6());
 }
 
 bool IPv6RoutingTable::isLocalAddress(const IPv6Address& dest) const
@@ -514,14 +513,11 @@ void IPv6RoutingTable::updateDestCache(const IPv6Address& dest, const IPv6Addres
     entry.nextHopAddr = nextHopAddr;
     entry.interfaceId = interfaceId;
     entry.expiryTime = expiryTime;
-
-    updateDisplayString();
 }
 
 void IPv6RoutingTable::purgeDestCache()
 {
     destCache.clear();
-    updateDisplayString();
 }
 
 void IPv6RoutingTable::purgeDestCacheEntriesToNeighbour(const IPv6Address& nextHopAddr, int interfaceId)
@@ -535,8 +531,6 @@ void IPv6RoutingTable::purgeDestCacheEntriesToNeighbour(const IPv6Address& nextH
             it++;
         }
     }
-
-    updateDisplayString();
 }
 
 void IPv6RoutingTable::purgeDestCacheForInterfaceID(int interfaceId)
@@ -550,8 +544,6 @@ void IPv6RoutingTable::purgeDestCacheForInterfaceID(int interfaceId)
             ++it;
         }
     }
-
-    updateDisplayString();
 }
 
 void IPv6RoutingTable::addOrUpdateOnLinkPrefix(const IPv6Address& destPrefix, int prefixLength,
@@ -584,8 +576,6 @@ void IPv6RoutingTable::addOrUpdateOnLinkPrefix(const IPv6Address& destPrefix, in
         route->setExpiryTime(expiryTime);
         emit(NF_ROUTE_ADDED, route);
     }
-
-    updateDisplayString();
 }
 
 void IPv6RoutingTable::addOrUpdateOwnAdvPrefix(const IPv6Address& destPrefix, int prefixLength,
@@ -620,8 +610,6 @@ void IPv6RoutingTable::addOrUpdateOwnAdvPrefix(const IPv6Address& destPrefix, in
         route->setExpiryTime(expiryTime);
         emit(NF_ROUTE_ADDED, route);
     }
-
-    updateDisplayString();
 }
 
 void IPv6RoutingTable::deleteOnLinkPrefix(const IPv6Address& destPrefix, int prefixLength)
@@ -633,8 +621,6 @@ void IPv6RoutingTable::deleteOnLinkPrefix(const IPv6Address& destPrefix, int pre
             return;    // there can be only one such route, addOrUpdateOnLinkPrefix() guarantees that
         }
     }
-
-    updateDisplayString();
 }
 
 void IPv6RoutingTable::addStaticRoute(const IPv6Address& destPrefix, int prefixLength,
@@ -701,7 +687,6 @@ void IPv6RoutingTable::addRoute(IPv6Route *route)
     /*XXX: this deletes some cache entries we want to keep, but the node MUST update
        the Destination Cache in such a way that the latest route information are used.*/
     purgeDestCache();
-    updateDisplayString();
 
     emit(NF_ROUTE_ADDED, route);
 }
@@ -710,7 +695,6 @@ IPv6Route *IPv6RoutingTable::removeRoute(IPv6Route *route)
 {
     route = internalRemoveRoute(route);
     if (route) {
-        updateDisplayString();
         // TODO purge cache?
 
         emit(NF_ROUTE_DELETED, route);    // rather: going to be deleted
@@ -760,7 +744,6 @@ bool IPv6RoutingTable::deleteRoute(IPv6Route *route)
         return false;
 
     internalDeleteRoute(it);
-    updateDisplayString();
     return true;
 }
 
@@ -818,8 +801,6 @@ void IPv6RoutingTable::deleteDefaultRoutes(int interfaceID)
         else
             ++it;
     }
-
-    updateDisplayString();
 }
 
 // Added by CB
@@ -834,8 +815,6 @@ void IPv6RoutingTable::deleteAllRoutes()
 
     routeList.clear();
     // TODO purge cache?
-
-    updateDisplayString();
 }
 
 // 4.9.07 - Added by CB
@@ -851,8 +830,6 @@ void IPv6RoutingTable::deletePrefixes(int interfaceID)
         else
             ++it;
     }
-
-    updateDisplayString();
 }
 
 bool IPv6RoutingTable::isOnLinkAddress(const IPv6Address& address)
@@ -892,7 +869,6 @@ void IPv6RoutingTable::deleteInterfaceRoutes(const InterfaceEntry *entry)
 
     if (changed) {
         // invalidateCache();
-        updateDisplayString();
     }
 }
 

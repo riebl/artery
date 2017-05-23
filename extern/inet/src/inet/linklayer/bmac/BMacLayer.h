@@ -72,6 +72,7 @@ class INET_API BMacLayer : public MACProtocolBase, public IMACProtocol
     /** @brief Initialization of the module and some variables*/
     virtual int numInitStages() const override { return NUM_INIT_STAGES; }
     virtual void initialize(int) override;
+    virtual void refreshDisplay() const override;
 
     /** @brief Delete all dynamically allocated objects of the module*/
     virtual void finish() override;
@@ -86,7 +87,7 @@ class INET_API BMacLayer : public MACProtocolBase, public IMACProtocol
     virtual void handleSelfMessage(cMessage *) override;
 
     /** @brief Handle control messages from lower layer */
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, long value DETAILS_ARG) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, long value, cObject *details) override;
 
   protected:
     typedef std::list<BMacFrame *> MacQueue;
@@ -216,22 +217,10 @@ class INET_API BMacLayer : public MACProtocolBase, public IMACProtocol
     /** @brief Gather stats at the end of the simulation */
     bool stats = false;
 
-    /** @brief Possible colors of the node for animation */
-    enum BMAC_COLORS {
-        GREEN = 1,
-        BLUE = 2,
-        RED = 3,
-        BLACK = 4,
-        YELLOW = 5
-    };
-
     /** @brief Generate new interface address*/
     virtual void initializeMACAddress();
     virtual InterfaceEntry *createInterfaceEntry() override;
     virtual void handleCommand(cMessage *msg) {}
-
-    /** @brief Internal function to change the color of the node */
-    void changeDisplayColor(BMAC_COLORS color);
 
     /** @brief Internal function to send the first packet in the queue */
     void sendDataPacket();

@@ -49,9 +49,6 @@ void RSTP::initialize(int stage)
         helloTimer = new cMessage("itshellotime", SELF_HELLOTIME);
         upgradeTimer = new cMessage("upgrade", SELF_UPGRADE);
     }
-    else if (stage == INITSTAGE_LINK_LAYER_2) {    // "auto" MAC addresses assignment takes place in stage 0
-        updateDisplay();
-    }
 }
 
 void RSTP::scheduleNextUpgrade()
@@ -144,7 +141,6 @@ void RSTP::handleUpgrade(cMessage *msg)
             }
         }
     }
-    updateDisplay();
     scheduleNextUpgrade();
 }
 
@@ -211,7 +207,6 @@ void RSTP::handleHelloTime(cMessage *msg)
     }
     sendBPDUs();    // generating and sending new BPDUs
     sendTCNtoRoot();
-    updateDisplay();
     scheduleAt(simTime() + helloTime, msg);    // programming next hello time
 }
 
@@ -291,8 +286,6 @@ void RSTP::handleIncomingFrame(BPDU *frame)
     else
         EV_DETAIL << "Expired BPDU" << endl;
     delete frame;
-
-    updateDisplay();
 }
 
 void RSTP::processBPDU(BPDU *frame, unsigned int arrivalPortNum)
@@ -859,7 +852,7 @@ void RSTP::flushOtherPorts(unsigned int portNum)
 }
 
 //void RSTP::receiveChangeNotification(int signalID, const cObject *obj)
-void RSTP::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj DETAILS_ARG)
+void RSTP::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details)
 {
     Enter_Method_Silent();
 

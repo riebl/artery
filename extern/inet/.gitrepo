@@ -5,7 +5,7 @@
 ;
 [subrepo]
 	remote = https://github.com/inet-framework/inet.git
-	branch = v3.4.0
-	commit = bb8393fa8030a2b6bf282f66033251b2ab6db589
-	parent = 5a4a65b2ffb8ed05e47582a2dba32c61e8246a2d
-	cmdver = 0.3.0
+	branch = v3.5.0
+	commit = fabe428fd5ee47d6be52e77a638b0b2efe5e1927
+	parent = 378249ecf07f02da8983ef617e22ed7c3f5a9425
+	cmdver = 0.3.1

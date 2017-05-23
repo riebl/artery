@@ -400,8 +400,7 @@ void DYMO::sendUDPPacket(UDPPacket *packet, double delay)
 void DYMO::processUDPPacket(UDPPacket *packet)
 {
     cPacket *encapsulatedPacket = packet->decapsulate();
-    if (dynamic_cast<DYMOPacket *>(encapsulatedPacket)) {
-        DYMOPacket *dymoPacket = (DYMOPacket *)encapsulatedPacket;
+    if (DYMOPacket *dymoPacket = dynamic_cast<DYMOPacket *>(encapsulatedPacket)) {
         dymoPacket->setControlInfo(packet->removeControlInfo());
         processDYMOPacket(dymoPacket);
     }
@@ -1444,7 +1443,7 @@ bool DYMO::handleOperationStage(LifecycleOperation *operation, int stage, IDoneC
 // notification
 //
 
-void DYMO::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj DETAILS_ARG)
+void DYMO::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details)
 {
     Enter_Method("receiveChangeNotification");
     if (signalID == NF_LINK_BREAK) {

@@ -68,13 +68,11 @@ class INET_API PPP : public MACBase
     virtual void startTransmitting(cPacket *msg);
     virtual PPPFrame *encapsulate(cPacket *msg);
     virtual cPacket *decapsulate(PPPFrame *pppFrame);
-    virtual void displayBusy();
-    virtual void displayIdle();
-    virtual void updateDisplayString();
+    virtual void refreshDisplay() const override;
     virtual void refreshOutGateConnection(bool connected);
 
     // cListener function
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj DETAILS_ARG) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
 
     // MACBase functions
     virtual InterfaceEntry *createInterfaceEntry() override;

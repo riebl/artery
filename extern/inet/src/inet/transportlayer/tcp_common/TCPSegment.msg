@@ -48,7 +48,7 @@ cplusplus {{
 
     inline std::ostream& operator<<(std::ostream& os, cPacketPtr msg)
     {
-        return os << "(" << msg->getClassName() << ") " << msg->getName() << ": " << msg->info();
+        return os << "(" << msg->getClassName() << ") " << msg->getName() << ": " << msg->str();
     }
 
     inline void doPacking(cCommBuffer *b, cPacketPtr& msg) {msg->parsimPack(b);}
@@ -114,7 +114,6 @@ enum TCPOptionNumbers
 //
 class SackItem
 {
-    @fieldNameSuffix("_var"); //TODO remove when OMNeT++ 4.x compatibility is no longer required
     unsigned int start;     // start seq no. of sack block
     unsigned int end;       // end seq no. of sack block
 }
@@ -202,7 +201,6 @@ class TCPOptionUnknown extends TCPOption
 packet TCPSegment
 {
     @customize(true);
-    @fieldNameSuffix("_var"); //TODO remove when OMNeT++ 4.x compatibility is no longer required
 
     // Source Port
     unsigned short srcPort;

@@ -20,10 +20,6 @@
 #ifndef __INET_TCP_NSC_H
 #define __INET_TCP_NSC_H
 
-#ifndef HAVE_NSC
-#error Please install NSC or disable 'TCP_NSC' feature
-#endif // ifndef HAVE_NSC
-
 #include <map>
 
 #include "inet/common/INETDefs.h"
@@ -91,7 +87,7 @@ class INET_API TCP_NSC : public cSimpleModule, ISendCallback, IInterruptCallback
     // find a TCP_NSC_Connection by nsc sockpair
     TCP_NSC_Connection *findConnByNscSockPair(TCP_NSC_Connection::SockPair const& sockPairP);
 
-    virtual void updateDisplayString();
+    virtual void refreshDisplay() const override;
     void removeConnection(int connIdP);
     void printConnBrief(TCP_NSC_Connection& connP);
     void loadStack(const char *stacknameP, int bufferSizeP);

@@ -47,7 +47,7 @@ Define_Module(PingApp);
 
 simsignal_t PingApp::rttSignal = registerSignal("rtt");
 simsignal_t PingApp::numLostSignal = registerSignal("numLost");
-simsignal_t PingApp::outOfOrderArrivalsSignal = registerSignal("outOfOrderArrivals");
+simsignal_t PingApp::numOutOfOrderArrivalsSignal = registerSignal("numOutOfOrderArrivals");
 simsignal_t PingApp::pingTxSeqSignal = registerSignal("pingTxSeq");
 simsignal_t PingApp::pingRxSeqSignal = registerSignal("pingRxSeq");
 
@@ -187,12 +187,13 @@ void PingApp::handleMessage(cMessage *msg)
         // process ping response
         processPingResponse(check_and_cast<PingPayload *>(msg));
     }
+}
 
-    if (hasGUI()) {
-        char buf[40];
-        sprintf(buf, "sent: %ld pks\nrcvd: %ld pks", sentCount, numPongs);
-        getDisplayString().setTagArg("t", 0, buf);
-    }
+void PingApp::refreshDisplay() const
+{
+    char buf[40];
+    sprintf(buf, "sent: %ld pks\nrcvd: %ld pks", sentCount, numPongs);
+    getDisplayString().setTagArg("t", 0, buf);
 }
 
 bool PingApp::handleOperationStage(LifecycleOperation *operation, int stage, IDoneCallback *doneCallback)
@@ -334,7 +335,7 @@ void PingApp::countPingResponse(int bytes, long seqNo, simtime_t rtt)
         EV_DETAIL << "Arrived out of order (too late)\n";
         outOfOrderArrivalCount++;
         lossCount--;
-        emit(outOfOrderArrivalsSignal, outOfOrderArrivalCount);
+        emit(numOutOfOrderArrivalsSignal, outOfOrderArrivalCount);
         emit(numLostSignal, lossCount);
     }
 }
@@ -343,11 +344,7 @@ std::vector<L3Address> PingApp::getAllAddresses()
 {
     std::vector<L3Address> result;
 
-#if OMNETPP_VERSION < 0x500
-    int lastId = getSimulation()->getLastModuleId();
-#else // if OMNETPP_VERSION < 0x500
     int lastId = getSimulation()->getLastComponentId();
-#endif // if OMNETPP_VERSION < 0x500
 
     for (int i = 0; i <= lastId; i++)
     {

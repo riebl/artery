@@ -70,7 +70,7 @@ class INET_API PingApp : public cSimpleModule, public ILifecycle
     cStdDev rttStat;
     static simsignal_t rttSignal;
     static simsignal_t numLostSignal;
-    static simsignal_t outOfOrderArrivalsSignal;
+    static simsignal_t numOutOfOrderArrivalsSignal;
     static simsignal_t pingTxSeqSignal;
     static simsignal_t pingRxSeqSignal;
     long sentCount = 0;    // number of sent Ping requests
@@ -83,6 +83,7 @@ class INET_API PingApp : public cSimpleModule, public ILifecycle
     virtual int numInitStages() const override { return NUM_INIT_STAGES; }
     virtual void handleMessage(cMessage *msg) override;
     virtual void finish() override;
+    virtual void refreshDisplay() const override;
 
     virtual void parseDestAddressesPar();
     virtual void startSendingPingRequests();

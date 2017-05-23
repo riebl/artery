@@ -20,6 +20,7 @@
 #define __INET_PACKETDRILL_H
 
 #include "inet/common/INETDefs.h"
+#include "omnetpp/platdep/sockets.h"
 
 #include "PacketDrillUtils.h"
 #include "inet/transportlayer/udp/UDPPacket.h"
@@ -77,6 +78,10 @@ class INET_API PacketDrill
         static PacketDrillSctpChunk* buildHeartbeatChunk(int64 flgs, PacketDrillSctpParameter *info);
 
         static PacketDrillSctpChunk* buildHeartbeatAckChunk(int64 flgs, PacketDrillSctpParameter *info);
+
+        static PacketDrillSctpChunk* buildReconfigChunk(int64 flgs, cQueue *parameters);
+
+        static PacketDrillSctpChunk* buildErrorChunk(int64 flgs, cQueue *causes);
 
         static IPv4Datagram *makeIPPacket(int protocol, enum direction_t direction, L3Address localAddr, L3Address remoteAddr);
 

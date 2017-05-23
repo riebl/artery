@@ -16,6 +16,7 @@
 #ifndef __INET_BYTEARRAY_H
 #define __INET_BYTEARRAY_H
 
+#include "inet/common/INETDefs.h"
 #include "inet/common/ByteArray_m.h"
 
 namespace inet {
@@ -117,7 +118,7 @@ class INET_API ByteArray : public ByteArray_Base
      */
     virtual void expandData(unsigned int addLeft, unsigned int addRight);
 
-    virtual char *getDataPtr()  { return data_var; }
+    virtual char *getDataPtr()  { return data; }
 };
 
 } // namespace inet

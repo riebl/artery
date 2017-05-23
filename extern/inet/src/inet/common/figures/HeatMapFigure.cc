@@ -19,7 +19,6 @@
 
 namespace inet {
 
-#if OMNETPP_VERSION >= 0x500
 HeatMapFigure::HeatMapFigure(int size, const char *name) :
     cPixmapFigure(name)
 {
@@ -39,9 +38,9 @@ double HeatMapFigure::getHeat(int x, int y)
 void HeatMapFigure::setHeat(int x, int y, double value)
 {
     cFigure::Color color(
-        (1 - value) * fromColor.red + value * toColor.red,
-        (1 - value) * fromColor.green + value * toColor.green,
-        (1 - value) * fromColor.blue + value * toColor.blue);
+            (1 - value) * fromColor.red + value * toColor.red,
+            (1 - value) * fromColor.green + value * toColor.green,
+            (1 - value) * fromColor.blue + value * toColor.blue);
     setPixel(x, y, color, value);
 }
 
@@ -91,7 +90,6 @@ void HeatMapFigure::coolDown()
                 setHeat(x, y, getHeat(x, y) * factor);
     }
 }
-#endif
 
 } // namespace inet
 

@@ -49,7 +49,7 @@ void SCTP::printInfoAssocMap()
             assoc = elem.second;
             key = elem.first;
 
-            EV_DETAIL << "assocId: " << assoc->assocId << "  assoc: " << assoc << " src: " << key.localAddr << " dst: " << key.remoteAddr << " lPort: " << key.localPort << " rPort: " << key.remotePort << "\n";
+            EV_DETAIL << "assocId: " << assoc->assocId << "  assoc: " << assoc << " src: " << key.localAddr << " dst: " << key.remoteAddr << " lPort: " << key.localPort << " rPort: " << key.remotePort << " fd: " << assoc->fd <<"\n";
         }
 
         EV_DETAIL << "\n";
@@ -300,8 +300,6 @@ void SCTP::handleMessage(cMessage *msg)
             delete msg;
         }
     }
-    if (hasGUI())
-        updateDisplayString();
 }
 
 SocketOptions* SCTP::collectSocketOptions()
@@ -316,7 +314,11 @@ SocketOptions* SCTP::collectSocketOptions()
     sockOptions->sackPeriod = (double) par("sackPeriod");
     sockOptions->maxBurst = (int) par("maxBurst");
     sockOptions->fragPoint = (int) par("fragPoint");
-    sockOptions->noDelay = ((bool) par("nagleEnabled")) ? 0 : 1;
+    sockOptions->nagle = ((bool) par("nagleEnabled")) ? 1 : 0;
+    sockOptions->enableHeartbeats = (bool) par("enableHeartbeats");
+    sockOptions->pathMaxRetrans = (int) par("pathMaxRetrans");
+    sockOptions->hbInterval = (double) par("hbInterval");
+    sockOptions->assocMaxRtx = (int) par("assocMaxRetrans");
     return sockOptions;
 }
 
@@ -398,7 +400,7 @@ void SCTP::send_to_ip(SCTPMessage *msg)
     send(msg, "to_ip");
 }
 
-void SCTP::updateDisplayString()
+void SCTP::refreshDisplay() const
 {
 #if 0
     if (getEnvir()->disable_tracing) {

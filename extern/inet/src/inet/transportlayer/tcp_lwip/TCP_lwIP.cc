@@ -470,18 +470,11 @@ void TCP_lwIP::handleMessage(cMessage *msgP)
         if (nullptr != pLwipTcpLayerM->tcp_active_pcbs || nullptr != pLwipTcpLayerM->tcp_tw_pcbs)
             scheduleAt(roundTime(simTime() + 0.250, 4), pLwipFastTimerM);
     }
-
-    if (hasGUI())
-        updateDisplayString();
 }
 
-void TCP_lwIP::updateDisplayString()
+void TCP_lwIP::refreshDisplay() const
 {
-#if OMNETPP_VERSION < 0x0500
-    if (getEnvir()->isDisabled()) {
-#else
     if (getEnvir()->isExpressMode()) {
-#endif
         // in express mode, we don't bother to update the display
         // (std::map's iteration is not very fast if map is large)
         getDisplayString().setTagArg("t", 0, "");

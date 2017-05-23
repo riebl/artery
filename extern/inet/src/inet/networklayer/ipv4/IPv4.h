@@ -110,7 +110,7 @@ class INET_API IPv4 : public QueueBase, public INetfilter, public ILifecycle, pu
     virtual const InterfaceEntry *getShortestPathInterfaceToSource(IPv4Datagram *datagram);
 
     // utility: show current statistics above the icon
-    virtual void updateDisplayString();
+    virtual void refreshDisplay() const override;
 
     // utility: processing requested ARP resolution completed
     void arpResolutionCompleted(IARP::Notification *entry);
@@ -302,7 +302,7 @@ class INET_API IPv4 : public QueueBase, public INetfilter, public ILifecycle, pu
     virtual bool handleOperationStage(LifecycleOperation *operation, int stage, IDoneCallback *doneCallback) override;
 
     /// cListener method
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj DETAILS_ARG) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
 
   protected:
     virtual bool isNodeUp();

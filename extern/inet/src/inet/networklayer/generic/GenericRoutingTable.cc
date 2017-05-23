@@ -38,7 +38,7 @@ std::ostream& operator<<(std::ostream& os, const GenericRoute& e)
 
 std::ostream& operator<<(std::ostream& os, const GenericMulticastRoute& e)
 {
-    os << e.info();
+    os << e.str();
     return os;
 };
 
@@ -123,7 +123,7 @@ void GenericRoutingTable::handleMessage(cMessage *msg)
     throw cRuntimeError("This module doesn't process messages");
 }
 
-void GenericRoutingTable::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj DETAILS_ARG)
+void GenericRoutingTable::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details)
 {
     // TODO:
 }
@@ -136,7 +136,6 @@ void GenericRoutingTable::routeChanged(GenericRoute *entry, int fieldCode)
         internalAddRoute(entry);
 
         //invalidateCache();
-        updateDisplayString();
     }
     emit(NF_ROUTE_CHANGED, entry);    // TODO include fieldCode in the notification
 }
@@ -198,11 +197,8 @@ void GenericRoutingTable::configureLoopback()
 //    ie->setIPv4Data(d);
 }
 
-void GenericRoutingTable::updateDisplayString()
+void GenericRoutingTable::refreshDisplay() const
 {
-    if (!hasGUI())
-        return;
-
 //TODO
 //    char buf[80];
 //    if (routerId.isUnspecified())
@@ -341,7 +337,6 @@ void GenericRoutingTable::addRoute(IRoute *route)
 
     internalAddRoute(entry);
 
-    updateDisplayString();
     emit(NF_ROUTE_ADDED, entry);
 }
 
@@ -351,7 +346,6 @@ IRoute *GenericRoutingTable::removeRoute(IRoute *route)
 
     GenericRoute *entry = internalRemoveRoute(check_and_cast<GenericRoute *>(route));
     if (entry) {
-        updateDisplayString();
         emit(NF_ROUTE_DELETED, entry);
     }
 

@@ -36,7 +36,6 @@ void NodeStatus::initialize(int stage)
     if (stage == INITSTAGE_LOCAL) {
         state = getStateByName(par("initialStatus"));
         origIcon = getDisplayString().getTagArg("i", 0);
-        updateDisplayString();
     }
 }
 
@@ -104,10 +103,9 @@ void NodeStatus::setState(State s)
 {
     state = s;
     emit(nodeStatusChangedSignal, this);
-    updateDisplayString();
 }
 
-void NodeStatus::updateDisplayString()
+void NodeStatus::refreshDisplay() const
 {
     const char *icon;
     switch (state) {

@@ -24,7 +24,7 @@ class FindModule
     static T findSubModule(const cModule *const top)
     {
         for (cModule::SubmoduleIterator i(top); !i.end(); i++) {
-            cModule *const sub = i();
+            cModule *const sub = *i;
             // this allows also a return type of read only pointer: const cModule *const
             T dCastRet = dynamic_cast<T>(sub);
             if (dCastRet != nullptr)
@@ -69,7 +69,7 @@ class FindModule
     // the constness version
     static const cModule *findHost(const cModule *const m)
     {
-        return const_cast<cModule *>(findContainingNode(const_cast<cModule *>(m)));
+        return const_cast<cModule *>(findContainingNode(m));
     }
 
     static const cModule *findNetwork(const cModule *const m)

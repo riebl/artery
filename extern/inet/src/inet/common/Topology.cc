@@ -68,7 +68,7 @@ std::string Topology::info() const
     return out.str();
 }
 
-void Topology::parsimPack(cCommBuffer *buffer) PARSIMPACK_CONST
+void Topology::parsimPack(cCommBuffer *buffer) const
 {
     throw cRuntimeError(this, "parsimPack() not implemented");
 }
@@ -198,11 +198,7 @@ void Topology::extractFromNetwork(bool (*predicate)(cModule *, void *), void *da
     clear();
 
     // Loop through all modules and find those that satisfy the criteria
-#if OMNETPP_VERSION < 0x500
-    for (int modId = 0; modId <= getSimulation()->getLastModuleId(); modId++)
-#else // if OMNETPP_VERSION < 0x500
     for (int modId = 0; modId <= getSimulation()->getLastComponentId(); modId++)
-#endif // if OMNETPP_VERSION < 0x500
     {
         cModule *module = getSimulation()->getModule(modId);
         if (module && predicate(module, data)) {
@@ -220,7 +216,7 @@ void Topology::extractFromNetwork(bool (*predicate)(cModule *, void *), void *da
         cModule *mod = getSimulation()->getModule(node->moduleId);
 
         for (cModule::GateIterator i(mod); !i.end(); i++) {
-            cGate *gate = i();
+            cGate *gate = *i;
             if (gate->getType() != cGate::OUTPUT)
                 continue;
 

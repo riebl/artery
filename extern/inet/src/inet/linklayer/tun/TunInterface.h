@@ -37,8 +37,6 @@ class INET_API TunInterface : public MACBase
         static simsignal_t packetReceivedFromUpperSignal;
 
     protected:
-        void updateDisplayString();
-
         // MACBase functions
         InterfaceEntry *createInterfaceEntry() override;
         virtual void flushQueue() override;

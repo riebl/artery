@@ -78,7 +78,7 @@ void PcapRecorder::initialize()
             mname.replace(mname.length() - 3, 3, "");
 
         for (cModule::SubmoduleIterator i(getParentModule()); !i.end(); i++) {
-            cModule *submod = i();
+            cModule *submod = *i;
             if (0 == strcmp(isAllIndex ? submod->getName() : submod->getFullName(), mname.c_str())) {
                 found = true;
 
@@ -109,7 +109,7 @@ void PcapRecorder::handleMessage(cMessage *msg)
     throw cRuntimeError("This module does not handle messages");
 }
 
-void PcapRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj DETAILS_ARG)
+void PcapRecorder::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details)
 {
     Enter_Method_Silent();
     cPacket *packet = dynamic_cast<cPacket *>(obj);

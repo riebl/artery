@@ -45,6 +45,12 @@ network = CloudAndHosts
 tkenv-plugin-path = ../../../etc/plugins
 ned-path = .;../../../../src;../../lib
 
+#omnetpp 5.0 - 5.1 compatibility:
+eventlog-file = "${resultdir}/${configname}-${runnumber}.elog"
+output-scalar-file = "${resultdir}/${configname}-${runnumber}.sca"
+output-vector-file = "${resultdir}/${configname}-${runnumber}.vec"
+snapshot-file = "${resultdir}/${configname}-${runnumber}.sna"
+
 *.sender[*].numPingApps = 1
 *.sender[*].pingApp[0].destAddr = "recip"
 *.sender[*].pingApp[0].startTime = 10s
@@ -92,16 +98,16 @@ ned-path = .;../../../../src;../../lib
 %#--------------------------------------------------------------------------------------------------------------
 %contains-regex: stdout
 [^C].*
-CloudAndHosts\.sender\[9\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=28 time=.*
-CloudAndHosts\.sender\[8\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=28 time=.*
-CloudAndHosts\.sender\[7\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=28 time=.*
-CloudAndHosts\.sender\[6\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=28 time=.*
-CloudAndHosts\.sender\[5\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=28 time=.*
-CloudAndHosts\.sender\[4\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=28 time=.*
-CloudAndHosts\.sender\[3\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=28 time=.*
-CloudAndHosts\.sender\[2\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=28 time=.*
-CloudAndHosts\.sender\[1\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=28 time=.*
-CloudAndHosts\.sender\[0\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=28 time=.*
+CloudAndHosts\.sender\[9\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=\d+ time=.*
+CloudAndHosts\.sender\[8\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=\d+ time=.*
+CloudAndHosts\.sender\[7\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=\d+ time=.*
+CloudAndHosts\.sender\[6\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=\d+ time=.*
+CloudAndHosts\.sender\[5\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=\d+ time=.*
+CloudAndHosts\.sender\[4\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=\d+ time=.*
+CloudAndHosts\.sender\[3\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=\d+ time=.*
+CloudAndHosts\.sender\[2\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=\d+ time=.*
+CloudAndHosts\.sender\[1\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=\d+ time=.*
+CloudAndHosts\.sender\[0\]\.pingApp\[0\]: reply of 60 bytes from 10\.0\.0.\d+ icmp_seq=0 ttl=\d+ time=.*
 [^C].*
 %#--------------------------------------------------------------------------------------------------------------
 %not-contains: stdout

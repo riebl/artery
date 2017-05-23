@@ -326,11 +326,11 @@ bool EtherMACBase::handleOperationStage(LifecycleOperation *operation, int stage
     return MACBase::handleOperationStage(operation, stage, doneCallback);
 }
 
-void EtherMACBase::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj DETAILS_ARG)
+void EtherMACBase::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details)
 {
     Enter_Method_Silent();
 
-    MACBase::receiveSignal(source, signalID, obj DETAILS_ARG_NAME);
+    MACBase::receiveSignal(source, signalID, obj, details);
 
     if (signalID != POST_MODEL_CHANGE)
         return;
@@ -615,7 +615,7 @@ void EtherMACBase::finish()
     }
 }
 
-void EtherMACBase::updateDisplayString()
+void EtherMACBase::refreshDisplay() const
 {
     // icon coloring
     const char *color;
@@ -706,7 +706,7 @@ void EtherMACBase::updateDisplayString()
 #endif // if 0
 }
 
-void EtherMACBase::updateConnectionColor(int txState)
+void EtherMACBase::updateConnectionColor(int txState) const
 {
     const char *color;
 
@@ -717,7 +717,7 @@ void EtherMACBase::updateConnectionColor(int txState)
     else
         color = "";
 
-    if (hasGUI() && connectionColoring) {
+    if (connectionColoring) {
         if (connected) {
             transmissionChannel->getDisplayString().setTagArg("ls", 0, color);
             transmissionChannel->getDisplayString().setTagArg("ls", 1, color[0] ? "3" : "1");

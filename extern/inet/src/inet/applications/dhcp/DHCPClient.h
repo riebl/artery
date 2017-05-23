@@ -84,7 +84,8 @@ class INET_API DHCPClient : public cSimpleModule, public cListener, public ILife
     virtual void scheduleTimerT2();
     static const char *getStateName(ClientState state);
     const char *getAndCheckMessageTypeName(DHCPMessageType type);
-    virtual void updateDisplayString();
+    virtual void refreshDisplay() const override;
+
 
     /*
      * Opens a UDP socket for client-server communication.
@@ -106,7 +107,7 @@ class INET_API DHCPClient : public cSimpleModule, public cListener, public ILife
     /*
      * Signal handler for cObject, override cListener function.
      */
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj DETAILS_ARG) override;
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
 
     /*
      * Performs UDP transmission.
@@ -151,7 +152,7 @@ class INET_API DHCPClient : public cSimpleModule, public cListener, public ILife
      * Removes the configured IP address (e. g. when clients get a DHCPNAK message in REBINDING or RENEWING states
      * or the lease time expires).
      */
-    virtual void unboundLease();
+    virtual void unbindLease();
 
     /*
      * Starts the DHCP configuration process with sending a DHCPDISCOVER.
