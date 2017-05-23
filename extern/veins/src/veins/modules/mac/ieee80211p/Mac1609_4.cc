@@ -176,7 +176,7 @@ void Mac1609_4::handleSelfMsg(cMessage* msg) {
 		channelBusySelf(true);
 		WaveShortMessage* pktToSend = myEDCA[activeChannel]->initiateTransmit(lastIdle);
 
-		lastAC = mapPriority(pktToSend->getPriority());
+		lastAC = mapUserPriority(pktToSend->getUserPriority());
 
 		DBG_MAC << "MacEvent received. Trying to send packet with priority" << lastAC << std::endl;
 
@@ -251,7 +251,7 @@ void Mac1609_4::handleUpperMsg(cMessage* msg) {
 		error("WaveMac only accepts WaveShortMessages");
 	}
 
-	t_access_category ac = mapPriority(thisMsg->getPriority());
+	t_access_category ac = mapUserPriority(thisMsg->getUserPriority());
 
 	DBG_MAC << "Received a message from upper layer for channel "
 	        << thisMsg->getChannelNumber() << " Access Category (Priority):  "
@@ -540,7 +540,7 @@ int Mac1609_4::EDCA::queuePacket(t_access_category ac,WaveShortMessage* msg) {
 	return myQueues[ac].queue.size();
 }
 
-int Mac1609_4::EDCA::createQueue(int aifsn, int cwMin, int cwMax,t_access_category ac) {
+void Mac1609_4::EDCA::createQueue(int aifsn, int cwMin, int cwMax,t_access_category ac) {
 
 	if (myQueues.find(ac) != myQueues.end()) {
 		throw cRuntimeError("You can only add one queue per Access Category per EDCA subsystem");
@@ -548,17 +548,19 @@ int Mac1609_4::EDCA::createQueue(int aifsn, int cwMin, int cwMax,t_access_catego
 
 	EDCAQueue newQueue(aifsn,cwMin,cwMax,ac);
 	myQueues[ac] = newQueue;
-
-	return ++numQueues;
 }
 
-Mac1609_4::t_access_category Mac1609_4::mapPriority(int prio) {
-	//dummy mapping function
+Mac1609_4::t_access_category Mac1609_4::mapUserPriority(int prio) {
+	// Map user priority to access category, based on IEEE Std 802.11-2012, Table 9-1
 	switch (prio) {
-		case 0: return AC_BK;
-		case 1: return AC_BE;
-		case 2: return AC_VI;
-		case 3: return AC_VO;
+		case 1: return AC_BK;
+		case 2: return AC_BK;
+		case 0: return AC_BE;
+		case 3: return AC_BE;
+		case 4: return AC_VI;
+		case 5: return AC_VI;
+		case 6: return AC_VO;
+		case 7: return AC_VO;
 		default: throw cRuntimeError("MacLayer received a packet with unknown priority"); break;
 	}
 	return AC_VO;
@@ -573,7 +575,10 @@ WaveShortMessage* Mac1609_4::EDCA::initiateTransmit(simtime_t lastIdle) {
 
 	DBG_MAC << "Initiating transmit at " << simTime() << ". I've been idle since " << idleTime << std::endl;
 
-	for (std::map<t_access_category, EDCAQueue>::iterator iter = myQueues.begin(); iter != myQueues.end(); iter++) {
+	// As t_access_category is sorted by priority, we iterate back to front.
+	// This realizes the behavior documented in IEEE Std 802.11-2012 Section 9.2.4.2; that is, "data frames from the higher priority AC" win an internal collision.
+	// The phrase "EDCAF of higher UP" of IEEE Std 802.11-2012 Section 9.19.2.3 is assumed to be meaningless.
+	for (std::map<t_access_category, EDCAQueue>::reverse_iterator iter = myQueues.rbegin(); iter != myQueues.rend(); iter++) {
 		if (iter->second.queue.size() != 0) {
 			if (idleTime >= iter->second.aifsn* SLOTLENGTH_11P + SIFS_11P && iter->second.txOP == true) {
 

@@ -18,14 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-cplusplus {{
-#include "veins/base/utils/Coord.h"
-
-
-}}
-
-class noncobject Coord;
-
 packet WaveShortMessage {
 	//Version of the Wave Short Message
 	int wsmVersion = 0;
@@ -35,8 +27,8 @@ packet WaveShortMessage {
 	int channelNumber;
 	//Data rate with which this packet was sent
 	int dataRate = 1;
-	//Power Level with which this packet was sent
-	int priority = 3;
+	//User priority with which this packet was sent (note the AC mapping rules in Mac1609_4::mapUserPriority)
+	int userPriority = 7;
 	//Unique number to identify the service
 	int psid = 0;
 	//Provider Service Context

@@ -60,6 +60,7 @@ class Mac1609_4 : public BaseMacLayer,
 
 	public:
 
+		// Access categories in increasing order of priority (see IEEE Std 802.11-2012, Table 9-1)
 		enum t_access_category {
 			AC_BK = 0,
 			AC_BE = 1,
@@ -85,17 +86,14 @@ class Mac1609_4 : public BaseMacLayer,
 						};
 				};
 
-				EDCA(cModule *owner, t_channel channelType,int maxQueueLength = 0):owner(owner),numQueues(0),maxQueueSize(maxQueueLength),channelType(channelType) {
+				EDCA(cModule *owner, t_channel channelType,int maxQueueLength = 0):owner(owner),maxQueueSize(maxQueueLength),channelType(channelType) {
 					statsNumInternalContention = 0;
 					statsNumBackoff = 0;
 					statsSlotsBackoff = 0;
 				};
-                const cObject *getThisPtr() const  {return NULL;}
-                const char *getClassName() const {return "Mac1609_4::EDCA"; }
-				/*
-				 * Currently you have to call createQueue in the right order. First Call is priority 0, second 1 and so on...
-				 */
-				int createQueue(int aifsn, int cwMin, int cwMax,t_access_category);
+				const cObject *getThisPtr() const  {return NULL;}
+				const char *getClassName() const {return "Mac1609_4::EDCA"; }
+				void createQueue(int aifsn, int cwMin, int cwMax,t_access_category);
 				int queuePacket(t_access_category AC,WaveShortMessage* cmsg);
 				void backoff(t_access_category ac);
 				simtime_t startContent(simtime_t idleSince, bool guardActive);
@@ -111,7 +109,6 @@ class Mac1609_4 : public BaseMacLayer,
 			public:
 				cModule *owner;
 				std::map<t_access_category,EDCAQueue> myQueues;
-				int numQueues;
 				uint32_t maxQueueSize;
 				simtime_t lastStart; //when we started the last contention;
 				t_channel channelType;
@@ -199,7 +196,7 @@ class Mac1609_4 : public BaseMacLayer,
 		Signal* createSignal(simtime_t start, simtime_t length, double power, uint64_t bitrate, double frequency);
 
 		/** @brief maps a application layer priority (up) to an EDCA access category. */
-		t_access_category mapPriority(int prio);
+		t_access_category mapUserPriority(int prio);
 
 		void channelBusy();
 		void channelBusySelf(bool generateTxOp);

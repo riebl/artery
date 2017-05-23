@@ -5,7 +5,7 @@
 ;
 [subrepo]
 	remote = https://github.com/sommer/veins.git
-	branch = veins-4.5
-	commit = df924a2a18ac4d947f6684b6751825aa13b28aba
-	parent = 4ad6e1db22c137c6e31a2ce98d43c78b44cb723e
+	branch = master
+	commit = b96ba5043342586360c4ce15dd245fc942277751
+	parent = e99f337cc53bf3c4e94b3ed7433b4b2f62edab80
 	cmdver = 0.3.1
