@@ -15,7 +15,6 @@ class OmnetProject:
         self.makefile_defines = {}
         self.root_directory = self.lookup_project_directory()
         self.output_directory = "out"
-        self.deep_include = True
         self.include_directories = []
         self.include_directories_deep = []
         self.library_directories = []
@@ -146,8 +145,8 @@ class FlagsHandler:
             "-f": self.ignore,
             "--force": self.ignore,
             "-p": self.skip,
-            "--deep": partial(self.deep_include, True),
-            "--no-deep-includes": partial(self.deep_include, False),
+            "--deep": self.ignore,
+            "--no-deep-includes": self.ignore,
             "-s": partial(self.binary_type, "shared"),
             "--make-so": partial(self.binary_type, "shared"),
             "-a": partial(self.binary_type, "static"),
@@ -202,16 +201,6 @@ class FlagsHandler:
 
     def binary_type(self, binary):
         self._project.binary = binary
-
-    def deep_include(self, go_deep):
-        if go_deep:
-            self._project.include_directories_deep.append(os.path.dirname(self._project.makefile))
-            for subdir, dirs, files in os.walk(os.path.dirname(self._project.makefile)):
-                for dir in dirs:
-                    self._project.include_directories_deep.append(os.path.normpath(os.path.join(subdir, dir)))
-        else:
-            self._project.include_directories_deep = []
-        self._project.deep_include = go_deep
 
     def project_name(self):
         self._project.name = self.fetch()
