@@ -2,7 +2,7 @@ find_program(OMNETPP_RUN NAMES opp_run opp_run_release PATHS ${OMNETPP_ROOT}/bin
 include(CMakeParseArguments)
 
 macro(add_opp_run _name)
-    set(_one_value_args "CONFIG;DEPENDENCY")
+    set(_one_value_args "CONFIG;DEPENDENCY;WORKING_DIRECTORY")
     set(_multi_value_args "NED_FOLDERS")
     cmake_parse_arguments(_add_opp_run "" "${_one_value_args}" "${_multi_value_args}" ${ARGN})
 
@@ -20,6 +20,12 @@ macro(add_opp_run _name)
         set(_target "${_add_opp_run_DEPENDENCY}")
     else()
         set(_target "artery")
+    endif()
+
+    if(_add_opp_run_WORKING_DIRECTORY)
+        set(_working_directory "${_add_opp_run_WORKING_DIRECTORY}")
+    else()
+        set(_working_directory "${CMAKE_CURRENT_SOURCE_DIR}")
     endif()
 
     get_ned_folders(${_target} _list_ned_folders)
@@ -43,16 +49,14 @@ macro(add_opp_run _name)
     string(REPLACE " " ";" _run_flags "${RUN_FLAGS}")
     add_custom_target(run_${_name}
         COMMAND ${_exec} ${_config} ${_run_flags}
-        SOURCES ${_config}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        WORKING_DIRECTORY ${_working_directory}
         VERBATIM)
 
     find_program(GDB_COMMAND gdb DOC "GNU debugger")
     if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND GDB_COMMAND)
         add_custom_target(debug_${_name}
             COMMAND ${GDB_COMMAND} --args ${_exec} ${_config} ${_run_flags}
-            SOURCES ${_config}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            WORKING_DIRECTORY ${_working_directory}
             VERBATIM)
     endif()
 
@@ -63,7 +67,6 @@ macro(add_opp_run _name)
     string(REPLACE " " ";" _valgrind_exec_flags "${VALGRIND_EXEC_FLAGS}")
     add_custom_target(memcheck_${_name}
         COMMAND ${VALGRIND_COMMAND} ${_valgrind_flags} ${_exec} ${_valgrind_exec_flags} ${_config}
-        SOURCES ${_config}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        WORKING_DIRECTORY ${_working_directory}
         VERBATIM)
 endmacro()
