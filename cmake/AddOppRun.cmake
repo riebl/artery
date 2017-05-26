@@ -1,8 +1,29 @@
 find_program(OMNETPP_RUN NAMES opp_run opp_run_release PATHS ${OMNETPP_ROOT}/bin DOC "OMNeT++ opp_run executable")
+include(CMakeParseArguments)
 
-macro(add_opp_run _name _config _target)
+macro(add_opp_run _name)
+    set(_one_value_args "CONFIG;DEPENDENCY")
+    set(_multi_value_args "NED_FOLDERS")
+    cmake_parse_arguments(_add_opp_run "" "${_one_value_args}" "${_multi_value_args}" ${ARGN})
+
+    if(_add_opp_run_UNPARSED_ARGUMENTS)
+        message(SEND_ERROR "add_opp_run called with invalid arguments: ${_add_opp_run_UNPARSED_ARGUMENTS}")
+    endif()
+
+    if(_add_opp_run_CONFIG)
+        set(_config "${_add_opp_run_CONFIG}")
+    else()
+        set(_config "omnetpp.ini")
+    endif()
+
+    if(_add_opp_run_DEPENDENCY)
+        set(_target "${_add_opp_run_DEPENDENCY}")
+    else()
+        set(_target "artery")
+    endif()
+
     get_ned_folders(${_target} _list_ned_folders)
-    list(APPEND _list_ned_folders ${ARGN})
+    list(APPEND _list_ned_folders ${_add_opp_run_NED_FOLDERS})
     set(_ned_folders "")
     foreach(_ned_folder IN LISTS _list_ned_folders)
         set(_ned_folders "${_ned_folders}:${_ned_folder}")
