@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_CXX_STANDARD 11)
 
-find_package(OmnetPP 5.0 REQUIRED)
+find_package(OmnetPP 5.1 REQUIRED)
 include(cmake/ImportOppTarget.cmake)
 include(cmake/GetNedFolders.cmake)
 include(cmake/AddOppRun.cmake)
