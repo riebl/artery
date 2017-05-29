@@ -4,8 +4,8 @@
 ; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
 ;
 [subrepo]
-	remote = https://github.com/inet-framework/inet.git
-	branch = v3.5.0
-	commit = fabe428fd5ee47d6be52e77a638b0b2efe5e1927
-	parent = 378249ecf07f02da8983ef617e22ed7c3f5a9425
+	remote = https://github.com/riebl/inet
+	branch = artery
+	commit = 786083fd894f4f1b4a5b34f395056aff3889f1b7
+	parent = 0c3a0f225db1f6d86a2501310d013ff38d76f282
 	cmdver = 0.3.1
