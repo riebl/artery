@@ -37,11 +37,16 @@ set(Boost_OPTIONAL_COMPONENTS system)
 find_package(Boost 1.58 REQUIRED
   COMPONENTS ${Boost_COMPONENTS}
   OPTIONAL_COMPONENTS ${Boost_OPTIONAL_COMPONENTS})
+include(CompatBoostTargets)
 find_package(CryptoPP 5.6.1 REQUIRED)
 find_package(GeographicLib 1.37 REQUIRED)
-find_package(OpenSSL 1.0.1)
-include(CompatBoostTargets)
-include(CompatOpenSSLTargets)
+
+find_package(OpenSSl 1.0.1 QUIET)
+option(VANETZA_WITH_OPENSSL "Enable OpenSSL extensions" "${OPENSSL_FOUND}")
+if (VANETZA_WITH_OPENSSL)
+  find_package(OpenSSL 1.0.1 REQUIRED)
+  include(CompatOpenSSLTargets)
+endif()
 
 add_subdirectory(vanetza/asn1)
 add_subdirectory(vanetza/btp)

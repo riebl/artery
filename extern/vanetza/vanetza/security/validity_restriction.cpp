@@ -21,6 +21,12 @@ Duration::Duration(uint16_t raw) : m_raw(raw)
 {
 }
 
+StartAndEndValidity::StartAndEndValidity(Time32 start, Time32 end) :
+    start_validity(start), end_validity(end) {}
+
+StartAndDurationValidity::StartAndDurationValidity(Time32 start, Duration dur) :
+    start_validity(start), duration(dur) {}
+
 ValidityRestrictionType get_type(const ValidityRestriction& restriction)
 {
     struct validity_restriction_visitor : public boost::static_visitor<ValidityRestrictionType>

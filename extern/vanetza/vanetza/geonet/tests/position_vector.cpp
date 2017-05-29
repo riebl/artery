@@ -29,3 +29,17 @@ TEST(PositionVector, lpv_serialization)
     EXPECT_EQ(lpv1.gn_addr, lpv2.gn_addr);
     EXPECT_EQ(lpv1, lpv2);
 }
+
+TEST(PositionVector, zero_initialized)
+{
+    // "At start-up, all data elements of the LPV shall be initialized
+    // with 0 to indicate an unknown value." (EN 302 636-4-1 V1.2.0)
+    LongPositionVector lpv;
+    EXPECT_TRUE(is_empty(lpv));
+
+    ByteBuffer buffer;
+    serialize_into_buffer(lpv, buffer);
+    ByteBuffer zero;
+    zero.assign(LongPositionVector::length_bytes, 0x00);
+    EXPECT_EQ(zero, buffer);
+}

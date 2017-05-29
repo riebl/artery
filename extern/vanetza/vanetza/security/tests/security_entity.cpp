@@ -83,12 +83,11 @@ TEST_F(SecurityEntityTest, signature_is_ecdsa)
     EncapConfirm confirm = sec_ent.encapsulate_packet(create_encap_request());
 
     // check if trailer_fields contain signature
-    ASSERT_EQ(1, confirm.sec_packet.trailer_fields.size());
-    // check trailer field type
-    ASSERT_EQ(TrailerFieldType::Signature, get_type(confirm.sec_packet.trailer_fields.front()));
-    // check signature type
-    Signature signature = boost::get<Signature>(confirm.sec_packet.trailer_fields.front());
-    EXPECT_EQ(PublicKeyAlgorithm::Ecdsa_Nistp256_With_Sha256, get_type(signature));
+    EXPECT_EQ(1, confirm.sec_packet.trailer_fields.size());
+    auto signature = confirm.sec_packet.trailer_field(TrailerFieldType::Signature);
+    ASSERT_TRUE(!!signature);
+    auto signature_type = get_type(boost::get<Signature>(*signature));
+    EXPECT_EQ(PublicKeyAlgorithm::Ecdsa_Nistp256_With_Sha256, signature_type);
 }
 
 TEST_F(SecurityEntityTest, expected_header_field_size)

@@ -21,6 +21,7 @@ struct DataRequestGeoNetParams
     geonet::CommunicationProfile communication_profile;
     security::Profile security_profile;
     boost::optional<geonet::Lifetime> maximum_lifetime;
+    boost::optional<unsigned> maximum_hop_limit;
     boost::optional<geonet::DataRequest::Repetition> repetition;
     geonet::TrafficClass traffic_class;
 };

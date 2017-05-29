@@ -51,12 +51,18 @@ enum class ValidityRestrictionType : uint8_t
 
 struct StartAndEndValidity
 {
+    StartAndEndValidity() = default;
+    StartAndEndValidity(Time32 start, Time32 end);
+
     Time32 start_validity;
     Time32 end_validity;
 };
 
 struct StartAndDurationValidity
 {
+    StartAndDurationValidity() = default;
+    StartAndDurationValidity(Time32 start, Duration);
+
     Time32 start_validity;
     Duration duration;
 };

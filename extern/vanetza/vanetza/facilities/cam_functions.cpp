@@ -8,15 +8,22 @@
 #include <vanetza/asn1/gen/PathDeltaTime.h>
 #include <vanetza/facilities/cam_functions.hpp>
 #include <vanetza/facilities/path_history.hpp>
+#include <vanetza/geonet/areas.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/math/constants/constants.hpp>
+#include <boost/units/cmath.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
+#include <boost/units/systems/angle/degrees.hpp>
 #include <algorithm>
+#include <limits>
 #undef min
 
 namespace vanetza
 {
 namespace facilities
 {
+
+using vanetza::units::Angle;
 
 // TODO:  C2C-CC BSP allows up to 500m history for CAMs, we provide just minimal required history
 void copy(const facilities::PathHistory& ph, BasicVehicleContainerLowFrequency& container)
@@ -51,6 +58,93 @@ void copy(const facilities::PathHistory& ph, BasicVehicleContainerLowFrequency& 
             ++path_points;
         }
     }
+}
+
+bool similar_heading(const Heading& a, const Heading& b, Angle limit)
+{
+    // HeadingValues are tenth of degree (900 equals 90 degree east)
+    static_assert(HeadingValue_wgs84East == 900, "HeadingValue interpretation fails");
+
+    bool result = false;
+    if (is_available(a) && is_available(b)) {
+        using vanetza::units::degree;
+        const Angle angle_a { a.headingValue / 10.0 * degree };
+        const Angle angle_b { b.headingValue / 10.0 * degree };
+        result = similar_heading(angle_a, angle_b, limit);
+    }
+
+    return result;
+}
+
+bool similar_heading(const Heading& a, Angle b, Angle limit)
+{
+    bool result = false;
+    if (is_available(a)) {
+        using vanetza::units::degree;
+        result = similar_heading(Angle { a.headingValue / 10.0 * degree}, b, limit);
+    }
+    return result;
+}
+
+bool similar_heading(Angle a, Angle b, Angle limit)
+{
+    using namespace boost::units;
+    using boost::math::double_constants::pi;
+
+    static const Angle full_circle = 2.0 * pi * si::radian;
+    const Angle abs_diff = fmod(abs(a - b), full_circle);
+    return abs_diff <= limit || abs_diff >= full_circle - limit;
+}
+
+units::Length distance(const ReferencePosition_t& a, const ReferencePosition_t& b)
+{
+    using geonet::GeodeticPosition;
+    using units::GeoAngle;
+    using boost::units::si::micro;
+    using boost::units::degree::degree;
+
+    auto length = units::Length::from_value(std::numeric_limits<double>::quiet_NaN());
+    if (is_available(a) && is_available(b)) {
+        GeodeticPosition geo_a {
+            GeoAngle { a.latitude / Latitude_oneMicrodegreeNorth * micro * degree },
+            GeoAngle { a.longitude / Longitude_oneMicrodegreeEast * micro * degree }
+        };
+        GeodeticPosition geo_b {
+            GeoAngle { b.latitude / Latitude_oneMicrodegreeNorth * micro * degree },
+            GeoAngle { b.longitude / Longitude_oneMicrodegreeEast * micro * degree }
+        };
+        length = geonet::distance(geo_a, geo_b);
+    }
+    return length;
+}
+
+units::Length distance(const ReferencePosition_t& a, units::GeoAngle lat, units::GeoAngle lon)
+{
+    using geonet::GeodeticPosition;
+    using units::GeoAngle;
+    using boost::units::si::micro;
+    using boost::units::degree::degree;
+
+    auto length = units::Length::from_value(std::numeric_limits<double>::quiet_NaN());
+    if (is_available(a)) {
+        GeodeticPosition geo_a {
+            GeoAngle { a.latitude / Latitude_oneMicrodegreeNorth * micro * degree },
+            GeoAngle { a.longitude / Longitude_oneMicrodegreeEast * micro * degree }
+        };
+        GeodeticPosition geo_b { lat, lon };
+        length = geonet::distance(geo_a, geo_b);
+    }
+    return length;
+}
+
+bool is_available(const Heading& hd)
+{
+    return hd.headingValue != HeadingValue_unavailable;
+}
+
+bool is_available(const ReferencePosition& pos)
+{
+    return pos.latitude != Latitude_unavailable && pos.longitude != Longitude_unavailable;
 }
 
 } // namespace facilities

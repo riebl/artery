@@ -19,6 +19,9 @@ TEST(Router, shb_round_trip)
     ManagementInformationBase mib;
     Runtime runtime;
     Router router(runtime, mib);
+    Address gn_addr;
+    gn_addr.mid(MacAddress { 0, 0, 0, 0, 0, 1});
+    router.set_address(gn_addr);
     router.set_access_interface(&req_ifc);
     router.set_transport_handler(UpperProtocol::IPv6, &ind_ifc);
 

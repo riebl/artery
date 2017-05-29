@@ -15,7 +15,7 @@ namespace vanetza
 class Clock
 {
 public:
-    typedef uint64_t rep;
+    typedef int64_t rep;
     typedef std::ratio<1, 1000 * 1000> period;
     typedef std::chrono::duration<rep, period> duration;
     typedef std::chrono::time_point<Clock> time_point;

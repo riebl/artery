@@ -57,6 +57,12 @@ bool operator!=(const ShortPositionVector& lhs, const ShortPositionVector& rhs)
     return !(lhs == rhs);
 }
 
+bool is_empty(const LongPositionVector& pv)
+{
+    static const LongPositionVector zero;
+    return pv == zero;
+}
+
 void serialize(const LongPositionVector& lpv, OutputArchive& ar)
 {
     serialize(lpv.gn_addr, ar);

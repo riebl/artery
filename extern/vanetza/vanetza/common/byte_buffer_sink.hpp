@@ -3,7 +3,7 @@
 
 #include <vanetza/common/byte_buffer.hpp>
 #include <boost/iostreams/categories.hpp>
-#include <iosfwd>
+#include <ios>
 
 namespace vanetza
 {

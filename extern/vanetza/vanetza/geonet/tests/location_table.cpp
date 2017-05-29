@@ -191,3 +191,16 @@ TEST_F(LocationTableTest, expire) {
     EXPECT_TRUE(loct->has_entry(addr));
 }
 
+TEST_F(LocationTableTest, update_after_duplicate_check) {
+    LongPositionVector pv;
+    pv.gn_addr.mid({ 0, 0, 0, 0, 0, 1 });
+
+    EXPECT_FALSE(loct->has_entry(pv.gn_addr));
+    loct->is_duplicate_packet(pv.gn_addr, runtime->now());
+    EXPECT_TRUE(loct->has_entry(pv.gn_addr));
+
+    loct->update(pv);
+    const LongPositionVector* pv_loct = loct->get_position(pv.gn_addr);
+    ASSERT_TRUE(pv_loct);
+    EXPECT_EQ(pv, *pv_loct);
+}

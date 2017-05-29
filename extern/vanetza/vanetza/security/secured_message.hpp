@@ -28,6 +28,13 @@ struct SecuredMessageV2
      * \return matching HeaderField
      */
     boost::optional<HeaderField&> header_field(HeaderFieldType);
+
+    /**
+     * Fetch reference of first matching trailer field
+     * \param type TrailerField has to match given type
+     * \return matching TrailerField
+     */
+    boost::optional<TrailerField&> trailer_field(TrailerFieldType);
 };
 
 using SecuredMessage = SecuredMessageV2;

@@ -21,6 +21,7 @@ TEST(Areas, geodetic_distance) {
     GeodeticPosition b(-25.41272 * degree, -49.24815 * degree);
     units::Length d = distance(a, b);
     EXPECT_NEAR(d / meter, 10185367.442, 0.0005);
+    EXPECT_DOUBLE_EQ(0.0, distance(a, a).value());
 }
 
 TEST(Areas, geometric_function_circle) {

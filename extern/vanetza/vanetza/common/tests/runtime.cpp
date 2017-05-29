@@ -13,7 +13,7 @@ using std::chrono::seconds;
 TEST(Runtime, default_construction)
 {
     Runtime r;
-    EXPECT_EQ(Clock::time_point::min(), r.now());
+    EXPECT_EQ(std::chrono::milliseconds(0), r.now().time_since_epoch());
 }
 
 TEST(Runtime, time_progress_absolute)

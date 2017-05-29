@@ -14,6 +14,10 @@
 
 namespace vanetza
 {
+
+// forward declaration
+namespace btp { struct DataRequestB; }
+
 namespace geonet
 {
 
@@ -117,6 +121,13 @@ using DataRequestVariant =
  * \return reference to underlying DataRequest
  */
 DataRequest& access_request(DataRequestVariant&);
+
+/**
+ * Copy request parameters from BTP-B request
+ * \param btp BTP-B data request
+ * \param gn GeoNet destination request
+ */
+void copy_request_parameters(const btp::DataRequestB& btp, DataRequest& gn);
 
 } // namespace geonet
 } // namespace vanetza

@@ -47,6 +47,19 @@ TEST(SecuredMessage, header_field_extractor)
     EXPECT_EQ(Time64 { 26 }, boost::get<Time64>(time2.get()));
 }
 
+TEST(SecuredMessage, trailer_field_extractor)
+{
+    SecuredMessage m;
+    auto empty = m.trailer_field(TrailerFieldType::Signature);
+    EXPECT_FALSE(!!empty);
+
+    m.trailer_fields.push_back(Signature {});
+    m.trailer_fields.push_back(Signature {});
+    auto first = m.trailer_field(TrailerFieldType::Signature);
+    ASSERT_TRUE(!!first);
+    EXPECT_EQ(&m.trailer_fields.front(), &first.get());
+}
+
 TEST(SecuredMessage, WebValidator_Serialize_SecuredMessageV2_1)
 {
     // SecuredMessage/v1 from FOKUS WebValidator adapted for v2
@@ -66,21 +79,20 @@ TEST(SecuredMessage, WebValidator_Serialize_SecuredMessageV2_1)
     EXPECT_EQ(358, get_size(m));
     EXPECT_EQ(2, m.protocol_version());
 
-    ASSERT_EQ(3, m.header_fields.size());
-    ASSERT_EQ(HeaderFieldType::Signer_Info, get_type(m.header_fields.front()));
-    auto signer_info = boost::get<SignerInfo>(m.header_fields.front());
-    m.header_fields.pop_front();
-    EXPECT_EQ(HeaderFieldType::Generation_Time, get_type(m.header_fields.front()));
-    m.header_fields.pop_front();
-    ASSERT_EQ(HeaderFieldType::Its_Aid, get_type(m.header_fields.front()));
-    auto its_aid = boost::get<IntX>(m.header_fields.front());
-    EXPECT_EQ(IntX {2}, its_aid);
+    EXPECT_EQ(3, m.header_fields.size());
+    auto signer_info = m.header_field(HeaderFieldType::Signer_Info);
+    ASSERT_TRUE(!!signer_info);
+    auto generation_time = m.header_field(HeaderFieldType::Generation_Time);
+    ASSERT_TRUE(!!generation_time);
+    auto its_aid = m.header_field(HeaderFieldType::Its_Aid);
+    ASSERT_TRUE(!!its_aid);
+    EXPECT_EQ(IntX {2}, boost::get<IntX>(*its_aid));
 
     EXPECT_EQ(PayloadType::Signed, m.payload.type);
     EXPECT_EQ(28, size(m.payload.data, min_osi_layer(), max_osi_layer()));
 
-    ASSERT_EQ(1, m.trailer_fields.size());
-    EXPECT_EQ(TrailerFieldType::Signature, get_type(m.trailer_fields.front()));
+    EXPECT_EQ(1, m.trailer_fields.size());
+    EXPECT_TRUE(!!m.trailer_field(TrailerFieldType::Signature));
 }
 
 TEST(SecuredMessage, WebValidator_Serialize_SecuredMessageV2_2)

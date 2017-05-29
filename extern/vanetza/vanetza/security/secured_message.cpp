@@ -22,6 +22,18 @@ boost::optional<HeaderField&> SecuredMessage::header_field(HeaderFieldType type)
     return match;
 }
 
+boost::optional<TrailerField&> SecuredMessage::trailer_field(TrailerFieldType type)
+{
+    boost::optional<TrailerField&> match;
+    for (auto& field : trailer_fields) {
+        if (get_type(field) == type) {
+            match = field;
+            break;
+        }
+    }
+    return match;
+}
+
 size_t get_size(const SecuredMessage& message)
 {
     size_t size = sizeof(uint8_t); // protocol version

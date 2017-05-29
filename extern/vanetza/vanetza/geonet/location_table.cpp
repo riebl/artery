@@ -134,7 +134,7 @@ bool LocationTable::is_duplicate_packet(const Address& addr, Timestamp t)
 void LocationTable::update(const LongPositionVector& lpv)
 {
     LocationTableEntry* entry = m_table.get_value_ptr(lpv.gn_addr.mid());
-    if (entry) {
+    if (entry && !is_empty(entry->position_vector)) {
         if (entry->position_vector.timestamp < lpv.timestamp) {
             entry->position_vector = lpv;
             m_table.refresh(lpv.gn_addr.mid());

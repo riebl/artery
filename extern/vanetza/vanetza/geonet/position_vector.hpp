@@ -41,6 +41,12 @@ public:
 bool operator==(const LongPositionVector& lhs, const LongPositionVector& rhs);
 bool operator!=(const LongPositionVector& lhs, const LongPositionVector& rhs);
 
+/**
+ * Check if position vector is empty (default)
+ * \return true if all data fields are zero
+ */
+bool is_empty(const LongPositionVector&);
+
 void serialize(const LongPositionVector&, OutputArchive&);
 void deserialize(LongPositionVector&, InputArchive&);
 
