@@ -194,8 +194,10 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 			CurvatureValue_reciprocalOf1MeterRadiusToLeft;
 	bvc.curvature.curvatureConfidence = CurvatureConfidence_unavailable;
 	bvc.curvatureCalculationMode = CurvatureCalculationMode_yawRateUsed;
-	bvc.yawRate.yawRateValue = round(vdp.yaw_rate(), degree_per_second) *
-			YawRateValue_degSec_000_01ToLeft * 100.0;
+	bvc.yawRate.yawRateValue = round(vdp.yaw_rate(), degree_per_second) * YawRateValue_degSec_000_01ToLeft * 100.0;
+	if (abs(bvc.yawRate.yawRateValue) >= YawRateValue_unavailable) {
+		bvc.yawRate.yawRateValue = YawRateValue_unavailable;
+	}
 	bvc.vehicleLength.vehicleLengthValue = VehicleLengthValue_unavailable;
 	bvc.vehicleLength.vehicleLengthConfidenceIndication =
 			VehicleLengthConfidenceIndication_noTrailerPresent;
