@@ -40,8 +40,8 @@ public:
         omnetpp::SimTime duration() const
         {
             auto d = omnetpp::SimTime::ZERO;
-            if (size() >= 2) {
-                d = begin()->timestamp - std::prev(end())->timestamp;
+            if (range::size() >= 2) {
+                d = range::begin()->timestamp - std::prev(range::end())->timestamp;
             }
             return d;
         }
