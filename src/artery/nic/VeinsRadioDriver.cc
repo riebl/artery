@@ -42,7 +42,7 @@ vanetza::MacAddress convert(LAddress::L2Type addr)
 
 vanetza::MacAddress VeinsRadioDriver::getMacAddress()
 {
-    vanetza::create_mac_address(this->getId());
+    return vanetza::create_mac_address(this->getId());
 }
 
 void VeinsRadioDriver::initialize()
