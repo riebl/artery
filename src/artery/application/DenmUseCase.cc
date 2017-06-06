@@ -25,6 +25,7 @@ bool UseCase::check()
         trigger = true;
         mDetectionBlockingSince = omnetpp::simTime();
     }
+    return trigger;
 }
 
 void UseCase::setDetectionBlockingTime(omnetpp::SimTime block)
