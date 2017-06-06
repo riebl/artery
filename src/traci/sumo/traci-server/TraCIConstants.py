@@ -33,7 +33,7 @@ def try_constant_description(line):
 
 
 def try_constant_definition(line):
-    m = re.match(r"#define ([0-9A-Z_]+) (0x[0-9a-fA-F]{2})$", line)
+    m = re.match(r"#define ([0-9A-Z_]+) (-?0x[0-9a-fA-F]{2})$", line)
     if m:
         return {'type': 'ubyte', 'name': m.group(1), 'value': m.group(2)}
 

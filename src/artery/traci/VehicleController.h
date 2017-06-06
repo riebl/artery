@@ -42,7 +42,7 @@ public:
 private:
     std::string m_id;
     traci::LiteAPI& m_api;
-    traci::API::TraCIBoundary m_boundary;
+    traci::TraCIBoundary m_boundary;
     VehicleType m_type;
 };
 

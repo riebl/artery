@@ -16,7 +16,7 @@ namespace constants {
 // VERSION
 // ****************************************
 
-constexpr integer TRACI_VERSION = 14;
+constexpr integer TRACI_VERSION = 15;
 
 // ****************************************
 // COMMANDS
@@ -25,8 +25,11 @@ constexpr integer TRACI_VERSION = 14;
 // command: get version
 constexpr ubyte CMD_GETVERSION = 0x00;
 
+// command: load
+constexpr ubyte CMD_LOAD = 0x01;
+
 // command: simulation step
-constexpr ubyte CMD_SIMSTEP2 = 0x02;
+constexpr ubyte CMD_SIMSTEP = 0x02;
 
 // command: stop node
 constexpr ubyte CMD_STOP = 0x12;
@@ -68,22 +71,22 @@ constexpr ubyte CMD_SUBSCRIBE_INDUCTIONLOOP_VARIABLE = 0xd0;
 constexpr ubyte RESPONSE_SUBSCRIBE_INDUCTIONLOOP_VARIABLE = 0xe0;
 
 // command: subscribe multi-entry/multi-exit detector (e3) context
-constexpr ubyte CMD_SUBSCRIBE_MULTI_ENTRY_EXIT_DETECTOR_CONTEXT = 0x81;
+constexpr ubyte CMD_SUBSCRIBE_MULTIENTRYEXIT_CONTEXT = 0x81;
 
 // response: subscribe multi-entry/multi-exit detector (e3) context
-constexpr ubyte RESPONSE_SUBSCRIBE_MULTI_ENTRY_EXIT_DETECTOR_CONTEXT = 0x91;
+constexpr ubyte RESPONSE_SUBSCRIBE_MULTIENTRYEXIT_CONTEXT = 0x91;
 
 // command: get multi-entry/multi-exit detector (e3) variable
-constexpr ubyte CMD_GET_MULTI_ENTRY_EXIT_DETECTOR_VARIABLE = 0xa1;
+constexpr ubyte CMD_GET_MULTIENTRYEXIT_VARIABLE = 0xa1;
 
 // response: get multi-entry/multi-exit detector (e3) variable
-constexpr ubyte RESPONSE_GET_MULTI_ENTRY_EXIT_DETECTOR_VARIABLE = 0xb1;
+constexpr ubyte RESPONSE_GET_MULTIENTRYEXIT_VARIABLE = 0xb1;
 
 // command: subscribe multi-entry/multi-exit detector (e3) variable
-constexpr ubyte CMD_SUBSCRIBE_MULTI_ENTRY_EXIT_DETECTOR_VARIABLE = 0xd1;
+constexpr ubyte CMD_SUBSCRIBE_MULTIENTRYEXIT_VARIABLE = 0xd1;
 
 // response: subscribe multi-entry/multi-exit detector (e3) variable
-constexpr ubyte RESPONSE_SUBSCRIBE_MULTI_ENTRY_EXIT_DETECTOR_VARIABLE = 0xe1;
+constexpr ubyte RESPONSE_SUBSCRIBE_MULTIENTRYEXIT_VARIABLE = 0xe1;
 
 // command: subscribe traffic lights context
 constexpr ubyte CMD_SUBSCRIBE_TL_CONTEXT = 0x82;
@@ -317,22 +320,22 @@ constexpr ubyte CMD_SUBSCRIBE_GUI_VARIABLE = 0xdc;
 constexpr ubyte RESPONSE_SUBSCRIBE_GUI_VARIABLE = 0xec;
 
 // command: subscribe areal detector (e2) context
-constexpr ubyte CMD_SUBSCRIBE_AREAL_DETECTOR_CONTEXT = 0x8d;
+constexpr ubyte CMD_SUBSCRIBE_LANEAREA_CONTEXT = 0x8d;
 
 // response: subscribe areal detector (e2) context
-constexpr ubyte RESPONSE_SUBSCRIBE_AREAL_DETECTOR_CONTEXT = 0x9d;
+constexpr ubyte RESPONSE_SUBSCRIBE_LANEAREA_CONTEXT = 0x9d;
 
 // command: get areal detector (e2) variable
-constexpr ubyte CMD_GET_AREAL_DETECTOR_VARIABLE = 0xad;
+constexpr ubyte CMD_GET_LANEAREA_VARIABLE = 0xad;
 
 // response: get areal detector (e2) variable
-constexpr ubyte RESPONSE_GET_AREAL_DETECTOR_VARIABLE = 0xbd;
+constexpr ubyte RESPONSE_GET_LANEAREA_VARIABLE = 0xbd;
 
 // command: subscribe areal detector (e2) variable
-constexpr ubyte CMD_SUBSCRIBE_AREAL_DETECTOR_VARIABLE = 0xdd;
+constexpr ubyte CMD_SUBSCRIBE_LANEAREA_VARIABLE = 0xdd;
 
 // response: subscribe areal detector (e2) variable
-constexpr ubyte RESPONSE_SUBSCRIBE_AREAL_DETECTOR_VARIABLE = 0xed;
+constexpr ubyte RESPONSE_SUBSCRIBE_LANEAREA_VARIABLE = 0xed;
 
 // command: subscribe person context
 constexpr ubyte CMD_SUBSCRIBE_PERSON_CONTEXT = 0x8e;
@@ -493,6 +496,50 @@ constexpr ubyte STAGE_WALKING = 0x02;
 
 // person riding / container being transported
 constexpr ubyte STAGE_DRIVING = 0x03;
+
+// ****************************************
+// Stop Flags
+// ****************************************
+
+constexpr ubyte STOP_DEFAULT = 0x00;
+
+constexpr ubyte STOP_PARKING = 0x01;
+
+constexpr ubyte STOP_TRIGGERED = 0x02;
+
+constexpr ubyte STOP_CONTAINER_TRIGGERED = 0x04;
+
+constexpr ubyte STOP_BUS_STOP = 0x08;
+
+constexpr ubyte STOP_CONTAINER_STOP = 0x10;
+
+constexpr ubyte STOP_CHARGING_STATION = 0x20;
+
+constexpr ubyte STOP_PARKING_AREA = 0x40;
+
+// ****************************************
+// Departure Flags
+// ****************************************
+
+constexpr ubyte DEPARTFLAG_TRIGGERED = -0x01;
+
+constexpr ubyte DEPARTFLAG_CONTAINER_TRIGGERED = -0x02;
+
+constexpr ubyte DEPARTFLAG_NOW = -0x03;
+
+constexpr ubyte DEPARTFLAG_SPEED_RANDOM = -0x02;
+
+constexpr ubyte DEPARTFLAG_SPEED_MAX = -0x03;
+
+constexpr ubyte DEPARTFLAG_LANE_RANDOM = -0x02;
+
+constexpr ubyte DEPARTFLAG_LANE_FREE = -0x03;
+
+constexpr ubyte DEPARTFLAG_LANE_ALLOWED_FREE = -0x04;
+
+constexpr ubyte DEPARTFLAG_LANE_BEST_FREE = -0x05;
+
+constexpr ubyte DEPARTFLAG_LANE_FIRST_ALLOWED = -0x06;
 
 // ****************************************
 // VARIABLE TYPES (for CMD_GET_*_VARIABLE)
@@ -777,6 +824,7 @@ constexpr ubyte VAR_LEADER = 0x68;
 // edge index in current route (get: vehicle)
 constexpr ubyte VAR_ROUTE_INDEX = 0x69;
 
+// current waiting time (get: vehicle, lane)
 constexpr ubyte VAR_WAITING_TIME = 0x7a;
 
 // upcoming traffic lights (get: vehicle)
@@ -872,6 +920,7 @@ constexpr ubyte POSITION_CONVERSION = 0x82;
 // distance between points or vehicles
 constexpr ubyte DISTANCE_REQUEST = 0x83;
 
+// the current driving distance
 constexpr ubyte VAR_DISTANCE = 0x84;
 
 // add a fully specified instance (vehicle)

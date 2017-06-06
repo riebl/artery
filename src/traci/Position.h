@@ -8,7 +8,7 @@
 namespace traci
 {
 
-using TraCIPosition = TraCIAPI::TraCIPosition;
+using TraCIPosition = TraCIPosition;
 
 Position position_cast(const TraCIBoundary&, const TraCIPosition&);
 

@@ -12,7 +12,7 @@
 /// @author  Jakob Erdmann
 /// @author  Laura Bieker
 /// @date    2007/10/24
-/// @version $Id: TraCIConstants.h 22929 2017-02-13 14:38:39Z behrisch $
+/// @version $Id: TraCIConstants.h 24087 2017-04-27 11:15:10Z behrisch $
 ///
 /// holds codes used for TraCI
 /****************************************************************************/
@@ -30,12 +30,10 @@
 #ifndef TRACICONSTANTS_H
 #define TRACICONSTANTS_H
 
-
 // ****************************************
 // VERSION
 // ****************************************
-#define TRACI_VERSION 14
-
+#define TRACI_VERSION 15
 
 // ****************************************
 // COMMANDS
@@ -43,8 +41,11 @@
 // command: get version
 #define CMD_GETVERSION 0x00
 
+// command: load
+#define CMD_LOAD 0x01
+
 // command: simulation step
-#define CMD_SIMSTEP2 0x02
+#define CMD_SIMSTEP 0x02
 
 // command: stop node
 #define CMD_STOP 0x12
@@ -82,17 +83,17 @@
 #define RESPONSE_SUBSCRIBE_INDUCTIONLOOP_VARIABLE 0xe0
 
 // command: subscribe multi-entry/multi-exit detector (e3) context
-#define CMD_SUBSCRIBE_MULTI_ENTRY_EXIT_DETECTOR_CONTEXT 0x81
+#define CMD_SUBSCRIBE_MULTIENTRYEXIT_CONTEXT 0x81
 // response: subscribe multi-entry/multi-exit detector (e3) context
-#define RESPONSE_SUBSCRIBE_MULTI_ENTRY_EXIT_DETECTOR_CONTEXT 0x91
+#define RESPONSE_SUBSCRIBE_MULTIENTRYEXIT_CONTEXT 0x91
 // command: get multi-entry/multi-exit detector (e3) variable
-#define CMD_GET_MULTI_ENTRY_EXIT_DETECTOR_VARIABLE 0xa1
+#define CMD_GET_MULTIENTRYEXIT_VARIABLE 0xa1
 // response: get multi-entry/multi-exit detector (e3) variable
-#define RESPONSE_GET_MULTI_ENTRY_EXIT_DETECTOR_VARIABLE 0xb1
+#define RESPONSE_GET_MULTIENTRYEXIT_VARIABLE 0xb1
 // command: subscribe multi-entry/multi-exit detector (e3) variable
-#define CMD_SUBSCRIBE_MULTI_ENTRY_EXIT_DETECTOR_VARIABLE 0xd1
+#define CMD_SUBSCRIBE_MULTIENTRYEXIT_VARIABLE 0xd1
 // response: subscribe multi-entry/multi-exit detector (e3) variable
-#define RESPONSE_SUBSCRIBE_MULTI_ENTRY_EXIT_DETECTOR_VARIABLE 0xe1
+#define RESPONSE_SUBSCRIBE_MULTIENTRYEXIT_VARIABLE 0xe1
 
 // command: subscribe traffic lights context
 #define CMD_SUBSCRIBE_TL_CONTEXT 0x82
@@ -260,17 +261,17 @@
 #define RESPONSE_SUBSCRIBE_GUI_VARIABLE 0xec
 
 // command: subscribe areal detector (e2) context
-#define CMD_SUBSCRIBE_AREAL_DETECTOR_CONTEXT 0x8d
+#define CMD_SUBSCRIBE_LANEAREA_CONTEXT 0x8d
 // response: subscribe areal detector (e2) context
-#define RESPONSE_SUBSCRIBE_AREAL_DETECTOR_CONTEXT 0x9d
+#define RESPONSE_SUBSCRIBE_LANEAREA_CONTEXT 0x9d
 // command: get areal detector (e2) variable
-#define CMD_GET_AREAL_DETECTOR_VARIABLE 0xad
+#define CMD_GET_LANEAREA_VARIABLE 0xad
 // response: get areal detector (e2) variable
-#define RESPONSE_GET_AREAL_DETECTOR_VARIABLE 0xbd
+#define RESPONSE_GET_LANEAREA_VARIABLE 0xbd
 // command: subscribe areal detector (e2) variable
-#define CMD_SUBSCRIBE_AREAL_DETECTOR_VARIABLE 0xdd
+#define CMD_SUBSCRIBE_LANEAREA_VARIABLE 0xdd
 // response: subscribe areal detector (e2) variable
-#define RESPONSE_SUBSCRIBE_AREAL_DETECTOR_VARIABLE 0xed
+#define RESPONSE_SUBSCRIBE_LANEAREA_VARIABLE 0xed
 
 // command: subscribe person context
 #define CMD_SUBSCRIBE_PERSON_CONTEXT 0x8e
@@ -398,6 +399,33 @@
 // person riding / container being transported
 #define STAGE_DRIVING 0x03
 
+// ****************************************
+// Stop Flags
+// ****************************************
+#define STOP_DEFAULT 0x00
+#define STOP_PARKING 0x01
+#define STOP_TRIGGERED 0x02
+#define STOP_CONTAINER_TRIGGERED 0x04
+#define STOP_BUS_STOP 0x08
+#define STOP_CONTAINER_STOP 0x10
+#define STOP_CHARGING_STATION 0x20
+#define STOP_PARKING_AREA 0x40
+
+// ****************************************
+// Departure Flags
+// ****************************************
+#define DEPARTFLAG_TRIGGERED -0x01
+#define DEPARTFLAG_CONTAINER_TRIGGERED -0x02
+#define DEPARTFLAG_NOW -0x03
+
+#define DEPARTFLAG_SPEED_RANDOM -0x02
+#define DEPARTFLAG_SPEED_MAX -0x03
+
+#define DEPARTFLAG_LANE_RANDOM -0x02
+#define DEPARTFLAG_LANE_FREE -0x03
+#define DEPARTFLAG_LANE_ALLOWED_FREE -0x04
+#define DEPARTFLAG_LANE_BEST_FREE -0x05
+#define DEPARTFLAG_LANE_FIRST_ALLOWED -0x06
 
 // ****************************************
 // VARIABLE TYPES (for CMD_GET_*_VARIABLE)
@@ -489,7 +517,6 @@
 
 // current state, using external signal names (get: traffic lights)
 #define TL_EXTERNAL_STATE 0x2e
-
 
 
 // outgoing link number (get: lanes)
@@ -610,7 +637,6 @@
 #define VAR_SPEED_DEVIATION 0x5f
 
 
-
 // speed without TraCI influence (get: vehicle)
 #define VAR_SPEED_WITHOUT_TRACI 0xb1
 
@@ -687,7 +713,7 @@
 // edge index in current route (get: vehicle)
 #define VAR_ROUTE_INDEX 0x69
 
-//current waiting time (get: vehicle, lane)
+// current waiting time (get: vehicle, lane)
 #define VAR_WAITING_TIME 0x7a
 
 // upcoming traffic lights (get: vehicle)
@@ -772,7 +798,6 @@
 #define VAR_PARAMETER 0x7e
 
 
-
 // add an instance (poi, polygon, vehicle, person, route)
 #define ADD 0x80
 
@@ -785,7 +810,7 @@
 // distance between points or vehicles
 #define DISTANCE_REQUEST 0x83
 
-//the current driving distance
+// the current driving distance
 #define VAR_DISTANCE 0x84
 
 // add a fully specified instance (vehicle)

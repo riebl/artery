@@ -6,7 +6,7 @@
 namespace traci
 {
 
-using TraCIBoundary = TraCIAPI::TraCIBoundary;
+using TraCIBoundary = TraCIBoundary;
 
 } // namespace traci
 
