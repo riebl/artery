@@ -38,6 +38,8 @@ public:
 
     void changeTarget(const std::string& edge);
 
+    traci::LiteAPI& getLiteAPI() { return m_api; }
+
 private:
     std::string m_id;
     traci::LiteAPI& m_api;
