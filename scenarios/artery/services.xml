@@ -3,9 +3,6 @@
 	<service type="artery.application.CaService">
 		<listener port="2001" />
 	</service>
-	<service type="artery.application.DenmService">
-		<listener port="2002" />
-	</service>
 	<service type="artery.application.ExampleService">
 		<listener port="4711" />
 		<filters>

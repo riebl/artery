@@ -37,20 +37,14 @@ find_package(Boost COMPONENTS date_time system REQUIRED)
 
 add_library(artery SHARED
     application/CaService.cc
-    application/DenmMemory.cc
-    application/DenmObject.cc
-    application/DenmUseCase.cc
-    application/DenmService.cc
     application/ExampleService.cc
     application/Facilities.cc
-    application/ImpactReductionUseCase.cc
     application/ItsG5BaseService.cc
     application/ItsG5Middleware.cc
     application/ItsG5PromiscuousService.cc
     application/ItsG5Service.cc
     application/LocalDynamicMap.cc
     application/Timer.cc
-    application/TrafficJamUseCase.cc
     application/VehicleDataProvider.cc
     mac/CarrierSensing.cc
     mac/ChannelLoadMeasurements.cc
@@ -98,6 +92,16 @@ endmacro()
 if(WITH_STORYBOARD)
     add_subdirectory(storyboard)
     target_link_libraries(artery PRIVATE storyboard)
+
+    # DENM service depends on StoryboardSignal
+    add_artery_feature(denm
+        application/DenmMemory.cc
+        application/DenmObject.cc
+        application/DenmUseCase.cc
+        application/DenmService.cc
+        application/ImpactReductionUseCase.cc
+        application/TrafficJamUseCase.cc)
+    target_link_libraries(artery PRIVATE denm)
 endif()
 
 if(WITH_TRANSFUSION)
