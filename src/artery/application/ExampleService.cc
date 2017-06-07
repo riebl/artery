@@ -21,7 +21,7 @@
 
 static const simsignal_t scSignalCamReceived = cComponent::registerSignal("CaService.received");
 
-Define_Module(ExampleService);
+Define_Module(ExampleService)
 
 using namespace vanetza;
 

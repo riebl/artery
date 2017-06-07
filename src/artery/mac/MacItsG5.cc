@@ -25,7 +25,7 @@
 #include <omnetpp/cexception.h>
 #include <cmath>
 
-Define_Module(MacItsG5);
+Define_Module(MacItsG5)
 
 MacItsG5::MacItsG5() : mEdca(mCarrierSensing, getRNG(0))
 {

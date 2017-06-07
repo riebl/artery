@@ -9,7 +9,7 @@
 
 using omnetpp::cRuntimeError;
 
-Define_Module(Storyboard);
+Define_Module(Storyboard)
 
 namespace
 {

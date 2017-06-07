@@ -5,7 +5,7 @@
 #include <inet/visualizer/mobility/MobilityCanvasVisualizer.h>
 #include <cmath>
 
-Define_Module(InetMobility);
+Define_Module(InetMobility)
 
 
 int InetMobility::numInitStages() const

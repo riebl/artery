@@ -25,7 +25,7 @@
 #include <vanetza/common/byte_view.hpp>
 #include <sstream>
 
-Define_Module(TransfusionService);
+Define_Module(TransfusionService)
 
 void TransfusionService::initialize()
 {

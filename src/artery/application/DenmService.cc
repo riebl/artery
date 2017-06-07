@@ -20,7 +20,7 @@
 // TODO wrap all Artery classes by namespace
 using namespace artery;
 
-Define_Module(DenmService);
+Define_Module(DenmService)
 
 static const simsignal_t denmReceivedSignal = cComponent::registerSignal("DenmService.received");
 static const simsignal_t storyboardSignal = cComponent::registerSignal("StoryboardSignal");

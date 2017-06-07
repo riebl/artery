@@ -17,7 +17,7 @@ auto centimeter_per_second = vanetza::units::si::meter_per_second * boost::units
 static const simsignal_t scSignalCamReceived = cComponent::registerSignal("CaService.received");
 static const simsignal_t scSignalCamSent = cComponent::registerSignal("CaService.sent");
 
-Define_Module(CaService);
+Define_Module(CaService)
 
 
 bool checkHeadingDelta(vanetza::units::Angle& prev, vanetza::units::Angle now)

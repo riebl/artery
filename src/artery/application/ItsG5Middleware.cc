@@ -41,7 +41,7 @@
 #include <regex>
 #include <string>
 
-Define_Module(ItsG5Middleware);
+Define_Module(ItsG5Middleware)
 
 ItsG5Middleware::ItsG5Middleware() :
 		mRadioDriver(nullptr), mRadioDriverIn(nullptr), mRadioDriverOut(nullptr),
