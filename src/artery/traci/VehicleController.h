@@ -36,8 +36,6 @@ public:
     Length getLength() const;
     Length getWidth() const;
 
-    Acceleration getMaxAcceleration() const;
-    Acceleration getMaxDeceleration() const;
 
 private:
     std::string m_id;
