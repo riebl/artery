@@ -36,6 +36,7 @@ public:
     Length getLength() const;
     Length getWidth() const;
 
+    void changeTarget(const std::string& edge);
 
 private:
     std::string m_id;

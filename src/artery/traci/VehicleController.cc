@@ -75,4 +75,9 @@ auto VehicleController::getWidth() const -> Length
     return m_type.getWidth();
 }
 
+void VehicleController::changeTarget(const std::string& edge)
+{
+    m_api.vehicle().changeTarget(m_id, edge);
+}
+
 } // namespace traci
