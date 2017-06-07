@@ -4,6 +4,7 @@
 #include <boost/units/operators.hpp>
 #include <boost/units/quantity.hpp>
 #include <boost/units/systems/si/time.hpp>
+#include <cassert>
 #include <numeric>
 #include <type_traits>
 
@@ -24,7 +25,9 @@ boost::units::quantity<
     >::type
 >
 {
-    return (to.value - from.value) / duration(from, to);
+    const auto d = duration(from, to);
+    assert(d.value() != 0.0);
+    return (to.value - from.value) / d;
 }
 
 template<
