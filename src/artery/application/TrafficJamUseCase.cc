@@ -48,15 +48,15 @@ bool TrafficJamEndOfQueue::checkPreconditions()
 
 bool TrafficJamEndOfQueue::checkConditions()
 {
-    const bool tc0 = checkEgoDeceleration();
+    const TriggeringCondition tc0 = std::bind(&TrafficJamEndOfQueue::checkEgoDeceleration, this);
     const bool tc1 = false; // there are no passengers in ego vehicle enabling hazard lights, assume false
     const bool tc2 = false; // so far no simulated vehicle enables hazard lights, assume false
-    const bool tc3 = checkEndOfQueueReceived();
-    const bool tc4 = checkJamAheadReceived();
+    const TriggeringCondition tc3 = std::bind(&TrafficJamEndOfQueue::checkEndOfQueueReceived, this);
+    const TriggeringCondition tc4 = std::bind(&TrafficJamEndOfQueue::checkJamAheadReceived, this);
     const bool tc5 = false; // so far there are no emergency vehicles in simulation, assume false
     const bool tc6 = false; // simulated vehicle has no on-board sensors for end of queue detection, assume false
 
-    return (tc1 && tc2) || (tc0 && (tc2 || tc3 || tc4 || tc5 || tc6));
+    return (tc1 && tc2) || (tc0() && (tc2 || tc3() || tc4() || tc5 || tc6));
 }
 
 bool TrafficJamEndOfQueue::checkEgoDeceleration() const
@@ -169,14 +169,14 @@ bool TrafficJamAhead::checkPreconditions()
 
 bool TrafficJamAhead::checkConditions()
 {
-    const bool tc0 = checkLowAverageEgoVelocity();
-    const bool tc1 = checkStationaryEgo();
-    const bool tc2 = checkTrafficJamAheadReceived();
+    const TriggeringCondition tc0 = std::bind(&TrafficJamAhead::checkLowAverageEgoVelocity, this);
+    const TriggeringCondition tc1 = std::bind(&TrafficJamAhead::checkStationaryEgo, this);
+    const TriggeringCondition tc2 = std::bind(&TrafficJamAhead::checkTrafficJamAheadReceived, this);
     const bool tc3 = false; // no mobile radio equipment available (yet)
-    const bool tc4 = checkSlowVehiclesAheadByV2X();
+    const TriggeringCondition tc4 = std::bind(&TrafficJamAhead::checkSlowVehiclesAheadByV2X, this);
     const bool tc5 = false; // no on-board sensors available (yet)
 
-    return tc0 || (tc1 && (tc2 || tc3 || tc4 || tc5));
+    return tc0() || (tc1() && (tc2() || tc3 || tc4() || tc5));
 }
 
 bool TrafficJamAhead::checkLowAverageEgoVelocity() const

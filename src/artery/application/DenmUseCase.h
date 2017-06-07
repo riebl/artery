@@ -11,6 +11,7 @@
 #include <omnetpp/simtime.h>
 #include <vanetza/asn1/denm.hpp>
 #include <vanetza/btp/data_request.hpp>
+#include <functional>
 
 class StoryboardSignal;
 
@@ -63,6 +64,8 @@ public:
     virtual ~UseCase() = default;
 
 protected:
+    using TriggeringCondition = std::function<bool(void)>;
+
     void setDetectionBlockingTime(omnetpp::SimTime);
     bool isDetectionBlocked();
 
