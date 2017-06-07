@@ -189,7 +189,7 @@ bool TrafficJamAhead::checkLowAverageEgoVelocity() const
     using vanetza::units::Velocity;
     auto speedSamples = mVelocitySampler.buffer().not_before(now - avgWindowMax);
     if (speedSamples.duration() >= avgWindowMin) {
-        static const Velocity zeroSpeed { 0.25 * km_per_hour }; // TODO set to zero with proper "StopEffect"
+        static const Velocity zeroSpeed { 0.0 * km_per_hour };
         static const Velocity upperSpeed { 30.0 * km_per_hour };
         const Velocity speedAvg = average(speedSamples);
         lowAvgEgoVelocity = speedAvg <= upperSpeed && speedAvg > zeroSpeed;
@@ -206,7 +206,7 @@ bool TrafficJamAhead::checkStationaryEgo() const
     bool isStationary = false;
     auto speedSamples = mVelocitySampler.buffer().not_before(now - maxWindow);
     if (speedSamples.duration() >= minWindow) {
-        static const Velocity zeroSpeed { 0.25 * km_per_hour }; // TODO set to zero with "StopEffect"
+        static const Velocity zeroSpeed { 0.0 * km_per_hour };
         const Velocity speedAvg = average(speedSamples);
         isStationary = speedAvg <= zeroSpeed;
     }
