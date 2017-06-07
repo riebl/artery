@@ -81,15 +81,11 @@ bool TrafficJamEndOfQueue::checkEgoDeceleration() const
         // find the newest sample above initial velocity threshold
         auto initialVelocity = std::find_if(std::next(velocitySamples.begin()), velocitySamples.end(),
                 [](const Sample<Velocity>& s) { return s.value >= initialVelocityThreshold; });
-        // if initial and target velocity are found, then deceleration constraint is fulfilled (see explanation below)
-        fulfilled = initialVelocity != velocitySamples.end();
-
-        // If appropriate initial and target velocity samples exist in given deceleration window,
-        // then deceleration threshold is implicitly fulfilled, i.e. it has not to be checked explicitly.
-        assert(((initialVelocityThreshold - targetVelocityThreshold) / instantDecelDuration) < instantDecelThreshold);
-
-        // stored samples never exceed the deceleration duration contraint because of buffer size (safety check)
-        assert(!fulfilled || duration(velocitySamples.begin(), initialVelocity) <= instantDecelDuration);
+        if (initialVelocity != velocitySamples.end()) {
+            // should never fail because only 10s are buffered at all
+            assert(duration(*initialVelocity, velocitySamples.latest()) < instantDecelDuration);
+            fulfilled = differentiate(*initialVelocity, velocitySamples.latest()) < instantDecelThreshold;
+        }
     }
 
     return fulfilled;
