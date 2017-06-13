@@ -29,8 +29,10 @@ simple ItsG5Middleware
 		string datetime;
 		xml services;
 		bool vanetzaEnableSecurity = default(true);
-		bool vanetzaDeferSigning = default(false);
-		string vanetzaCryptoBackend = default("default");
+		string vanetzaCryptoBackend = default("Null");
+		string vanetzaCertificateManager = default("NullOk");
+		string vanetzaSecuritySignService = default("dummy");
+		string vanetzaSecurityVerifyService = default("dummy");
 		int vanetzaDccQueueLength = default(2);
 
 	gates:

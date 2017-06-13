@@ -38,6 +38,9 @@
 #include <vanetza/dcc/state_machine.hpp>
 #include <vanetza/geonet/packet.hpp>
 #include <vanetza/geonet/router.hpp>
+#include <vanetza/security/backend.hpp>
+#include <vanetza/security/certificate_manager.hpp>
+#include <vanetza/security/security_entity.hpp>
 #include <map>
 #include <memory>
 
@@ -80,6 +83,7 @@ class ItsG5Middleware :
 		void initializeMiddleware();
 		void initializeServices();
 		void initializeVehicleController();
+		void initializeSecurity();
 		void scheduleRuntime();
 		omnetpp::SimTime convertSimTime(vanetza::Clock::time_point tp) const;
 
@@ -95,6 +99,9 @@ class ItsG5Middleware :
 		vanetza::dcc::StateMachine mDccFsm;
 		vanetza::dcc::Scheduler mDccScheduler;
 		std::unique_ptr<vanetza::dcc::FlowControl> mDccControl;
+		std::unique_ptr<vanetza::security::Backend> mSecurityBackend;
+		std::unique_ptr<vanetza::security::CertificateManager> mSecurityCertificates;
+		std::unique_ptr<vanetza::security::SecurityEntity> mSecurityEntity;
 		vanetza::geonet::MIB mGeoMib;
 		std::unique_ptr<vanetza::geonet::Router> mGeoRouter;
 		vanetza::btp::PortDispatcher mBtpPortDispatcher;

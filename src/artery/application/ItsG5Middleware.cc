@@ -36,6 +36,7 @@
 #include <vanetza/geonet/data_confirm.hpp>
 #include <vanetza/geonet/packet.hpp>
 #include <vanetza/geonet/position_vector.hpp>
+#include <vanetza/security/null_certificate_manager.hpp>
 #include <vanetza/net/mac_address.hpp>
 #include <algorithm>
 #include <chrono>
@@ -148,11 +149,10 @@ void ItsG5Middleware::initializeMiddleware()
 	mUpdateMessage = new cMessage("middleware update");
 	mUpdateRuntimeMessage = new cMessage("runtime update");
 	findHost()->subscribe(inet::IMobility::mobilityStateChangedSignal, this);
+	initializeSecurity();
 
 	mGeoMib.itsGnDefaultTrafficClass.tc_id(3); // send BEACONs with DP3
 	mGeoMib.itsGnSecurity = par("vanetzaEnableSecurity").boolValue();
-	mGeoMib.vanetzaDeferSigning = par("vanetzaDeferSigning").boolValue();
-	mGeoMib.vanetzaCryptoBackend = par("vanetzaCryptoBackend").stringValue();
 
 	using vanetza::geonet::UpperProtocol;
 	vanetza::geonet::Address gn_addr;
@@ -166,11 +166,53 @@ void ItsG5Middleware::initializeMiddleware()
 	mDccControl->queue_length(par("vanetzaDccQueueLength"));
 	mGeoRouter->set_access_interface(mDccControl.get());
 	mGeoRouter->set_transport_handler(UpperProtocol::BTP_B, &mBtpPortDispatcher);
+	mGeoRouter->set_security_entity(mSecurityEntity.get());
 
 	mIdentity.traci = mVehicleController->getVehicleId();
 	mIdentity.application = mVehicleDataProvider.station_id();
 	mIdentity.geonet = gn_addr;
 	emit(artery::IdentityRegistry::updateSignal, &mIdentity);
+}
+
+void ItsG5Middleware::initializeSecurity()
+{
+	using namespace vanetza::security;
+	const char* vanetzaCryptoBackend = par("vanetzaCryptoBackend");
+	mSecurityBackend = create_backend(vanetzaCryptoBackend);
+	if (!mSecurityBackend) {
+		throw cRuntimeError("No security backend found with name \"%s\"", vanetzaCryptoBackend);
+	}
+	const char* vanetzaCertificateManager = par("vanetzaCertificateManager");
+	mSecurityCertificates = builtin_certificate_managers().create(vanetzaCertificateManager, mRuntime);
+	if (!mSecurityCertificates) {
+		throw cRuntimeError("No certificate manager found with name \"%s\"", vanetzaCertificateManager);
+	}
+
+	SignService sign_service;
+	const std::string vanetzaSecuritySignService = par("vanetzaSecuritySignService");
+	if (vanetzaSecuritySignService == "straight") {
+		sign_service = straight_sign_service(mRuntime, *mSecurityCertificates, *mSecurityBackend);
+		VerifyService verify_service = straight_verify_service(mRuntime, *mSecurityCertificates, *mSecurityBackend);
+	} else if (vanetzaSecuritySignService == "deferred") {
+		sign_service = deferred_sign_service(mRuntime, *mSecurityCertificates, *mSecurityBackend);
+		VerifyService verify_service = straight_verify_service(mRuntime, *mSecurityCertificates, *mSecurityBackend);
+	} else if (vanetzaSecuritySignService == "dummy") {
+		sign_service = dummy_sign_service(mRuntime, NullCertificateManager::null_certificate());
+	} else {
+		throw cRuntimeError("No security sign service available with name \"%s\"", vanetzaSecuritySignService);
+	}
+
+	VerifyService verify_service;
+	const std::string vanetzaSecurityVerifyService = par("vanetzaSecurityVerifyService");
+	if (vanetzaSecurityVerifyService == "straight") {
+		verify_service = straight_verify_service(mRuntime, *mSecurityCertificates, *mSecurityBackend);
+	} else if (vanetzaSecurityVerifyService == "dummy") {
+		verify_service = dummy_verify_service(VerificationReport::Success, CertificateValidity::valid());
+	} else {
+		throw cRuntimeError("No security verify service available with name \"%s\"", vanetzaSecurityVerifyService);
+	}
+
+	mSecurityEntity.reset(new SecurityEntity(sign_service, verify_service));
 }
 
 void ItsG5Middleware::initializeVehicleController()
