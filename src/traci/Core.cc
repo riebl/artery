@@ -47,7 +47,7 @@ void Core::handleMessage(omnetpp::cMessage* msg)
         if (!m_stopping || m_traci->simulation.getMinExpectedNumber() > 0) {
             scheduleAt(simTime() + m_updateInterval, m_updateEvent);
         }
-    } else if (msg = m_connectEvent) {
+    } else if (msg == m_connectEvent) {
         m_traci->connect(m_launcher->launch());
         checkVersion();
         emit(initSignal, simTime());
