@@ -86,7 +86,7 @@ void CaService::indicate(const vanetza::btp::DataIndication& ind, std::unique_pt
 	if (cam && cam->validate()) {
 		CaObject obj = visitor.shared_wrapper;
 		emit(scSignalCamReceived, &obj);
-		mLocalDynamicMap->updateAwareness(*cam);
+		mLocalDynamicMap->updateAwareness(obj);
 	}
 }
 

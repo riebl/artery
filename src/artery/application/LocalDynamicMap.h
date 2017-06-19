@@ -1,6 +1,7 @@
 #ifndef LOCALDYNAMICMAP_H_AL7SS9KT
 #define LOCALDYNAMICMAP_H_AL7SS9KT
 
+#include "artery/application/CaObject.h"
 #include <omnetpp/simtime.h>
 #include <vanetza/asn1/cam.hpp>
 #include <cstdint>
@@ -20,14 +21,19 @@ public:
     using CamPredicate = std::function<bool(const Cam&)>;
 
     LocalDynamicMap(const Timer&);
-    void updateAwareness(const Cam&);
+    void updateAwareness(const CaObject&);
     void dropExpired();
     unsigned count(const CamPredicate&) const;
 
 private:
-    struct AwarenessEntry {
+    struct AwarenessEntry
+    {
+        AwarenessEntry(const CaObject&, omnetpp::SimTime);
+        AwarenessEntry(AwarenessEntry&&) = default;
+        AwarenessEntry& operator=(AwarenessEntry&&) = default;
+
         omnetpp::SimTime expiry;
-        Cam last_cam;
+        CaObject object;
     };
 
     const Timer& mTimer;

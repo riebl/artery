@@ -11,18 +11,51 @@ CaObject::CaObject(Cam&& cam) :
 {
 }
 
+CaObject& CaObject::operator=(Cam&& cam)
+{
+    m_cam_wrapper = std::make_shared<Cam>(std::move(cam));
+    return *this;
+}
+
 CaObject::CaObject(const Cam& cam) :
     m_cam_wrapper(std::make_shared<Cam>(cam))
 {
 }
 
-CaObject::CaObject(const std::shared_ptr<Cam>& cam) :
-    m_cam_wrapper(cam)
+CaObject& CaObject::operator=(const Cam& cam)
+{
+    m_cam_wrapper = std::make_shared<Cam>(cam);
+    return *this;
+}
+
+CaObject::CaObject(std::shared_ptr<const Cam> ptr) :
+    m_cam_wrapper(std::move(ptr))
 {
     assert(m_cam_wrapper);
 }
 
-std::shared_ptr<Cam> CaObject::asn1()
+CaObject& CaObject::operator=(std::shared_ptr<const Cam> ptr)
 {
+    m_cam_wrapper = std::move(ptr);
+    assert(m_cam_wrapper);
+    return *this;
+}
+
+CaObject::CaObject(std::shared_ptr<Cam> ptr) :
+    m_cam_wrapper(std::move(ptr))
+{
+    assert(m_cam_wrapper);
+}
+
+CaObject& CaObject::operator=(std::shared_ptr<Cam> ptr)
+{
+    m_cam_wrapper = std::move(ptr);
+    assert(m_cam_wrapper);
+    return *this;
+}
+
+std::shared_ptr<const Cam> CaObject::asn1() const
+{
+    assert(m_cam_wrapper);
     return m_cam_wrapper;
 }
