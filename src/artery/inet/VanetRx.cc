@@ -1,5 +1,5 @@
 #include "artery/inet/VanetRx.h"
-#include <algorithm>
+#include <cstdint>
 
 Define_Module(VanetRx)
 
@@ -42,8 +42,8 @@ void VanetRx::recomputeMediumFree()
     static const simtime_t symbolPeriod { 8, SIMTIME_US };
     const auto updateDelta = simTime() - channelLoadLastUpdate;
     if (updateDelta >= symbolPeriod) {
-        std::size_t fillSamples = updateDelta / symbolPeriod;
-        std::fill_n(std::back_inserter(channelLoadSamples), fillSamples, !mediumFree);
+        const std::size_t fillSamples = updateDelta / symbolPeriod;
+        channelLoadSamples.insert(channelLoadSamples.end(), fillSamples, !mediumFree);
         channelLoadLastUpdate = simTime();
     }
 
