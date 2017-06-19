@@ -10,7 +10,7 @@
 
 using Denm = vanetza::asn1::Denm;
 
-Register_Abstract_Class(artery::DenmObject);
+Register_Abstract_Class(artery::DenmObject)
 
 namespace artery
 {

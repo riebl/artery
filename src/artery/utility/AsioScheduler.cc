@@ -21,7 +21,7 @@
 #include <boost/asio/read.hpp>
 #include <boost/asio/steady_timer.hpp>
 
-Register_Class(AsioScheduler);
+Register_Class(AsioScheduler)
 
 using namespace omnetpp;
 
