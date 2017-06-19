@@ -19,7 +19,7 @@ std::unique_ptr<DownPacket> duplicate(const PacketVariant& packet)
 
         void operator()(const ChunkPacket& packet)
         {
-            m_duplicate = std::move(duplicate(packet));
+            m_duplicate = duplicate(packet);
         }
 
         std::unique_ptr<ChunkPacket> m_duplicate;

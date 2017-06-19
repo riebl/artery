@@ -17,6 +17,8 @@ namespace security
 class BackendNull : public Backend
 {
 public:
+    static constexpr auto backend_name = "Null";
+
     /// \see Backend::sign_data
     EcdsaSignature sign_data(const ecdsa256::PrivateKey& private_key, const ByteBuffer& data_buffer) override;
 

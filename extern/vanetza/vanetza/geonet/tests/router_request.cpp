@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <vanetza/common/runtime.hpp>
 #include <vanetza/geonet/tests/fake_interfaces.hpp>
+#include <vanetza/geonet/tests/security_context.hpp>
 #include <vanetza/geonet/pdu_conversion.hpp>
 #include <vanetza/geonet/pdu_variant.hpp>
 #include <vanetza/geonet/router.hpp>
@@ -12,13 +13,15 @@ using namespace vanetza::geonet;
 class RouterRequest : public ::testing::Test
 {
 public:
-    RouterRequest() : router(runtime, mib) {}
+    RouterRequest() :
+        security(runtime), router(runtime, mib) {}
 
 protected:
     virtual void SetUp() override
     {
         mib.itsGnSecurity = true;
         router.set_access_interface(&req_ifc);
+        router.set_security_entity(&security.entity());
         router.set_transport_handler(geonet::UpperProtocol::IPv6, &ind_ifc);
         test_payload[OsiLayer::Application] = ByteBuffer {47, 11, 1, 4, 42, 85};
     }
@@ -31,6 +34,7 @@ protected:
 
     ManagementInformationBase mib;
     Runtime runtime;
+    SecurityContext security;
     Router router;
     FakeRequestInterface req_ifc;
     FakeTransportInterface ind_ifc;

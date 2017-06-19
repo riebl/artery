@@ -9,7 +9,7 @@
 namespace vanetza
 {
 // forward declarations
-namespace security { class SecuredMessageV2; }
+namespace security { struct SecuredMessageV2; }
 
 namespace geonet
 {

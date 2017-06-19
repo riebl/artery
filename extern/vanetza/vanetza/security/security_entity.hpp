@@ -1,31 +1,32 @@
 #ifndef SECURITY_ENTITY_HPP
 #define SECURITY_ENTITY_HPP
 
-#include <vanetza/common/clock.hpp>
-#include <vanetza/security/certificate_manager.hpp>
 #include <vanetza/security/decap_confirm.hpp>
 #include <vanetza/security/decap_request.hpp>
 #include <vanetza/security/encap_confirm.hpp>
 #include <vanetza/security/encap_request.hpp>
-#include <memory>
-#include <string>
+#include <vanetza/security/sign_service.hpp>
+#include <vanetza/security/verify_service.hpp>
 
 namespace vanetza
 {
 namespace security
 {
 
-// forward declaration
-class Backend;
-
 class SecurityEntity
 {
 public:
     /**
-     * \param time_now timestamp referring to current time
-     * \param backend [optional] identifier of desired backend implementation
+     * \brief Create security entity from primitive services.
+     *
+     * A std::invalid_argument exception is thrown at construction
+     * if any given service is not callable.
+     *
+     * \param sign SN-SIGN service
+     * \param verify SN-VERIFY service
      */
-    SecurityEntity(const Clock::time_point& time_now, const std::string& backend = "default");
+    SecurityEntity(SignService sign, VerifyService verify);
+
     ~SecurityEntity();
 
     /**
@@ -38,13 +39,7 @@ public:
      * \param request containing payload to sign
      * \return confirmation containing signed SecuredMessage
      */
-    EncapConfirm encapsulate_packet(const EncapRequest& encap_request);
-
-    /** \brief decapsulates packet
-     *
-     * \param packet that should be decapsulated
-     * \return decapsulated packet
-     */
+    EncapConfirm encapsulate_packet(EncapRequest&& encap_request);
 
     /**
      * \brief Decapsulates the payload within a SecuredMessage
@@ -54,50 +49,11 @@ public:
      * \param request containing a SecuredMessage
      * \return decapsulation confirmation including plaintext payload
      */
-    DecapConfirm decapsulate_packet(const DecapRequest& decap_request);
-
-    /**
-     * \brief enable deferred signature creation
-     *
-     * SecuredMessages contain EcdsaSignatureFuture instead of EcdsaSignature
-     * when this feature is enabled.
-     *
-     * \param flag true for enabling deferred signature calculation
-     */
-    void enable_deferred_signing(bool flag);
+    DecapConfirm decapsulate_packet(DecapRequest&& decap_request);
 
 private:
-    /** \brief sign the packet
-    *
-    * \param encap request that was handed over
-    * \return signed packet
-    */
-    EncapConfirm sign(const EncapRequest& encap_request);
-
-    /** \brief verify the packet
-    *
-    * \param signed packet
-    * \return verified packet
-    */
-    DecapConfirm verify(const DecapRequest& decap_request);
-
-    /**
-     * \brief signature used as placeholder until final signature is calculated
-     * \return placeholder containing dummy data
-     */
-    const Signature& signature_placeholder() const;
-
-    /**
-     * \brief check if generation time is within validity range
-     * \param gt generation time
-     * \return true if valid
-     */
-    bool check_generation_time(Time64 gt) const;
-
-    const Clock::time_point& m_time_now;
-    bool m_sign_deferred; /*< controls if EcdsaSignatureFuture is used */
-    NaiveCertificateManager m_certificate_manager; /*< replace with interface later */
-    std::unique_ptr<Backend> m_crypto_backend;
+    SignService m_sign_service;
+    VerifyService m_verify_service;
 };
 
 } // namespace security

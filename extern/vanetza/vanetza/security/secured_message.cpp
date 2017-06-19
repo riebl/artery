@@ -10,24 +10,48 @@ namespace vanetza
 namespace security
 {
 
-boost::optional<HeaderField&> SecuredMessage::header_field(HeaderFieldType type)
+HeaderField* SecuredMessage::header_field(HeaderFieldType type)
 {
-    boost::optional<HeaderField&> match;
+    HeaderField* match = nullptr;
     for (auto& field : header_fields) {
         if (get_type(field) == type) {
-            match = field;
+            match = &field;
             break;
         }
     }
     return match;
 }
 
-boost::optional<TrailerField&> SecuredMessage::trailer_field(TrailerFieldType type)
+const HeaderField* SecuredMessage::header_field(HeaderFieldType type) const
 {
-    boost::optional<TrailerField&> match;
+    const HeaderField* match = nullptr;
+    for (auto& field : header_fields) {
+        if (get_type(field) == type) {
+            match = &field;
+            break;
+        }
+    }
+    return match;
+}
+
+TrailerField* SecuredMessage::trailer_field(TrailerFieldType type)
+{
+    TrailerField* match = nullptr;
     for (auto& field : trailer_fields) {
         if (get_type(field) == type) {
-            match = field;
+            match = &field;
+            break;
+        }
+    }
+    return match;
+}
+
+const TrailerField* SecuredMessage::trailer_field(TrailerFieldType type) const
+{
+    const TrailerField* match = nullptr;
+    for (auto& field : trailer_fields) {
+        if (get_type(field) == type) {
+            match = &field;
             break;
         }
     }

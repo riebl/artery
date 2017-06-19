@@ -80,6 +80,7 @@ public:
         DECAP_UNSUCCESSFUL_STRICT,
         HOP_LIMIT,
         PAYLOAD_SIZE,
+        SECURITY_ENTITY_MISSING
     };
 
     Router(Runtime&, const MIB&);
@@ -147,6 +148,13 @@ public:
      * \param ifc use this interface or disable handling if nullptr
      */
     void set_transport_handler(UpperProtocol proto, TransportInterface* ifc);
+
+    /**
+     * \brief Register security entity used when itsGnSecurity is enabled
+     *
+     * \param entity security entity
+     */
+    void set_security_entity(security::SecurityEntity* entity);
 
     /**
      * \brief Register access layer interface
@@ -484,7 +492,7 @@ private:
     const MIB& m_mib;
     Runtime& m_runtime;
     dcc::RequestInterface* m_request_interface;
-    security::SecurityEntity m_security_entity;
+    security::SecurityEntity* m_security_entity;
     transport_map_t m_transport_ifcs;
     LocationTable m_location_table;
     PacketBuffer m_bc_forward_buffer;

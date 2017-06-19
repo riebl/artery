@@ -51,8 +51,6 @@ ManagementInformationBase::ManagementInformationBase() :
     itsGnBcForwardingPacketBufferSize(1024),
     itsGnCbfPacketBufferSize(256),
     itsGnDefaultTrafficClass(false, false, 0),
-    vanetzaCryptoBackend("default"),
-    vanetzaDeferSigning(false),
     vanetzaCbfMaxCounter(3)
 {
 }

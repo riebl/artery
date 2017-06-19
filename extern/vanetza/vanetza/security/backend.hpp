@@ -2,6 +2,7 @@
 #define BACKEND_HPP_ZMRDTY2O
 
 #include <vanetza/common/byte_buffer.hpp>
+#include <vanetza/common/factory.hpp>
 #include <vanetza/security/ecdsa256.hpp>
 #include <vanetza/security/signature.hpp>
 #include <memory>
@@ -41,15 +42,25 @@ public:
 };
 
 /**
+ * \brief get factory containing builtin backend implementations
+ *
+ * Included set of backends depends on CMake build configuration.
+ * At least the "Null" backend is always included.
+ * \return factory
+ */
+const Factory<Backend>& builtin_backends();
+
+/**
  * \brief create a backend instance
  *
  * A backend named "default" is guaranteed not to return a nullptr.
  * However, it might be a dummy backend.
  *
  * \param name identifying name of backend implementation
+ * \param factory build backend registered by name from this factory
  * \return backend instance (if available) or nullptr
  */
-std::unique_ptr<Backend> create_backend(const std::string& name);
+std::unique_ptr<Backend> create_backend(const std::string& name, const Factory<Backend>& = builtin_backends());
 
 } // namespace security
 } // namespace vanetza

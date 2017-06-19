@@ -11,7 +11,11 @@ namespace vanetza
 namespace security
 {
 
-enum class ReportType
+/**
+ * SN-DECAP.confirm report codes
+ * \see TS 102 723-8 v1.1.1 table 27
+ */
+enum class DecapReport
 {
     Success,
     False_Signature,
@@ -38,7 +42,7 @@ struct DecapConfirm
 {
     // plaintext_packet_length is gathered via ByteBuffer::size(); valid range 0 ... 2^16-1; mandatory
     PacketVariant plaintext_payload; // mandatory
-    ReportType report; // mandatory
+    DecapReport report; // mandatory
     CertificateValidity certificate_validity; // non-standard extension
     boost::optional<uint64_t> certificate_id; // optional
     // member field 'permissions' currently not used; optional

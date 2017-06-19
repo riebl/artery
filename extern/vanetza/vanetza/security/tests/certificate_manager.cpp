@@ -1,5 +1,5 @@
 #include <vanetza/common/clock.hpp>
-#include <vanetza/security/certificate_manager.hpp>
+#include <vanetza/security/naive_certificate_manager.hpp>
 #include <boost/variant/get.hpp>
 #include <gtest/gtest.h>
 
@@ -16,7 +16,7 @@ public:
 
 protected:
     Clock::time_point time_now;
-    CertificateManager cert_manager;
+    NaiveCertificateManager cert_manager;
 };
 
 TEST_F(CertificateManagerTest, own_certificate)

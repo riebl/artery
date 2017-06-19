@@ -86,74 +86,71 @@ EndianType<T, ByteOrder::BigEndian> network_cast(T value)
 namespace detail
 {
 
+template<typename T, ByteOrder FROM, ByteOrder TO>
+struct EndianConverter
+{
+    T operator()(const T&) const;
+};
+
+template<typename T, ByteOrder ORDER>
+struct EndianConverter<T, ORDER, ORDER>
+{
+    T operator()(const T& t) const { return t; }
+};
+
 template<typename T>
-class EndianTypeStorage
+struct EndianConverter<T, ByteOrder::LittleEndian, ByteOrder::BigEndian>
 {
-    static_assert(std::is_pod<T>::value == true, "EndianType is only availabe for POD types");
-
-public:
-    typedef T value_type;
-
-    EndianTypeStorage() = default;
-    explicit EndianTypeStorage(T value) : mValue(value) {}
-
-    void set(T value) { mValue = value; }
-    T get() const { return mValue; }
-    explicit operator T() const { return get(); }
-
-protected:
-    T mValue;
+    T operator()(const T& t) const { return boost::endian::endian_reverse(t); }
 };
 
-
-template<typename T, typename BASE>
-class EndianTypeCasterToHost : public BASE
+template<typename T>
+struct EndianConverter<T, ByteOrder::BigEndian, ByteOrder::LittleEndian>
 {
-public:
-    typedef EndianType<T, getHostByteOrder()> host_type;
-    operator host_type() const { return host_cast(ntoh(BASE::get())); }
+    T operator()(const T& t) const { return boost::endian::endian_reverse(t); }
 };
 
-template<typename T, typename BASE>
-class EndianTypeCasterToNetwork : public BASE
+template<typename T, ByteOrder FROM, ByteOrder TO>
+T convert_endian(const T& t)
 {
-public:
-    typedef EndianType<T, ByteOrder::BigEndian> network_type;
-    operator network_type() const { return network_cast(hton(BASE::get())); }
-};
-
-
-template<typename T, typename BASE, ByteOrder ORDER, bool HOST_EQ_NET = (getHostByteOrder() == ByteOrder::BigEndian)>
-class EndianTypeCaster;
-
-template<typename T, typename BASE, ByteOrder ORDER>
-class EndianTypeCaster<T, BASE, ORDER, true> : public BASE {};
-
-template<typename T, typename BASE, ByteOrder ORDER>
-class EndianTypeCaster<T, BASE, ORDER, false> : public
-    std::conditional<ORDER == ByteOrder::BigEndian,
-        EndianTypeCasterToHost<T, BASE>,
-        EndianTypeCasterToNetwork<T, BASE>
-    >::type {};
+    EndianConverter<T, FROM, TO> converter;
+    return converter(t);
+}
 
 } // namespace detail
 
 
 template<typename T, ByteOrder ORDER>
-class EndianType : public detail::EndianTypeCaster<T, detail::EndianTypeStorage<T>, ORDER>
+class EndianType
 {
 public:
-    typedef detail::EndianTypeStorage<T> storage_type;
-    typedef detail::EndianTypeCaster<T, storage_type, ORDER> base_type;
+    static_assert(std::is_pod<T>::value == true, "EndianType is only availabe for POD types");
+    typedef T value_type;
     typedef EndianType<T, getHostByteOrder()> host_type;
     typedef EndianType<T, ByteOrder::BigEndian> network_type;
 
     EndianType() = default;
-    explicit EndianType(T value) { storage_type::set(value); }
+    explicit EndianType(T value) { m_value = value; }
+
+    EndianType(const EndianType&) = default;
+    EndianType& operator=(const EndianType&) = default;
+
+    template<ByteOrder OTHER_ORDER>
+    EndianType(const EndianType<T, OTHER_ORDER>& other) :
+        m_value(detail::convert_endian<T, OTHER_ORDER, ORDER>(other.m_value))
+    {
+    }
+
+    template<ByteOrder OTHER_ORDER>
+    EndianType& operator=(const EndianType<T, OTHER_ORDER>& other)
+    {
+        m_value = detail::convert_endian<T, OTHER_ORDER, ORDER>(other.m_value);
+        return *this;
+    }
 
     bool operator==(const EndianType& other) const
     {
-        return base_type::get() == other.get();
+        return m_value == other.m_value;
     }
 
     bool operator!=(const EndianType& other) const
@@ -161,15 +158,31 @@ public:
         return !(*this == other);
     }
 
-    T net() const
+    bool operator<(const EndianType& other) const
     {
-        return network_type(*this).get();
+        return m_value < other.m_value;
     }
 
-    T host() const
+    value_type net() const
     {
-        return host_type(*this).get();
+        return detail::convert_endian<T, ORDER, ByteOrder::BigEndian>(m_value);
     }
+
+    value_type host() const
+    {
+        return detail::convert_endian<T, ORDER, getHostByteOrder()>(m_value);
+    }
+
+    value_type get() const
+    {
+        return m_value;
+    }
+
+private:
+    friend class EndianType<T, ByteOrder::BigEndian>;
+    friend class EndianType<T, ByteOrder::LittleEndian>;
+
+    T m_value;
 };
 
 

@@ -11,15 +11,15 @@ namespace geonet
 DataIndication::DataIndication() :
     upper_protocol(UpperProtocol::BTP_B),
     transport_type(TransportType::SHB),
-    security_report(security::ReportType::Unsigned_Message)
+    security_report(security::DecapReport::Unsigned_Message)
 {
 }
 
 DataIndication::DataIndication(const BasicHeader& basic, const CommonHeader& common) :
     transport_type(TransportType::SHB),
     security_report(basic.next_header == NextHeaderBasic::SECURED ?
-            security::ReportType::Incompatible_Protocol :
-            security::ReportType::Unsigned_Message),
+            security::DecapReport::Incompatible_Protocol :
+            security::DecapReport::Unsigned_Message),
     traffic_class(common.traffic_class),
     remaining_packet_lifetime(basic.lifetime),
     remaining_hop_limit(basic.hop_limit)

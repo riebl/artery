@@ -20,6 +20,8 @@ public:
     using Signer = CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::Signer;
     using Verifier = CryptoPP::ECDSA<CryptoPP::ECP, CryptoPP::SHA256>::Verifier;
 
+    static constexpr auto backend_name = "CryptoPP";
+
     BackendCryptoPP();
 
     /// \see Backend::sign_data

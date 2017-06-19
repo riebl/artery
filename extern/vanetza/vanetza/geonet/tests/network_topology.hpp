@@ -6,6 +6,7 @@
 #include <vanetza/geonet/mib.hpp>
 #include <vanetza/geonet/packet.hpp>
 #include <vanetza/geonet/router.hpp>
+#include <vanetza/geonet/tests/security_context.hpp>
 #include <vanetza/net/mac_address.hpp>
 #include <vanetza/units/length.hpp>
 #include <boost/optional.hpp>
@@ -51,6 +52,7 @@ public:
         MacAddress mac_address;
         RequestInterface request_interface;
         Runtime runtime;
+        SecurityContext security;
         Router router;
     };
 

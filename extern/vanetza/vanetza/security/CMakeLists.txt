@@ -8,21 +8,25 @@ add_vanetza_component(security
     ecdsa256.cpp
     encryption_parameter.cpp
     header_field.cpp
+    int_x.cpp
+    length_coding.cpp
+    naive_certificate_manager.cpp
+    null_certificate_manager.cpp
     payload.cpp
     public_key.cpp
-    length_coding.cpp
-    int_x.cpp
+    recipient_info.cpp
+    region.cpp
     secured_message.cpp
     security_entity.cpp
     serialization.cpp
     signature.cpp
+    sign_service.cpp
     signer_info.cpp
     subject_attribute.cpp
     subject_info.cpp
-    recipient_info.cpp
-    region.cpp
     trailer_field.cpp
     validity_restriction.cpp
+    verify_service.cpp
 )
 target_link_libraries(security PUBLIC Boost::serialization common net)
 

@@ -73,6 +73,68 @@ void serialize(OutputArchive& ar, const HeaderField& field);
  */
 size_t deserialize(InputArchive& ar, std::list<HeaderField>& list);
 
+/**
+ * \brief resolve type for matching HeaderFieldType
+ *
+ * This is kind of the reverse function of get_type(const HeaderField&)
+ */
+template<HeaderFieldType>
+struct header_field_type;
+
+template<>
+struct header_field_type<HeaderFieldType::Generation_Time>
+{
+    using type = Time64;
+};
+
+template<>
+struct header_field_type<HeaderFieldType::Generation_Time_Confidence>
+{
+    using type = Time64WithStandardDeviation;
+};
+
+template<>
+struct header_field_type<HeaderFieldType::Expiration>
+{
+    using type = Time32;
+};
+
+template<>
+struct header_field_type<HeaderFieldType::Generation_Location>
+{
+    using type = ThreeDLocation;
+};
+
+template<>
+struct header_field_type<HeaderFieldType::Request_Unrecognized_Certificate>
+{
+    using type = std::list<HashedId3>;
+};
+
+template<>
+struct header_field_type<HeaderFieldType::Its_Aid>
+{
+    using type = IntX;
+};
+
+template<>
+struct header_field_type<HeaderFieldType::Signer_Info>
+{
+    using type = SignerInfo;
+};
+
+template<>
+struct header_field_type<HeaderFieldType::Encryption_Parameters>
+{
+    using type = EncryptionParameter;
+};
+
+template<>
+struct header_field_type<HeaderFieldType::Recipient_Info>
+{
+    using type = std::list<RecipientInfo>;
+};
+
 } // namespace security
 } // namespace vanetza
 

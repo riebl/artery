@@ -55,9 +55,11 @@ void NetworkTopology::RequestInterface::request(const dcc::DataRequest& req, std
 NetworkTopology::RouterContext::RouterContext(NetworkTopology& network) :
     request_interface(network, mac_address),
     runtime(network.now),
+    security(runtime),
     router(runtime, network.get_mib())
 {
     router.set_access_interface(&request_interface);
+    router.set_security_entity(&security.entity());
 }
 
 NetworkTopology::NetworkTopology() : now(Clock::at("2016-02-29 23:59"))

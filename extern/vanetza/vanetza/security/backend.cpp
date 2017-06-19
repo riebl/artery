@@ -1,12 +1,44 @@
+#include <vanetza/common/factory.hpp>
 #include <vanetza/security/backend.hpp>
-#include <vanetza/security/backend_cryptopp.hpp>
-#include <vanetza/security/backend_null.hpp>
 #include <cassert>
-#include <functional>
-#include <map>
+
+namespace
+{
+
+static vanetza::Factory<vanetza::security::Backend> backend_factory;
+
+template<typename T>
+class BackendRegistrar
+{
+public:
+    BackendRegistrar(const std::string& name)
+    {
+        auto f = []() { return std::unique_ptr<vanetza::security::Backend> { new T() }; };
+        bool success = backend_factory.add(name, f) && backend_factory.configure_default(name);
+        assert(success);
+    }
+};
+
+} // namespace
+
+// order of VANETZA_REGISTER_CRYPTO_BACKEND invocation defines priority: last registered one will be default
+#define VANETZA_REGISTER_CRYPTO_BACKEND(clazz) \
+    namespace { \
+        using namespace vanetza::security; \
+        static const BackendRegistrar<clazz> clazz##Factory(clazz::backend_name); \
+    }
+
+#include <vanetza/security/backend_null.hpp>
+VANETZA_REGISTER_CRYPTO_BACKEND(BackendNull);
+
+#ifdef VANETZA_WITH_CRYPTOPP
+#   include <vanetza/security/backend_cryptopp.hpp>
+    VANETZA_REGISTER_CRYPTO_BACKEND(BackendCryptoPP);
+#endif
 
 #ifdef VANETZA_WITH_OPENSSL
-#include <vanetza/security/backend_openssl.hpp>
+#   include <vanetza/security/backend_openssl.hpp>
+    VANETZA_REGISTER_CRYPTO_BACKEND(BackendOpenSsl);
 #endif
 
 namespace vanetza
@@ -14,62 +46,18 @@ namespace vanetza
 namespace security
 {
 
-template<typename T>
-std::unique_ptr<T> make_unique(T* t)
+const Factory<Backend>& builtin_backends()
 {
-    return std::unique_ptr<T>(t);
-}
-
-class BackendFactory
-{
-public:
-    using BackendGeneratorFn = std::function<std::unique_ptr<Backend>()>;
-
-    BackendFactory()
-    {
-        // first inserted backend is implicitly "default"
-#ifdef VANETZA_WITH_OPENSSL
-        attach("OpenSSL", []() { return make_unique(new BackendOpenSsl()); });
-#endif
-        attach("CryptoPP", []() { return make_unique(new BackendCryptoPP()); });
-        attach("Null", []() { return make_unique(new BackendNull()); });
-    }
-
-    std::unique_ptr<Backend> create(const std::string& name)
-    {
-        assert(!backends.empty());
-        std::unique_ptr<Backend> backend;
-
-        if (name == "default") {
-            assert(default_backend);
-            backend = default_backend();
-        } else {
-            auto found = backends.find(name);
-            if (found != backends.end()) {
-                backend = (found->second)();
-            }
-        }
-
-        return backend;
-    }
-
-private:
-    void attach(const std::string& name, BackendGeneratorFn gen)
-    {
-        backends[name] = gen;
-        if (!default_backend) {
-            default_backend = gen;
-        }
-    }
-
-    std::map<std::string, BackendGeneratorFn> backends;
-    BackendGeneratorFn default_backend;
+    return backend_factory;
 };
 
-std::unique_ptr<Backend> create_backend(const std::string& name)
+std::unique_ptr<Backend> create_backend(const std::string& name, const Factory<Backend>& factory)
 {
-    static BackendFactory factory;
-    return factory.create(name);
+    if (name == "default") {
+        return factory.create();
+    } else {
+        return factory.create(name);
+    }
 }
 
 } // namespace security

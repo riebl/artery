@@ -2,6 +2,7 @@
 #include <vanetza/btp/header.hpp>
 #include <vanetza/common/runtime.hpp>
 #include <vanetza/geonet/tests/fake_interfaces.hpp>
+#include <vanetza/geonet/tests/security_context.hpp>
 #include <vanetza/geonet/router.hpp>
 
 using namespace vanetza;
@@ -9,7 +10,8 @@ using namespace vanetza;
 class RouterIndicate : public ::testing::Test
 {
 public:
-    RouterIndicate() : router(runtime, mib), packet_drop_occurred(false) {}
+    RouterIndicate() :
+        security(runtime), router(runtime, mib), packet_drop_occurred(false) {}
 
 protected:
     virtual void SetUp() override
@@ -20,6 +22,7 @@ protected:
         router.set_address(gn_addr);
         router.set_access_interface(&req_ifc);
         router.set_transport_handler(geonet::UpperProtocol::IPv6, &ind_ifc);
+        router.set_security_entity(&security.entity());
         packet_drop_occurred = false;
         router.packet_dropped = [this](geonet::Router::PacketDropReason r) {
             drop_reason = r;
@@ -107,6 +110,7 @@ protected:
     MacAddress mac_address_destination =  {0x07, 0x08, 0x09, 0x00, 0x01, 0x02};
     geonet::ManagementInformationBase mib;
     Runtime runtime;
+    SecurityContext security;
     geonet::Router router;
     geonet::Router::PacketDropReason drop_reason;
     FakeRequestInterface req_ifc;

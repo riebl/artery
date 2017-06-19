@@ -88,8 +88,6 @@ struct ManagementInformationBase
     unsigned itsGnBcForwardingPacketBufferSize; // kbyte
     unsigned itsGnCbfPacketBufferSize; // kbyte
     TrafficClass itsGnDefaultTrafficClass;
-    std::string vanetzaCryptoBackend; /*< choose preferred crypto backend implementation */
-    bool vanetzaDeferSigning; /*< calculate signatures on-demand, i.e. defer calculation (experimental option) */
     std::size_t vanetzaCbfMaxCounter; /*< maximum counter value used for ADVANCED routing */
 };
 

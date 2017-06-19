@@ -25,7 +25,7 @@ struct DataIndication
     TransportType transport_type;
     DestinationVariant destination;
     ShortPositionVector source_position;
-    security::ReportType security_report;
+    security::DecapReport security_report;
     // TODO: certificate id and permissions are missing (optional)
     TrafficClass traffic_class;
     boost::optional<Lifetime> remaining_packet_lifetime;

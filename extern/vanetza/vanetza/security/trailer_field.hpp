@@ -59,6 +59,17 @@ size_t deserialize(InputArchive&, TrailerField&);
  */
 boost::optional<ByteBuffer> extract_signature_buffer(const TrailerField& trailer_field);
 
+/**
+ * \brief resolve type for matching TrailerFieldType
+ *
+ * This is kind of the reverse function of get_type(const TrailerField&)
+ */
+template<TrailerFieldType>
+struct trailer_field_type;
+
+template<>
+struct trailer_field_type<TrailerFieldType::Signature> { using type = Signature; };
+
 } // namespace security
 } // namespace vanetza
 

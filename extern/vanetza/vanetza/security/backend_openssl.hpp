@@ -23,6 +23,8 @@ class Key;
 class BackendOpenSsl : public Backend
 {
 public:
+    static constexpr auto backend_name = "OpenSSL";
+
     BackendOpenSsl();
 
     /// \see Backend::sign_data
