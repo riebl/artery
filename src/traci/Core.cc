@@ -33,9 +33,11 @@ void Core::initialize()
 void Core::finish()
 {
     emit(closeSignal, simTime());
+    if (!m_connectEvent->isScheduled()) {
+        m_traci->close();
+    }
     cancelAndDelete(m_connectEvent);
     cancelAndDelete(m_updateEvent);
-    m_traci->close();
 }
 
 void Core::handleMessage(omnetpp::cMessage* msg)
