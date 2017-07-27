@@ -78,7 +78,12 @@ void Storyboard::initialize(int stage)
         if(canvas == "storyboard") {
             mCanvas = getCanvas();
         } else {
-            mCanvas = getModuleByPath(canvas.c_str())->getCanvas();
+            auto* module = getModuleByPath(canvas.c_str());
+            if(!module) {
+                throw cRuntimeError("No canvas found at %s. Check storyboard's canvas NED parameter!", canvas.c_str());
+            } else {
+                mCanvas = module->getCanvas();
+            }
         }
     }
 }
