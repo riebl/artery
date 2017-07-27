@@ -73,7 +73,7 @@ void Storyboard::initialize(int stage)
 
         // Par visualisation flag from ned
         mDrawConditions = par("drawConditions");
-    } else if(stage == 1){
+    } else if(stage == 1) {
         std::string canvas = par("canvas");
         if(canvas == "storyboard") {
             mCanvas = getCanvas();
