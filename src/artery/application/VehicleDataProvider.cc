@@ -51,14 +51,12 @@ const std::map<VehicleDataProvider::AngularAcceleration, double> VehicleDataProv
 vanetza::units::Angle convertMobilityAngle(Angle angle)
 {
 	using vanetza::units::si::radians;
-	assert(angle.value >= -pi * radians);
-	assert(angle.value < pi * radians);
 	// change rotation ccw -> cw
 	angle.value *= -1.0;
 	// rotate zero from east to north
-	// adjust [-pi; pi[ to [0; 2pi[
-	angle.value += 2.5 * pi * radians;
-	angle.value = boost::units::fmod(angle.value, 2.0 * pi * radians);
+	angle.value += 0.5 * pi * radians;
+	// normalize angle to [0; 2*pi[
+	angle.value -= 2.0 * pi * radians * std::floor(angle.value / (2.0 * pi * radians));
 
 	assert(angle.value >= 0.0 * radians);
 	assert(angle.value < 2.0 * pi * radians);
