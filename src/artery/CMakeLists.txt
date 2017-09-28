@@ -63,6 +63,7 @@ add_library(artery SHARED
     utility/IdentityRegistry.cc
     utility/FilterRules.cc
     utility/Geometry.cc
+    veins/VeinsConnectionManager.cc
     veins/VeinsMobility.cc
     veins/VeinsObstacleControl.cc
     $<TARGET_OBJECTS:messages>

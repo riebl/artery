@@ -2,7 +2,7 @@ package artery.veins;
 
 import artery.storyboard.Storyboard;
 import artery.veins.ObstacleControl;
-import org.car2x.veins.base.connectionManager.ConnectionManager;
+import artery.veins.ConnectionManager;
 import org.car2x.veins.base.modules.BaseWorldUtility;
 import traci.Manager;
 
