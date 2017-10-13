@@ -1,7 +1,9 @@
 #include "artery/traci/MobilityBase.h"
+#include <omnetpp/ccomponent.h>
 
 using namespace traci;
 
+omnetpp::simsignal_t MobilityBase::stateChangedSignal = omnetpp::cComponent::registerSignal("mobilityStateChanged");
 
 void MobilityBase::initializeVehicle(LiteAPI* api, const std::string& id, const TraCIBoundary& boundary)
 {

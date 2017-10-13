@@ -26,10 +26,10 @@
 #include "artery/netw/GeoNetRequest.h"
 #include "artery/nic/RadioDriverBase.h"
 #include "artery/traci/ControllableVehicle.h"
+#include "artery/traci/MobilityBase.h"
 #include "artery/utility/IdentityRegistry.h"
 #include "artery/utility/FilterRules.h"
 #include "inet/common/ModuleAccess.h"
-#include "inet/mobility/contract/IMobility.h"
 #include <vanetza/btp/header.hpp>
 #include <vanetza/btp/header_conversion.hpp>
 #include <vanetza/btp/ports.hpp>
@@ -148,7 +148,7 @@ void ItsG5Middleware::initializeMiddleware()
 	mUpdateInterval = par("updateInterval").doubleValue();
 	mUpdateMessage = new cMessage("middleware update");
 	mUpdateRuntimeMessage = new cMessage("runtime update");
-	findHost()->subscribe(inet::IMobility::mobilityStateChangedSignal, this);
+	findHost()->subscribe(MobilityBase::stateChangedSignal, this);
 	initializeSecurity();
 
 	mGeoMib.itsGnDefaultTrafficClass.tc_id(3); // send BEACONs with DP3
@@ -271,7 +271,7 @@ void ItsG5Middleware::finish()
 {
 	cancelAndDelete(mUpdateMessage);
 	cancelAndDelete(mUpdateRuntimeMessage);
-	findHost()->unsubscribe(inet::IMobility::mobilityStateChangedSignal, this);
+	findHost()->unsubscribe(MobilityBase::stateChangedSignal, this);
 	emit(artery::IdentityRegistry::removeSignal, &mIdentity);
 }
 
@@ -323,7 +323,7 @@ void ItsG5Middleware::update()
 
 void ItsG5Middleware::receiveSignal(cComponent* component, simsignal_t signal, cObject* obj, cObject* details)
 {
-	if (signal == inet::IMobility::mobilityStateChangedSignal) {
+	if (signal == MobilityBase::stateChangedSignal) {
 		mVehicleDataProvider.update(mVehicleController);
 	}
 }

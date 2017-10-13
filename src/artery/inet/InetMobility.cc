@@ -75,7 +75,8 @@ void InetMobility::update(const Position& pos, Angle heading, double speed)
     mSpeed = direction * speed;
     mOrientation.alpha = -rad;
 
-    emit(inet::IMobility::mobilityStateChangedSignal, this);
+    ASSERT(inet::IMobility::mobilityStateChangedSignal == MobilityBase::stateChangedSignal);
+    emit(MobilityBase::stateChangedSignal, this);
     updateVisualRepresentation();
 }
 

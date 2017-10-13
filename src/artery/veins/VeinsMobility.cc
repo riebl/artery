@@ -3,11 +3,6 @@
 
 Define_Module(VeinsMobility)
 
-namespace
-{
-    const auto mobilityStateChangedSignal = omnetpp::cComponent::registerSignal("mobilityStateChanged");
-}
-
 void VeinsMobility::initialize(int stage)
 {
     BaseMobility::initialize(stage);
@@ -34,5 +29,7 @@ void VeinsMobility::update(const Position& pos, Angle heading, double speed)
     move.setDirectionByVector(mDirection);
 
     BaseMobility::updatePosition(); // emits update signal for Veins
-    emit(mobilityStateChangedSignal, this);
+    // assert there is no identical signal emitted twice
+    ASSERT(BaseMobility::mobilityStateChangedSignal != MobilityBase::stateChangedSignal);
+    emit(MobilityBase::stateChangedSignal, this);
 }

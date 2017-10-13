@@ -4,6 +4,7 @@
 #include "artery/traci/ControllableVehicle.h"
 #include "traci/LiteAPI.h"
 #include "traci/VehicleSink.h"
+#include <omnetpp/clistener.h>
 #include <memory>
 #include <string>
 
@@ -19,6 +20,9 @@ public:
 
     // ControllableVehicle
     traci::VehicleController* getVehicleController() override;
+
+    // generic signal for mobility state changes
+    static omnetpp::simsignal_t stateChangedSignal;
 
 protected:
     std::string mVehicleId;
