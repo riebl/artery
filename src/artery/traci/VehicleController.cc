@@ -36,12 +36,12 @@ Position VehicleController::getPosition() const
 
 auto VehicleController::getGeoPosition() const -> GeoPosition
 {
-    TraCIPosition pos = m_api.vehicle().getPosition(m_id);
-    TraCIGeoPosition geo = m_api.convertGeo(pos);
-    return GeoPosition {
-        geo.longitude * boost::units::degree::degree,
-        geo.latitude * boost::units::degree::degree
-    };
+    TraCIPosition traci_pos = m_api.vehicle().getPosition(m_id);
+    TraCIGeoPosition traci_geo = m_api.convertGeo(traci_pos);
+    GeoPosition geo;
+    geo.latitude = traci_geo.latitude * boost::units::degree::degree;
+    geo.longitude = traci_geo.longitude * boost::units::degree::degree;
+    return geo;
 }
 
 auto VehicleController::getHeading() const -> Angle
