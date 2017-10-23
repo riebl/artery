@@ -31,6 +31,13 @@ static const auto microdegree = vanetza::units::degree * boost::units::si::micro
 static const auto decidegree = vanetza::units::degree * boost::units::si::deci;
 static const auto centimeter_per_second = vanetza::units::si::meter_per_second * boost::units::si::centi;
 
+template<typename T, typename U>
+long round(const boost::units::quantity<T>& q, const U& u)
+{
+    boost::units::quantity<U> v { q };
+    return std::round(v.value());
+}
+
 DenmService::DenmService() :
     mTimer(nullptr), mSequenceNumber(0)
 {
@@ -141,18 +148,18 @@ vanetza::asn1::Denm DenmService::createDenm(artery::denm::UseCase& uc)
     assert(ret == 0);
     message->denm.management.eventPosition.altitude.altitudeValue = AltitudeValue_unavailable;
     message->denm.management.eventPosition.altitude.altitudeConfidence = AltitudeConfidence_unavailable;
-    message->denm.management.eventPosition.longitude = (vdp.longitude() / microdegree).value() * Longitude_oneMicrodegreeEast;
-    message->denm.management.eventPosition.latitude = (vdp.latitude() / microdegree).value() * Latitude_oneMicrodegreeNorth;
+    message->denm.management.eventPosition.longitude = round(vdp.longitude(), microdegree) * Longitude_oneMicrodegreeEast;
+    message->denm.management.eventPosition.latitude = round(vdp.latitude(), microdegree) * Latitude_oneMicrodegreeNorth;
     message->denm.management.eventPosition.positionConfidenceEllipse.semiMajorOrientation = HeadingValue_unavailable;
     message->denm.management.eventPosition.positionConfidenceEllipse.semiMajorConfidence = SemiAxisLength_unavailable;
     message->denm.management.eventPosition.positionConfidenceEllipse.semiMinorConfidence = SemiAxisLength_unavailable;
 
     message->denm.location = vanetza::asn1::allocate<LocationContainer_t>();
     message->denm.location->eventSpeed = vanetza::asn1::allocate<Speed>();
-    message->denm.location->eventSpeed->speedValue = std::abs((vdp.speed() / centimeter_per_second).value()) * SpeedValue_oneCentimeterPerSec;
+    message->denm.location->eventSpeed->speedValue = std::abs(round(vdp.speed(), centimeter_per_second)) * SpeedValue_oneCentimeterPerSec;
     message->denm.location->eventSpeed->speedConfidence = SpeedConfidence_equalOrWithinOneCentimeterPerSec * 3;
     message->denm.location->eventPositionHeading = vanetza::asn1::allocate<Heading>();
-    message->denm.location->eventPositionHeading->headingValue = (vdp.heading() / decidegree).value();
+    message->denm.location->eventPositionHeading->headingValue = round(vdp.heading(), decidegree);
     message->denm.location->eventPositionHeading->headingConfidence = HeadingConfidence_equalOrWithinOneDegree;
 
     // TODO fill path history
