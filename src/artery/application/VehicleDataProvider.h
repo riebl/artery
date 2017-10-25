@@ -37,6 +37,11 @@ class VehicleDataProvider
 	public:
 		VehicleDataProvider();
 		VehicleDataProvider(uint32_t id);
+
+		// prevent inadvertent VDP copies
+		VehicleDataProvider(const VehicleDataProvider&) = delete;
+		VehicleDataProvider& operator=(const VehicleDataProvider&) = delete;
+
 		void update(const traci::VehicleController*);
 		omnetpp::SimTime updated() const { return mLastUpdate; }
 
