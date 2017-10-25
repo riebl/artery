@@ -1,11 +1,6 @@
 #include "artery/storyboard/PolygonCondition.h"
-#include <boost/geometry.hpp>
-#include <boost/geometry/algorithms/within.hpp>
-#include <boost/geometry/geometries/ring.hpp>
-#include <boost/geometry/geometries/register/ring.hpp>
+#include "artery/utility/Geometry.h"
 #include <omnetpp/cexception.h>
-
-BOOST_GEOMETRY_REGISTER_RING(std::vector<Position>)
 
 PolygonCondition::PolygonCondition(const std::vector<Position>& vertices) :
     m_vertices(vertices)

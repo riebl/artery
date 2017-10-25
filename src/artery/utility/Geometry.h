@@ -1,15 +1,16 @@
 #ifndef GEOMETRY_H_W8CYK9GM
 #define GEOMETRY_H_W8CYK9GM
 
-#include <boost/geometry/core/access.hpp>
-#include <boost/geometry/core/cs.hpp>
+#include <boost/geometry.hpp>
 #include <boost/geometry/geometries/point.hpp>
+#include <boost/geometry/geometries/ring.hpp>
 #include <boost/geometry/geometries/register/point.hpp>
+#include <boost/geometry/geometries/register/ring.hpp>
 #include <boost/units/quantity.hpp>
 #include <boost/units/systems/angle/degrees.hpp>
 #include <boost/units/systems/si/length.hpp>
 #include <boost/units/systems/si/plane_angle.hpp>
-#include <iostream>
+#include <vector>
 
 /**
  * Position represents a point in OMNeT++'s coordinate system
@@ -87,6 +88,9 @@ struct Angle
 };
 
 
+// this register macro needs to be outside of any namespaces
+BOOST_GEOMETRY_REGISTER_RING(std::vector<Position>)
+
 namespace boost { namespace geometry { namespace traits
 {
 
@@ -102,6 +106,16 @@ template<> struct access<Position, 1>
 {
     static inline double get(const Position& pos) { return pos.y.value(); }
     static inline void set(Position& pos, double v) { pos.y = Position::value_type::from_value(v); }
+};
+
+template<> struct point_order<std::vector<Position>>
+{
+    static const order_selector value = clockwise;
+};
+
+template<> struct closure<std::vector<Position>>
+{
+    static const closure_selector value = open;
 };
 
 } // namespace traits
