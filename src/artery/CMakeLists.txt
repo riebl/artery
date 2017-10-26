@@ -68,6 +68,7 @@ if(TARGET INET)
     set_property(TARGET core APPEND PROPERTY SOURCES
         inet/InetRadioDriver.cc
         inet/InetMobility.cc
+        inet/gemv2/PathLoss.cc
         inet/VanetRx.cc)
     target_link_libraries(core PUBLIC INET)
 endif()
