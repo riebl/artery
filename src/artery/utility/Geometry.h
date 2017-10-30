@@ -2,8 +2,7 @@
 #define GEOMETRY_H_W8CYK9GM
 
 #include <boost/geometry.hpp>
-#include <boost/geometry/geometries/point.hpp>
-#include <boost/geometry/geometries/ring.hpp>
+#include <boost/geometry/geometries/geometries.hpp>
 #include <boost/geometry/geometries/register/point.hpp>
 #include <boost/geometry/geometries/register/ring.hpp>
 #include <boost/units/quantity.hpp>
@@ -121,6 +120,20 @@ template<> struct closure<std::vector<Position>>
 } // namespace traits
 } // namespace geometry
 } // namespace boost
+
+namespace artery
+{
+namespace geometry
+{
+
+using Point = boost::geometry::model::point<double, 2, boost::geometry::cs::cartesian>;
+using Polygon = boost::geometry::model::polygon<Point, false, false, std::vector>;
+using Box = boost::geometry::model::box<Point>;
+using LineString = boost::geometry::model::linestring<Point>;
+using Ring = boost::geometry::model::ring<Point, true, false>;
+
+} // namespace geometry
+} // namespace artery
 
 #endif /* GEOMETRY_H_W8CYK9GM */
 
