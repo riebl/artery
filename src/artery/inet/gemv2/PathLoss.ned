@@ -6,6 +6,7 @@ module Gemv2 like IPathLoss
 {
     parameters:
         @class(artery::gemv2::PathLoss);
+        *.traciModule = default("traci");
 
     submodules:
         LOS: <default("TwoRayInterference")> like IPathLoss {
@@ -21,4 +22,7 @@ module Gemv2 like IPathLoss
             @display("p=20,60");
         }
 
+        obstacles: ObstacleIndex {
+            @display("p=50,20");
+        }
 }
