@@ -78,9 +78,7 @@ void BasicNodeManager::traciStep()
         updateVehicle(vehicle.first, vehicle.second);
     }
 
-    for (auto& node : m_nodes) {
-        emit(updateNodeSignal, node.first.c_str(), node.second);
-    }
+    emit(updateNodeSignal, getNumberOfNodes());
 }
 
 void BasicNodeManager::traciClose()
