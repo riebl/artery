@@ -21,7 +21,7 @@ void LocalDynamicMap::updateAwareness(const CaObject& obj)
     const omnetpp::SimTime expiry = mTimer.getTimeFor(tai) + lifetime;
 
     AwarenessEntry entry(obj, expiry);
-    assert(entry.expiry > simTime() && entry.expiry < simTime() + 2.0);
+    assert(entry.expiry > omnetpp::simTime() && entry.expiry < omnetpp::simTime() + 2.0);
 
     auto found = mCaMessages.find(msg->header.stationID);
     if (found != mCaMessages.end()) {

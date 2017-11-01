@@ -320,9 +320,8 @@ void Middleware::receiveSignal(cComponent* component, simsignal_t signal, double
 {
 	if (signal == RadioDriverBase::ChannelLoadSignal) {
 		ASSERT(value >= 0.0 && value <= 1.0);
-		unsigned busy_samples = 12500.0 * value;
+		unsigned busy_samples = std::round(12500.0 * value);
 		vanetza::dcc::ChannelLoad cl { busy_samples, 12500 };
-		ASSERT(abs(channel_load.fraction() - value) < 1.0e-6);
 		mDccFsm.update(cl);
 	}
 }
