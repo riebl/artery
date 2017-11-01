@@ -25,4 +25,8 @@ module Gemv2 like IPathLoss
         obstacles: ObstacleIndex {
             @display("p=50,20");
         }
+
+        vehicles: VehicleIndex {
+            @display("p=50,40");
+        }
 }

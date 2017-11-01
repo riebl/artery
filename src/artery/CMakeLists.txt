@@ -70,6 +70,7 @@ if(TARGET INET)
         inet/InetMobility.cc
         inet/gemv2/ObstacleIndex.cc
         inet/gemv2/PathLoss.cc
+        inet/gemv2/VehicleIndex.cc
         inet/VanetRx.cc)
     target_link_libraries(core PUBLIC INET)
 endif()
