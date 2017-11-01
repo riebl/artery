@@ -29,4 +29,10 @@ module Gemv2 like IPathLoss
         vehicles: VehicleIndex {
             @display("p=50,40");
         }
+
+        classifier: LinkClassifier {
+            @display("p=50,60");
+            obstacleIndexModule = "^.obstacles";
+            vehicleIndexModule = "^.vehicles";
+        }
 }

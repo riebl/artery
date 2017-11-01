@@ -15,6 +15,9 @@ namespace artery
 namespace gemv2
 {
 
+// forward declaration
+class LinkClassifier;
+
 class PathLoss : public omnetpp::cSimpleModule, public inet::physicallayer::IPathLoss
 {
 public:
@@ -30,6 +33,7 @@ private:
     inet::physicallayer::IPathLoss* m_los;
     inet::physicallayer::IPathLoss* m_nlos_b;
     inet::physicallayer::IPathLoss* m_nlos_v;
+    LinkClassifier* m_classifier;
 };
 
 } // namespace gemv2
