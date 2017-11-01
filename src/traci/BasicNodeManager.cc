@@ -18,13 +18,32 @@ static const std::set<int> sVehicleVariables {
 static const std::set<int> sSimulationVariables {
     VAR_DEPARTED_VEHICLES_IDS, VAR_ARRIVED_VEHICLES_IDS, VAR_TIME_STEP
 };
+
+class VehicleObjectImpl : public BasicNodeManager::VehicleObject
+{
+public:
+    VehicleObjectImpl(std::shared_ptr<VehicleCache> cache) : m_cache(cache) {}
+
+    std::shared_ptr<VehicleCache> getCache() const override { return m_cache; }
+    const TraCIPosition& getPosition() const override { return m_cache->get<VAR_POSITION>(); }
+    TraCIAngle getHeading() const override { return TraCIAngle { m_cache->get<VAR_ANGLE>() }; }
+    double getSpeed() const override { return m_cache->get<VAR_SPEED>(); }
+
+private:
+    std::shared_ptr<VehicleCache> m_cache;
+};
+
 } // namespace
+
 
 Define_Module(BasicNodeManager)
 
 const simsignal_t BasicNodeManager::addNodeSignal = cComponent::registerSignal("traci.node.add");
 const simsignal_t BasicNodeManager::updateNodeSignal = cComponent::registerSignal("traci.node.update");
 const simsignal_t BasicNodeManager::removeNodeSignal = cComponent::registerSignal("traci.node.remove");
+const simsignal_t BasicNodeManager::addVehicleSignal = cComponent::registerSignal("traci.vehicle.add");
+const simsignal_t BasicNodeManager::updateVehicleSignal = cComponent::registerSignal("traci.vehicle.update");
+const simsignal_t BasicNodeManager::removeVehicleSignal = cComponent::registerSignal("traci.vehicle.remove");
 
 void BasicNodeManager::initialize()
 {
@@ -75,7 +94,9 @@ void BasicNodeManager::traciStep()
     }
 
     for (auto& vehicle : m_vehicles) {
-        updateVehicle(vehicle.first, vehicle.second);
+        const std::string& id = vehicle.first;
+        VehicleSink* sink = vehicle.second;
+        updateVehicle(id, sink);
     }
 
     emit(updateNodeSignal, getNumberOfNodes());
@@ -98,30 +119,32 @@ void BasicNodeManager::addVehicle(const std::string& id)
         m_vehicles[id] = vehicle;
     };
 
+    emit(addVehicleSignal, id.c_str());
     cModuleType* type = m_mapper->vehicle(*this, id);
     if (type != nullptr) {
         addNodeModule(id, type, init);
+    } else {
+        m_vehicles[id] = nullptr;
     }
 }
 
 void BasicNodeManager::removeVehicle(const std::string& id)
 {
+    emit(removeVehicleSignal, id.c_str());
     removeNodeModule(id);
     m_vehicles.erase(id);
 }
 
-void BasicNodeManager::updateVehicle(const std::string& id)
-{
-    updateVehicle(id, m_vehicles.at(id));
-}
-
 void BasicNodeManager::updateVehicle(const std::string& id, VehicleSink* sink)
 {
-    ASSERT(sink);
     auto vehicle = m_subscriptions->getVehicleCache(id);
-    sink->updateVehicle(vehicle->get<VAR_POSITION>(),
-            TraCIAngle { vehicle->get<VAR_ANGLE>() },
-            vehicle->get<VAR_SPEED>() );
+    VehicleObjectImpl update(vehicle);
+    emit(updateVehicleSignal, id.c_str(), &update);
+    if (sink) {
+        sink->updateVehicle(vehicle->get<VAR_POSITION>(),
+                TraCIAngle { vehicle->get<VAR_ANGLE>() },
+                vehicle->get<VAR_SPEED>());
+    }
 }
 
 cModule* BasicNodeManager::createModule(const std::string&, cModuleType* type)
@@ -154,7 +177,7 @@ void BasicNodeManager::removeNodeModule(const std::string& id)
         module->deleteModule();
         m_nodes.erase(id);
     } else {
-        throw cRuntimeError("Node with id %s does not exist", id.c_str());
+        EV_DEBUG << "Node with id " << id << " does not exist, no removal\n";
     }
 }
 
