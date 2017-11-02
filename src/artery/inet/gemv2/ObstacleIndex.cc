@@ -12,6 +12,7 @@
 #include <boost/geometry/geometries/register/linestring.hpp>
 #include <boost/range/adaptor/indexed.hpp>
 #include <boost/range/adaptor/transformed.hpp>
+#include <boost/units/cmath.hpp>
 #include <omnetpp/checkandcast.h>
 #include <algorithm>
 #include <array>
@@ -113,6 +114,39 @@ bool ObstacleIndex::anyBlockage(const Position& a, const Position& b) const
             [&](const RtreeValue& candidate) {
                 return bg::intersects(los, mObstacles[candidate.second].getOutline());
             });
+}
+
+std::vector<const ObstacleIndex::Obstacle*>
+ObstacleIndex::obstaclesEllipse(const Position& a, const Position& b, double r) const
+{
+    using boost::units::fmin;
+    using boost::units::fmax;
+
+    std::vector<const Obstacle*> obstacles;
+    const double d = bg::distance(a, b);
+    const double k = 0.5 * (r - d);
+
+    // Are positions a and b within (theoretical) communication range?
+    if (k >= 0.0) {
+        // coarse approximation of ellipse's bounding box
+        geometry::Box ebb;
+        bg::set<bg::min_corner, 0>(ebb, fmin(a.x, b.x).value() - k); // left
+        bg::set<bg::min_corner, 1>(ebb, fmin(a.y, b.y).value() - k); // top (y axis growing downwards)
+        bg::set<bg::max_corner, 0>(ebb, fmax(a.x, b.x).value() + k); // right
+        bg::set<bg::max_corner, 1>(ebb, fmax(a.y, b.y).value() + k); // bottom
+
+        auto rtree_intersect = bg::index::intersects(ebb);
+        for (auto it = mObstacleRtree.qbegin(rtree_intersect); it != mObstacleRtree.qend(); ++it) {
+            const Obstacle& obstacle = mObstacles[it->second];
+            const Position& c = obstacle.getCentroid();
+            if (bg::distance(a, c) + bg::distance(b, c) <= r) {
+                // obstacle's center is within ellipse
+                obstacles.push_back(&obstacle);
+            }
+        }
+    }
+
+    return obstacles;
 }
 
 ObstacleIndex::Obstacle::Obstacle(std::vector<Position>&& shape) :

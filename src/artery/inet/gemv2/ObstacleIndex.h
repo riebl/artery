@@ -26,17 +26,6 @@ namespace gemv2
 class ObstacleIndex : public omnetpp::cSimpleModule, public omnetpp::cListener
 {
 public:
-    // cSimpleModule
-    void initialize() override;
-
-    // cListener
-    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, const omnetpp::SimTime&, omnetpp::cObject*) override;
-
-    bool anyBlockage(const Position& a, const Position& b) const;
-
-private:
-    void fetchObstacles(traci::LiteAPI&);
-
     class Obstacle
     {
     public:
@@ -50,6 +39,27 @@ private:
         Position mCentroid;
         double mArea;
     };
+
+    // cSimpleModule
+    void initialize() override;
+
+    // cListener
+    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, const omnetpp::SimTime&, omnetpp::cObject*) override;
+
+    bool anyBlockage(const Position& a, const Position& b) const;
+
+    /**
+     * Get obstacles with their center point being within the defined ellipse.
+     *
+     * The foci of the ellipse are a and b, respectively.
+     * Semi-major axis is 1/2 of given range.
+     *
+     * \return pointers to obstacles
+     */
+    std::vector<const Obstacle*> obstaclesEllipse(const Position& a, const Position& b, double range) const;
+
+private:
+    void fetchObstacles(traci::LiteAPI&);
 
     using RtreeValue = std::pair<geometry::Box, std::size_t>;
     using Rtree = boost::geometry::index::rtree<RtreeValue, boost::geometry::index::rstar<16>>;
