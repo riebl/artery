@@ -75,7 +75,7 @@ void ObstacleIndex::fetchObstacles(traci::LiteAPI& traci)
             }
         }
 
-        Obstacle shape;
+        std::vector<Position> shape;
         for (const traci::TraCIPosition& point : polygons.getShape(id)) {
             bg::append(shape, traci::position_cast(boundary, point));
         }
@@ -95,7 +95,7 @@ void ObstacleIndex::fetchObstacles(traci::LiteAPI& traci)
         RtreeValue operator()(const boost::range::index_value<Obstacle&>& v) const
         {
             using Indexable = typename RtreeValue::first_type;
-            return RtreeValue { bg::return_envelope<Indexable>(v.value()), v.index() };
+            return RtreeValue { bg::return_envelope<Indexable>(v.value().getOutline()), v.index() };
         }
     };
 
@@ -111,8 +111,15 @@ bool ObstacleIndex::anyBlockage(const Position& a, const Position& b) const
     auto rtree_intersect = bg::index::intersects(los);
     return std::any_of(mObstacleRtree.qbegin(rtree_intersect), mObstacleRtree.qend(),
             [&](const RtreeValue& candidate) {
-                return bg::intersects(los, mObstacles[candidate.second]);
+                return bg::intersects(los, mObstacles[candidate.second].getOutline());
             });
+}
+
+ObstacleIndex::Obstacle::Obstacle(std::vector<Position>&& shape) :
+    mOutline(shape),
+    mCentroid(bg::return_centroid<Position>(mOutline)),
+    mArea(bg::area(mOutline))
+{
 }
 
 } // namespace gemv2

@@ -37,7 +37,20 @@ public:
 private:
     void fetchObstacles(traci::LiteAPI&);
 
-    using Obstacle = std::vector<Position>;
+    class Obstacle
+    {
+    public:
+        Obstacle(std::vector<Position>&& shape);
+        const std::vector<Position>& getOutline() const { return mOutline; }
+        double getArea() const { return mArea; }
+        const Position& getCentroid() const { return mCentroid; }
+
+    private:
+        std::vector<Position> mOutline;
+        Position mCentroid;
+        double mArea;
+    };
+
     using RtreeValue = std::pair<geometry::Box, std::size_t>;
     using Rtree = boost::geometry::index::rtree<RtreeValue, boost::geometry::index::rstar<16>>;
 
