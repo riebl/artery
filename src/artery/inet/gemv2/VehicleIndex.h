@@ -46,12 +46,14 @@ private:
         Vehicle(traci::LiteAPI&, const std::string& id);
         void update(const traci::TraCIPosition& pos, traci::TraCIAngle heading);
         const std::vector<Position>& getOutline() const { return mWorldOutline; }
+        const double getHeight() const { return mHeight; }
 
     private:
         void createLocalOutline(double width, double length);
         void calculateWorldOutline();
 
         traci::TraCIBoundary mBoundary;
+        double mHeight;
         Angle mHeading;
         Position mPosition;
         std::vector<Position> mLocalOutline;

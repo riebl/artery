@@ -98,9 +98,10 @@ bool VehicleIndex::anyBlockage(const Position& a, const Position& b) const
 }
 
 VehicleIndex::Vehicle::Vehicle(traci::LiteAPI& api, const std::string& id) :
-    mBoundary(api.simulation().getNetBoundary())
+    mBoundary(api.simulation().getNetBoundary()), mHeight(0.0)
 {
     auto vtype = api.vehicle().getTypeID(id);
+    mHeight = api.vehicletype().getHeight(vtype);
     createLocalOutline(api.vehicletype().getWidth(vtype), api.vehicletype().getLength(vtype));
     update(api.vehicle().getPosition(id), traci::TraCIAngle { api.vehicle().getAngle(id) });
 }
