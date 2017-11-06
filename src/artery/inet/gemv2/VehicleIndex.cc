@@ -97,6 +97,21 @@ bool VehicleIndex::anyBlockage(const Position& a, const Position& b) const
             });
 }
 
+std::vector<const VehicleIndex::Vehicle*>
+VehicleIndex::getObstructingVehicles(const Position& a, const Position& b) const
+{
+    std::vector<const Vehicle*> result;
+    const LineOfSight los { a, b };
+    auto rtree_intersect = bg::index::intersects(los);
+    for (auto it = mVehicleRtree.qbegin(rtree_intersect); it != mVehicleRtree.qend(); ++it) {
+        const Vehicle& vehicle = it->second->second;
+        if (bg::relate(los, vehicle.getOutline(), cutting)) {
+            result.push_back(&vehicle);
+        }
+    }
+    return result;
+}
+
 VehicleIndex::Vehicle::Vehicle(traci::LiteAPI& api, const std::string& id) :
     mBoundary(api.simulation().getNetBoundary()), mHeight(0.0)
 {

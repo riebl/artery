@@ -30,16 +30,6 @@ namespace gemv2
 class VehicleIndex : public omnetpp::cSimpleModule, public omnetpp::cListener
 {
 public:
-    // cSimpleModule
-    void initialize() override;
-
-    // cListener
-    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, unsigned long, omnetpp::cObject*) override;
-    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, const char*, omnetpp::cObject*) override;
-
-    bool anyBlockage(const Position& a, const Position& b) const;
-
-private:
     class Vehicle
     {
     public:
@@ -60,6 +50,24 @@ private:
         std::vector<Position> mWorldOutline;
     };
 
+    // cSimpleModule
+    void initialize() override;
+
+    // cListener
+    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, unsigned long, omnetpp::cObject*) override;
+    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, const char*, omnetpp::cObject*) override;
+
+    bool anyBlockage(const Position& a, const Position& b) const;
+
+    /**
+     * Get all vehicles obstructing the line of sight between given points
+     * \param a position a, e.g. transmitter
+     * \param b position b, e.g. receiver
+     * \return pointer to vehicles obstructing line of sight
+     */
+    std::vector<const Vehicle*> getObstructingVehicles(const Position& a, const Position& b) const;
+
+private:
     using VehicleMap = std::map<std::string, Vehicle>;
     using RtreeValue = std::pair<geometry::Box, VehicleMap::const_iterator>;
     using Rtree = boost::geometry::index::rtree<RtreeValue, boost::geometry::index::rstar<16>>;
