@@ -37,6 +37,7 @@ public:
         void update(const traci::TraCIPosition& pos, traci::TraCIAngle heading);
         const std::vector<Position>& getOutline() const { return mWorldOutline; }
         const double getHeight() const { return mHeight; }
+        const Position& getMidpoint() const { return mWorldMidpoint; }
 
     private:
         void createLocalOutline(double width, double length);
@@ -46,6 +47,8 @@ public:
         double mHeight;
         Angle mHeading;
         Position mPosition;
+        Position mLocalMidpoint;
+        Position mWorldMidpoint;
         std::vector<Position> mLocalOutline;
         std::vector<Position> mWorldOutline;
     };

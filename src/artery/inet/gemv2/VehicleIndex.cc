@@ -137,6 +137,7 @@ void VehicleIndex::Vehicle::createLocalOutline(double width, double length)
         Position(-length, -0.5 * width),
         Position(-length, 0.5 * width)
     });
+    mLocalMidpoint = Position { -0.5*length, 0.0 };
 }
 
 void VehicleIndex::Vehicle::calculateWorldOutline()
@@ -149,6 +150,9 @@ void VehicleIndex::Vehicle::calculateWorldOutline()
     translate_transformer<double, 2, 2> mov(mPosition.x.value(), mPosition.y.value());
     boost::geometry::transform(mLocalOutline, tmp, rot);
     boost::geometry::transform(tmp, mWorldOutline, mov);
+    tmp.resize(1);
+    boost::geometry::transform(mLocalMidpoint, tmp.front(), rot);
+    boost::geometry::transform(tmp.front(), mWorldMidpoint, mov);
 
     ASSERT(mWorldOutline.size() == mLocalOutline.size());
     ASSERT(bg::is_valid(mWorldOutline));
