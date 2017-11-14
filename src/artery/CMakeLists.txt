@@ -45,6 +45,7 @@ add_library(artery SHARED
     application/ItsG5Service.cc
     application/LocalDynamicMap.cc
     application/Middleware.cc
+    application/StationaryMiddleware.cc
     application/Timer.cc
     application/VehicleDataProvider.cc
     application/VehicleMiddleware.cc

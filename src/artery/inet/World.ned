@@ -8,6 +8,7 @@ network World
 {
     parameters:
         bool withStoryboard = default(false);
+        int numRoadSideUnits = default(0);
         traci.mapper.vehicleType = default("artery.inet.Car");
         traci.nodes.vehicleSinkModule = default(".mobility");
         storyboard.middlewareModule = default(".middleware");
@@ -27,5 +28,10 @@ network World
         storyboard: Storyboard if withStoryboard {
             parameters:
                 @display("p=100,20");
+        }
+
+        rsu[numRoadSideUnits]: RSU {
+            parameters:
+                mobility.initFromDisplayString = false;
         }
 }
