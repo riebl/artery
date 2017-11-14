@@ -12,7 +12,6 @@
 
 // forward declarations
 class Facilities;
-class ItsG5Middleware;
 
 namespace artery
 {
@@ -20,6 +19,7 @@ namespace artery
 // forward declarations
 class GlobalEnvironmentModel;
 class LocalEnvironmentModel;
+class Middleware;
 
 class BaseSensor : public Sensor
 {
@@ -30,7 +30,7 @@ public:
 protected:
     void initialize() override;
     Facilities& getFacilities();
-    ItsG5Middleware& getItsG5Middleware();
+    Middleware& getMiddleware();
     std::string getEgoId();
     cModule* findHost();
 
@@ -40,7 +40,7 @@ protected:
 
 private:
     Facilities* mFacilities;
-    ItsG5Middleware* mMiddleware;
+    Middleware* mMiddleware;
 };
 
 } // namespace artery

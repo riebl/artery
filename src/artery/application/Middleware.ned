@@ -16,9 +16,10 @@
 package artery.application;
 
 // Middleware for ITS G5 services
-simple ItsG5Middleware
+simple Middleware
 {
 	parameters:
+		@class(artery::Middleware);
 		@signal[Identity.update](type=artery::Identity);
 		@signal[Identity.remove](type=artery::Identity);
 		@signal[StoryboardSignal](type=StoryboardSignal);

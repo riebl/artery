@@ -7,7 +7,7 @@
 #include "artery/envmod/GlobalEnvironmentModel.h"
 #include "artery/envmod/LocalEnvironmentModel.h"
 #include "artery/envmod/sensor/BaseSensor.h"
-#include "artery/application/ItsG5Middleware.h"
+#include "artery/application/Middleware.h"
 #include "artery/application/Facilities.h"
 #include "artery/traci/VehicleController.h"
 #include <inet/common/ModuleAccess.h>
@@ -27,7 +27,7 @@ Facilities& BaseSensor::getFacilities()
     return *mFacilities;
 }
 
-ItsG5Middleware& BaseSensor::getItsG5Middleware()
+Middleware& BaseSensor::getMiddleware()
 {
     assert(mMiddleware);
     return *mMiddleware;
@@ -41,7 +41,7 @@ cModule* BaseSensor::findHost()
 void BaseSensor::initialize()
 {
     cModule* module = findHost()->getSubmodule("middleware");
-    ItsG5Middleware* middleware = dynamic_cast<ItsG5Middleware*>(module);
+    Middleware* middleware = dynamic_cast<Middleware*>(module);
     if (middleware == nullptr) {
         throw cRuntimeError("Middleware not found");
     }

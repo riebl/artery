@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#include "artery/application/ItsG5Middleware.h"
+#include "artery/application/Middleware.h"
 #include "artery/application/ItsG5PromiscuousService.h"
 #include "artery/application/ItsG5Service.h"
 #include "artery/mac/AccessCategories.h"
@@ -44,16 +44,18 @@
 #include <chrono>
 #include <string>
 
-Define_Module(ItsG5Middleware)
+namespace artery
+{
 
+Define_Module(Middleware)
 
-ItsG5Middleware::ItsG5Middleware() :
+Middleware::Middleware() :
 		mRadioDriver(nullptr), mRadioDriverIn(nullptr), mRadioDriverOut(nullptr),
 		mLocalDynamicMap(mTimer), mDccScheduler(mDccFsm, mRuntime.now())
 {
 }
 
-void ItsG5Middleware::request(const vanetza::access::DataRequest& req,
+void Middleware::request(const vanetza::access::DataRequest& req,
 		std::unique_ptr<vanetza::geonet::DownPacket> payload)
 {
 	Enter_Method_Silent();
@@ -69,7 +71,7 @@ void ItsG5Middleware::request(const vanetza::access::DataRequest& req,
 	send(net, mRadioDriverOut);
 }
 
-void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique_ptr<vanetza::DownPacket> payload)
+void Middleware::request(const vanetza::btp::DataRequestB& req, std::unique_ptr<vanetza::DownPacket> payload)
 {
 	Enter_Method("request");
 	using namespace vanetza;
@@ -104,12 +106,12 @@ void ItsG5Middleware::request(const vanetza::btp::DataRequestB& req, std::unique
 	scheduleRuntime();
 }
 
-int ItsG5Middleware::numInitStages() const
+int Middleware::numInitStages() const
 {
 	return 3;
 }
 
-void ItsG5Middleware::initialize(int stage)
+void Middleware::initialize(int stage)
 {
 	switch (stage) {
 		case 0:
@@ -131,7 +133,7 @@ void ItsG5Middleware::initialize(int stage)
 	}
 }
 
-void ItsG5Middleware::initializeMiddleware()
+void Middleware::initializeMiddleware()
 {
 	mTimer.setTimebase(par("datetime"));
 
@@ -178,7 +180,7 @@ void ItsG5Middleware::initializeMiddleware()
 	emit(artery::IdentityRegistry::updateSignal, &mIdentity);
 }
 
-void ItsG5Middleware::initializeSecurity()
+void Middleware::initializeSecurity()
 {
 	using namespace vanetza::security;
 	const char* vanetzaCryptoBackend = par("vanetzaCryptoBackend");
@@ -219,14 +221,14 @@ void ItsG5Middleware::initializeSecurity()
 	mSecurityEntity.reset(new SecurityEntity(sign_service, verify_service));
 }
 
-void ItsG5Middleware::initializeVehicleController()
+void Middleware::initializeVehicleController()
 {
 	auto mobility = inet::getModuleFromPar<ControllableVehicle>(par("mobilityModule"), findHost());
 	mVehicleController = mobility->getVehicleController();
 	ASSERT(mVehicleController);
 }
 
-void ItsG5Middleware::initializeEnviromentModel()
+void Middleware::initializeEnviromentModel()
 {
 	mLocalEnvironmentModel = inet::findModuleFromPar<artery::LocalEnvironmentModel>(par("localEnvironmentModule"), findHost());
 	if (mLocalEnvironmentModel) {
@@ -236,7 +238,7 @@ void ItsG5Middleware::initializeEnviromentModel()
 	}
 }
 
-void ItsG5Middleware::initializeServices()
+void Middleware::initializeServices()
 {
 	cXMLElement* config = par("services").xmlValue();
 	for (cXMLElement* service_cfg : config->getChildrenByTagName("service")) {
@@ -281,7 +283,7 @@ void ItsG5Middleware::initializeServices()
 	}
 }
 
-void ItsG5Middleware::finish()
+void Middleware::finish()
 {
 	cancelAndDelete(mUpdateMessage);
 	cancelAndDelete(mUpdateRuntimeMessage);
@@ -289,7 +291,7 @@ void ItsG5Middleware::finish()
 	emit(artery::IdentityRegistry::removeSignal, &mIdentity);
 }
 
-void ItsG5Middleware::handleMessage(cMessage *msg)
+void Middleware::handleMessage(cMessage *msg)
 {
 	// Update clock before anything else is executed (which might read the clock)
 	mRuntime.trigger(mTimer.getCurrentTime());
@@ -302,7 +304,7 @@ void ItsG5Middleware::handleMessage(cMessage *msg)
 	}
 }
 
-void ItsG5Middleware::handleSelfMsg(cMessage *msg)
+void Middleware::handleSelfMsg(cMessage *msg)
 {
 	if (msg == mUpdateMessage) {
 		update();
@@ -313,7 +315,7 @@ void ItsG5Middleware::handleSelfMsg(cMessage *msg)
 	}
 }
 
-void ItsG5Middleware::handleLowerMsg(cMessage *msg)
+void Middleware::handleLowerMsg(cMessage *msg)
 {
 	auto* packet = check_and_cast<GeoNetPacket*>(msg);
 	auto& wrapper = packet->getPayload();
@@ -323,26 +325,26 @@ void ItsG5Middleware::handleLowerMsg(cMessage *msg)
 	delete msg;
 }
 
-cModule* ItsG5Middleware::findHost()
+cModule* Middleware::findHost()
 {
 	return inet::getContainingNode(this);
 }
 
-void ItsG5Middleware::update()
+void Middleware::update()
 {
 	updatePosition();
 	updateServices();
 	scheduleAt(simTime() + mUpdateInterval, mUpdateMessage);
 }
 
-void ItsG5Middleware::receiveSignal(cComponent* component, simsignal_t signal, cObject* obj, cObject* details)
+void Middleware::receiveSignal(cComponent* component, simsignal_t signal, cObject* obj, cObject* details)
 {
 	if (signal == MobilityBase::stateChangedSignal) {
 		mVehicleDataProvider.update(mVehicleController);
 	}
 }
 
-void ItsG5Middleware::receiveSignal(cComponent* component, simsignal_t signal, double value, cObject* details)
+void Middleware::receiveSignal(cComponent* component, simsignal_t signal, double value, cObject* details)
 {
 	if (signal == RadioDriverBase::ChannelLoadSignal) {
 		ASSERT(value >= 0.0 && value <= 1.0);
@@ -353,7 +355,7 @@ void ItsG5Middleware::receiveSignal(cComponent* component, simsignal_t signal, d
 	}
 }
 
-void ItsG5Middleware::scheduleRuntime()
+void Middleware::scheduleRuntime()
 {
 	cancelEvent(mUpdateRuntimeMessage);
 	auto next_time_point = mRuntime.next();
@@ -368,7 +370,7 @@ void ItsG5Middleware::scheduleRuntime()
 	}
 }
 
-void ItsG5Middleware::updatePosition()
+void Middleware::updatePosition()
 {
 	vanetza::geonet::LongPositionVector lpv;
 	lpv.timestamp = vanetza::geonet::Timestamp(mRuntime.now());
@@ -380,7 +382,7 @@ void ItsG5Middleware::updatePosition()
 	mGeoRouter->update(lpv);
 }
 
-void ItsG5Middleware::updateServices()
+void Middleware::updateServices()
 {
 	mLocalDynamicMap.dropExpired();
 	for (auto& kv : mServices) {
@@ -388,7 +390,7 @@ void ItsG5Middleware::updateServices()
 	}
 }
 
-ItsG5Middleware::port_type ItsG5Middleware::getPortNumber(const ItsG5BaseService* service) const
+Middleware::port_type Middleware::getPortNumber(const ItsG5BaseService* service) const
 {
 	port_type port = 0;
 	auto it = mServices.find(const_cast<ItsG5BaseService*>(service));
@@ -398,10 +400,12 @@ ItsG5Middleware::port_type ItsG5Middleware::getPortNumber(const ItsG5BaseService
 	return port;
 }
 
-SimTime ItsG5Middleware::convertSimTime(vanetza::Clock::time_point tp) const
+SimTime Middleware::convertSimTime(vanetza::Clock::time_point tp) const
 {
 	using namespace std::chrono;
 	const auto d = duration_cast<microseconds>(tp - mRuntime.now());
 	return SimTime { simTime().inUnit(SIMTIME_US) + d.count(), SIMTIME_US };
 }
+
+} // namespace artery
 

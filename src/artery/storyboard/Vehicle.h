@@ -1,7 +1,7 @@
 #ifndef VEHICLE_H_
 #define VEHICLE_H_
 
-#include "artery/application/ItsG5Middleware.h"
+#include "artery/application/Middleware.h"
 #include "artery/traci/VehicleController.h"
 #include "artery/application/VehicleDataProvider.h"
 #include <map>
@@ -16,7 +16,7 @@ class VehicleDataProvider;
 class Vehicle
 {
 public:
-    Vehicle(ItsG5Middleware&, std::map<std::string, Vehicle>&);
+    Vehicle(artery::Middleware&, std::map<std::string, Vehicle>&);
 
     const std::string& getId() const;
 
@@ -34,7 +34,7 @@ public:
     }
 
 private:
-    ItsG5Middleware& mMiddleware;
+    artery::Middleware& mMiddleware;
     std::map<std::string, Vehicle>& mVehicles;
 };
 

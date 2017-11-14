@@ -6,7 +6,7 @@ using namespace omnetpp;
 
 static const simsignal_t signalStoryboard = cComponent::registerSignal("StoryboardSignal");
 
-Vehicle::Vehicle(ItsG5Middleware& mw, std::map<std::string, Vehicle>& vs) :
+Vehicle::Vehicle(artery::Middleware& mw, std::map<std::string, Vehicle>& vs) :
     mMiddleware(mw), mVehicles(vs)
 {
 }

@@ -85,7 +85,7 @@ void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const c
 {
     if (signalId == traciAddNodeSignal) {
         cModule* nodeModule = dynamic_cast<cModule*>(node);
-        ItsG5Middleware* appl = inet::findModuleFromPar<ItsG5Middleware>(par("middlewareModule"), nodeModule, false);
+        artery::Middleware* appl = inet::findModuleFromPar<artery::Middleware>(par("middlewareModule"), nodeModule, false);
         if (appl) {
             m_vehicles.emplace(nodeId, Vehicle { *appl, m_vehicles });
         } else {

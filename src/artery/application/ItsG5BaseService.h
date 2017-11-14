@@ -24,14 +24,14 @@
 #include <vanetza/btp/data_interface.hpp>
 #include <vanetza/btp/data_request.hpp>
 #include "Facilities.h"
-#include "ItsG5Middleware.h"
+#include "Middleware.h"
 
 class ItsG5BaseService :
 	public omnetpp::cSimpleModule, public omnetpp::cListener,
 	public vanetza::btp::IndicationInterface
 {
 	public:
-		typedef ItsG5Middleware::port_type port_type;
+		typedef artery::Middleware::port_type port_type;
 
 		ItsG5BaseService();
 		virtual ~ItsG5BaseService();
@@ -51,7 +51,7 @@ class ItsG5BaseService :
 
 	private:
 		Facilities* m_facilities;
-		ItsG5Middleware* m_middleware;
+		artery::Middleware* m_middleware;
 };
 
 #endif /* ITSG5BASESERVICE_H_ */

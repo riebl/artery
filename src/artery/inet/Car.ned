@@ -1,6 +1,6 @@
 package artery.inet;
 
-import artery.application.ItsG5Middleware;
+import artery.application.Middleware;
 import artery.nic.IRadioDriver;
 import inet.node.inet.INetworkNode;
 import inet.linklayer.contract.IWirelessNic;
@@ -43,7 +43,7 @@ module Car like INetworkNode
                 macModule = ".wlan[" + string(index) + "].mac";
         }
 
-        middleware: ItsG5Middleware {
+        middleware: Middleware {
             parameters:
                 radioDriverModule = ".radioDriver[0]";
                 mobilityModule = ".mobility";

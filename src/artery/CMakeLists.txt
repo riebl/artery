@@ -41,10 +41,10 @@ add_library(artery SHARED
     application/ExampleService.cc
     application/Facilities.cc
     application/ItsG5BaseService.cc
-    application/ItsG5Middleware.cc
     application/ItsG5PromiscuousService.cc
     application/ItsG5Service.cc
     application/LocalDynamicMap.cc
+    application/Middleware.cc
     application/Timer.cc
     application/VehicleDataProvider.cc
     mac/CarrierSensing.cc

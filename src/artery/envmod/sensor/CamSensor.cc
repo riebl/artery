@@ -8,7 +8,7 @@
 #include "artery/envmod/GlobalEnvironmentModel.h"
 #include "artery/envmod/LocalEnvironmentModel.h"
 #include "artery/application/CaObject.h"
-#include "artery/application/ItsG5Middleware.h"
+#include "artery/application/Middleware.h"
 #include "artery/utility/IdentityRegistry.h"
 #include <inet/common/ModuleAccess.h>
 
@@ -25,12 +25,12 @@ void CamSensor::initialize()
 {
     BaseSensor::initialize();
     mIdentityRegistry = inet::getModuleFromPar<IdentityRegistry>(par("identityRegistryModule"), this);
-    getItsG5Middleware().subscribe(CamReceivedSignal, this);
+    getMiddleware().subscribe(CamReceivedSignal, this);
 }
 
 void CamSensor::finish()
 {
-    getItsG5Middleware().unsubscribe(CamReceivedSignal, this);
+    getMiddleware().unsubscribe(CamReceivedSignal, this);
     BaseSensor::finish();
 }
 

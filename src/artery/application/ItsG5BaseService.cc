@@ -17,10 +17,11 @@
 //
 
 #include "artery/application/ItsG5Service.h"
-#include "artery/application/ItsG5Middleware.h"
+#include "artery/application/Middleware.h"
 #include "veins/base/utils/FindModule.h"
 #include <cassert>
 
+using namespace artery;
 using namespace omnetpp;
 
 ItsG5BaseService::ItsG5BaseService() :
@@ -56,7 +57,7 @@ cModule* ItsG5BaseService::findHost()
 
 void ItsG5BaseService::initialize()
 {
-	ItsG5Middleware* middleware = dynamic_cast<ItsG5Middleware*>(getParentModule());
+	Middleware* middleware = dynamic_cast<Middleware*>(getParentModule());
 	if (middleware == nullptr) {
 		throw cRuntimeError("Middleware not found");
 	}

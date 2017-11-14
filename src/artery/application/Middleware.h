@@ -16,8 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef ITSG5MIDDLEWARE_H_
-#define ITSG5MIDDLEWARE_H_
+#ifndef ARTERY_MIDDLEWARE_H_
+#define ARTERY_MIDDLEWARE_H_
 
 #include "artery/application/Facilities.h"
 #include "artery/application/LocalDynamicMap.h"
@@ -45,26 +45,26 @@
 #include <memory>
 
 // forward declarations
-namespace artery
-{
-    class GlobalEnvironmentModel;
-    class LocalEnvironmentModel;
-} // namespace artery
 class ItsG5BaseService;
 class RadioDriverBase;
 namespace traci { class VehicleController; }
 
+namespace artery
+{
+    class GlobalEnvironmentModel;
+    class LocalEnvironmentModel;
+
 /**
  * Middleware providing a runtime context for services.
  */
-class ItsG5Middleware :
+class Middleware :
     public omnetpp::cSimpleModule, public omnetpp::cListener,
     public vanetza::access::Interface, public vanetza::btp::RequestInterface
 {
 	public:
 		typedef uint16_t port_type;
 
-		ItsG5Middleware();
+		Middleware();
 		void request(const vanetza::access::DataRequest&, std::unique_ptr<vanetza::DownPacket>) override;
 		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::DownPacket>) override;
 		Facilities* getFacilities() { return &mFacilities; }
@@ -120,5 +120,7 @@ class ItsG5Middleware :
 		artery::GlobalEnvironmentModel* mGlobalEnvironmentModel;
 		artery::LocalEnvironmentModel* mLocalEnvironmentModel;
 };
+
+} // namespace artery
 
 #endif
