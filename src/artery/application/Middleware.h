@@ -22,7 +22,6 @@
 #include "artery/application/Facilities.h"
 #include "artery/application/LocalDynamicMap.h"
 #include "artery/application/Timer.h"
-#include "artery/application/VehicleDataProvider.h"
 #include "artery/utility/Identity.h"
 #include <omnetpp/clistener.h>
 #include <omnetpp/csimplemodule.h>
@@ -51,8 +50,6 @@ namespace traci { class VehicleController; }
 
 namespace artery
 {
-    class GlobalEnvironmentModel;
-    class LocalEnvironmentModel;
 
 /**
  * Middleware providing a runtime context for services.
@@ -78,18 +75,17 @@ class Middleware :
 		void handleMessage(omnetpp::cMessage* msg) override;
 		virtual void handleSelfMsg(omnetpp::cMessage* msg);
 		virtual void handleLowerMsg(omnetpp::cMessage* msg);
-		void receiveSignal(cComponent*, omnetpp::simsignal_t, cObject*, cObject*) override;
 		void receiveSignal(cComponent*, omnetpp::simsignal_t, double, cObject*) override;
+		virtual void initializeIdentity(Identity&);
+		virtual void update();
+		omnetpp::cModule* findHost();
+		const vanetza::Runtime& getRuntime() const { return mRuntime; }
+		vanetza::geonet::Router& getRouter() const { ASSERT(mGeoRouter); return *mGeoRouter; }
 
 	private:
-		omnetpp::cModule* findHost();
-		void update();
-		void updatePosition();
 		void updateServices();
 		void initializeMiddleware();
-		void initializeEnviromentModel();
 		void initializeServices();
-		void initializeVehicleController();
 		void initializeSecurity();
 		void scheduleRuntime();
 		omnetpp::SimTime convertSimTime(vanetza::Clock::time_point tp) const;
@@ -97,10 +93,8 @@ class Middleware :
 		RadioDriverBase* mRadioDriver;
 		omnetpp::cGate* mRadioDriverIn;
 		omnetpp::cGate* mRadioDriverOut;
-		traci::VehicleController* mVehicleController;
-		VehicleDataProvider mVehicleDataProvider;
 		Timer mTimer;
-		artery::Identity mIdentity;
+		Identity mIdentity;
 		artery::LocalDynamicMap mLocalDynamicMap;
 		vanetza::Runtime mRuntime;
 		vanetza::dcc::StateMachine mDccFsm;
@@ -118,8 +112,6 @@ class Middleware :
 		omnetpp::cMessage* mUpdateRuntimeMessage;
 		Facilities mFacilities;
 		std::map<ItsG5BaseService*, port_type> mServices;
-		artery::GlobalEnvironmentModel* mGlobalEnvironmentModel;
-		artery::LocalEnvironmentModel* mLocalEnvironmentModel;
 };
 
 } // namespace artery

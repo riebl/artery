@@ -47,6 +47,7 @@ add_library(artery SHARED
     application/Middleware.cc
     application/Timer.cc
     application/VehicleDataProvider.cc
+    application/VehicleMiddleware.cc
     mac/CarrierSensing.cc
     mac/ChannelLoadMeasurements.cc
     mac/Edca.cc

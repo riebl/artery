@@ -1,6 +1,6 @@
 package artery.veins;
 
-import artery.application.Middleware;
+import artery.application.VehicleMiddleware;
 import artery.nic.IRadioDriver;
 import artery.nic.VeinsRadioDriver;
 import org.car2x.veins.base.modules.IBaseApplLayer;
@@ -21,7 +21,7 @@ module ApplicationLayer like IBaseApplLayer
 		radioDriver : VeinsRadioDriver {
 		}
 
-		middleware : Middleware {
+		middleware : VehicleMiddleware {
 		}
 
 	connections allowunconnected:

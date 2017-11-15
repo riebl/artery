@@ -25,12 +25,8 @@
 #include "artery/netw/GeoNetIndication.h"
 #include "artery/netw/GeoNetRequest.h"
 #include "artery/nic/RadioDriverBase.h"
-#include "artery/traci/ControllableVehicle.h"
-#include "artery/traci/MobilityBase.h"
 #include "artery/utility/IdentityRegistry.h"
 #include "artery/utility/FilterRules.h"
-#include "artery/envmod/LocalEnvironmentModel.h"
-#include "artery/envmod/GlobalEnvironmentModel.h"
 #include "inet/common/ModuleAccess.h"
 #include <vanetza/btp/header.hpp>
 #include <vanetza/btp/header_conversion.hpp>
@@ -116,7 +112,6 @@ void Middleware::initialize(int stage)
 	switch (stage) {
 		case 0:
 			initializeMiddleware();
-			initializeEnviromentModel();
 			break;
 		case 1:
 			initializeServices();
@@ -142,9 +137,6 @@ void Middleware::initializeMiddleware()
 	mRadioDriverOut = gate("radioDriverOut");
 	mRadioDriver->subscribe(RadioDriverBase::ChannelLoadSignal, this);
 
-	initializeVehicleController();
-	mFacilities.register_mutable(mVehicleController);
-	mFacilities.register_const(&mVehicleDataProvider);
 	mFacilities.register_const(&mDccFsm);
 	mFacilities.register_mutable(&mDccScheduler);
 	mFacilities.register_const(&mTimer);
@@ -154,7 +146,6 @@ void Middleware::initializeMiddleware()
 	mUpdateInterval = par("updateInterval").doubleValue();
 	mUpdateMessage = new cMessage("middleware update");
 	mUpdateRuntimeMessage = new cMessage("runtime update");
-	findHost()->subscribe(MobilityBase::stateChangedSignal, this);
 	initializeSecurity();
 
 	mGeoMib.itsGnDefaultTrafficClass.tc_id(3); // send BEACONs with DP3
@@ -174,10 +165,13 @@ void Middleware::initializeMiddleware()
 	mGeoRouter->set_transport_handler(UpperProtocol::BTP_B, &mBtpPortDispatcher);
 	mGeoRouter->set_security_entity(mSecurityEntity.get());
 
-	mIdentity.traci = mVehicleController->getVehicleId();
-	mIdentity.application = mVehicleDataProvider.station_id();
-	mIdentity.geonet = gn_addr;
+	initializeIdentity(mIdentity);
 	emit(artery::IdentityRegistry::updateSignal, &mIdentity);
+}
+
+void Middleware::initializeIdentity(Identity& id)
+{
+	id.geonet = mGeoRouter->get_local_position_vector().gn_addr;
 }
 
 void Middleware::initializeSecurity()
@@ -221,23 +215,6 @@ void Middleware::initializeSecurity()
 	mSecurityEntity.reset(new SecurityEntity(sign_service, verify_service));
 }
 
-void Middleware::initializeVehicleController()
-{
-	auto mobility = inet::getModuleFromPar<ControllableVehicle>(par("mobilityModule"), findHost());
-	mVehicleController = mobility->getVehicleController();
-	ASSERT(mVehicleController);
-}
-
-void Middleware::initializeEnviromentModel()
-{
-	mLocalEnvironmentModel = inet::findModuleFromPar<artery::LocalEnvironmentModel>(par("localEnvironmentModule"), findHost());
-	if (mLocalEnvironmentModel) {
-		mGlobalEnvironmentModel = inet::getModuleFromPar<artery::GlobalEnvironmentModel>(par("globalEnvironmentModule"), findHost());
-		mFacilities.register_mutable(mLocalEnvironmentModel);
-		mFacilities.register_mutable(mGlobalEnvironmentModel);
-	}
-}
-
 void Middleware::initializeServices()
 {
 	cXMLElement* config = par("services").xmlValue();
@@ -250,8 +227,7 @@ void Middleware::initializeServices()
 		cXMLElement* service_filters = service_cfg->getFirstChildWithTag("filters");
 		bool service_applicable = true;
 		if (service_filters) {
-			ASSERT(mVehicleController);
-			artery::FilterRules rules(getRNG(0), *mVehicleController);
+			artery::FilterRules rules(getRNG(0), mIdentity);
 			service_applicable = rules.applyFilterConfig(*service_filters);
 		}
 
@@ -287,7 +263,6 @@ void Middleware::finish()
 {
 	cancelAndDelete(mUpdateMessage);
 	cancelAndDelete(mUpdateRuntimeMessage);
-	findHost()->unsubscribe(MobilityBase::stateChangedSignal, this);
 	emit(artery::IdentityRegistry::removeSignal, &mIdentity);
 }
 
@@ -332,16 +307,8 @@ cModule* Middleware::findHost()
 
 void Middleware::update()
 {
-	updatePosition();
 	updateServices();
 	scheduleAt(simTime() + mUpdateInterval, mUpdateMessage);
-}
-
-void Middleware::receiveSignal(cComponent* component, simsignal_t signal, cObject* obj, cObject* details)
-{
-	if (signal == MobilityBase::stateChangedSignal) {
-		mVehicleDataProvider.update(mVehicleController);
-	}
 }
 
 void Middleware::receiveSignal(cComponent* component, simsignal_t signal, double value, cObject* details)
@@ -368,18 +335,6 @@ void Middleware::scheduleRuntime()
 			next_time_point = mRuntime.next();
 		}
 	}
-}
-
-void Middleware::updatePosition()
-{
-	vanetza::geonet::LongPositionVector lpv;
-	lpv.timestamp = vanetza::geonet::Timestamp(mRuntime.now());
-	lpv.latitude = static_cast<decltype(lpv.latitude)>(mVehicleDataProvider.latitude());
-	lpv.longitude = static_cast<decltype(lpv.longitude)>(mVehicleDataProvider.longitude());
-	lpv.heading = static_cast<decltype(lpv.heading)>(mVehicleDataProvider.heading());
-	lpv.speed = static_cast<decltype(lpv.speed)>(mVehicleDataProvider.speed());
-	lpv.position_accuracy_indicator = true;
-	mGeoRouter->update(lpv);
 }
 
 void Middleware::updateServices()
