@@ -118,6 +118,7 @@ endif()
 if(WITH_ENVMOD)
     add_subdirectory(envmod)
     target_link_libraries(artery PRIVATE envmod)
+    set_property(SOURCE application/VehicleMiddleware.cc APPEND PROPERTY COMPILE_DEFINITIONS "WITH_ENVMOD")
 endif()
 
 if("${Vanetza_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/vanetza/build")

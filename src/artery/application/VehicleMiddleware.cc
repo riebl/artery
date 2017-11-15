@@ -58,6 +58,7 @@ void VehicleMiddleware::initializeVehicleController()
 
 void VehicleMiddleware::initializeEnvironmentModel()
 {
+#ifdef WITH_ENVMOD
 	mLocalEnvironmentModel = inet::findModuleFromPar<artery::LocalEnvironmentModel>(par("localEnvironmentModule"), findHost());
 	if (mLocalEnvironmentModel) {
 		mGlobalEnvironmentModel = inet::getModuleFromPar<artery::GlobalEnvironmentModel>(par("globalEnvironmentModule"), findHost());
@@ -65,6 +66,7 @@ void VehicleMiddleware::initializeEnvironmentModel()
 		fac.register_mutable(mLocalEnvironmentModel);
 		fac.register_mutable(mGlobalEnvironmentModel);
 	}
+#endif
 }
 
 void VehicleMiddleware::receiveSignal(cComponent* component, simsignal_t signal, cObject* obj, cObject* details)
