@@ -50,7 +50,6 @@ class ItsG5BaseService :
 		void unsubscribe(const omnetpp::simsignal_t&);
 
 	private:
-		Facilities* m_facilities;
 		artery::Middleware* m_middleware;
 };
 

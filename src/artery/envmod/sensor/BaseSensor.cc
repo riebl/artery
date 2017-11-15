@@ -17,14 +17,13 @@ namespace artery
 {
 
 BaseSensor::BaseSensor() :
-    mFacilities(nullptr), mMiddleware(nullptr)
+    mMiddleware(nullptr)
 {
 }
 
 Facilities& BaseSensor::getFacilities()
 {
-    assert(mFacilities);
-    return *mFacilities;
+    return getMiddleware().getFacilities();
 }
 
 Middleware& BaseSensor::getMiddleware()
@@ -46,11 +45,9 @@ void BaseSensor::initialize()
         throw cRuntimeError("Middleware not found");
     }
 
-    mFacilities = middleware->getFacilities();
     mMiddleware = middleware;
-
-    mLocalEnvironmentModel = getFacilities().get_mutable_ptr<LocalEnvironmentModel>();
-    mGlobalEnvironmentModel = getFacilities().get_mutable_ptr<GlobalEnvironmentModel>();
+    mLocalEnvironmentModel = mMiddleware->getFacilities().get_mutable_ptr<LocalEnvironmentModel>();
+    mGlobalEnvironmentModel = mMiddleware->getFacilities().get_mutable_ptr<GlobalEnvironmentModel>();
 }
 
 std::string BaseSensor::getEgoId()

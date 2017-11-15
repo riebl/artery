@@ -30,7 +30,7 @@ public:
     template<typename T>
     const T& get() const
     {
-        return mMiddleware.getFacilities()->get_const<T>();
+        return mMiddleware.getFacilities().get_const<T>();
     }
 
 private:

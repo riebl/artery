@@ -67,7 +67,7 @@ class Middleware :
 		Middleware();
 		void request(const vanetza::access::DataRequest&, std::unique_ptr<vanetza::DownPacket>) override;
 		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::DownPacket>) override;
-		Facilities* getFacilities() { return &mFacilities; }
+		Facilities& getFacilities() { return mFacilities; }
 		port_type getPortNumber(const ItsG5BaseService*) const;
 		const Identity& getIdentity() const { return mIdentity; }
 

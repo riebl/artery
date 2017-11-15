@@ -25,7 +25,7 @@ using namespace artery;
 using namespace omnetpp;
 
 ItsG5BaseService::ItsG5BaseService() :
-		m_facilities(nullptr), m_middleware(nullptr)
+	m_middleware(nullptr)
 {
 }
 
@@ -35,8 +35,8 @@ ItsG5BaseService::~ItsG5BaseService()
 
 Facilities& ItsG5BaseService::getFacilities()
 {
-	assert(m_facilities);
-	return *m_facilities;
+	assert(m_middleware);
+	return m_middleware->getFacilities();
 }
 
 bool ItsG5BaseService::requiresListener() const
@@ -62,7 +62,6 @@ void ItsG5BaseService::initialize()
 		throw cRuntimeError("Middleware not found");
 	}
 
-	m_facilities = middleware->getFacilities();
 	m_middleware = middleware;
 }
 

@@ -39,7 +39,6 @@ protected:
     SensorVisualizationConfig mVisualizationConfig;
 
 private:
-    Facilities* mFacilities;
     Middleware* mMiddleware;
 };
 

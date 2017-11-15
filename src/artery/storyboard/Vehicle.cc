@@ -18,12 +18,12 @@ const std::string& Vehicle::getId() const
 
 traci::VehicleController& Vehicle::getController()
 {
-    return mMiddleware.getFacilities()->get_mutable<traci::VehicleController>();
+    return mMiddleware.getFacilities().get_mutable<traci::VehicleController>();
 }
 
 const traci::VehicleController& Vehicle::getController() const
 {
-    return mMiddleware.getFacilities()->get_const<traci::VehicleController>();
+    return mMiddleware.getFacilities().get_const<traci::VehicleController>();
 }
 
 const std::map<std::string, Vehicle>& Vehicle::getVehicles() const
