@@ -12,6 +12,6 @@ simple LocalEnvironmentModel
         @display("i=abstract/db");
         xml sensors = default(xml("<sensors />"));
         string globalEnvironmentModule;
-        string mobilityModule;
+        string middlewareModule;
 }
 

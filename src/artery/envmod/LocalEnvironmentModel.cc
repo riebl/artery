@@ -4,11 +4,11 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
+#include "artery/application/Middleware.h"
 #include "artery/envmod/EnvironmentModelObject.h"
 #include "artery/envmod/LocalEnvironmentModel.h"
 #include "artery/envmod/GlobalEnvironmentModel.h"
 #include "artery/envmod/sensor/Sensor.h"
-#include "artery/traci/ControllableVehicle.h"
 #include "artery/utility/FilterRules.h"
 #include <inet/common/ModuleAccess.h>
 #include <omnetpp/cxmlelement.h>
@@ -96,10 +96,9 @@ void LocalEnvironmentModel::initializeSensors()
         bool sensor_applicable = true;
         if (sensor_filters) {
             auto vehicle = inet::findContainingNode(this);
-            auto mobility = inet::getModuleFromPar<ControllableVehicle>(par("mobilityModule"), vehicle);
-            const auto controller = mobility->getVehicleController();
-            ASSERT(controller);
-            FilterRules rules(getRNG(0), *controller);
+            auto middleware = inet::getModuleFromPar<Middleware>(par("middlewareModule"), vehicle);
+            auto identity = middleware->getIdentity();
+            FilterRules rules(getRNG(0), identity);
             sensor_applicable = rules.applyFilterConfig(*sensor_filters);
         }
 

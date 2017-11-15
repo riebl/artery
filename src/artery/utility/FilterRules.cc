@@ -4,7 +4,7 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
-#include "artery/traci/VehicleController.h"
+#include "artery/utility/Identity.h"
 #include "artery/utility/FilterRules.h"
 #include <boost/lexical_cast.hpp>
 #include <omnetpp/cexception.h>
@@ -20,12 +20,12 @@ using namespace omnetpp;
 namespace artery
 {
 
-FilterRules::FilterRules(omnetpp::cRNG* rng, const traci::VehicleController& vehicle) :
-    mRNG(rng), mVehicleController(vehicle)
+FilterRules::FilterRules(omnetpp::cRNG* rng, const Identity& id) :
+    mRNG(rng), mIdentity(id)
 {
 }
 
-auto FilterRules::createVehicleFilterNamePattern(const cXMLElement& name_filter_cfg) const -> Filter
+auto FilterRules::createFilterNamePattern(const cXMLElement& name_filter_cfg) const -> Filter
 {
     const char* name_pattern = name_filter_cfg.getAttribute("pattern");
     const char* name_match = name_filter_cfg.getAttribute("match");
@@ -36,12 +36,12 @@ auto FilterRules::createVehicleFilterNamePattern(const cXMLElement& name_filter_
 
     std::regex name_regex(name_pattern);
     Filter name_filter = [this, name_regex, inverse]() {
-            return std::regex_match(mVehicleController.getVehicleId(), name_regex) ^ inverse;
+            return std::regex_match(mIdentity.traci, name_regex) ^ inverse;
     };
     return name_filter;
 }
 
-auto FilterRules::createVehicleFilterPenetrationRate(const cXMLElement& penetration_filter_cfg) const -> Filter
+auto FilterRules::createFilterPenetrationRate(const cXMLElement& penetration_filter_cfg) const -> Filter
 {
     const char* penetration_rate_str = penetration_filter_cfg.getAttribute("rate");
     if (!penetration_rate_str) {
@@ -65,12 +65,12 @@ bool FilterRules::applyFilterConfig(const omnetpp::cXMLElement& filter_cfg)
 
     cXMLElement* name_filter_cfg = filter_cfg.getFirstChildWithTag("name");
     if (name_filter_cfg) {
-        filters.emplace_back(createVehicleFilterNamePattern(*name_filter_cfg));
+        filters.emplace_back(createFilterNamePattern(*name_filter_cfg));
     }
 
     cXMLElement* penetration_filter_cfg = filter_cfg.getFirstChildWithTag("penetration");
     if (penetration_filter_cfg) {
-        filters.emplace_back(createVehicleFilterPenetrationRate(*penetration_filter_cfg));
+        filters.emplace_back(createFilterPenetrationRate(*penetration_filter_cfg));
     }
 
     bool applicable = true;

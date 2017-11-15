@@ -17,8 +17,6 @@
 #include <memory>
 #include <vector>
 
-namespace traci { class VehicleController; }
-
 namespace artery
 {
 

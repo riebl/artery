@@ -17,6 +17,6 @@ module Car extends artery.inet.Car
     submodules:
         environmentModel: LocalEnvironmentModel {
             @display("p=214,57");
-            mobilityModule = default(".mobility");
+            middlewareModule = default(".middleware");
         }
 }

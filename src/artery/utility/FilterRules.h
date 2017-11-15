@@ -14,26 +14,28 @@ namespace omnetpp {
     class cRNG;
     class cXMLElement;
 }
-namespace traci { class VehicleController; }
 
 namespace artery
 {
+
+// forward declaration
+class Identity;
 
 class FilterRules
 {
 public:
     using Filter = std::function<bool()>;
 
-    FilterRules(omnetpp::cRNG* rng, const traci::VehicleController& vehicle);
+    FilterRules(omnetpp::cRNG* rng, const Identity& id);
     virtual bool applyFilterConfig(const omnetpp::cXMLElement&);
 
 protected:
-    Filter createVehicleFilterNamePattern(const omnetpp::cXMLElement&) const;
-    Filter createVehicleFilterPenetrationRate(const omnetpp::cXMLElement&) const;
+    Filter createFilterNamePattern(const omnetpp::cXMLElement&) const;
+    Filter createFilterPenetrationRate(const omnetpp::cXMLElement&) const;
 
 private:
     omnetpp::cRNG* mRNG;
-    const traci::VehicleController& mVehicleController;
+    const Identity& mIdentity;
 };
 
 } // namespace artery
