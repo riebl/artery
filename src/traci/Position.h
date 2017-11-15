@@ -11,6 +11,7 @@ namespace traci
 using TraCIPosition = TraCIPosition;
 
 Position position_cast(const TraCIBoundary&, const TraCIPosition&);
+TraCIPosition position_cast(const TraCIBoundary&, const Position&);
 
 } // namespace traci
 
