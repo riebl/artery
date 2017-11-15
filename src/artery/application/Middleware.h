@@ -77,6 +77,7 @@ class Middleware :
 		virtual void handleLowerMsg(omnetpp::cMessage* msg);
 		void receiveSignal(cComponent*, omnetpp::simsignal_t, double, cObject*) override;
 		virtual void initializeIdentity(Identity&);
+		virtual void initializeManagementInformationBase(vanetza::geonet::MIB&);
 		virtual void update();
 		omnetpp::cModule* findHost();
 		const vanetza::Runtime& getRuntime() const { return mRuntime; }

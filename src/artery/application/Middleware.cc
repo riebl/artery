@@ -147,14 +147,12 @@ void Middleware::initializeMiddleware()
 	mUpdateMessage = new cMessage("middleware update");
 	mUpdateRuntimeMessage = new cMessage("runtime update");
 	initializeSecurity();
-
-	mGeoMib.itsGnDefaultTrafficClass.tc_id(3); // send BEACONs with DP3
-	mGeoMib.itsGnSecurity = par("vanetzaEnableSecurity").boolValue();
+	initializeManagementInformationBase(mGeoMib);
 
 	using vanetza::geonet::UpperProtocol;
 	vanetza::geonet::Address gn_addr;
 	gn_addr.is_manually_configured(true);
-	gn_addr.station_type(vanetza::geonet::StationType::PASSENGER_CAR);
+	gn_addr.station_type(mGeoMib.itsGnStationType);
 	gn_addr.country_code(0);
 	gn_addr.mid(mRadioDriver->getMacAddress());
 	mGeoRouter.reset(new vanetza::geonet::Router {mRuntime, mGeoMib});
@@ -172,6 +170,13 @@ void Middleware::initializeMiddleware()
 void Middleware::initializeIdentity(Identity& id)
 {
 	id.geonet = mGeoRouter->get_local_position_vector().gn_addr;
+}
+
+void Middleware::initializeManagementInformationBase(vanetza::geonet::MIB& mib)
+{
+	mib.itsGnStationType = vanetza::geonet::StationType::UNKNOWN;
+	mib.itsGnDefaultTrafficClass.tc_id(3); // send BEACONs with DP3
+	mib.itsGnSecurity = par("vanetzaEnableSecurity").boolValue();
 }
 
 void Middleware::initializeSecurity()

@@ -25,6 +25,7 @@ class VehicleMiddleware : public Middleware
 
 	protected:
 		void initializeIdentity(Identity&) override;
+		void initializeManagementInformationBase(vanetza::geonet::MIB&) override;
 		void receiveSignal(cComponent*, omnetpp::simsignal_t, cObject*, cObject*) override;
 		void update() override;
 

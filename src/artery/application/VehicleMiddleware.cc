@@ -41,6 +41,13 @@ void VehicleMiddleware::initializeIdentity(Identity& id)
 	id.application = mVehicleDataProvider.station_id();
 }
 
+void VehicleMiddleware::initializeManagementInformationBase(vanetza::geonet::MIB& mib)
+{
+	Middleware::initializeManagementInformationBase(mib);
+	// TODO derive station type from SUMO vehicle class
+	mib.itsGnStationType = vanetza::geonet::StationType::PASSENGER_CAR;
+}
+
 void VehicleMiddleware::initializeVehicleController()
 {
 	auto mobility = inet::getModuleFromPar<ControllableVehicle>(par("mobilityModule"), findHost());
