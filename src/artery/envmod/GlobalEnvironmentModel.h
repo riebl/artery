@@ -44,17 +44,36 @@ public:
     GlobalEnvironmentModel();
     virtual ~GlobalEnvironmentModel();
 
-
-    /**
-     * Simple module initialization
-     */
+    // cSimpleModule life-cycle
     void initialize() override;
-
     void finish() override;
 
+    // cListener handlers
     void receiveSignal(cComponent*, omnetpp::simsignal_t, const omnetpp::SimTime&, cObject*) override;
     void receiveSignal(cComponent*, omnetpp::simsignal_t, const char*, cObject*) override;
+    void receiveSignal(cComponent*, omnetpp::simsignal_t, unsigned long, cObject*) override;
 
+    /**
+     * Fetch an object by its external id.
+     * @param externalID
+     * @return model object matching external id
+     */
+    std::shared_ptr<EnvironmentModelObject> getObject(const std::string& objId);
+
+    /**
+     * Returns GSDE of all objects in a sensor area defined by the sensor configuration
+     * @param config
+     * @return
+     */
+    SensorDetection detectObjects(const SensorConfigRadar&);
+
+    using ObjectDB = boost::multi_index_container<
+        std::shared_ptr<EnvironmentModelObject>,
+        boost::multi_index::indexed_by<
+            boost::multi_index::ordered_unique<
+                boost::multi_index::const_mem_fun<EnvironmentModelObject, std::string, &EnvironmentModelObject::getExternalId>>>>;
+
+private:
     /**
      * Refresh all dynamic objects in the database.
      */
@@ -99,28 +118,17 @@ public:
     void clear();
 
     /**
-     * Fetch an object by its external id.
-     * @param externalID
-     * @return model object matching external id
+     * Fetch static obstacles (polygons) from TraCI
+     * @param api TraCI API object
      */
-    std::shared_ptr<EnvironmentModelObject> getObject(const std::string& objId);
+    void fetchObstacles(traci::LiteAPI& api);
 
     /**
-     * Returns GSDE of all objects in a sensor area defined by the sensor configuration
-     * @param config
-     * @return
+     * Try to get vehicle controller corresponding to given module
+     * @param mod vehicle host module
+     * @return nullptr if no vehicle controller is available
      */
-    SensorDetection detectObjects(const SensorConfigRadar&);
-
-    using ObjectDB = boost::multi_index_container<
-        std::shared_ptr<EnvironmentModelObject>,
-        boost::multi_index::indexed_by<
-            boost::multi_index::ordered_unique<
-                boost::multi_index::const_mem_fun<EnvironmentModelObject, std::string, &EnvironmentModelObject::getExternalId>>>>;
-
-private:
-    void fetchObstacles(traci::LiteAPI&);
-    virtual traci::VehicleController* getVehicleController(cModule*);
+    virtual traci::VehicleController* getVehicleController(cModule* mod);
 
     using ObstacleDB = std::map<std::string, std::shared_ptr<EnvironmentModelObstacle>>;
     using ObstacleRtreeValue = std::pair<geometry::Box, std::string>;
@@ -130,6 +138,7 @@ private:
     boost::geometry::index::rtree<ObstacleRtreeValue, boost::geometry::index::rstar<16>> mObstacleRtree;
     std::unique_ptr<PreselectionMethod> mPreselector;
     IdentityRegistry* mIdentityRegistry;
+    bool mTainted;
 };
 
 } // namespace artery

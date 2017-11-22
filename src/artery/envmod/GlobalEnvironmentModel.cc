@@ -29,10 +29,10 @@ namespace artery
 namespace {
 const simsignal_t refreshSignal = cComponent::registerSignal("EnvironmentModel.refresh");
 const simsignal_t traciInitSignal = cComponent::registerSignal("traci.init");
-const simsignal_t traciStepSignal = cComponent::registerSignal("traci.step");
 const simsignal_t traciCloseSignal = cComponent::registerSignal("traci.close");
 const simsignal_t traciNodeAddSignal = cComponent::registerSignal("traci.node.add");
 const simsignal_t traciNodeRemoveSignal = cComponent::registerSignal("traci.node.remove");
+const simsignal_t traciNodeUpdateSignal = cComponent::registerSignal("traci.node.update");
 }
 
 Define_Module(GlobalEnvironmentModel);
@@ -54,6 +54,7 @@ void GlobalEnvironmentModel::refresh()
     }
 
     mPreselector->update();
+    mTainted = false;
 
     emit(refreshSignal, this);
 }
@@ -69,6 +70,7 @@ bool GlobalEnvironmentModel::addVehicle(traci::VehicleController* vehicle)
     }
 
     auto insertion = mObjects.insert(std::make_shared<EnvironmentModelObject>(vehicle, id));
+    mTainted |= insertion.second; /*< pending preselector update if insertion took place */
     return insertion.second;
 }
 
@@ -96,18 +98,15 @@ void GlobalEnvironmentModel::buildObstacleRtree()
 
 bool GlobalEnvironmentModel::removeVehicle(std::string objID)
 {
-    if (mObjects.erase(objID) > 0) {
-        mPreselector->update();
-        return true;
-    }
-
-    return false;
+    return mObjects.erase(objID) > 0;
+    mTainted = true; /*< pending preselector update */
 }
 
 void GlobalEnvironmentModel::removeVehicles()
 {
     mObjects.clear();
     mPreselector->update();
+    mTainted = false;
 }
 
 void GlobalEnvironmentModel::clear()
@@ -119,6 +118,8 @@ void GlobalEnvironmentModel::clear()
 
 SensorDetection GlobalEnvironmentModel::detectObjects(const SensorConfigRadar& config)
 {
+    ASSERT(!mTainted); /*< object database and preselector are in sync */
+
     namespace bg = boost::geometry;
     if (config.fieldOfView.range <= 0.0 * boost::units::si::meter) {
         throw std::runtime_error("sensor range is 0 meter or less");
@@ -224,16 +225,17 @@ void GlobalEnvironmentModel::initialize()
     cModule* traci = getModuleByPath(par("traciModule"));
     if (traci) {
         traci->subscribe(traciInitSignal, this);
-        traci->subscribe(traciStepSignal, this);
         traci->subscribe(traciCloseSignal, this);
 
         traci->subscribe(traciNodeAddSignal, this);
         traci->subscribe(traciNodeRemoveSignal, this);
+        traci->subscribe(traciNodeUpdateSignal, this);
     } else {
         throw cRuntimeError("No TraCI module found for signal subscription");
     }
 
     mIdentityRegistry = inet::findModuleFromPar<IdentityRegistry>(par("identityRegistryModule"), this);
+    mTainted = false;
 }
 
 void GlobalEnvironmentModel::finish()
@@ -243,9 +245,7 @@ void GlobalEnvironmentModel::finish()
 
 void GlobalEnvironmentModel::receiveSignal(cComponent* source, simsignal_t signal, const SimTime&, cObject*)
 {
-    if (signal == traciStepSignal) {
-        refresh();
-    } else if (signal == traciInitSignal) {
+    if (signal == traciInitSignal) {
         auto core = check_and_cast<traci::Core*>(source);
         fetchObstacles(core->getLiteAPI());
     } else if (signal == traciCloseSignal) {
@@ -265,6 +265,13 @@ void GlobalEnvironmentModel::receiveSignal(cComponent*, simsignal_t signal, cons
         }
     } else if (signal == traciNodeRemoveSignal) {
         removeVehicle(id);
+    }
+}
+
+void GlobalEnvironmentModel::receiveSignal(cComponent*, simsignal_t signal, unsigned long nodes, cObject* obj)
+{
+    if (signal == traciNodeUpdateSignal) {
+        refresh();
     }
 }
 
