@@ -38,7 +38,7 @@ void EnvmodPrinter::printSensorObjectList(const std::string& title, const Tracke
     for (const auto& obj : objs)
     {
         std::weak_ptr<EnvironmentModelObject> obj_ptr = obj.first;
-        ASSERT(!obj_ptr.expired());
+        if (obj_ptr.expired()) continue; /*< objects remain in tracking briefly after leaving simulation */
         const auto& vd = obj_ptr.lock()->getVehicleData();
         EV_DETAIL
             << "station ID: " << vd.station_id()
