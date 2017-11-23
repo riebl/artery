@@ -7,6 +7,7 @@
 #ifndef LINKCLASSIFIER_H_OAXCBN1T
 #define LINKCLASSIFIER_H_OAXCBN1T
 
+#include "LinkClass.h"
 #include <omnetpp/csimplemodule.h>
 
 // forward declaration
@@ -24,10 +25,8 @@ class VehicleIndex;
 class LinkClassifier : public omnetpp::cSimpleModule
 {
 public:
-    enum class Link { LOS, NLOSb, NLOSv };
-
     void initialize() override;
-    Link classifyLink(const Position& tx, const Position& rx) const;
+    LinkClass classifyLink(const Position& tx, const Position& rx) const;
 
 private:
     const ObstacleIndex* mObstacleIndex;

@@ -22,13 +22,13 @@ void LinkClassifier::initialize()
     mVehicleIndex = inet::findModuleFromPar<VehicleIndex>(par("vehicleIndexModule"), this);
 }
 
-LinkClassifier::Link LinkClassifier::classifyLink(const Position& tx, const Position& rx) const
+LinkClass LinkClassifier::classifyLink(const Position& tx, const Position& rx) const
 {
-    Link link = Link::LOS;
+    LinkClass link = LinkClass::LOS;
     if (mObstacleIndex->anyBlockage(tx, rx)) {
-        link = Link::NLOSb;
+        link = LinkClass::NLOSb;
     } else if (mVehicleIndex->anyBlockage(tx, rx)) {
-        link = Link::NLOSv;
+        link = LinkClass::NLOSv;
     }
     return link;
 }
