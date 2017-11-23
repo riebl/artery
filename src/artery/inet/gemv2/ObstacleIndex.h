@@ -58,6 +58,14 @@ public:
      */
     std::vector<const Obstacle*> obstaclesEllipse(const Position& a, const Position& b, double range) const;
 
+    /**
+     * Get all obstacles obstructing the line of sight between given points
+     * \param a position a, e.g. transmitter
+     * \param b position b, e.g. receiver
+     * \return pointer to obstacles obstructing line of sight
+     */
+    std::vector<const Obstacle*> getObstructingObstacles(const Position& a, const Position& b) const;
+
 private:
     void fetchObstacles(traci::LiteAPI&);
 

@@ -17,7 +17,13 @@
 #include <algorithm>
 #include <array>
 
-namespace { using LineOfSight = std::array<Position, 2>; }
+namespace bg = boost::geometry;
+
+namespace {
+    using LineOfSight = std::array<Position, 2>;
+    const bg::de9im::mask cutting("T**FF****");
+}
+
 BOOST_GEOMETRY_REGISTER_LINESTRING(LineOfSight)
 
 namespace artery
@@ -147,6 +153,21 @@ ObstacleIndex::obstaclesEllipse(const Position& a, const Position& b, double r) 
     }
 
     return obstacles;
+}
+
+std::vector<const ObstacleIndex::Obstacle*>
+ObstacleIndex::getObstructingObstacles(const Position& a, const Position& b) const
+{
+    std::vector<const Obstacle*> result;
+    const LineOfSight los { a, b };
+    auto rtree_intersect = bg::index::intersects(los);
+    for (auto it = mObstacleRtree.qbegin(rtree_intersect); it != mObstacleRtree.qend(); ++it) {
+        const Obstacle& obstacle = mObstacles[it->second];
+        if (bg::relate(los, obstacle.getOutline(), cutting)) {
+            result.push_back(&obstacle);
+        }
+    }
+    return result;
 }
 
 ObstacleIndex::Obstacle::Obstacle(std::vector<Position>&& shape) :
