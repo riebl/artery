@@ -13,6 +13,7 @@
 #include <boost/geometry/strategies/transform/matrix_transformers.hpp>
 #include <boost/range/adaptor/indexed.hpp>
 #include <boost/range/adaptor/transformed.hpp>
+#include <boost/units/cmath.hpp>
 #include <omnetpp/checkandcast.h>
 #include <algorithm>
 #include <array>
@@ -156,6 +157,39 @@ void VehicleIndex::Vehicle::calculateWorldOutline()
 
     ASSERT(mWorldOutline.size() == mLocalOutline.size());
     ASSERT(bg::is_valid(mWorldOutline));
+}
+
+std::vector<const VehicleIndex::Vehicle*>
+VehicleIndex::vehiclesEllipse(const Position& a, const Position& b, double r) const
+{
+    using boost::units::fmin;
+    using boost::units::fmax;
+
+    std::vector<const Vehicle*> vehicles;
+    const double d = bg::distance(a, b);
+    const double k = 0.5 * (r - d);
+
+    // Are positions a and b within (theoretical) communication range?
+    if (k >= 0.0) {
+        // coarse approximation of ellipse's bounding box
+        geometry::Box ebb;
+        bg::set<bg::min_corner, 0>(ebb, fmin(a.x, b.x).value() - k); // left
+        bg::set<bg::min_corner, 1>(ebb, fmin(a.y, b.y).value() - k); // top (y axis growing downwards)
+        bg::set<bg::max_corner, 0>(ebb, fmax(a.x, b.x).value() + k); // right
+        bg::set<bg::max_corner, 1>(ebb, fmax(a.y, b.y).value() + k); // bottom
+
+        auto rtree_intersect = bg::index::intersects(ebb);
+        for (auto it = mVehicleRtree.qbegin(rtree_intersect); it != mVehicleRtree.qend(); ++it) {
+            const Vehicle& vehicle = it->second->second;
+            const Position& c = vehicle.getMidpoint();
+            if (bg::distance(a, c) + bg::distance(b, c) <= r) {
+                // vehicle's center is within ellipse
+                vehicles.push_back(&vehicle);
+            }
+        }
+    }
+
+    return vehicles;
 }
 
 } // namespace gemv2

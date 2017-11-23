@@ -70,6 +70,16 @@ public:
      */
     std::vector<const Vehicle*> getObstructingVehicles(const Position& a, const Position& b) const;
 
+    /**
+     * Get vehicles with their center point being within the defined ellipse.
+     *
+     * The foci of the ellipse are a and b, respectively.
+     * Semi-major axis is 1/2 of given range.
+     *
+     * \return pointers to vehicles
+     */
+    std::vector<const Vehicle*> vehiclesEllipse(const Position& a, const Position& b, double range) const;
+
 private:
     using VehicleMap = std::map<std::string, Vehicle>;
     using RtreeValue = std::pair<geometry::Box, VehicleMap::const_iterator>;
