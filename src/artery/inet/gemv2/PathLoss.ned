@@ -7,6 +7,10 @@ module Gemv2 like IPathLoss
     parameters:
         @class(artery::gemv2::PathLoss);
         *.traciModule = default("traci");
+        bool withSmallScaleVariations = default(true);
+        double rangeLOS @unit(m) = default(1000 m);
+        double rangeNLOSv @unit(m) = default(400 m);
+        double rangeNLOSb @unit(m) = default(300 m);
 
     submodules:
         LOS: <default("TwoRayInterference")> like IPathLoss {
@@ -20,6 +24,12 @@ module Gemv2 like IPathLoss
 
         NLOSv: <default("LogNormalShadowing")> like IPathLoss {
             @display("p=20,60");
+        }
+
+        smallScaleVariations: SmallScaleVariation if withSmallScaleVariations {
+            @display("p=20,80");
+            obstacleIndexModule = "^.obstacles";
+            vehicleIndexModule = "^.vehicles";
         }
 
         obstacles: ObstacleIndex {

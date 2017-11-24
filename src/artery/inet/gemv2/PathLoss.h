@@ -7,6 +7,7 @@
 #ifndef PATHLOSS_H_ZABKB47G
 #define PATHLOSS_H_ZABKB47G
 
+#include <inet/common/Units.h>
 #include <inet/physicallayer/contract/packetlevel/IPathLoss.h>
 #include <omnetpp/csimplemodule.h>
 
@@ -15,12 +16,15 @@ namespace artery
 namespace gemv2
 {
 
-// forward declaration
+// forward declarations
 class LinkClassifier;
+class SmallScaleVariation;
 
 class PathLoss : public omnetpp::cSimpleModule, public inet::physicallayer::IPathLoss
 {
 public:
+    PathLoss();
+
     // OMNeT++ simple module
     void initialize() override;
 
@@ -30,10 +34,16 @@ public:
     inet::m computeRange(inet::mps, inet::Hz, double loss) const override;
 
 private:
+    using meter = inet::m;
+
     inet::physicallayer::IPathLoss* m_los;
     inet::physicallayer::IPathLoss* m_nlos_b;
     inet::physicallayer::IPathLoss* m_nlos_v;
     LinkClassifier* m_classifier;
+    SmallScaleVariation* m_small_scale;
+    meter m_range_los;
+    meter m_range_nlos_b;
+    meter m_range_nlos_v;
 };
 
 } // namespace gemv2
