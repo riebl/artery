@@ -71,6 +71,7 @@ if(TARGET INET)
         inet/gemv2/LinkClassifier.cc
         inet/gemv2/ObstacleIndex.cc
         inet/gemv2/PathLoss.cc
+        inet/gemv2/SmallScaleVariation.cc
         inet/gemv2/VehicleIndex.cc
         inet/VanetRx.cc)
     target_link_libraries(core PUBLIC INET)
