@@ -69,6 +69,7 @@ if(TARGET INET)
         inet/InetRadioDriver.cc
         inet/InetMobility.cc
         inet/gemv2/LinkClassifier.cc
+        inet/gemv2/NLOSv.cc
         inet/gemv2/ObstacleIndex.cc
         inet/gemv2/PathLoss.cc
         inet/gemv2/SmallScaleVariation.cc

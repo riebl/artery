@@ -22,8 +22,9 @@ module Gemv2 like IPathLoss
             @display("p=20,40");
         }
 
-        NLOSv: <default("LogNormalShadowing")> like IPathLoss {
+        NLOSv: <default("NLOSv")> like IPathLoss {
             @display("p=20,60");
+            vehicleIndexModule = "^.vehicles";
         }
 
         smallScaleVariations: SmallScaleVariation if withSmallScaleVariations {
