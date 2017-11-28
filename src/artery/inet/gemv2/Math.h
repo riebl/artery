@@ -7,6 +7,8 @@
 #ifndef ARTERY_GEMV2_MATH_H_RMEYTQN7
 #define ARTERY_GEMV2_MATH_H_RMEYTQN7
 
+#include <inet/common/Units.h>
+
 namespace artery
 {
 namespace gemv2
@@ -14,6 +16,12 @@ namespace gemv2
 
 // shortcut for squaring numbers (should be faster than pow(x, 2.0))
 constexpr double squared(double x) { return x * x; }
+
+template<typename U, typename V = double>
+inet::units::value<V, inet::units::pow<U, 2>> squared(inet::units::value<V, U> x)
+{
+    return x * x;
+}
 
 } // namespace gemv2
 } // namespace artery
