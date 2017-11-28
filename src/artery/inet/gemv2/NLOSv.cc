@@ -304,17 +304,13 @@ NLOSv::SideObstacles NLOSv::buildSideObstacles(const VehicleList& vehicles, cons
     return SideObstacles { std::move(diffOnLeftSide), std::move(diffOnRightSide) };
 }
 
-double NLOSv::combineDiffractionLoss(const DiffractionPath& a, const DiffractionPath& b, const DiffractionPath& c, m lambda) const
+double NLOSv::combineDiffractionLoss(const DiffractionPath& a, const DiffractionPath& b, const DiffractionPath& c, m /* lambda */) const
 {
-    static const double two_pi = 2.0 * M_PI;
-    // use smallest diffraction attenuation (maximum E-field) for reference distance d
+    // use only smallest diffraction attenuation (maximum E-field)
     const DiffractionPath& ref = std::min({a, b, c},
             [](const DiffractionPath& a, const DiffractionPath& b) { return a.attenuation < b.attenuation; });
-    const double phi_a = two_pi * static_cast<inet::unit>((ref.d - a.d) / lambda).get();
-    const double phi_b = two_pi * static_cast<inet::unit>((ref.d - b.d) / lambda).get();
-    const double phi_c = two_pi * static_cast<inet::unit>((ref.d - c.d) / lambda).get();
 
-    return squared(sqrt(1.0 / a.attenuation) * cos(phi_a) + sqrt(1.0 / b.attenuation) * cos(phi_b) + sqrt(1.0 / c.attenuation) * cos(phi_c));
+    return 1.0 / ref.attenuation;
 }
 
 namespace {
