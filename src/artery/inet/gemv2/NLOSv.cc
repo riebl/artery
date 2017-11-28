@@ -208,7 +208,7 @@ DiffractionPath NLOSv::computeMultipleKnifeEdge(const std::list<DiffractionObsta
     }
     C /= mainObsDistances.front().get() * mainObsDistances.back().get() * pairwiseDistProduct;
 
-    path.attenuation = inet::math::dB2fraction(attMainObs + attSecObs) * C;
+    path.attenuation = inet::math::dB2fraction(attMainObs + attSecObs) / C;
     ASSERT(path.attenuation >= 1.0);
     return path;
 }
