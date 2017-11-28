@@ -272,10 +272,14 @@ NLOSv::SideObstacles NLOSv::buildSideObstacles(const VehicleList& vehicles, cons
                continue;
             }
 
-            if (current.l > 0.0 && leftmost.l < current.l) {
-                leftmost = current;
-            } else if (current.l < 0.0 && rightmost.l > current.l) {
-                rightmost = current;
+            if (current.l > 0.0) {
+                if (leftmost.l < current.l) {
+                    leftmost = current;
+                }
+            } else if (current.l < 0.0) {
+                if (rightmost.l > current.l) {
+                    rightmost = current;
+                }
             } else {
                 // exactly on TxRx line -> possibly left or right maximum (even both)
                 if (leftmost.l < current.l) {
