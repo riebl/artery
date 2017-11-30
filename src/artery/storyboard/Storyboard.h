@@ -1,8 +1,8 @@
-#ifndef STORYBOARD_H_
-#define STORYBOARD_H_
+#ifndef ARTERY_STORYBOARD_H_6AOIDBWG
+#define ARTERY_STORYBOARD_H_6AOIDBWG
 
 #include <map>
-#include <boost/python.hpp>
+#include <memory>
 #include <omnetpp/ccanvas.h>
 #include <omnetpp/clistener.h>
 #include <omnetpp/csimplemodule.h>
@@ -13,47 +13,42 @@
 class Effect;
 class Story;
 class Vehicle;
+namespace pybind11 { class module; }
+
+namespace artery
+{
 
 class Storyboard : public omnetpp::cSimpleModule, public omnetpp::cListener
 {
-private:
+public:
+    Storyboard();
 
-    /**
-     * Initializes the Storyboard
-     * Handled by Omnet++
-     */
-    virtual void initialize(int) override;
-
-    /**
-     * Recieves messages, sent to the Storyboard
-     * Handled by Omnet++
-     */
-    virtual void handleMessage(omnetpp::cMessage * msg);
-
+    // omnetpp::cSimpleModule
+    void initialize(int) override;
+    int numInitStages() const override;
+    void handleMessage(omnetpp::cMessage * msg) override;
+    // omnetpp::cListener
     void receiveSignal(cComponent* source, omnetpp::simsignal_t, const char*, cObject*) override;
     void receiveSignal(cComponent* source, omnetpp::simsignal_t, const omnetpp::SimTime&, cObject*) override;
-
-    void drawConditions();
-
-    boost::python::object module;
-    std::vector<std::shared_ptr<Story>> m_stories;
-    std::map<Vehicle*, EffectStack> m_affectedCars;
-    std::map<std::string, Vehicle> m_vehicles;
-    bool mDrawConditions;
-    omnetpp::cCanvas* mCanvas = nullptr;
-
-public:
-    /**
-     * Updates the storyboard by checking all stories
-     * Is called each time TraCIScenarioManager processes one omnet step
-     */
-    void updateStoryboard();
 
     /**
      * Registers a story created in the python script
      * \param shared_ptr to a story, which should be executed from the storyboard
      */
     void registerStory(std::shared_ptr<Story>);
+
+    class PythonContext
+    {
+    public:
+        virtual pybind11::module& module() = 0;
+    };
+
+private:
+    /**
+     * Updates the storyboard by checking all stories
+     * Is called each time TraCIScenarioManager processes one omnet step
+     */
+    void updateStoryboard();
 
     /**
      * Adds all effects generated from a story
@@ -84,7 +79,20 @@ public:
      */
     void checkCar(Vehicle&, ConditionResult&, Story*);
 
-    int numInitStages() const override;
+    /**
+     * Iterate over all conditions associated with registered stories and draw them on canvas
+     */
+    void drawConditions();
+
+    std::unique_ptr<PythonContext> m_python;
+    std::vector<std::shared_ptr<Story>> m_stories;
+    std::map<Vehicle*, EffectStack> m_affectedCars;
+    std::map<std::string, Vehicle> m_vehicles;
+    bool mDrawConditions;
+    omnetpp::cCanvas* mCanvas = nullptr;
 };
 
-#endif /* STORYBOARD_H_ */
+} // namespace artery
+
+#endif /* ARTERY_STORYBOARD_H_6AOIDBWG */
+

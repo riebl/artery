@@ -32,7 +32,7 @@ public:
 };
 
 
-OrCondition::OrCondition(Condition* left, Condition* right) :
+OrCondition::OrCondition(ConditionPtr left, ConditionPtr right) :
     m_left(left), m_right(right)
 {
 }

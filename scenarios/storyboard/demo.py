@@ -20,7 +20,7 @@ def createStories():
 	cond1 = storyboard.TimeCondition(timeline.milliseconds(15000))
 
 	# Create CarSetCondition
-	cond2 = storyboard.CarSetCondition(["flow1.0", "flow0.1", "flow0.2"])
+	cond2 = storyboard.CarSetCondition({"flow1.0", "flow0.1", "flow0.2"})
 
 	# Create SpeedEffect
 	effect0 = storyboard.SpeedEffect(2.44)
@@ -43,7 +43,7 @@ def createStories():
 
 	# Create Story 3, overlapping story0
 	cond5 = storyboard.TimeCondition(timeline.seconds(200), timeline.seconds(210))
-	cond6 = storyboard.CarSetCondition(["flow0.0", "flow0.1"])
+	cond6 = storyboard.CarSetCondition({"flow0.0", "flow0.1"})
 	and2 = storyboard.AndCondition(cond5, cond6)
 	effect2 = storyboard.SpeedEffect(0.1)
 	story2 = storyboard.Story(and2, [effect2])

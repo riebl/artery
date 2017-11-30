@@ -3,6 +3,7 @@
 
 #include "artery/storyboard/Condition.h"
 #include <algorithm>
+#include <memory>
 
 /**
  * Class to create a Tree of AndConditions
@@ -10,7 +11,9 @@
 class AndCondition : public Condition
 {
 public:
-    AndCondition(Condition*, Condition*);
+    using ConditionPtr = std::shared_ptr<Condition>;
+
+    AndCondition(ConditionPtr, ConditionPtr);
 
     /**
      * Tests if the condition is true for one car
@@ -22,8 +25,8 @@ public:
     void drawCondition(omnetpp::cCanvas*) override;
 
 private:
-    Condition* m_left;
-    Condition* m_right;
+    ConditionPtr m_left;
+    ConditionPtr m_right;
 };
 
 #endif /* ANDCONDITION_H_ */

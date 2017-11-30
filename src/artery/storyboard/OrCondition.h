@@ -2,6 +2,7 @@
 #define ORCONDITION_H_
 
 #include "artery/storyboard/Condition.h"
+#include <memory>
 
 /**
  * Class to create a Tree of OrConditions
@@ -9,7 +10,9 @@
 class OrCondition : public Condition
 {
 public:
-    OrCondition(Condition*, Condition*);
+    using ConditionPtr = std::shared_ptr<Condition>;
+
+    OrCondition(ConditionPtr, ConditionPtr);
 
     /**
      * Tests if the condition is true for one car
@@ -21,8 +24,8 @@ public:
     void drawCondition(omnetpp::cCanvas*) override;
 
 private:
-    Condition* m_left;
-    Condition* m_right;
+    ConditionPtr m_left;
+    ConditionPtr m_right;
 };
 
 #endif /* ORCONDITION_H_ */

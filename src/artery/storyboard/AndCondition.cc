@@ -32,7 +32,7 @@ public:
 };
 
 
-AndCondition::AndCondition(Condition* left, Condition* right) :
+AndCondition::AndCondition(ConditionPtr left, ConditionPtr right) :
     m_left(left), m_right(right)
 {
 }

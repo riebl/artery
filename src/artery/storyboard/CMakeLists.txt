@@ -1,8 +1,6 @@
-find_package(Boost COMPONENTS python REQUIRED)
-find_package(PythonLibs REQUIRED)
-
 add_artery_feature(storyboard
     AndCondition.cc
+    Binding.cc
     CarSetCondition.cc
     ConditionResult.cc
     Effect.cc
@@ -25,5 +23,5 @@ add_artery_feature(storyboard
     Vehicle.cc
 )
 
-target_include_directories(storyboard PUBLIC ${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
-target_link_libraries(storyboard PUBLIC ${Boost_PYTHON_LIBRARY} ${PYTHON_LIBRARIES})
+add_subdirectory(${PROJECT_SOURCE_DIR}/extern/pybind11 pybind11)
+target_link_libraries(storyboard pybind11::embed)

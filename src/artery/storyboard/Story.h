@@ -1,10 +1,11 @@
 #ifndef STORY_H_
 #define STORY_H_
 
-#include <vector>
 #include "artery/storyboard/Condition.h"
 #include "artery/storyboard/EffectFactory.h"
 #include "artery/storyboard/Vehicle.h"
+#include <memory>
+#include <vector>
 
 class Storyboard;
 class EffectFactory;
@@ -16,7 +17,9 @@ class EffectFactory;
 class Story
 {
 public:
-    Story(Condition*, std::vector<EffectFactory*>);
+    using EffectFactories = std::vector<std::shared_ptr<EffectFactory>>;
+
+    Story(std::shared_ptr<Condition>, EffectFactories);
 
     /**
      * Tests the car if the condition is true
@@ -28,13 +31,13 @@ public:
     /**
      * Returns vector containing all EffectFactories
      */
-    std::vector<EffectFactory*> getEffectFactories();
+    std::vector<std::shared_ptr<EffectFactory>> getEffectFactories();
 
-    Condition* getCondition() { return m_condition; }
+    std::shared_ptr<Condition> getCondition() { return m_condition; }
 
 private:
-    Condition* m_condition;
-    std::vector<EffectFactory*> m_factories;
+    std::shared_ptr<Condition> m_condition;
+    EffectFactories m_factories;
 };
 
 #endif /* STORY_H_ */

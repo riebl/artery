@@ -1,13 +1,17 @@
 #include "artery/storyboard/Storyboard.h"
-#include "artery/storyboard/PythonModule.h"
 #include "artery/storyboard/Story.h"
 #include "artery/storyboard/Effect.h"
 #include "artery/traci/VehicleController.h"
 #include "inet/common/ModuleAccess.h"
 #include <omnetpp/ccomponent.h>
 #include <omnetpp/cexception.h>
+#include <pybind11/embed.h>
 
 using namespace omnetpp;
+namespace py = pybind11;
+
+namespace artery
+{
 
 Define_Module(Storyboard)
 
@@ -18,8 +22,23 @@ const auto traciAddNodeSignal = omnetpp::cComponent::registerSignal("traci.node.
 const auto traciRemoveNodeSignal = omnetpp::cComponent::registerSignal("traci.node.remove");
 const auto traciStepSignal = omnetpp::cComponent::registerSignal("traci.step");
 
-}
+class PythonContextImpl : public Storyboard::PythonContext
+{
+public:
+    pybind11::module& module() override { return m_module; }
 
+private:
+    pybind11::scoped_interpreter m_interpreter;
+    pybind11::module m_module;
+};
+
+} // namespace
+
+
+Storyboard::Storyboard() :
+    m_python(new PythonContextImpl())
+{
+}
 
 void Storyboard::initialize(int stage)
 {
@@ -34,32 +53,20 @@ void Storyboard::initialize(int stage)
         traci->subscribe(traciRemoveNodeSignal, this);
         traci->subscribe(traciStepSignal, this);
 
-        // Import staticly linked modules
-#       if PY_VERSION_HEX >= 0x03000000
-        PyImport_AppendInittab("storyboard", &PyInit_storyboard);
-        PyImport_AppendInittab("timeline", &PyInit_timeline);
-#       else
-        PyImport_AppendInittab("storyboard", &initstoryboard);
-        PyImport_AppendInittab("timeline", &inittimeline);
-#       endif
-
-        // Initialize python
-        Py_Initialize();
-
         try {
             // Append directory containing omnetpp.ini to Python import path
             const auto& netConfigEntry = getEnvir()->getConfig()->getConfigEntry("network");
             const char* simBaseDir = netConfigEntry.getBaseDirectory();
             assert(simBaseDir);
-            python::import("sys").attr("path").attr("append")(simBaseDir);
+            py::module::import("sys").attr("path").attr("append")(simBaseDir);
             EV_INFO << "Appended " << simBaseDir << " to Python system path" << endl;
 
             // Load module containing storyboard description
-            module = python::import(par("python").stringValue());
-            module.attr("board") = boost::cref(*this);
-            module.attr("createStories") ();
+            m_python->module() = py::module::import(par("python").stringValue());
+            m_python->module().attr("board") = this;
+            m_python->module().attr("createStories")();
 
-        } catch (const python::error_already_set&) {
+        } catch (const py::error_already_set&) {
             PyErr_Print();
             throw;
         }
@@ -191,3 +198,6 @@ int Storyboard::numInitStages() const
 {
     return 2;
 }
+
+} // namespace artery
+

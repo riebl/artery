@@ -1,7 +1,7 @@
 #include "artery/storyboard/Story.h"
 #include "artery/storyboard/Storyboard.h"
 
-Story::Story(Condition* condition, std::vector<EffectFactory*> factories) :
+Story::Story(std::shared_ptr<Condition> condition, EffectFactories factories) :
     m_condition(condition), m_factories(factories)
 {
 }
@@ -11,6 +11,6 @@ ConditionResult Story::testCondition(const Vehicle& car)
     return (m_condition->testCondition(car));
 }
 
-std::vector<EffectFactory*> Story::getEffectFactories() {
+auto Story::getEffectFactories() -> EffectFactories {
     return m_factories;
 }
