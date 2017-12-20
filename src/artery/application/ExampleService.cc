@@ -34,7 +34,7 @@ ExampleService::ExampleService()
 void ExampleService::indicate(const btp::DataIndication& ind, cPacket* packet)
 {
 	if (packet->getByteLength() == 42) {
-		findHost()->bubble("packet indication");
+		EV_INFO << "packet indication\n";
 	}
 
 	delete(packet);
@@ -59,7 +59,7 @@ void ExampleService::handleMessage(cMessage* msg)
 {
 	Enter_Method("handleMessage");
 	if (msg == m_self_msg) {
-		findHost()->bubble("self message");
+		EV_INFO << "self message\n";
 	}
 }
 
@@ -81,6 +81,6 @@ void ExampleService::receiveSignal(cComponent* source, simsignal_t signal, cObje
 {
 	if (signal == scSignalCamReceived) {
 		auto& vehicle = getFacilities().get_const<traci::VehicleController>();
-		EV << "Vehicle " << vehicle.getVehicleId() << " received a CAM in sibling serivce\n";
+		EV_INFO << "Vehicle " << vehicle.getVehicleId() << " received a CAM in sibling serivce\n";
 	}
 }
