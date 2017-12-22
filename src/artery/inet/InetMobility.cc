@@ -2,8 +2,14 @@
 #include "artery/traci/VehicleController.h"
 #include <inet/common/ModuleAccess.h>
 #include <inet/common/geometry/common/CanvasProjection.h>
-#include <inet/visualizer/mobility/MobilityCanvasVisualizer.h>
+#include <inet/features.h>
 #include <cmath>
+
+#ifdef WITH_VISUALIZERS
+#   include <inet/visualizer/mobility/MobilityCanvasVisualizer.h>
+#else
+#   include <cstdio>
+#endif
 
 Define_Module(InetMobility)
 
@@ -82,8 +88,20 @@ void InetMobility::update(const Position& pos, Angle heading, double speed)
 
 void InetMobility::updateVisualRepresentation()
 {
+    // following code is taken from INET's MobilityBase::updateVisualRepresentation
     if (hasGUI() && mVisualRepresentation) {
+#ifdef WITH_VISUALIZERS
         using inet::visualizer::MobilityCanvasVisualizer;
         MobilityCanvasVisualizer::setPosition(mVisualRepresentation, mCanvasProjection->computeCanvasPoint(getCurrentPosition()));
+#else
+        auto position = mCanvasProjection->computeCanvasPoint(getCurrentPosition());
+        char buf[32];
+        snprintf(buf, sizeof(buf), "%lf", position.x);
+        buf[sizeof(buf) - 1] = 0;
+        mVisualRepresentation->getDisplayString().setTagArg("p", 0, buf);
+        snprintf(buf, sizeof(buf), "%lf", position.y);
+        buf[sizeof(buf) - 1] = 0;
+        mVisualRepresentation->getDisplayString().setTagArg("p", 1, buf);
+#endif
     }
 }
