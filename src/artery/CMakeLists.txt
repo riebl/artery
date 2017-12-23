@@ -36,11 +36,12 @@ add_library(messages OBJECT
     messages/GeoNetPacket_m.cc)
 set_target_properties(messages PROPERTIES
     POSITION_INDEPENDENT_CODE ON
-    INCLUDE_DIRECTORIES $<TARGET_PROPERTY:artery,INCLUDE_DIRECTORIES>)
+    INCLUDE_DIRECTORIES $<TARGET_PROPERTY:core,INCLUDE_DIRECTORIES>)
 
 find_package(Boost COMPONENTS date_time system REQUIRED)
 
-add_library(artery SHARED
+add_library(artery INTERFACE)
+add_library(core SHARED
     application/CaObject.cc
     application/CaService.cc
     application/ExampleService.cc
@@ -66,18 +67,23 @@ add_library(artery SHARED
     utility/Geometry.cc
     $<TARGET_OBJECTS:messages>
 )
+target_link_libraries(artery INTERFACE core)
+add_library(Artery::Core ALIAS core)
 
-set_property(TARGET artery PROPERTY NED_FOLDERS ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(artery PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_include_directories(artery PUBLIC ${Boost_INCLUDE_DIRS})
-target_link_libraries(artery PUBLIC ${Boost_LIBRARIES})
-target_link_libraries(artery PUBLIC opp_interface)
-target_link_libraries(artery PUBLIC traci)
-target_link_libraries(artery PUBLIC Vanetza::vanetza)
+set_target_properties(core PROPERTIES
+    OUTPUT_NAME artery_core
+    OMNETPP_LIBRARY ON
+    NED_FOLDERS ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(core PUBLIC ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(core PUBLIC ${Boost_INCLUDE_DIRS})
+target_link_libraries(core PUBLIC ${Boost_LIBRARIES})
+target_link_libraries(core PUBLIC opp_interface)
+target_link_libraries(core PUBLIC traci)
+target_link_libraries(core PUBLIC Vanetza::vanetza)
 
 if(TARGET veins)
     message(STATUS "Enable Veins integration")
-    set_property(TARGET artery APPEND PROPERTY SOURCES
+    set_property(TARGET core APPEND PROPERTY SOURCES
         mac/CarrierSensing.cc
         mac/ChannelLoadMeasurements.cc
         mac/Edca.cc
@@ -87,27 +93,30 @@ if(TARGET veins)
         veins/VeinsConnectionManager.cc
         veins/VeinsMobility.cc
         veins/VeinsObstacleControl.cc)
-    target_link_libraries(artery PUBLIC veins)
+    target_link_libraries(core PUBLIC veins)
 endif()
 
 if(TARGET INET)
     message(STATUS "Enable INET integration")
-    set_property(TARGET artery APPEND PROPERTY SOURCES
+    set_property(TARGET core APPEND PROPERTY SOURCES
         inet/InetRadioDriver.cc
         inet/InetMobility.cc
         inet/VanetRx.cc)
-    target_link_libraries(artery PUBLIC INET)
+    target_link_libraries(core PUBLIC INET)
 endif()
 
 macro(add_artery_feature name)
     add_library(${name} SHARED ${ARGN})
+    add_library(Artery::${name} ALIAS ${name})
     set_target_properties(${name} PROPERTIES
-        INCLUDE_DIRECTORIES $<TARGET_PROPERTY:artery,INCLUDE_DIRECTORIES>)
+        OUTPUT_NAME artery_${name}
+        OMNETPP_LIBRARY ON)
+    target_link_libraries(${name} PRIVATE core)
+    target_link_libraries(artery INTERFACE Artery::${name})
 endmacro()
 
 if(WITH_STORYBOARD)
     add_subdirectory(storyboard)
-    target_link_libraries(artery PRIVATE storyboard)
 
     # DENM service depends on StoryboardSignal
     add_artery_feature(denm
@@ -117,17 +126,15 @@ if(WITH_STORYBOARD)
         application/DenmService.cc
         application/ImpactReductionUseCase.cc
         application/TrafficJamUseCase.cc)
-    target_link_libraries(artery PRIVATE denm)
+    target_link_libraries(denm PUBLIC storyboard)
 endif()
 
 if(WITH_TRANSFUSION)
     add_subdirectory(transfusion)
-    target_link_libraries(artery PRIVATE transfusion)
 endif()
 
 if(WITH_ENVMOD)
     add_subdirectory(envmod)
-    target_link_libraries(artery PRIVATE envmod)
     set_property(SOURCE application/VehicleMiddleware.cc APPEND PROPERTY COMPILE_DEFINITIONS "WITH_ENVMOD")
 endif()
 

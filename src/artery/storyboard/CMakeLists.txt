@@ -25,4 +25,4 @@ add_artery_feature(storyboard
 
 find_package(PythonLibs REQUIRED)
 add_subdirectory(${PROJECT_SOURCE_DIR}/extern/pybind11 pybind11)
-target_link_libraries(storyboard pybind11::embed)
+target_link_libraries(storyboard PRIVATE pybind11::embed)
