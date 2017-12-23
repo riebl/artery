@@ -4,13 +4,13 @@ find_path(OMNETPP_INCLUDE_DIR NAMES omnetpp.h PATHS ${OMNETPP_ROOT}/include DOC 
 
 if(EXISTS ${OMNETPP_ROOT}/Makefile.inc)
     # extract version from Makefile.inc
-    file(STRINGS ${OMNETPP_ROOT}/Makefile.inc _inc_version REGEX "^OMNETPP_VERSION = (.*)")
-    string(REGEX MATCH "([0-9.]+)$" _match_version ${_inc_version})
+    file(STRINGS ${OMNETPP_ROOT}/Makefile.inc _inc_version REGEX "^OMNETPP_VERSION =")
+    string(REGEX MATCH "([0-9.]+)$" _match_version "${_inc_version}")
     set(OMNETPP_VERSION ${CMAKE_MATCH_1})
 
     # extract compile definitions from Makefile.inc
-    file(STRINGS ${OMNETPP_ROOT}/Makefile.inc _cflags_release REGEX "^CFLAGS_RELEASE = .*")
-    string(REGEX MATCHALL "-D[^ ]+" _cflags_release_definitions ${_cflags_release})
+    file(STRINGS ${OMNETPP_ROOT}/Makefile.inc _cflags_release REGEX "^CFLAGS_RELEASE =")
+    string(REGEX MATCHALL "-D[^ ]+" _cflags_release_definitions "${_cflags_release}")
     foreach(_cflag_release_definition IN LISTS _cflags_release_definitions)
         if (NOT _cflag_release_definition MATCHES "-DNDEBUG=?")
             string(SUBSTRING ${_cflag_release_definition} 2 -1 _compile_definition)
