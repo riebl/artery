@@ -8,6 +8,7 @@
 #include "artery/application/ImpactReductionUseCase.h"
 #include "artery/application/VehicleDataProvider.h"
 #include "artery/storyboard/StoryboardSignal.h"
+#include <omnetpp/cexception.h>
 
 namespace artery
 {
