@@ -54,14 +54,8 @@ add_library(artery SHARED
     application/Timer.cc
     application/VehicleDataProvider.cc
     application/VehicleMiddleware.cc
-    mac/CarrierSensing.cc
-    mac/ChannelLoadMeasurements.cc
-    mac/Edca.cc
-    mac/EdcaQueue.cc
-    mac/MacItsG5.cc
     netw/GeoNetPacketWrapper.cc
     nic/RadioDriverBase.cc
-    nic/VeinsRadioDriver.cc
     traci/MobilityBase.cc
     traci/VehicleController.cc
     traci/VehicleType.cc
@@ -70,9 +64,6 @@ add_library(artery SHARED
     utility/IdentityRegistry.cc
     utility/FilterRules.cc
     utility/Geometry.cc
-    veins/VeinsConnectionManager.cc
-    veins/VeinsMobility.cc
-    veins/VeinsObstacleControl.cc
     $<TARGET_OBJECTS:messages>
 )
 
@@ -82,8 +73,22 @@ target_include_directories(artery PUBLIC ${Boost_INCLUDE_DIRS})
 target_link_libraries(artery PUBLIC ${Boost_LIBRARIES})
 target_link_libraries(artery PUBLIC opp_interface)
 target_link_libraries(artery PUBLIC traci)
-target_link_libraries(artery PUBLIC veins)
 target_link_libraries(artery PUBLIC Vanetza::vanetza)
+
+if(TARGET veins)
+    message(STATUS "Enable Veins integration")
+    set_property(TARGET artery APPEND PROPERTY SOURCES
+        mac/CarrierSensing.cc
+        mac/ChannelLoadMeasurements.cc
+        mac/Edca.cc
+        mac/EdcaQueue.cc
+        mac/MacItsG5.cc
+        nic/VeinsRadioDriver.cc
+        veins/VeinsConnectionManager.cc
+        veins/VeinsMobility.cc
+        veins/VeinsObstacleControl.cc)
+    target_link_libraries(artery PUBLIC veins)
+endif()
 
 if(TARGET INET)
     message(STATUS "Enable INET integration")
