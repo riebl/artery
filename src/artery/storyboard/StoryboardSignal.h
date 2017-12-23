@@ -1,7 +1,6 @@
 #ifndef STORYBOARDSIGNAL_H_W6RAFKKY
 #define STORYBOARDSIGNAL_H_W6RAFKKY
 
-#include "artery/storyboard/Condition.h"
 #include <omnetpp/cobject.h>
 #include <set>
 #include <string>
