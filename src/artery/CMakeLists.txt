@@ -44,8 +44,13 @@ add_library(artery INTERFACE)
 add_library(core SHARED
     application/CaObject.cc
     application/CaService.cc
+    application/DenmMemory.cc
+    application/DenmObject.cc
+    application/DenmUseCase.cc
+    application/DenmService.cc
     application/ExampleService.cc
     application/Facilities.cc
+    application/ImpactReductionUseCase.cc
     application/ItsG5BaseService.cc
     application/ItsG5PromiscuousService.cc
     application/ItsG5Service.cc
@@ -54,6 +59,7 @@ add_library(core SHARED
     application/StationaryMiddleware.cc
     application/StoryboardSignal.cc
     application/Timer.cc
+    application/TrafficJamUseCase.cc
     application/VehicleDataProvider.cc
     application/VehicleMiddleware.cc
     netw/GeoNetPacketWrapper.cc
@@ -118,16 +124,6 @@ endmacro()
 
 if(WITH_STORYBOARD)
     add_subdirectory(storyboard)
-
-    # DENM service depends on StoryboardSignal
-    add_artery_feature(denm
-        application/DenmMemory.cc
-        application/DenmObject.cc
-        application/DenmUseCase.cc
-        application/DenmService.cc
-        application/ImpactReductionUseCase.cc
-        application/TrafficJamUseCase.cc)
-    target_link_libraries(denm PUBLIC storyboard)
 endif()
 
 if(WITH_TRANSFUSION)
