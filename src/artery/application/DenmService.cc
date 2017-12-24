@@ -10,8 +10,8 @@
 #include "artery/application/LocalDynamicMap.h"
 #include "artery/application/Timer.h"
 #include "artery/application/ImpactReductionUseCase.h"
+#include "artery/application/StoryboardSignal.h"
 #include "artery/application/TrafficJamUseCase.h"
-#include "artery/storyboard/StoryboardSignal.h"
 #include <boost/units/base_units/metric/hour.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
 #include <omnetpp/checkandcast.h>

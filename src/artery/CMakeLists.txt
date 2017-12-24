@@ -52,6 +52,7 @@ add_library(core SHARED
     application/LocalDynamicMap.cc
     application/Middleware.cc
     application/StationaryMiddleware.cc
+    application/StoryboardSignal.cc
     application/Timer.cc
     application/VehicleDataProvider.cc
     application/VehicleMiddleware.cc

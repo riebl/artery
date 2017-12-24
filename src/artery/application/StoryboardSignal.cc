@@ -1,4 +1,4 @@
-#include "artery/storyboard/StoryboardSignal.h"
+#include "artery/application/StoryboardSignal.h"
 #include <omnetpp.h>
 
 Register_Class(StoryboardSignal)

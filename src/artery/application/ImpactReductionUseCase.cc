@@ -6,8 +6,8 @@
 
 #include "artery/application/DenmObject.h"
 #include "artery/application/ImpactReductionUseCase.h"
+#include "artery/application/StoryboardSignal.h"
 #include "artery/application/VehicleDataProvider.h"
-#include "artery/storyboard/StoryboardSignal.h"
 #include <omnetpp/cexception.h>
 
 namespace artery

@@ -16,7 +16,6 @@ add_artery_feature(storyboard
     StopEffect.cc
     StopEffectFactory.cc
     Storyboard.cc
-    StoryboardSignal.cc
     Story.cc
     TimeCondition.cc
     TtcCondition.cc

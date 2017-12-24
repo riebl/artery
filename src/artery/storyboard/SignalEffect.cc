@@ -1,5 +1,5 @@
 #include "artery/storyboard/SignalEffect.h"
-#include "artery/storyboard/StoryboardSignal.h"
+#include "artery/application/StoryboardSignal.h"
 
 using namespace omnetpp;
 

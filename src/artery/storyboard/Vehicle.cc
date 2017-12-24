@@ -1,5 +1,5 @@
 #include "artery/storyboard/Vehicle.h"
-#include "artery/storyboard/StoryboardSignal.h"
+#include "artery/application/StoryboardSignal.h"
 #include <omnetpp/ccomponent.h>
 
 using namespace omnetpp;
