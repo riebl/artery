@@ -95,13 +95,10 @@ using units::clock_cast;
 
 template<typename PDU>
 auto create_forwarding_duplicate(const PDU& pdu, const UpPacket& packet) ->
-std::tuple<
-    std::unique_ptr<typename std::remove_pointer<decltype(pdu.clone())>::type>,
-    std::unique_ptr<DownPacket>
->
+std::tuple<std::unique_ptr<ExtendedPdu<typename PDU::ExtendedHeader>>, std::unique_ptr<DownPacket>>
 {
-    using PduCloneType = typename std::remove_pointer<decltype(pdu.clone())>::type;
-    std::unique_ptr<PduCloneType> pdu_dup { pdu.clone() };
+    using pdu_type = ExtendedPdu<typename PDU::ExtendedHeader>;
+    std::unique_ptr<pdu_type> pdu_dup { new pdu_type { pdu }};
     std::unique_ptr<DownPacket> packet_dup;
     if (pdu.secured()) {
         packet_dup.reset(new DownPacket());
@@ -216,7 +213,6 @@ DataConfirm Router::request(const GbcDataRequest& request, DownPacketPtr payload
         auto pdu = create_gbc_pdu(request);
         pdu->common().payload = payload->size();
 
-
         // Set up packet repetition (plaintext payload)
         if (request.repetition) {
             assert(payload);
@@ -311,33 +307,60 @@ void Router::indicate(UpPacketPtr packet, const MacAddress& sender, const MacAdd
     IndicationContext::LinkLayer link_layer;
     link_layer.sender = sender;
     link_layer.destination = destination;
-    UpPacket* packet_tmp = packet.get();
+
+    UpPacket* packet_ptr = packet.get();
     indication_visitor visitor(*this, link_layer, std::move(packet));
-    boost::apply_visitor(visitor, *packet_tmp);
+    boost::apply_visitor(visitor, *packet_ptr);
 }
 
-void Router::indicate_basic(IndicationContext& ctx)
+void Router::indicate_basic(IndicationContextBasic& ctx)
 {
-    BasicHeader* basic = ctx.parse_basic();
+    const BasicHeader* basic = ctx.parse_basic();
     if (!basic) {
         packet_dropped(PacketDropReason::PARSE_BASIC_HEADER);
     } else if (basic->version.raw() != m_mib.itsGnProtocolVersion) {
         packet_dropped(PacketDropReason::ITS_PROTOCOL_VERSION);
-    } else if (basic->next_header == NextHeaderBasic::SECURED) {
-        indicate_secured(ctx, *basic);
-    } else if (basic->next_header == NextHeaderBasic::COMMON) {
-        indicate_common(ctx, *basic);
+    } else {
+        DataIndication& indication = ctx.service_primitive();
+        indication.remaining_packet_lifetime = basic->lifetime;
+        indication.remaining_hop_limit = basic->hop_limit;
+
+        if (basic->next_header == NextHeaderBasic::SECURED) {
+            indication.security_report = security::DecapReport::Incompatible_Protocol;
+            indicate_secured(ctx, *basic);
+        } else if (basic->next_header == NextHeaderBasic::COMMON) {
+            indication.security_report = security::DecapReport::Unsigned_Message,
+            indicate_common(ctx, *basic);
+        }
     }
 }
 
 void Router::indicate_common(IndicationContext& ctx, const BasicHeader& basic)
 {
-    CommonHeader* common = ctx.parse_common();
+    const CommonHeader* common = ctx.parse_common();
     if (!common) {
         packet_dropped(PacketDropReason::PARSE_COMMON_HEADER);
     } else if (common->maximum_hop_limit < basic.hop_limit) {
         packet_dropped(PacketDropReason::HOP_LIMIT);
     } else {
+        DataIndication& indication = ctx.service_primitive();
+        indication.traffic_class = common->traffic_class;
+        switch (common->next_header)
+        {
+            case NextHeaderCommon::BTP_A:
+                indication.upper_protocol = UpperProtocol::BTP_A;
+                break;
+            case NextHeaderCommon::BTP_B:
+                indication.upper_protocol = UpperProtocol::BTP_B;
+                break;
+            case NextHeaderCommon::IPv6:
+                indication.upper_protocol = UpperProtocol::IPv6;
+                break;
+            default:
+                indication.upper_protocol = UpperProtocol::Unknown;
+                break;
+        }
+
         // clean up location table at packet indication (nothing else creates entries)
         m_location_table.drop_expired();
         flush_broadcast_forwarding_buffer();
@@ -345,29 +368,29 @@ void Router::indicate_common(IndicationContext& ctx, const BasicHeader& basic)
     }
 }
 
-void Router::indicate_secured(IndicationContext& ctx, const BasicHeader& basic)
+void Router::indicate_secured(IndicationContextBasic& ctx, const BasicHeader& basic)
 {
     struct secured_payload_visitor : public boost::static_visitor<>
     {
-        secured_payload_visitor(Router& router, IndicationContext& ctx, const BasicHeader& basic) :
-            m_router(router), m_parent_ctx(ctx), m_basic(basic)
+        secured_payload_visitor(Router& router, IndicationContextBasic& ctx, const BasicHeader& basic) :
+            m_router(router), m_context(ctx), m_basic(basic)
         {
         }
 
         void operator()(ChunkPacket& packet)
         {
-            IndicationContextSecuredCast ctx(m_parent_ctx, packet);
+            IndicationContextSecuredCast ctx(m_context, packet);
             m_router.indicate_common(ctx, m_basic);
         }
 
         void operator()(CohesivePacket& packet)
         {
-            IndicationContextSecuredDeserialize ctx(m_parent_ctx, packet);
+            IndicationContextSecuredDeserialize ctx(m_context, packet);
             m_router.indicate_common(ctx, m_basic);
         }
 
         Router& m_router;
-        IndicationContext& m_parent_ctx;
+        IndicationContextBasic& m_context;
         const BasicHeader& m_basic;
     };
 
@@ -378,6 +401,7 @@ void Router::indicate_secured(IndicationContext& ctx, const BasicHeader& basic)
         // Decap packet
         using namespace vanetza::security;
         DecapConfirm decap_confirm = m_security_entity->decapsulate_packet(DecapRequest(*secured_message));
+        ctx.service_primitive().security_report = decap_confirm.report;
         secured_payload_visitor visitor(*this, ctx, basic);
 
         // check whether the received packet is valid
@@ -418,50 +442,62 @@ void Router::indicate_secured(IndicationContext& ctx, const BasicHeader& basic)
 
 void Router::indicate_extended(IndicationContext& ctx, const CommonHeader& common)
 {
-    struct extended_header_visitor : public boost::static_visitor<>
+    struct extended_header_visitor : public boost::static_visitor<bool>
     {
-        extended_header_visitor(Router* router, IndicationContext& ctx, UpPacketPtr packet) :
-            m_router(router), m_context(ctx), m_packet(std::move(packet))
+        extended_header_visitor(Router& router, IndicationContext& ctx, const UpPacket& packet) :
+            m_router(router), m_context(ctx), m_packet(packet)
         {
         }
 
-        void operator()(const ShbHeader& shb)
+        bool operator()(const ShbHeader& shb)
         {
+            DataIndication& indication = m_context.service_primitive();
+            indication.transport_type = TransportType::SHB;
+            indication.source_position = static_cast<ShortPositionVector>(shb.source_position);
+
             auto& pdu = m_context.pdu();
             ExtendedPduConstRefs<ShbHeader> shb_pdu(pdu.basic(), pdu.common(), shb, pdu.secured());
-            m_router->process_extended(shb_pdu, std::move(m_packet));
+            return m_router.process_extended(shb_pdu, m_packet);
         }
 
-        void operator()(const GeoBroadcastHeader& gbc)
+        bool operator()(const GeoBroadcastHeader& gbc)
         {
+            DataIndication& indication = m_context.service_primitive();
+            indication.transport_type = TransportType::GBC;
+            indication.source_position = static_cast<ShortPositionVector>(gbc.source_position);
+            indication.destination = gbc.destination(m_context.pdu().common().header_type);
+
             auto& pdu = m_context.pdu();
             ExtendedPduConstRefs<GeoBroadcastHeader> gbc_pdu(pdu.basic(), pdu.common(), gbc, pdu.secured());
             const IndicationContext::LinkLayer& ll = m_context.link_layer();
-            m_router->process_extended(gbc_pdu, std::move(m_packet), ll.sender, ll.destination);
+            return m_router.process_extended(gbc_pdu, m_packet, ll.sender, ll.destination);
         }
 
-        void operator()(const BeaconHeader& beacon)
+        bool operator()(const BeaconHeader& beacon)
         {
             auto& pdu = m_context.pdu();
             ExtendedPduConstRefs<BeaconHeader> beacon_pdu(pdu.basic(), pdu.common(), beacon, pdu.secured());
-            m_router->process_extended(beacon_pdu, std::move(m_packet));
+            return m_router.process_extended(beacon_pdu, m_packet);
         }
 
-        Router* m_router;
+        Router& m_router;
         IndicationContext& m_context;
-        UpPacketPtr m_packet;
+        const UpPacket& m_packet;
     };
 
     auto extended = ctx.parse_extended(common.header_type);
     UpPacketPtr packet = ctx.finish();
+    assert(packet);
 
     if (!extended) {
         packet_dropped(PacketDropReason::PARSE_EXTENDED_HEADER);
     } else if (common.payload != size(*packet, OsiLayer::Transport, max_osi_layer())) {
         packet_dropped(PacketDropReason::PAYLOAD_SIZE);
     } else {
-        extended_header_visitor visitor(this, ctx, std::move(packet));
-        boost::apply_visitor(visitor, *extended);
+        extended_header_visitor visitor(*this, ctx, *packet);
+        if (boost::apply_visitor(visitor, *extended)) {
+            pass_up(ctx.service_primitive(), std::move(packet));
+        }
     }
 }
 
@@ -521,7 +557,7 @@ void Router::pass_down(const MacAddress& addr, PduPtr pdu, DownPacketPtr payload
     pass_down(request, std::move(pdu), std::move(payload));
 }
 
-void Router::pass_up(DataIndication& ind, UpPacketPtr packet)
+void Router::pass_up(const DataIndication& ind, UpPacketPtr packet)
 {
     TransportInterface* transport = m_transport_ifcs[ind.upper_protocol];
     if (transport != nullptr) {
@@ -631,7 +667,7 @@ NextHop Router::first_hop_gbc_advanced(bool scf, std::unique_ptr<GbcPdu> pdu, Do
     const Area& destination = pdu->extended().destination(pdu->common().header_type);
     if (inside_or_at_border(destination, m_local_position_vector.position())) {
         units::Duration timeout = m_mib.itsGnGeoBroadcastCbfMaxTime;
-        CbfPacket packet(std::unique_ptr<GbcPdu> { pdu->clone() }, duplicate(*payload));
+        CbfPacket packet(std::unique_ptr<GbcPdu> { new GbcPdu(*pdu) }, duplicate(*payload));
         m_cbf_buffer.enqueue(std::move(packet), clock_cast(timeout));
     }
 
@@ -669,7 +705,7 @@ NextHop Router::next_hop_gbc_advanced(
             if (destination == m_local_position_vector.gn_addr.mid()) {
                 timeout = m_mib.itsGnGeoUnicastCbfMaxTime;
                 nh = next_hop_greedy_forwarding(scf,
-                        std::unique_ptr<GbcPdu> { pdu->clone() }, duplicate(*payload));
+                        std::unique_ptr<GbcPdu> { new GbcPdu(*pdu) }, duplicate(*payload));
             } else {
                 timeout = timeout_cbf_gbc(sender);
                 nh.state(NextHop::State::BUFFERED);
@@ -708,7 +744,7 @@ NextHop Router::next_hop_greedy_forwarding(
     units::Length mfr = own;
 
     for (auto& neighbour : m_location_table.neighbours()) {
-        const units::Length dist = distance(dest, neighbour.position_vector.position());
+        const units::Length dist = distance(dest, neighbour.get_position_vector().position());
         if (dist < mfr) {
             nh.mac(neighbour.link_layer_address());
             mfr = dist;
@@ -816,7 +852,7 @@ void Router::on_cbf_timer_expiration(CbfPacket::Data&& packet)
     pass_down(request, std::move(packet.pdu), std::move(packet.payload));
 }
 
-void Router::process_extended(const ExtendedPduConstRefs<ShbHeader>& pdu, UpPacketPtr packet)
+bool Router::process_extended(const ExtendedPduConstRefs<ShbHeader>& pdu, const UpPacket& packet)
 {
     const ShbHeader& shb = pdu.extended();
     const Address& source_addr = shb.source_position.gn_addr;
@@ -825,7 +861,7 @@ void Router::process_extended(const ExtendedPduConstRefs<ShbHeader>& pdu, UpPack
     // execute duplicate packet detection (see A.3)
     if (m_location_table.is_duplicate_packet(source_addr, source_time)) {
         // discard packet
-        return;
+        return false;
     }
 
     // execute duplicate address detection (see 9.2.1.5)
@@ -834,24 +870,22 @@ void Router::process_extended(const ExtendedPduConstRefs<ShbHeader>& pdu, UpPack
     // update location table with SO.PV (see C.2)
     m_location_table.update(shb.source_position);
     auto& source_entry = m_location_table.get_entry(source_addr);
-    assert(!is_empty(source_entry.position_vector));
+    assert(source_entry.has_position_vector());
 
     // update SO.PDR in location table (see B.2)
-    const std::size_t packet_size = size(*packet, OsiLayer::Network, OsiLayer::Application);
+    const std::size_t packet_size = size(packet, OsiLayer::Network, OsiLayer::Application);
     source_entry.update_pdr(packet_size);
 
     // set SO LocTE to neighbour
-    source_entry.is_neighbour = true;
+    source_entry.set_neighbour(true);
 
-    // pass packet to transport interface
-    DataIndication ind(pdu.basic(), pdu.common());
-    ind.source_position = static_cast<ShortPositionVector>(shb.source_position);
-    ind.transport_type = TransportType::SHB;
-    pass_up(ind, std::move(packet));
+    // SHB packets are always passed up (except duplicates)
+    return true;
 }
 
-void Router::process_extended(const ExtendedPduConstRefs<BeaconHeader>& pdu, UpPacketPtr packet)
+bool Router::process_extended(const ExtendedPduConstRefs<BeaconHeader>& pdu, const UpPacket& packet)
 {
+    const bool pass_up_decision = false; /*< BEACONS are internal to GeoNetworking and never passed up */
     const BeaconHeader& beacon = pdu.extended();
     const Address& source_addr = beacon.source_position.gn_addr;
     const Timestamp& source_time = beacon.source_position.timestamp;
@@ -859,7 +893,7 @@ void Router::process_extended(const ExtendedPduConstRefs<BeaconHeader>& pdu, UpP
     // execute duplicate packet detection (see A.3)
     if (m_location_table.is_duplicate_packet(source_addr, source_time)) {
         // discard packet
-        return;
+        return pass_up_decision;
     }
 
     // execute duplicate address detection (see 9.2.1.5)
@@ -870,18 +904,21 @@ void Router::process_extended(const ExtendedPduConstRefs<BeaconHeader>& pdu, UpP
     auto& source_entry = m_location_table.get_entry(source_addr);
 
     // update SO.PDR in location table (see B.2)
-    const std::size_t packet_size = size(*packet, OsiLayer::Network, OsiLayer::Application);
+    const std::size_t packet_size = size(packet, OsiLayer::Network, OsiLayer::Application);
     source_entry.update_pdr(packet_size);
 
     // set SO LocTE to neighbour
-    source_entry.is_neighbour = true;
+    source_entry.set_neighbour(true);
+
+    return pass_up_decision;
 }
 
-void Router::process_extended(const ExtendedPduConstRefs<GeoBroadcastHeader>& pdu,
-        UpPacketPtr packet, const MacAddress& sender, const MacAddress& destination)
+bool Router::process_extended(const ExtendedPduConstRefs<GeoBroadcastHeader>& pdu,
+        const UpPacket& packet, const MacAddress& sender, const MacAddress& destination)
 {
+    bool pass_up_decision = false;
+
     // GBC forwarder and receiver operations (section 9.3.11.3 in EN 302 636-4-1 V1.2.1)
-    assert(packet);
     const GeoBroadcastHeader& gbc = pdu.extended();
     const Address& source_addr = gbc.source_position.gn_addr;
 
@@ -892,39 +929,36 @@ void Router::process_extended(const ExtendedPduConstRefs<GeoBroadcastHeader>& pd
         const Timestamp& source_time = gbc.source_position.timestamp;
         const SequenceNumber& source_sn = gbc.sequence_number;
         if (m_location_table.is_duplicate_packet(source_addr, source_sn, source_time)) {
-            return; // discard packet
+            return pass_up_decision; // discard packet
         }
     }
 
     detect_duplicate_address(source_addr);
 
-    const std::size_t packet_size = size(*packet, OsiLayer::Network, OsiLayer::Application);
+    const std::size_t packet_size = size(packet, OsiLayer::Network, OsiLayer::Application);
     m_location_table.update(gbc.source_position);
     auto& source_entry = m_location_table.get_entry(source_addr);
     source_entry.update_pdr(packet_size);
     if (remove_neighbour_flag) {
-        source_entry.is_neighbour = false;
+        source_entry.set_neighbour(false);
     }
-
-    auto fwd_dup = create_forwarding_duplicate(pdu, *packet);
-    auto& fwd_pdu = std::get<0>(fwd_dup);
-    auto& fwd_packet = std::get<1>(fwd_dup);
 
     const Area dest_area = gbc.destination(pdu.common().header_type);
     if (inside_or_at_border(dest_area, m_local_position_vector.position())) {
-        DataIndication ind(pdu.basic(), pdu.common());
-        ind.source_position = static_cast<ShortPositionVector>(gbc.source_position);
-        ind.transport_type = TransportType::GBC;
-        ind.destination = gbc.destination(pdu.common().header_type);
-        pass_up(ind, std::move(packet));
+        pass_up_decision = true;
     }
 
     // TODO: flush SO LS packet buffer if LS_pending, reset LS_pending
     flush_unicast_forwarding_buffer();
 
     if (pdu.basic().hop_limit <= 1) {
-        return; // discard packet (step 9a)
+        return pass_up_decision; // discard packet (step 9a)
     }
+
+    auto fwd_dup = create_forwarding_duplicate(pdu, packet);
+    auto& fwd_pdu = std::get<0>(fwd_dup);
+    auto& fwd_packet = std::get<1>(fwd_dup);
+
     --fwd_pdu->basic().hop_limit; // step 9b
     assert(fwd_pdu->basic().hop_limit + 1 == pdu.basic().hop_limit);
 
@@ -962,6 +996,8 @@ void Router::process_extended(const ExtendedPduConstRefs<GeoBroadcastHeader>& pd
 
         pass_down(request, std::move(pdu), std::move(payload));
     }
+
+    return pass_up_decision;
 }
 
 void Router::flush_forwarding_buffer(PacketBuffer& buffer)
@@ -1059,6 +1095,50 @@ Router::DownPacketPtr Router::encap_packet(security::Profile profile, Pdu& pdu, 
     assert(size(*packet, OsiLayer::Transport, max_osi_layer()) == 0);
     assert(pdu.basic().next_header == NextHeaderBasic::SECURED);
     return packet;
+}
+
+std::string stringify(Router::PacketDropReason pdr)
+{
+    std::string reason_string;
+
+    // TODO replace this by something more elegant, e.g. https://github.com/aantron/better-enums
+    switch (pdr) {
+        case Router::PacketDropReason::PARSE_BASIC_HEADER:
+            reason_string = "PARSE_BASIC_HEADER";
+            break;
+        case Router::PacketDropReason::PARSE_COMMON_HEADER:
+            reason_string = "PARSE_COMMON_HEADER";
+            break;
+        case Router::PacketDropReason::PARSE_SECURED_HEADER:
+            reason_string = "PARSE_SECURED_HEADER";
+            break;
+        case Router::PacketDropReason::PARSE_EXTENDED_HEADER:
+            reason_string = "PARSE_EXTENDED_HEADER";
+            break;
+        case Router::PacketDropReason::ITS_PROTOCOL_VERSION:
+            reason_string = "ITS_PROTOCOL_VERSION";
+            break;
+        case Router::PacketDropReason::DECAP_UNSUCCESSFUL_NON_STRICT:
+            reason_string = "DECAP_UNSUCCESSFUL_NON_STRICT";
+            break;
+        case Router::PacketDropReason::DECAP_UNSUCCESSFUL_STRICT:
+            reason_string = "DECAP_UNSUCCESSFUL_STRICT";
+            break;
+        case Router::PacketDropReason::HOP_LIMIT:
+            reason_string = "HOP_LIMIT";
+            break;
+        case Router::PacketDropReason::PAYLOAD_SIZE:
+            reason_string = "PAYLOAD_SIZE";
+            break;
+        case Router::PacketDropReason::SECURITY_ENTITY_MISSING:
+            reason_string = "SECURITY_ENTITY_MISSING";
+            break;
+        default:
+            reason_string = "UNKNOWN";
+            break;
+    }
+
+    return reason_string;
 }
 
 } // namespace geonet

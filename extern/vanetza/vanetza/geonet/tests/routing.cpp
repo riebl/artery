@@ -84,8 +84,8 @@ TEST_P(Routing, beacon_location_table) {
     ASSERT_TRUE(sender_table.has_entry(Address { cars[5] }));
     const LocationTableEntry* entry5 = sender_table.get_entry(Address { cars[5] });
     ASSERT_TRUE(entry5);
-    EXPECT_LT(0, entry5->position_vector.longitude.value());
-    EXPECT_GT(0, entry5->position_vector.latitude.value());
+    EXPECT_LT(0, entry5->get_position_vector().longitude.value());
+    EXPECT_GT(0, entry5->get_position_vector().latitude.value());
 }
 
 /*

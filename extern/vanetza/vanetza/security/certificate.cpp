@@ -2,13 +2,13 @@
 #include <vanetza/common/serialization_buffer.hpp>
 #include <vanetza/security/certificate.hpp>
 #include <vanetza/security/length_coding.hpp>
+#include <vanetza/security/sha.hpp>
 #include <vanetza/security/signer_info.hpp>
 #include <vanetza/security/exception.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/variant/apply_visitor.hpp>
 #include <boost/variant/get.hpp>
 #include <boost/variant/static_visitor.hpp>
-#include <cryptopp/sha.h>
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -148,11 +148,8 @@ HashedId8 calculate_hash(const Certificate& cert)
     ByteBuffer bytes;
     serialize_into_buffer(canonical_cert, bytes);
 
-    CryptoPP::SHA256 hash;
-    std::array<uint8_t, decltype(hash)::DIGESTSIZE> digest;
-    hash.CalculateDigest(digest.data(), bytes.data(), bytes.size());
-
     HashedId8 id;
+    Sha256Digest digest = calculate_sha256_digest(bytes.data(), bytes.size());
     assert(digest.size() >= id.size());
     std::copy(digest.end() - id.size(), digest.end(), id.begin());
     return id;

@@ -14,7 +14,7 @@ if(Boost_FOUND AND NOT TARGET Boost::boost)
 endif()
 
 # NOTE: every Boost library used by Vanetza has to be listed here
-foreach(comp IN ITEMS date_time serialization system)
+foreach(comp IN ITEMS date_time program_options serialization system)
     string(TOUPPER "${comp}" COMP)
     if(Boost_${COMP}_FOUND AND NOT TARGET Boost::${comp})
         add_library(Boost::${comp} UNKNOWN IMPORTED)

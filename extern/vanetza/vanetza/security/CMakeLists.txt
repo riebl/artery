@@ -3,15 +3,16 @@ add_vanetza_component(security
     backend_null.cpp
     basic_elements.cpp
     certificate.cpp
-    certificate_manager.cpp
+    default_certificate_validator.cpp
     ecc_point.cpp
     ecdsa256.cpp
     encryption_parameter.cpp
     header_field.cpp
     int_x.cpp
     length_coding.cpp
-    naive_certificate_manager.cpp
-    null_certificate_manager.cpp
+    naive_certificate_provider.cpp
+    null_certificate_provider.cpp
+    null_certificate_validator.cpp
     payload.cpp
     public_key.cpp
     recipient_info.cpp
@@ -19,12 +20,15 @@ add_vanetza_component(security
     secured_message.cpp
     security_entity.cpp
     serialization.cpp
+    sha.cpp
     signature.cpp
     sign_service.cpp
     signer_info.cpp
+    static_certificate_provider.cpp
     subject_attribute.cpp
     subject_info.cpp
     trailer_field.cpp
+    trust_store.cpp
     validity_restriction.cpp
     verify_service.cpp
 )
@@ -43,7 +47,10 @@ if(TARGET OpenSSL::Crypto)
         SOURCES backend_openssl.cpp openssl_wrapper.cpp)
     target_link_libraries(security PRIVATE OpenSSL::Crypto)
     target_compile_definitions(security PUBLIC "VANETZA_WITH_OPENSSL")
-    if (${OPENSSL_VERSION} VERSION_LESS 1.1.0)
+    if (${OPENSSL_VERSION} VERSION_EQUAL 2.0.0)
+        # found LibreSSL most likely, should be API compatible to OpenSSL 1.0.1
+        target_compile_definitions(security PRIVATE "OPENSSL_API_COMPAT=0x10000000L")
+    elseif (${OPENSSL_VERSION} VERSION_LESS 1.1.0)
         target_compile_definitions(security PRIVATE "OPENSSL_API_COMPAT=0x10000000L")
     else()
         target_compile_definitions(security PRIVATE "OPENSSL_API_COMPAT=0x10100000L")

@@ -2,10 +2,10 @@
 #define CAM_FUNCTIONS_CPP_JQXFKSJP
 
 #include <vanetza/asn1/asn1c_wrapper.hpp>
-#include <vanetza/asn1/gen/asn_SEQUENCE_OF.h>
-#include <vanetza/asn1/gen/BasicVehicleContainerLowFrequency.h>
-#include <vanetza/asn1/gen/DeltaReferencePosition.h>
-#include <vanetza/asn1/gen/PathDeltaTime.h>
+#include <vanetza/asn1/its/asn_SEQUENCE_OF.h>
+#include <vanetza/asn1/its/BasicVehicleContainerLowFrequency.h>
+#include <vanetza/asn1/its/DeltaReferencePosition.h>
+#include <vanetza/asn1/its/PathDeltaTime.h>
 #include <vanetza/facilities/cam_functions.hpp>
 #include <vanetza/facilities/path_history.hpp>
 #include <vanetza/geonet/areas.hpp>

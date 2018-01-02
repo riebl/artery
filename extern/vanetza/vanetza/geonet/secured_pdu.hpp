@@ -32,6 +32,13 @@ public:
 
 void serialize(const SecuredPdu&, OutputArchive&);
 
+/**
+ * Cast secured PDU from byte buffer convertible
+ * \param conv source convertible
+ * \return secured PDU pointer or nullptr if cast failed
+ */
+SecuredPdu* secured_pdu_cast(ByteBufferConvertible&);
+
 } // namespace geonet
 
 namespace convertible

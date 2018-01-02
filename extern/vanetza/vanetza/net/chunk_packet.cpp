@@ -20,10 +20,8 @@ ChunkPacket::ChunkPacket(const ChunkPacket& other)
 
 ChunkPacket& ChunkPacket::operator=(const ChunkPacket& other)
 {
-    m_layers.clear();
-    for (auto& layer : other.m_layers) {
-        m_layers.insert(layer);
-    }
+    ChunkPacket tmp = other;
+    m_layers.swap(tmp.m_layers);
     return *this;
 }
 

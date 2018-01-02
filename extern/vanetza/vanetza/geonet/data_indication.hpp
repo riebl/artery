@@ -12,15 +12,8 @@ namespace vanetza
 namespace geonet
 {
 
-// forward declarations
-struct BasicHeader;
-struct CommonHeader;
-
 struct DataIndication
 {
-    DataIndication();
-    DataIndication(const BasicHeader&, const CommonHeader&);
-
     UpperProtocol upper_protocol;
     TransportType transport_type;
     DestinationVariant destination;

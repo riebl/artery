@@ -17,8 +17,8 @@ You need following tools and libraries on your system for compiling Vanetza:
 * [GeographicLib](http://geographiclib.sourceforge.net) 1.37 or higher
 * [Crypto++](https://www.cryptopp.com) 5.6.1 or higher
 
-If openSSL 1.1.0 is available on your system, an alternative security backend implementation is compiled along with the Crypto++ based backend.
-You can switch the employed backend per `geonet::Router` instance through the `vanetzaCryptoBackend` option located in the Management Information Base (MIB).
+If OpenSSL (1.0 or 1.1) or LibreSSL is available on your system, an alternative security backend implementation is compiled along with the Crypto++ based backend.
+See `security::Backend` and `security::create_backend` for more details.
 
 ## Compilation
 
@@ -40,6 +40,7 @@ We strive for quality in our code base. Latest commits are built using [Travis C
 Vanetza ships with a simple demo application called *socktap*.
 You can enable the build process for this application by the *BUILD_SOCKTAP* CMake option.
 See [tools/socktap](tools/socktap/README.md) for details.
+If *socktap* is going to be built [gpsd](http://catb.org/gpsd) is required in addition to aforementioned prerequisites.
 
 # Integrating Vanetza
 

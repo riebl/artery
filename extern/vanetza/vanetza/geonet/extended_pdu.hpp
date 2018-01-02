@@ -9,17 +9,22 @@
 #include <vanetza/common/byte_buffer_sink.hpp>
 #include <vanetza/security/secured_message.hpp>
 #include <boost/iostreams/stream.hpp>
+#include <boost/optional/optional.hpp>
+#include <memory>
 
 namespace vanetza
 {
 namespace geonet
 {
 
+template<class HEADER> class ExtendedPduConstRefs;
+
 template<class HEADER>
 class ExtendedPdu : public Pdu
 {
 public:
     using SecuredMessage = security::SecuredMessage;
+    using ExtendedHeader = HEADER;
 
     ExtendedPdu() {}
     ExtendedPdu(const MIB& mib) : m_basic(mib), m_common(mib) {}
@@ -30,6 +35,9 @@ public:
     ExtendedPdu(const BasicHeader& basic, const CommonHeader& common, const HEADER& extended,
             const SecuredMessage& secured) :
         m_basic(basic), m_common(common), m_extended(extended), m_secured(secured) {}
+    ExtendedPdu(const ExtendedPduConstRefs<HEADER>& pdu) :
+        m_basic(pdu.basic()), m_common(pdu.common()), m_extended(pdu.extended()),
+        m_secured(pdu.secured() != nullptr, *pdu.secured()) {}
 
     BasicHeader& basic() override { return m_basic; }
     const BasicHeader& basic() const override { return m_basic; }
@@ -40,12 +48,16 @@ public:
     const HEADER& extended() const { return m_extended; }
     SecuredMessage* secured() override { return m_secured.get_ptr(); }
     const SecuredMessage* secured() const override { return m_secured.get_ptr(); }
-    void secured(SecuredMessage* smsg) override {
+    void secured(SecuredMessage* smsg) override
+    {
         m_secured = boost::optional<SecuredMessage>(smsg, *smsg);
     }
-    void secured(SecuredMessage&& smsg) override{ m_secured = std::move(smsg); }
+    void secured(SecuredMessage&& smsg) override { m_secured = std::move(smsg); }
 
-    ExtendedPdu* clone() const override { return new ExtendedPdu(*this); }
+    std::unique_ptr<Pdu> clone() const override
+    {
+        return std::unique_ptr<ExtendedPdu> { new ExtendedPdu(*this) };
+    }
 
 private:
     BasicHeader m_basic;
@@ -59,6 +71,7 @@ class ExtendedPduConstRefs : public ConstAccessiblePdu
 {
 public:
     using SecuredMessage = security::SecuredMessage;
+    using ExtendedHeader = HEADER;
 
     ExtendedPduConstRefs(const BasicHeader& basic, const CommonHeader& common, const HEADER& extended) :
         mr_basic(basic), mr_common(common), mr_extended(extended), mp_secured(nullptr) {}
@@ -72,13 +85,13 @@ public:
     const HEADER& extended() const { return mr_extended; }
     const SecuredMessage* secured() const override { return mp_secured; }
 
-    ExtendedPdu<HEADER>* clone() const override
+    std::unique_ptr<Pdu> clone() const override
     {
-        if (mp_secured) {
-            return new ExtendedPdu<HEADER>(mr_basic, mr_common, mr_extended, *mp_secured);
-        } else {
-            return new ExtendedPdu<HEADER>(mr_basic, mr_common, mr_extended);
-        }
+        return std::unique_ptr<ExtendedPdu<HEADER>> {
+            mp_secured ?
+                new ExtendedPdu<HEADER>(mr_basic, mr_common, mr_extended, *mp_secured) :
+                new ExtendedPdu<HEADER>(mr_basic, mr_common, mr_extended)
+        };
     }
 
 private:

@@ -47,6 +47,7 @@ namespace geonet
 extern const uint16be_t ether_type;
 
 class IndicationContext;
+class IndicationContextBasic;
 class TransportInterface;
 class NextHop;
 struct ShbDataRequest;
@@ -242,7 +243,7 @@ private:
      * \brief Process BasicHeader at packet indication.
      * \param ctx Context holding data for further parsing
      */
-    void indicate_basic(IndicationContext&);
+    void indicate_basic(IndicationContextBasic&);
 
     /**
      * \brief Process CommonHeader at packet indication.
@@ -263,7 +264,7 @@ private:
      * \param ctx Context holding data for further parsing
      * \param basic Previously decoded BasicHeader
      */
-    void indicate_secured(IndicationContext&, const BasicHeader&);
+    void indicate_secured(IndicationContextBasic&, const BasicHeader&);
 
     /**
      * \brief Process ExtendedHeader information.
@@ -271,8 +272,9 @@ private:
      *
      * \param pdu containing the ExtendedHeader
      * \param packet received packet
+     * \return pass up decision (always false for BEACONs)
      */
-    void process_extended(const ExtendedPduConstRefs<BeaconHeader>&, UpPacketPtr);
+    bool process_extended(const ExtendedPduConstRefs<BeaconHeader>&, const UpPacket&);
 
     /**
      * \brief Process ExtendedHeader information.
@@ -281,8 +283,9 @@ private:
      *
      * \param pdu containing the ExtendedHeader
      * \param packet received packet
+     * \return pass up decision (true for all non-duplicate SHBs)
      */
-    void process_extended(const ExtendedPduConstRefs<ShbHeader>&, UpPacketPtr);
+    bool process_extended(const ExtendedPduConstRefs<ShbHeader>&, const UpPacket&);
 
     /**
      * \brief Process ExtendedHeader information.
@@ -294,8 +297,9 @@ private:
      * \param packet received packet
      * \param sender
      * \param destination
+     * \return pass up decision (depends on addressed area and router position)
      */
-    void process_extended(const ExtendedPduConstRefs<GeoBroadcastHeader>&, UpPacketPtr,
+    bool process_extended(const ExtendedPduConstRefs<GeoBroadcastHeader>&, const UpPacket&,
             const MacAddress& sender, const MacAddress& destination);
 
     /**
@@ -354,7 +358,7 @@ private:
      * \param ind containing network information
      * \param packet payload to be passed up to the next layer
      */
-    void pass_up(DataIndication&, UpPacketPtr);
+    void pass_up(const DataIndication&, UpPacketPtr);
 
     /**
      * \brief Helper method to handle duplicate addresses.
@@ -503,6 +507,13 @@ private:
     Repeater m_repeater;
     std::mt19937 m_random_gen;
 };
+
+/**
+ * Get string representation of packet drop reason
+ * \param pdr packet drop reason code
+ * \return string representation
+ */
+std::string stringify(Router::PacketDropReason pdr);
 
 } // namespace geonet
 } // namespace vanetza

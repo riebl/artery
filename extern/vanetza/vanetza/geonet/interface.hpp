@@ -7,7 +7,7 @@ namespace vanetza
 {
 namespace geonet
 {
-    enum class UpperProtocol { BTP_A, BTP_B, IPv6 };
+    enum class UpperProtocol { Unknown, BTP_A, BTP_B, IPv6 };
     enum class TransportType { GUC, GAC, GBC, TSB, SHB };
     typedef InterfaceType CommunicationProfile;
 } // namespace geonet

@@ -25,6 +25,18 @@ struct byte_buffer_impl<std::unique_ptr<vanetza::geonet::Pdu>> : public byte_buf
 };
 
 } // namespace convertible
+
+namespace geonet
+{
+
+/**
+ * Fetch PDU from byte buffer convertible
+ * \param conv source convertible
+ * \return PDU pointer or nullptr if cast failed
+ * */
+Pdu* pdu_cast(ByteBufferConvertible& conv);
+
+} // namespace geonet
 } // namespace vanetza
 
 #endif /* PDU_CONVERSION_HPP_XLCSI42E */

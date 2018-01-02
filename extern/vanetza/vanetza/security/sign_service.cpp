@@ -1,6 +1,6 @@
 #include <vanetza/common/runtime.hpp>
 #include <vanetza/security/backend.hpp>
-#include <vanetza/security/certificate_manager.hpp>
+#include <vanetza/security/certificate_provider.hpp>
 #include <vanetza/security/sign_service.hpp>
 #include <cassert>
 #include <future>
@@ -41,7 +41,7 @@ SignConfirm prepare_sign_confirm(SignRequest& request, const Certificate& certif
 } // namespace
 
 
-SignService straight_sign_service(Runtime& rt, CertificateManager& certificates, Backend& backend)
+SignService straight_sign_service(Runtime& rt, CertificateProvider& certificates, Backend& backend)
 {
     return [&](SignRequest&& request) -> SignConfirm {
         SignConfirm confirm = prepare_sign_confirm(request, certificates.own_certificate(), rt.now());
@@ -57,7 +57,7 @@ SignService straight_sign_service(Runtime& rt, CertificateManager& certificates,
     };
 }
 
-SignService deferred_sign_service(Runtime& rt, CertificateManager& certificates, Backend& backend)
+SignService deferred_sign_service(Runtime& rt, CertificateProvider& certificates, Backend& backend)
 {
     return [&](SignRequest&& request) -> SignConfirm {
         SignConfirm confirm = prepare_sign_confirm(request, certificates.own_certificate(), rt.now());

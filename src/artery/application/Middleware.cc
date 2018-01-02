@@ -34,7 +34,9 @@
 #include <vanetza/geonet/data_confirm.hpp>
 #include <vanetza/geonet/packet.hpp>
 #include <vanetza/geonet/position_vector.hpp>
-#include <vanetza/security/null_certificate_manager.hpp>
+#include <vanetza/security/naive_certificate_provider.hpp>
+#include <vanetza/security/null_certificate_provider.hpp>
+#include <vanetza/security/null_certificate_validator.hpp>
 #include <vanetza/net/mac_address.hpp>
 #include <algorithm>
 #include <chrono>
@@ -187,22 +189,37 @@ void Middleware::initializeSecurity()
 	if (!mSecurityBackend) {
 		throw cRuntimeError("No security backend found with name \"%s\"", vanetzaCryptoBackend);
 	}
-	const char* vanetzaCertificateManager = par("vanetzaCertificateManager");
-	mSecurityCertificates = builtin_certificate_managers().create(vanetzaCertificateManager, mRuntime);
-	if (!mSecurityCertificates) {
-		throw cRuntimeError("No certificate manager found with name \"%s\"", vanetzaCertificateManager);
+
+	const std::string vanetzaCertificateProvider = par("vanetzaCertificateProvider");
+	if (vanetzaCertificateProvider == "Null") {
+		mSecurityCertificates.reset(new NullCertificateProvider());
+	} else if (vanetzaCertificateProvider == "Naive") {
+		mSecurityCertificates.reset(new NaiveCertificateProvider(mRuntime.now()));
+	} else {
+		throw cRuntimeError("No certificate provider available with name \"%s\"", vanetzaCertificateProvider);
+	}
+
+	const std::string vanetzaCertificateValidator = par("vanetzaCertificateValidator");
+	if (vanetzaCertificateValidator == "Null") {
+		mSecurityCertificateValidator.reset(new NullCertificateValidator());
+	} else if (vanetzaCertificateValidator == "NullOk") {
+		std::unique_ptr<NullCertificateValidator> validator { new NullCertificateValidator() };
+		static const CertificateValidity ok;
+		ASSERT(ok);
+		validator->certificate_check_result(ok);
+		mSecurityCertificateValidator = std::move(validator);
+	} else {
+		throw cRuntimeError("No certificate validator available with name \"%s\"", vanetzaCertificateValidator);
 	}
 
 	SignService sign_service;
 	const std::string vanetzaSecuritySignService = par("vanetzaSecuritySignService");
 	if (vanetzaSecuritySignService == "straight") {
 		sign_service = straight_sign_service(mRuntime, *mSecurityCertificates, *mSecurityBackend);
-		VerifyService verify_service = straight_verify_service(mRuntime, *mSecurityCertificates, *mSecurityBackend);
 	} else if (vanetzaSecuritySignService == "deferred") {
 		sign_service = deferred_sign_service(mRuntime, *mSecurityCertificates, *mSecurityBackend);
-		VerifyService verify_service = straight_verify_service(mRuntime, *mSecurityCertificates, *mSecurityBackend);
 	} else if (vanetzaSecuritySignService == "dummy") {
-		sign_service = dummy_sign_service(mRuntime, NullCertificateManager::null_certificate());
+		sign_service = dummy_sign_service(mRuntime, NullCertificateProvider::null_certificate());
 	} else {
 		throw cRuntimeError("No security sign service available with name \"%s\"", vanetzaSecuritySignService);
 	}
@@ -210,7 +227,7 @@ void Middleware::initializeSecurity()
 	VerifyService verify_service;
 	const std::string vanetzaSecurityVerifyService = par("vanetzaSecurityVerifyService");
 	if (vanetzaSecurityVerifyService == "straight") {
-		verify_service = straight_verify_service(mRuntime, *mSecurityCertificates, *mSecurityBackend);
+		verify_service = straight_verify_service(mRuntime, *mSecurityCertificateValidator, *mSecurityBackend);
 	} else if (vanetzaSecurityVerifyService == "dummy") {
 		verify_service = dummy_verify_service(VerificationReport::Success, CertificateValidity::valid());
 	} else {

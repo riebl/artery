@@ -1,8 +1,8 @@
 #ifndef ASN1C_WRAPPER_HPP_ZCNDO8E5
 #define ASN1C_WRAPPER_HPP_ZCNDO8E5
 
-#include <vanetza/asn1/gen/asn_system.h>
-#include <vanetza/asn1/gen/constr_TYPE.h>
+#include <vanetza/asn1/its/asn_system.h>
+#include <vanetza/asn1/its/constr_TYPE.h>
 #include <vanetza/common/byte_buffer.hpp>
 #include <cstddef>
 #include <string>
@@ -40,33 +40,18 @@ public:
 
     // copy semantics
     asn1c_wrapper(const asn1c_wrapper& other) :
-        m_struct(nullptr), m_type(other.m_type)
-    {
-        void* copy = vanetza::asn1::copy(m_type, other.m_struct);
-        m_struct = static_cast<asn1c_type*>(copy);
-    }
-
+        m_struct(static_cast<asn1c_type*>(copy(other.m_type, other.m_struct))), m_type(other.m_type) {}
     asn1c_wrapper& operator=(const asn1c_wrapper& other)
     {
-        using namespace vanetza::asn1;
-        free(m_type, m_struct);
-        void* dup = copy(other.m_type, other.m_struct);
-        m_struct = static_cast<asn1c_type*>(dup);
-        m_type = other.m_type;
+        asn1c_wrapper tmp = other;
+        swap(tmp);
         return *this;
     }
 
     // move semantics
-    asn1c_wrapper(asn1c_wrapper&& other) :
-        m_struct(nullptr), m_type(other.m_type)
-    {
-        std::swap(m_struct, other.m_struct);
-    }
-
-    asn1c_wrapper& operator=(asn1c_wrapper&& other)
-    {
-        std::swap(m_struct, other.m_struct);
-    }
+    asn1c_wrapper(asn1c_wrapper&& other) noexcept :
+        m_struct(nullptr), m_type(other.m_type) { swap(other); }
+    asn1c_wrapper& operator=(asn1c_wrapper&& other) noexcept { swap(other); }
 
     // dereferencing
     asn1c_type& operator*() { return *m_struct; }
@@ -122,10 +107,26 @@ public:
         return vanetza::asn1::size(m_type, m_struct);
     }
 
+    /**
+     * Swap ASN.1 wrapper content
+     * \param other wrapper
+     */
+    void swap(asn1c_wrapper& other) noexcept
+    {
+        std::swap(m_struct, other.m_struct);
+        std::swap(m_type, other.m_type);
+    }
+
 private:
     asn1c_type* m_struct;
     asn_TYPE_descriptor_t& m_type;
 };
+
+template<typename T>
+void swap(asn1c_wrapper<T>& lhs, asn1c_wrapper<T>& rhs)
+{
+    lhs.swap(rhs);
+}
 
 } // namespace asn1
 } // namespace vanetza

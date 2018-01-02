@@ -158,7 +158,7 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 	vanetza::asn1::Cam message;
 
 	ItsPduHeader_t& header = (*message).header;
-	header.protocolVersion = ItsPduHeader__protocolVersion_currentVersion;
+	header.protocolVersion = 1;
 	header.messageID = ItsPduHeader__messageID_cam;
 	header.stationID = vdp.station_id();
 
@@ -194,8 +194,10 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 		bvc.longitudinalAcceleration.longitudinalAccelerationValue = LongitudinalAccelerationValue_unavailable;
 	}
 	bvc.longitudinalAcceleration.longitudinalAccelerationConfidence = AccelerationConfidence_unavailable;
-	bvc.curvature.curvatureValue = (vdp.curvature() / vanetza::units::reciprocal_metre) *
-			CurvatureValue_reciprocalOf1MeterRadiusToLeft;
+	bvc.curvature.curvatureValue = abs(vdp.curvature() / vanetza::units::reciprocal_metre) * 10000.0;
+	if (bvc.curvature.curvatureValue >= 1023) {
+		bvc.curvature.curvatureValue = 1023;
+	}
 	bvc.curvature.curvatureConfidence = CurvatureConfidence_unavailable;
 	bvc.curvatureCalculationMode = CurvatureCalculationMode_yawRateUsed;
 	bvc.yawRate.yawRateValue = round(vdp.yaw_rate(), degree_per_second) * YawRateValue_degSec_000_01ToLeft * 100.0;

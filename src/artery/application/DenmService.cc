@@ -135,8 +135,8 @@ vanetza::asn1::Denm DenmService::createDenm(artery::denm::UseCase& uc)
     uc.message(message);
 
     const VehicleDataProvider& vdp = getFacilities().getVehicleDataProvider();
+    message->header.protocolVersion = 1;
     message->header.messageID = ItsPduHeader__messageID_denm;
-    message->header.protocolVersion = ItsPduHeader__protocolVersion_currentVersion;
     message->header.stationID = vdp.station_id();
 
     message->denm.management.actionID.originatingStationID = vdp.station_id();

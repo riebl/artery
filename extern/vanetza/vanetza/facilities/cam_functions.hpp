@@ -1,8 +1,8 @@
 #ifndef CAM_FUNCTIONS_HPP_PUFKBEM8
 #define CAM_FUNCTIONS_HPP_PUFKBEM8
 
-#include <vanetza/asn1/gen/Heading.h>
-#include <vanetza/asn1/gen/ReferencePosition.h>
+#include <vanetza/asn1/its/Heading.h>
+#include <vanetza/asn1/its/ReferencePosition.h>
 #include <vanetza/units/angle.hpp>
 #include <vanetza/units/length.hpp>
 

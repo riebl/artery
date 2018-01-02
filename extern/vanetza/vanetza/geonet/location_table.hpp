@@ -47,7 +47,7 @@ public:
      * Get packed data rate (PDR) of corresponding source.
      * \return PDR in bytes per second, might be not-a-number
      */
-    double get_pdr() const;
+    double get_pdr() const { return m_pdr; }
 
     /**
      * Update packet data rate.
@@ -56,15 +56,46 @@ public:
      */
     void update_pdr(std::size_t packet_size);
 
-    bool is_neighbour;
-    LongPositionVector position_vector;
+    /**
+     * Check if position vector has been set before
+     * \return  false after entry initialization
+     *          true after set_position_vector invocations
+     */
+    bool has_position_vector() const { return m_has_position_vector; }
+
+    /**
+     * Get stored position vector
+     * \return position vector (empty until set_position_vector invocation)
+     */
+    const LongPositionVector& get_position_vector() const { return m_position_vector; }
+
+    /**
+     * Update stored position vector
+     * \param pv source position vector
+     */
+    void set_position_vector(const LongPositionVector& pv);
+
+    /**
+     * Check if this entry belongs to a direct neighbour
+     * \return true if direct neighbour
+     */
+    bool is_neighbour() const { return m_is_neighbour; }
+
+    /**
+     * Set neighbour relation
+     * \param flag true if entry represents a direct neighbour
+     */
+    void set_neighbour(bool flag);
 
 private:
-    const Runtime& runtime;
-    boost::optional<Timestamp> timestamp;
-    boost::optional<SequenceNumber> sequence_number;
-    double pdr;
-    Clock::time_point pdr_update;
+    const Runtime& m_runtime;
+    bool m_is_neighbour;
+    bool m_has_position_vector;
+    LongPositionVector m_position_vector;
+    boost::optional<Timestamp> m_timestamp;
+    boost::optional<SequenceNumber> m_sequence_number;
+    double m_pdr;
+    Clock::time_point m_pdr_update;
 };
 
 class LocationTableEntryCreator

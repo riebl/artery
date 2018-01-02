@@ -33,5 +33,17 @@ std::unique_ptr<byte_buffer> byte_buffer_impl<PduPtr>::duplicate() const
 }
 
 } // namespace convertible
+
+namespace geonet
+{
+
+Pdu* pdu_cast(ByteBufferConvertible& convertible)
+{
+    using convertible_pdu_t = convertible::byte_buffer_impl<std::unique_ptr<Pdu>>;
+    auto convertible_pdu = dynamic_cast<convertible_pdu_t*>(convertible.ptr());
+    return convertible_pdu ? convertible_pdu->m_pdu.get() : nullptr;
+}
+
+} // namespace geonet
 } // namespace vanetza
 

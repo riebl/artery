@@ -1,90 +1,70 @@
-include(UseAsn1c)
-set(ASN1C_GEN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/gen")
-set(ASN1C_BUNDLED_GEN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bundled-gen")
-file(GLOB ASN1_SOURCES *.asn1)
+set(_its_asn1_source_file "asn1c_its_sources.txt")
 
-if(ASN1C_EXECUTABLE)
-    set(_with_asn1c ON)
-else()
-    set(_with_asn1c OFF)
-endif()
-option(VANETZA_ASN1_WITH_ASN1C "Generate ASN.1 code using asn1c (instead of using bundled code)" ${_with_asn1c})
-
+option(VANETZA_ASN1_WITH_ASN1C "Enable asn1c targets" OFF)
 if(VANETZA_ASN1_WITH_ASN1C)
-    if(NOT ASN1C_EXECUTABLE)
-        message(SEND_ERROR "asn1c not found, cannot generate ASN.1 code from sources")
-    endif()
+    find_package(ASN1C 0.9.29 REQUIRED MODULE)
+    set(ASN1C_FLAGS "-fcompound-names -fincludes-quoted -no-gen-example" CACHE STRING "asn1c compiler options")
+    mark_as_advanced(ASN1C_FLAGS)
+    string(REPLACE " " ";" _asn1c_flags "${ASN1C_FLAGS}")
 
-    set(ASN1C_ARGS -fcompound-names -gen-PER -pdu=auto)
-    if("${ASN1C_VERSION}" VERSION_LESS "0.9.26")
-        # These options became default with 0.9.26
-        list(APPEND ASN1C_ARGS -fnative-types -fskeletons-copy)
-    endif()
+    set(_its_asn1_files
+        CDD_TS102894-2/ITS-Container.asn
+        CAM_EN302637-2/CAM.asn
+        DENM_EN302637-3/DENM.asn
+        IS_TS103301/ISO_TS_24534-3.asn
+        IS_TS103301/ISO_TS_14816.asn
+        IS_TS103301/ISO_TS_14906_Application.asn
+        IS_TS103301/ISO_TS_17419.asn
+        IS_TS103301/ISO_TS_19091.asn
+        IS_TS103301/ISO_TS_19321.asn
+        IS_TS103301/ETSI_TS_103301.asn
+    )
+    set(_its_asn1_revision 24)
+    set(_its_asn1_name "ITS_ASN1.r${_its_asn1_revision}")
+    set(_its_asn1_archive "${_its_asn1_name}.tar.gz")
+    set(_its_asn1_dir "${CMAKE_CURRENT_SOURCE_DIR}/its")
 
-    add_custom_command(
-        OUTPUT
-            ${ASN1C_GEN_DIR}/CAM.h
-            ${ASN1C_GEN_DIR}/DENM.h
-            ${ASN1C_GEN_DIR}/VanetzaTest.h
-        COMMAND ${ASN1C_EXECUTABLE} ${ASN1C_ARGS} ${ASN1_SOURCES}
-        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/patch_asn1c.cmake
-        DEPENDS ${ASN1C_SOURCES}
-        WORKING_DIRECTORY ${ASN1C_GEN_DIR}
+    add_custom_target(clean_asn1c
+        COMMAND ${CMAKE_COMMAND} -DASN1C_OUTPUT_DIR=its -P clean_asn1c.cmake
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    file(DOWNLOAD
+        "http://oldforge.etsi.org/websvn/dl.php?repname=ITS.ITS_ASN1&path=%2Ftrunk%2F&isdir=1&rev=${_its_asn1_revision}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${_its_asn1_archive}"
+        EXPECTED_HASH SHA256=5a02659c8fd45a0708d64e52a9fb7f98e18daf981c990afb572383a64d28e52b
+        SHOW_PROGRESS)
+    add_custom_command(OUTPUT ${_its_asn1_name}/${_its_asn1_files}
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_its_asn1_archive}
+        COMMAND ${CMAKE_COMMAND} -E tar xfz ${CMAKE_CURRENT_SOURCE_DIR}/${_its_asn1_archive}
+        COMMENT "Extracting ITS ASN.1 modules"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         VERBATIM)
-
-    add_custom_target(update_asn1c_bundle
-        COMMAND ${CMAKE_COMMAND} -E remove_directory ${ASN1C_BUNDLED_GEN_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${ASN1C_GEN_DIR} ${ASN1C_BUNDLED_GEN_DIR}
-        DEPENDS ${ASN1C_GEN_DIR}/CAM.h ${ASN1C_GEN_DIR}/DENM.h
-        VERBATIM)
-    add_custom_command(TARGET update_asn1c_bundle PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove .gitignore converter-sample.c Makefile.am.sample
-        WORKING_DIRECTORY ${ASN1C_BUNDLED_GEN_DIR}
-        VERBATIM)
-
-else()
-    message(STATUS "Using bundled ASN.1 code instead of asn1c")
-    set(_bundle_dir ${ASN1C_BUNDLED_GEN_DIR})
-    set(_gen_dir ${ASN1C_GEN_DIR})
-    file(GLOB _bundle_files RELATIVE ${_bundle_dir} ${_bundle_dir}/*.c ${_bundle_dir}/*.h)
-    file(GLOB _gen_files RELATIVE ${_gen_dir} ${_gen_dir}/*.c ${_gen_dir}/*.h)
-
-    # remove surplus files
-    foreach(_gen_file IN LISTS _gen_files)
-        list(FIND _bundle_files ${_gen_file} _bundle_index)
-        if(_bundle_index LESS 0)
-            file(REMOVE ${_gen_dir}/${_gen_file})
-        endif()
-    endforeach()
-
-    # synchronize bundled files into gen directory
-    if(${CMAKE_VERSION} VERSION_LESS 3.5)
-        foreach(_bundle_file IN LISTS _bundle_files)
-            execute_process(COMMAND ${CMAKE_COMMAND} -E
-                copy_if_different ${_bundle_file} ${_gen_dir}
-                WORKING_DIRECTORY ${_bundle_dir})
-        endforeach()
-    else()
-        execute_process(COMMAND ${CMAKE_COMMAND} -E
-            copy_if_different ${_bundle_files} ${_gen_dir}
-            WORKING_DIRECTORY ${_bundle_dir})
-    endif()
+    add_custom_command(OUTPUT ${_its_asn1_dir}
+        DEPENDS ${_its_asn1_name}/${_its_asn1_files}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${_its_asn1_dir}
+        COMMAND ${ASN1C_EXECUTABLE} ${_asn1c_flags} -D ${_its_asn1_dir} ${_its_asn1_files} ${CMAKE_CURRENT_SOURCE_DIR}/test.asn
+        COMMENT "Generating code from ITS ASN.1 modules" VERBATIM
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${_its_asn1_name})
+    add_custom_command(OUTPUT "${_its_asn1_source_file}"
+        DEPENDS ${_its_asn1_dir}
+        COMMAND ${CMAKE_COMMAND} -DASN1C_OUTPUT_DIR=its -DASN1C_SOURCE_FILE=${_its_asn1_source_file} -P collect_asn1c_sources.cmake
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    add_custom_target(generate_asn1c DEPENDS ${_its_asn1_dir} ${_its_asn1_source_file})
+    add_custom_command(TARGET generate_asn1c POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/patch_asn1c_sources.cmake
+        COMMENT "Patching ITS asn1c files"
+        WORKING_DIRECTORY ${_its_asn1_dir})
+    # wipe directory with generated files before generating
+    add_dependencies(generate_asn1c clean_asn1c)
 endif()
-
-add_custom_target(asn1_gen DEPENDS ${ASN1C_GEN_DIR}/CAM.h ${ASN1C_GEN_DIR}/DENM.h)
 
 set(CXX_SOURCES asn1c_wrapper.cpp)
-asn1c_sources(ASN1C_SOURCES ${ASN1C_GEN_DIR})
+file(STRINGS "${_its_asn1_source_file}" ASN1C_SOURCES REGEX "^[^#]+")
 add_vanetza_component(asn1 ${CXX_SOURCES} ${ASN1C_SOURCES})
-add_dependencies(asn1 asn1_gen)
-target_link_libraries(asn1 Boost::boost)
-target_include_directories(asn1 PUBLIC
-    $<BUILD_INTERFACE:${ASN1C_GEN_DIR}>
-    $<INSTALL_INTERFACE:include/vanetza/asn1/gen>)
+target_link_libraries(asn1 PUBLIC Boost::boost)
 
 # Silence warnings in code generated by asn1c
 if (CMAKE_C_COMPILER_ID STREQUAL "Clang")
-    set_property(TARGET asn1 APPEND PROPERTY COMPILE_OPTIONS "-Wno-parentheses-equality")
+    set_property(SOURCE ${ASN1C_SOURCES} APPEND PROPERTY COMPILE_OPTIONS "-Wno-parentheses-equality")
 endif()
 
 add_test_subdirectory(tests)

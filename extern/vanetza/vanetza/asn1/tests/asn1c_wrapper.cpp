@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <vanetza/asn1/asn1c_wrapper.hpp>
-#include <vanetza/asn1/gen/VanetzaTest.h>
+#include <vanetza/asn1/its/VanetzaTest.h>
 
 using namespace vanetza::asn1;
 typedef vanetza::asn1::asn1c_wrapper<VanetzaTest_t> test_wrapper;
@@ -35,6 +35,14 @@ TEST(asn1c_wrapper, copy) {
     EXPECT_EQ(wrapper_copy->field, 5);
     wrapper_copy->field = 6;
     EXPECT_EQ(wrapper_orig->field, 5);
+}
+
+TEST(asn1c_wrapper, self_assignment) {
+    test_wrapper wrapper(asn_DEF_VanetzaTest);
+    OCTET_STRING_fromString(&wrapper->string, "1234");
+    ASSERT_EQ(wrapper.size(), 5);
+    wrapper = wrapper;
+    EXPECT_EQ(wrapper.size(), 5);
 }
 
 TEST(asn1c_wrapper, validate) {

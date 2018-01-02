@@ -21,7 +21,8 @@ simple Middleware
 
 		bool vanetzaEnableSecurity = default(true);
 		string vanetzaCryptoBackend = default("Null");
-		string vanetzaCertificateManager = default("NullOk");
+		string vanetzaCertificateProvider = default("Null");
+		string vanetzaCertificateValidator = default("NullOk");
 		string vanetzaSecuritySignService = default("dummy");
 		string vanetzaSecurityVerifyService = default("dummy");
 		int vanetzaDccQueueLength = default(2);

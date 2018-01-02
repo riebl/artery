@@ -38,7 +38,8 @@
 #include <vanetza/geonet/packet.hpp>
 #include <vanetza/geonet/router.hpp>
 #include <vanetza/security/backend.hpp>
-#include <vanetza/security/certificate_manager.hpp>
+#include <vanetza/security/certificate_provider.hpp>
+#include <vanetza/security/certificate_validator.hpp>
 #include <vanetza/security/security_entity.hpp>
 #include <map>
 #include <memory>
@@ -102,7 +103,8 @@ class Middleware :
 		vanetza::dcc::Scheduler mDccScheduler;
 		std::unique_ptr<vanetza::dcc::FlowControl> mDccControl;
 		std::unique_ptr<vanetza::security::Backend> mSecurityBackend;
-		std::unique_ptr<vanetza::security::CertificateManager> mSecurityCertificates;
+		std::unique_ptr<vanetza::security::CertificateProvider> mSecurityCertificates;
+		std::unique_ptr<vanetza::security::CertificateValidator> mSecurityCertificateValidator;
 		std::unique_ptr<vanetza::security::SecurityEntity> mSecurityEntity;
 		vanetza::geonet::MIB mGeoMib;
 		std::unique_ptr<vanetza::geonet::Router> mGeoRouter;

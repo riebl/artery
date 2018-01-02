@@ -33,13 +33,15 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Mandatory and optional project dependencies
 set(Boost_COMPONENTS date_time serialization)
-set(Boost_OPTIONAL_COMPONENTS system)
-find_package(Boost 1.58 REQUIRED
-  COMPONENTS ${Boost_COMPONENTS}
-  OPTIONAL_COMPONENTS ${Boost_OPTIONAL_COMPONENTS})
+set(Boost_OPTIONAL_COMPONENTS system program_options)
+find_package(Boost 1.58 REQUIRED COMPONENTS ${Boost_COMPONENTS})
+include(CompatBoostTargets)
+# optional components need to be queried seperately (FindBoost bails out when one is missing)
+find_package(Boost 1.58 QUIET OPTIONAL_COMPONENTS ${Boost_OPTIONAL_COMPONENTS})
 include(CompatBoostTargets)
 find_package(CryptoPP 5.6.1 REQUIRED)
 find_package(GeographicLib 1.37 REQUIRED)
+find_package(Cohda MODULE)
 
 option(VANETZA_WITH_OPENSSL "Enable OpenSSL extensions" OFF)
 if (VANETZA_WITH_OPENSSL)
@@ -57,12 +59,20 @@ add_subdirectory(vanetza/gnss)
 add_subdirectory(vanetza/net)
 add_subdirectory(vanetza/security)
 add_subdirectory(vanetza/units)
-add_subdirectory(tools/cohda_proxy)
 add_subdirectory(tools/proxy_fake_feed)
+
+if(TARGET Cohda::headers)
+  add_subdirectory(tools/cohda_proxy)
+endif()
 
 option(BUILD_SOCKTAP "Build socktap application" OFF)
 if(BUILD_SOCKTAP)
   add_subdirectory(tools/socktap)
+endif()
+
+option(BUILD_CERTIFY "Build certify application" OFF)
+if(BUILD_CERTIFY)
+  add_subdirectory(tools/certify)
 endif()
 
 # interface library for convenience
@@ -100,7 +110,7 @@ install(EXPORT ${PROJECT_NAME} NAMESPACE Vanetza:: FILE VanetzaTargets.cmake DES
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/vanetza
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-  FILES_MATCHING PATTERN "*.hpp" PATTERN "asn1/gen/*.h" PATTERN "/tests/*.hpp" EXCLUDE)
+  FILES_MATCHING PATTERN "*.hpp" PATTERN "asn1/its/*.h" PATTERN "/tests/*.hpp" EXCLUDE)
 
 # export build tree (allows import by outside projects)
 export(EXPORT ${PROJECT_NAME} NAMESPACE Vanetza:: FILE VanetzaExports.cmake)
@@ -109,4 +119,3 @@ file(COPY ${CMAKECONFIG_BUILD_DIR}/VanetzaConfigVersion.cmake
 configure_file(cmake/VanetzaExportsConfig.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/VanetzaConfig.cmake @ONLY)
 export(PACKAGE ${PROJECT_NAME})
-

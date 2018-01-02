@@ -3,6 +3,7 @@
 
 #include "position_provider.hpp"
 #include <stdexcept>
+#include <string>
 #include <gps.h>
 
 class GpsPositionProvider : public PositionProvider
@@ -16,6 +17,7 @@ public:
     };
 
     GpsPositionProvider();
+    GpsPositionProvider(const std::string& hostname, const std::string& port);
     ~GpsPositionProvider();
     vanetza::geonet::LongPositionVector current_position();
 
@@ -24,6 +26,14 @@ private:
 
     gps_data_t gps_data;
 };
+
+namespace gpsd
+{
+
+constexpr char* default_port = DEFAULT_GPSD_PORT;
+constexpr char* shared_memory = GPSD_SHARED_MEMORY;
+
+} // namespace gpsd
 
 #endif /* GPS_POSITION_PROVIDER_HPP_GYN3GVQA */
 

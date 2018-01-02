@@ -29,16 +29,16 @@ public:
     }
 
 #include <vanetza/security/backend_null.hpp>
-VANETZA_REGISTER_CRYPTO_BACKEND(BackendNull);
+VANETZA_REGISTER_CRYPTO_BACKEND(BackendNull)
 
 #ifdef VANETZA_WITH_CRYPTOPP
 #   include <vanetza/security/backend_cryptopp.hpp>
-    VANETZA_REGISTER_CRYPTO_BACKEND(BackendCryptoPP);
+    VANETZA_REGISTER_CRYPTO_BACKEND(BackendCryptoPP)
 #endif
 
 #ifdef VANETZA_WITH_OPENSSL
 #   include <vanetza/security/backend_openssl.hpp>
-    VANETZA_REGISTER_CRYPTO_BACKEND(BackendOpenSsl);
+    VANETZA_REGISTER_CRYPTO_BACKEND(BackendOpenSsl)
 #endif
 
 namespace vanetza
@@ -49,7 +49,7 @@ namespace security
 const Factory<Backend>& builtin_backends()
 {
     return backend_factory;
-};
+}
 
 std::unique_ptr<Backend> create_backend(const std::string& name, const Factory<Backend>& factory)
 {

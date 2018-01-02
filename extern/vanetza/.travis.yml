@@ -29,7 +29,7 @@ install:
     tar xjf boost_1_58_0.tar.bz2
     pushd ${BOOST_ROOT}
     ./bootstrap.sh
-    ./b2 --with-date_time --with-serialization --with-system
+    ./b2 --with-date_time --with-serialization --with-system --with-program_options
     popd
   fi
   popd

@@ -5,6 +5,7 @@
 #include <vanetza/security/region.hpp>
 #include <vanetza/security/serialization.hpp>
 #include <boost/variant/variant.hpp>
+#include <chrono>
 
 namespace vanetza
 {
@@ -34,6 +35,31 @@ public:
     {
         return m_raw;
     }
+
+    /**
+     * Get duration's unit.
+     * \return unit part of raw value
+     */
+    Units unit() const
+    {
+        return static_cast<Units>(m_raw >> 13);
+    }
+
+    /**
+     * Get duration's ticks value
+     * \return value part of raw value
+     */
+    uint16_t value() const
+    {
+        return m_raw & 0x1FFF; // mask upper 3 bit
+    }
+
+    /**
+     * Convert duration to seconds.
+     * \note std::chrono::seconds is wide enough to represent 2^13 years
+     * \return duration in seconds
+     */
+    std::chrono::seconds to_seconds() const;
 
 private:
     uint16_t m_raw;

@@ -3,7 +3,7 @@
 
 #include <vanetza/asn1/asn1c_conversion.hpp>
 #include <vanetza/asn1/asn1c_wrapper.hpp>
-#include <vanetza/asn1/gen/DENM.h>
+#include <vanetza/asn1/its/DENM.h>
 
 namespace vanetza
 {

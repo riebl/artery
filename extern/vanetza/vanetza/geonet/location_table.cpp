@@ -10,8 +10,8 @@ namespace geonet
 static_assert(std::numeric_limits<double>::has_quiet_NaN, "quiet NaN value unavailable");
 
 LocationTableEntry::LocationTableEntry(const Runtime& rt) :
-    is_neighbour(false), runtime(rt),
-    pdr(std::numeric_limits<double>::quiet_NaN()), pdr_update(rt.now())
+    m_runtime(rt), m_is_neighbour(false), m_has_position_vector(false),
+    m_pdr(std::numeric_limits<double>::quiet_NaN()), m_pdr_update(rt.now())
 {
 }
 
@@ -22,7 +22,7 @@ StationType LocationTableEntry::station_type() const
 
 const Address& LocationTableEntry::geonet_address() const
 {
-    return position_vector.gn_addr;
+    return m_position_vector.gn_addr;
 }
 
 const MacAddress& LocationTableEntry::link_layer_address() const
@@ -34,21 +34,21 @@ bool LocationTableEntry::is_duplicate_packet(SequenceNumber sn, Timestamp time)
 {
     bool is_duplicate = false;
 
-    if (timestamp) {
-        if (timestamp.get() > time) {
+    if (m_timestamp) {
+        if (m_timestamp.get() > time) {
             is_duplicate = true;
-        } else if (timestamp.get() == time) {
-            if (!sequence_number) {
+        } else if (m_timestamp.get() == time) {
+            if (!m_sequence_number) {
                 is_duplicate = true;
-            } else if (sequence_number.get() >= sn) {
+            } else if (m_sequence_number.get() >= sn) {
                 is_duplicate = true;
             }
         }
     }
 
     if (!is_duplicate) {
-        timestamp = time;
-        sequence_number = sn;
+        m_timestamp = time;
+        m_sequence_number = sn;
     }
 
     return is_duplicate;
@@ -58,8 +58,8 @@ bool LocationTableEntry::is_duplicate_packet(Timestamp time)
 {
     bool is_duplicate = false;
 
-    if (!timestamp || timestamp.get() <= time) {
-        timestamp = time;
+    if (!m_timestamp || m_timestamp.get() <= time) {
+        m_timestamp = time;
     } else {
         is_duplicate = true;
     }
@@ -71,24 +71,31 @@ void LocationTableEntry::update_pdr(std::size_t packet_size)
 {
     using namespace vanetza::units;
 
-    if (std::isnan(pdr)) {
-        pdr = 0.0;
-        pdr_update = runtime.now();
+    if (std::isnan(m_pdr)) {
+        m_pdr = 0.0;
+        m_pdr_update = m_runtime.now();
     } else {
-        const std::chrono::duration<double> time_period = runtime.now() - pdr_update;
+        const std::chrono::duration<double> time_period = m_runtime.now() - m_pdr_update;
         if (time_period.count() > 0.0) {
             double instant_pdr = packet_size / time_period.count();
-            pdr *= 0.5;
-            pdr += 0.5 * instant_pdr;
-            pdr_update = runtime.now();
+            m_pdr *= 0.5;
+            m_pdr += 0.5 * instant_pdr;
+            m_pdr_update = m_runtime.now();
         }
     }
 }
 
-double LocationTableEntry::get_pdr() const
+void LocationTableEntry::set_position_vector(const LongPositionVector& pv)
 {
-    return pdr;
+    m_has_position_vector = true;
+    m_position_vector = pv;
 }
+
+void LocationTableEntry::set_neighbour(bool flag)
+{
+    m_is_neighbour = flag;
+}
+
 
 LocationTable::LocationTable(const MIB& mib, Runtime& rt) :
     m_table(rt, LocationTableEntryCreator(rt))
@@ -105,7 +112,7 @@ bool LocationTable::has_neighbours() const
 {
     bool found_neighbour = false;
     for (const auto& entry : m_table.map()) {
-        if (entry.second.is_neighbour == true) {
+        if (entry.second.is_neighbour()) {
             found_neighbour = true;
             break;
         }
@@ -117,7 +124,7 @@ auto LocationTable::neighbours() const -> neighbour_range
 {
     using namespace boost::adaptors;
     std::function<bool(const typename table_type::value_type&)> filter_fn =
-        [](const typename table_type::value_type& v) { return v.second.is_neighbour; };
+        [](const typename table_type::value_type& v) { return v.second.is_neighbour(); };
     return m_table.map() | filtered(filter_fn) | map_values;
 }
 
@@ -134,13 +141,13 @@ bool LocationTable::is_duplicate_packet(const Address& addr, Timestamp t)
 void LocationTable::update(const LongPositionVector& lpv)
 {
     LocationTableEntry* entry = m_table.get_value_ptr(lpv.gn_addr.mid());
-    if (entry && !is_empty(entry->position_vector)) {
-        if (entry->position_vector.timestamp < lpv.timestamp) {
-            entry->position_vector = lpv;
+    if (entry && entry->has_position_vector()) {
+        if (entry->get_position_vector().timestamp < lpv.timestamp) {
+            entry->set_position_vector(lpv);
             m_table.refresh(lpv.gn_addr.mid());
         }
     } else {
-        m_table.refresh(lpv.gn_addr.mid()).position_vector = lpv;
+        m_table.refresh(lpv.gn_addr.mid()).set_position_vector(lpv);
     }
 }
 
@@ -163,8 +170,8 @@ const LongPositionVector* LocationTable::get_position(const MacAddress& mac) con
 {
     const LongPositionVector* position = nullptr;
     auto* entry = m_table.get_value_ptr(mac);
-    if (entry) {
-        position = &entry->position_vector;
+    if (entry && entry->has_position_vector()) {
+        position = &entry->get_position_vector();
     }
     return position;
 }

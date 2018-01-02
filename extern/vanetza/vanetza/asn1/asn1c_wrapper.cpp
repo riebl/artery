@@ -1,5 +1,5 @@
-#include <vanetza/asn1/gen/asn_application.h>
-#include <vanetza/asn1/gen/constraints.h>
+#include <vanetza/asn1/its/asn_application.h>
+#include <vanetza/asn1/its/constraints.h>
 #include "asn1c_wrapper.hpp"
 #include <vanetza/common/byte_buffer.hpp>
 #include <boost/format.hpp>
@@ -84,7 +84,7 @@ bool validate(asn_TYPE_descriptor_t& td, const void* t, std::string& error)
 std::size_t size(asn_TYPE_descriptor_t& td, const void* t)
 {
     asn_enc_rval_t ec;
-    ec = uper_encode(&td, const_cast<void*>(t), write_null, 0);
+    ec = uper_encode(&td, nullptr, const_cast<void*>(t), write_null, nullptr);
     if (ec.encoded < 0) {
         const char* failed_type = ec.failed_type ? ec.failed_type->name : "unknown";
         const auto error_msg = boost::format(
@@ -100,7 +100,7 @@ std::size_t size(asn_TYPE_descriptor_t& td, const void* t)
 ByteBuffer encode(asn_TYPE_descriptor_t& td, const void* t)
 {
     ByteBuffer buffer;
-    asn_enc_rval_t ec = uper_encode(&td, const_cast<void*>(t), write_buffer, &buffer);
+    asn_enc_rval_t ec = uper_encode(&td, nullptr, const_cast<void*>(t), write_buffer, &buffer);
     if (ec.encoded == -1) {
         const char* failed_type = ec.failed_type ? ec.failed_type->name : "unknown";
         const auto error_msg = boost::format(

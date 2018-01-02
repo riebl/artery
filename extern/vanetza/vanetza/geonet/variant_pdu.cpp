@@ -76,9 +76,9 @@ void VariantPdu::secured(SecuredMessage&& smsg)
     m_secured = std::move(smsg);
 }
 
-Pdu* VariantPdu::clone() const
+std::unique_ptr<Pdu> VariantPdu::clone() const
 {
-    return new VariantPdu(*this);
+    return std::unique_ptr<Pdu> { new VariantPdu(*this) };
 }
 
 } // namespace geonet

@@ -32,7 +32,7 @@ public:
     const SecuredMessage* secured() const override;
     void secured(SecuredMessage*) override;
     void secured(SecuredMessage&&) override;
-    Pdu* clone() const override;
+    std::unique_ptr<Pdu> clone() const override;
 
 private:
     BasicHeader m_basic;

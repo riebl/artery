@@ -6,7 +6,6 @@ set(CXX_SOURCES
     cbf_packet_buffer.cpp
     common_header.cpp
     data_confirm.cpp
-    data_indication.cpp
     data_request.cpp
     gbc_gac_header.cpp
     gbc_header.cpp
@@ -19,6 +18,7 @@ set(CXX_SOURCES
     location_table.cpp
     next_hop.cpp
     packet_buffer.cpp
+    parser.cpp
     pdu.cpp
     pdu_conversion.cpp
     position_vector.cpp

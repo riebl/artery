@@ -17,6 +17,13 @@ void serialize(const SecuredPdu& pdu, OutputArchive& ar)
     serialize(pdu.extended, ar);
 }
 
+SecuredPdu* secured_pdu_cast(ByteBufferConvertible& convertible)
+{
+    using convertible_pdu_t = convertible::byte_buffer_impl<SecuredPdu>;
+    auto convertible_pdu = dynamic_cast<convertible_pdu_t*>(convertible.ptr());
+    return convertible_pdu ? &convertible_pdu->pdu : nullptr;
+}
+
 } // namespace geonet
 
 namespace convertible

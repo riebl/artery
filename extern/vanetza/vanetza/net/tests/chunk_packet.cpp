@@ -54,6 +54,15 @@ TEST(ChunkPacket, copy)
     EXPECT_EQ(46, tmp.size());
 }
 
+TEST(ChunkPacket, self_assignment)
+{
+    ChunkPacket data;
+    data[OsiLayer::Physical] = ByteBuffer(20);
+    ASSERT_EQ(20, data.size());
+    data = data;
+    EXPECT_EQ(20, data.size());
+}
+
 TEST(ChunkPacket, extract)
 {
     std::array<ByteBuffer, 5> buffer;

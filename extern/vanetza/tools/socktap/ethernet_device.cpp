@@ -6,7 +6,7 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 
-void initialize(ifreq& request, const char* interface_name)
+static void initialize(ifreq& request, const char* interface_name)
 {
     std::memset(&request, 0, sizeof(ifreq));
     std::strncpy(request.ifr_name, interface_name, IF_NAMESIZE);

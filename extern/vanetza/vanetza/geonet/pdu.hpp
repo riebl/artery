@@ -3,8 +3,8 @@
 
 #include <vanetza/geonet/header_variant.hpp>
 #include <vanetza/geonet/serialization.hpp>
-#include <boost/optional.hpp>
 #include <cstddef>
+#include <memory>
 
 namespace vanetza
 {
@@ -28,7 +28,7 @@ public:
     virtual const CommonHeader& common() const = 0;
     virtual const SecuredMessage* secured() const = 0;
     virtual HeaderConstRefVariant extended_variant() const = 0;
-    virtual Pdu* clone() const = 0;
+    virtual std::unique_ptr<Pdu> clone() const = 0;
     virtual ~ConstAccessiblePdu() = default;
 };
 

@@ -1,2 +1,3 @@
+build
 conanfile.pyc
-doc
+doc/*/

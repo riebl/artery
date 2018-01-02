@@ -1,6 +1,6 @@
 #include <vanetza/common/runtime.hpp>
 #include <vanetza/security/backend.hpp>
-#include <vanetza/security/certificate_manager.hpp>
+#include <vanetza/security/certificate_validator.hpp>
 #include <vanetza/security/its_aid.hpp>
 #include <vanetza/security/verify_service.hpp>
 #include <boost/optional.hpp>
@@ -23,8 +23,8 @@ bool check_generation_time(Clock::time_point now, const SecuredMessageV2& messag
     if (generation_time) {
         // Values are picked from C2C-CC Basic System Profile v1.1.0, see RS_BSP_168
         static const auto generation_time_future = milliseconds(40);
-        static const auto generation_time_past_default = minutes(10);;
-        static const auto generation_time_past_ca = minutes(2);
+        static const Clock::duration generation_time_past_default = minutes(10);
+        static const Clock::duration generation_time_past_ca = seconds(2);
         auto generation_time_past = generation_time_past_default;
 
         const HeaderField* its_aid_field = message.header_field(HeaderFieldType::Its_Aid);
@@ -47,7 +47,7 @@ bool check_generation_time(Clock::time_point now, const SecuredMessageV2& messag
 
 } // namespace
 
-VerifyService straight_verify_service(Runtime& rt, CertificateManager& certs, Backend& backend)
+VerifyService straight_verify_service(Runtime& rt, CertificateValidator& certs, Backend& backend)
 {
     return [&](VerifyRequest&& request) -> VerifyConfirm {
         VerifyConfirm confirm;

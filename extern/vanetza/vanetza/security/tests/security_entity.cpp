@@ -1,8 +1,10 @@
 #include <gtest/gtest.h>
 #include <vanetza/common/runtime.hpp>
 #include <vanetza/security/backend.hpp>
-#include <vanetza/security/naive_certificate_manager.hpp>
+#include <vanetza/security/default_certificate_validator.hpp>
+#include <vanetza/security/naive_certificate_provider.hpp>
 #include <vanetza/security/security_entity.hpp>
+#include <vanetza/security/trust_store.hpp>
 #include <vanetza/security/tests/check_payload.hpp>
 #include <vanetza/security/tests/check_signature.hpp>
 
@@ -14,9 +16,12 @@ class SecurityEntityTest : public ::testing::Test
 protected:
     SecurityEntityTest() :
         crypto_backend(create_backend("default")),
-        certificate_manager(new NaiveCertificateManager(runtime.now())),
-        sign_service(straight_sign_service(runtime, *certificate_manager, *crypto_backend)),
-        verify_service(straight_verify_service(runtime, *certificate_manager, *crypto_backend)),
+        certificate_provider(new NaiveCertificateProvider(runtime.now())),
+        roots({ certificate_provider->root_certificate() }),
+        trust_store(roots),
+        certificate_validator(new DefaultCertificateValidator(runtime.now(), trust_store)),
+        sign_service(straight_sign_service(runtime, *certificate_provider, *crypto_backend)),
+        verify_service(straight_verify_service(runtime, *certificate_validator, *crypto_backend)),
         security(sign_service, verify_service)
     {
     }
@@ -43,7 +48,10 @@ protected:
 
     Runtime runtime;
     std::unique_ptr<Backend> crypto_backend;
-    std::unique_ptr<CertificateManager> certificate_manager;
+    std::unique_ptr<NaiveCertificateProvider> certificate_provider;
+    std::vector<Certificate> roots;
+    TrustStore trust_store;
+    std::unique_ptr<CertificateValidator> certificate_validator;
     SignService sign_service;
     VerifyService verify_service;
     SecurityEntity security;
@@ -52,8 +60,8 @@ protected:
 
 TEST_F(SecurityEntityTest, mutual_acceptance)
 {
-    SignService sign = straight_sign_service(runtime, *certificate_manager, *crypto_backend);
-    VerifyService verify = straight_verify_service(runtime, *certificate_manager, *crypto_backend);
+    SignService sign = straight_sign_service(runtime, *certificate_provider, *crypto_backend);
+    VerifyService verify = straight_verify_service(runtime, *certificate_validator, *crypto_backend);
     SecurityEntity other_security(sign, verify);
     EncapConfirm encap_confirm = other_security.encapsulate_packet(create_encap_request());
     DecapConfirm decap_confirm = security.decapsulate_packet(DecapRequest { encap_confirm.sec_packet });
@@ -63,17 +71,16 @@ TEST_F(SecurityEntityTest, mutual_acceptance)
 #if defined(VANETZA_WITH_CRYPTOPP) && defined(VANETZA_WITH_OPENSSL)
 TEST_F(SecurityEntityTest, mutual_acceptance_impl)
 {
-    NaiveCertificateManager cryptopp_certs(runtime.now()), openssl_certs(runtime.now());
     auto cryptopp_backend = create_backend("CryptoPP");
     auto openssl_backend = create_backend("OpenSSL");
     ASSERT_TRUE(cryptopp_backend);
     ASSERT_TRUE(openssl_backend);
     SecurityEntity cryptopp_security {
-            straight_sign_service(runtime, cryptopp_certs, *cryptopp_backend),
-            straight_verify_service(runtime, cryptopp_certs, *cryptopp_backend) };
+            straight_sign_service(runtime, *certificate_provider, *cryptopp_backend),
+            straight_verify_service(runtime, *certificate_validator, *cryptopp_backend) };
     SecurityEntity openssl_security {
-            straight_sign_service(runtime, openssl_certs, *openssl_backend),
-            straight_verify_service(runtime, openssl_certs, *openssl_backend) };
+            straight_sign_service(runtime, *certificate_provider, *openssl_backend),
+            straight_verify_service(runtime, *certificate_validator, *openssl_backend) };
 
     // OpenSSL to Crypto++
     EncapConfirm encap_confirm = openssl_security.encapsulate_packet(create_encap_request());
@@ -192,7 +199,7 @@ TEST_F(SecurityEntityTest, verify_message_modified_certificate_signer_info)
     // verify message
     DecapConfirm decap_confirm = security.decapsulate_packet(std::move(decap_request));
     ASSERT_FALSE(decap_confirm.certificate_validity);
-    EXPECT_EQ(CertificateInvalidReason::INVALID_ROOT_HASH, decap_confirm.certificate_validity.reason());
+    EXPECT_EQ(CertificateInvalidReason::UNKNOWN_SIGNER, decap_confirm.certificate_validity.reason());
 }
 
 TEST_F(SecurityEntityTest, verify_message_modified_certificate_subject_info)
@@ -210,7 +217,7 @@ TEST_F(SecurityEntityTest, verify_message_modified_certificate_subject_info)
     // verify message
     DecapConfirm decap_confirm = security.decapsulate_packet(std::move(decap_request));
     ASSERT_FALSE(decap_confirm.certificate_validity);
-    EXPECT_EQ(CertificateInvalidReason::INVALID_SIGNATURE, decap_confirm.certificate_validity.reason());
+    EXPECT_EQ(CertificateInvalidReason::UNKNOWN_SIGNER, decap_confirm.certificate_validity.reason());
 }
 
 TEST_F(SecurityEntityTest, verify_message_modified_certificate_subject_assurance)
@@ -233,7 +240,7 @@ TEST_F(SecurityEntityTest, verify_message_modified_certificate_subject_assurance
     // verify message
     DecapConfirm decap_confirm = security.decapsulate_packet(std::move(decap_request));
     ASSERT_FALSE(decap_confirm.certificate_validity);
-    EXPECT_EQ(CertificateInvalidReason::INVALID_SIGNATURE, decap_confirm.certificate_validity.reason());
+    EXPECT_EQ(CertificateInvalidReason::UNKNOWN_SIGNER, decap_confirm.certificate_validity.reason());
 }
 
 TEST_F(SecurityEntityTest, verify_message_outdated_certificate)
@@ -321,7 +328,7 @@ TEST_F(SecurityEntityTest, verify_message_modified_certificate_signature)
     // verify message
     DecapConfirm decap_confirm = security.decapsulate_packet(std::move(decap_request));
     ASSERT_FALSE(decap_confirm.certificate_validity);
-    EXPECT_EQ(CertificateInvalidReason::INVALID_SIGNATURE, decap_confirm.certificate_validity.reason());
+    EXPECT_EQ(CertificateInvalidReason::UNKNOWN_SIGNER, decap_confirm.certificate_validity.reason());
 }
 
 TEST_F(SecurityEntityTest, verify_message_modified_signature)

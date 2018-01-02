@@ -17,7 +17,7 @@ enum class SubjectType : uint8_t
     Enrollment_Credential = 0,
     Authorization_Ticket = 1,
     Authorization_Authority = 2,
-    Enrollment_Atuhority = 3,
+    Enrollment_Authority = 3,
     Root_Ca = 4,
     Crl_Signer = 5
 };

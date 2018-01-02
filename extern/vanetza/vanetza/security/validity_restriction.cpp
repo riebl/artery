@@ -21,6 +21,33 @@ Duration::Duration(uint16_t raw) : m_raw(raw)
 {
 }
 
+std::chrono::seconds Duration::to_seconds() const
+{
+    using std::chrono::seconds;
+
+    // see section 4.2.17 of TS 103 097 v1.2.1 for conversion factors
+    switch (unit()) {
+        case Units::Seconds:
+            return seconds(value());
+
+        case Units::Minutes:
+            return seconds(value() * 60L);
+
+        case Units::Hours:
+            return seconds(value() * 3600L);
+
+        case Units::Sixty_Hour_Blocks:
+            return seconds(value() * 216000L);
+
+        case Units::Years:
+            return seconds(value() * 31556925L);
+
+        default:
+            // undefined, let's interpret it as minimal duration, which will fail during validation
+            return std::chrono::seconds::min();
+    }
+}
+
 StartAndEndValidity::StartAndEndValidity(Time32 start, Time32 end) :
     start_validity(start), end_validity(end) {}
 
