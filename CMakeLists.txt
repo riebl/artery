@@ -20,6 +20,19 @@ find_program(MAKE_COMMAND NAMES make gmake HINTS ${CMAKE_MAKE_COMMAND} DOC "Make
 set(MAKE_ARGUMENTS "" CACHE STRING "Additional arguments passed to Makefile processor")
 string(REPLACE " " ";" MAKE_ARGUMENTS "${MAKE_ARGUMENTS}")
 
+if("${Vanetza_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/vanetza/build")
+    set(_make_command ${MAKE_COMMAND})
+    if(CMAKE_GENERATOR MATCHES "Makefiles")
+        set(_make_command \$\(MAKE\))
+    endif()
+    add_custom_target(build_vanetza
+        COMMAND ${_make_command} ${MAKE_ARGUMENTS} vanetza
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMENT "Building Vanetza (external dependency)"
+        VERBATIM)
+    add_dependencies(Vanetza::vanetza build_vanetza)
+endif()
+
 if("${Veins_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/veins")
     set(_veins_mode "release")
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")

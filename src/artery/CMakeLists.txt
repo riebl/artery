@@ -138,15 +138,3 @@ if(WITH_ENVMOD)
     set_property(SOURCE application/VehicleMiddleware.cc APPEND PROPERTY COMPILE_DEFINITIONS "WITH_ENVMOD")
 endif()
 
-if("${Vanetza_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/vanetza/build")
-    set(_make_command ${MAKE_COMMAND})
-    if(CMAKE_GENERATOR MATCHES "Makefiles")
-        set(_make_command \$\(MAKE\))
-    endif()
-    add_custom_target(build_vanetza
-        COMMAND ${_make_command} ${MAKE_ARGUMENTS} vanetza
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-        COMMENT "Building Vanetza (external dependency)"
-        VERBATIM)
-    add_dependencies(artery build_vanetza)
-endif()
