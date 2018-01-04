@@ -1,9 +1,6 @@
 /* src/config.h.  Generated from config.h.in by configure.  */
 /* src/config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Define to 1 in order to enable memory checks. */
-/* #undef CHECK_MEMORY_LEAKS */
-
 /* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
    systems. This function is required for `alloca.c' support on those systems.
    */
@@ -26,10 +23,10 @@
 #define HAVE_DLFCN_H 1
 
 /* Reporting string for enabled options */
-#define HAVE_ENABLED "x86_64-suse-linux-gnu InternalLanes DoublePrecision TRACI PROJ GDAL GUI UnitTests ffmpeg"
+#define HAVE_ENABLED "x86_64-pc-linux-gnu TRACI PROJ GDAL GUI"
 
 /* defined if ffmpeg is available */
-#define HAVE_FFMPEG 1
+/* #undef HAVE_FFMPEG */
 
 /* Define to 1 if you have the <float.h> header file. */
 #define HAVE_FLOAT_H 1
@@ -48,9 +45,6 @@
 
 /* Define to 1 if you have the `gettimeofday' function. */
 #define HAVE_GETTIMEOFDAY 1
-
-/* Define to 1 if you want junction internal lanes */
-#define HAVE_INTERNAL_LANES 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -96,7 +90,7 @@
 /* #undef HAVE_STAT_EMPTY_STRING_BUG */
 
 /* Define to 1 if stdbool.h conforms to C99. */
-#define HAVE_STDBOOL_H 1
+/* #undef HAVE_STDBOOL_H */
 
 /* Define to 1 if you have the <stddef.h> header file. */
 #define HAVE_STDDEF_H 1
@@ -144,8 +138,7 @@
    slash. */
 #define LSTAT_FOLLOWS_SLASHED_SYMLINK 1
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
 
 /* Including windows.h gives errors otherwise (cygwin) */
@@ -155,7 +148,7 @@
 /* #undef NO_TRACI */
 
 /* defines the epsilon to use on general floating point comparison */
-#define NUMERICAL_EPS (SUMOReal)0.001
+#define NUMERICAL_EPS 0.001
 
 /* Name of package */
 #define PACKAGE "sumo"
@@ -167,7 +160,7 @@
 #define PACKAGE_NAME "sumo"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "sumo 0.29.0"
+#define PACKAGE_STRING "sumo 0.32.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "sumo"
@@ -176,10 +169,10 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.29.0"
+#define PACKAGE_VERSION "0.32.0"
 
 /* defines the epsilon to use on position comparison */
-#define POSITION_EPS (SUMOReal)0.1
+#define POSITION_EPS 0.1
 
 /* Define as the return type of signal handlers (`int' or `void'). */
 #define RETSIGTYPE void
@@ -204,9 +197,6 @@
 /* Define to 1 if you have the ANSI C header files. */
 /* #undef STDC_HEADERS */
 
-/* defines the precision of floats */
-#define SUMOReal double
-
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1
 
@@ -214,7 +204,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "0.29.0"
+#define VERSION "0.32.0"
 
 /* Defined if auto-generated version.h is unavailable. */
 /* #undef VERSION_STRING */

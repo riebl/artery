@@ -6,7 +6,7 @@
 namespace traci
 {
 
-using TraCIBoundary = TraCIBoundary;
+using TraCIBoundary = libsumo::TraCIBoundary;
 
 } // namespace traci
 

@@ -1,24 +1,23 @@
 /****************************************************************************/
+// Eclipse SUMO, Simulation of Urban MObility; see https://eclipse.org/sumo
+// Copyright (C) 2012-2017 German Aerospace Center (DLR) and others.
+/****************************************************************************/
+//
+//   This program and the accompanying materials
+//   are made available under the terms of the Eclipse Public License v2.0
+//   which accompanies this distribution, and is available at
+//   http://www.eclipse.org/legal/epl-v20.html
+//
+/****************************************************************************/
 /// @file    TraCIDefs.h
 /// @author  Daniel Krajzewicz
 /// @author  Mario Krumnow
 /// @author  Michael Behrisch
 /// @author  Robert Hilbrich
 /// @date    30.05.2012
-/// @version $Id: TraCIDefs.h 24108 2017-04-27 18:43:30Z behrisch $
+/// @version $Id$
 ///
 // C++ TraCI client API implementation
-/****************************************************************************/
-// SUMO, Simulation of Urban MObility; see http://sumo.dlr.de/
-// Copyright (C) 2012-2017 DLR (http://www.dlr.de/) and contributors
-/****************************************************************************/
-//
-//   This file is part of SUMO.
-//   SUMO is free software: you can redistribute it and/or modify
-//   it under the terms of the GNU General Public License as published by
-//   the Free Software Foundation, either version 3 of the License, or
-//   (at your option) any later version.
-//
 /****************************************************************************/
 #ifndef TraCIDefs_h
 #define TraCIDefs_h
@@ -52,6 +51,7 @@
 typedef long long int SUMOTime; // <utils/common/SUMOTime.h>
 #define SUMOTime_MAX std::numeric_limits<SUMOTime>::max()
 
+namespace libsumo {
 /**
 * @class TraCIException
 */
@@ -72,7 +72,7 @@ struct TraCIPosition {
     double x, y, z;
 };
 
-/** @struct TraCIPosition
+/** @struct TraCIColor
     * @brief A color
     */
 struct TraCIColor {
@@ -92,6 +92,7 @@ struct TraCIBoundary {
     double xMax, yMax, zMax;
 };
 
+
 struct TraCIValue {
     union {
         double scalar;
@@ -101,6 +102,7 @@ struct TraCIValue {
     std::string string;
     std::vector<std::string> stringList;
 };
+
 
 class TraCIPhase {
 public:
@@ -115,15 +117,16 @@ public:
 
 class TraCILogic {
 public:
-    TraCILogic(const std::string& _subID, int _type, const std::map<std::string, double>& _subParameter, int _currentPhaseIndex, const std::vector<TraCIPhase>& _phases)
-        : subID(_subID), type(_type), subParameter(_subParameter), currentPhaseIndex(_currentPhaseIndex), phases(_phases) {}
+    TraCILogic() {}
+    TraCILogic(const std::string& _subID, int _type, int _currentPhaseIndex)
+        : subID(_subID), type(_type), currentPhaseIndex(_currentPhaseIndex) {}
     ~TraCILogic() {}
 
     std::string subID;
     int type;
-    std::map<std::string, double> subParameter;
     int currentPhaseIndex;
     std::vector<TraCIPhase> phases;
+    std::map<std::string, std::string> subParameter;
 };
 
 
@@ -158,11 +161,8 @@ public:
 };
 
 
-class TraCIVehicleData {
-public:
-    /* @brief Constructor
-    (mirrors MSInductLoop::VehicleData) */
-    TraCIVehicleData() {}
+/// @brief mirrors MSInductLoop::VehicleData
+struct TraCIVehicleData {
     /// @brief The id of the vehicle
     std::string id;
     /// @brief Length of the vehicle
@@ -175,7 +175,53 @@ public:
     std::string typeID;
 };
 
-/// @}
+
+struct TraCINextTLSData {
+    /// @brief The id of the next tls
+    std::string id;
+    /// @brief The tls index of the controlled link
+    int tlIndex;
+    /// @brief The distance to the tls
+    double dist;
+    /// @brief The current state of the tls
+    char state;
+};
+
+
+struct TraCIBestLanesData {
+    /// @brief The id of the lane
+    std::string laneID;
+    /// @brief The length than can be driven from that lane without lane change
+    double length;
+    /// @brief The traffic density along length
+    double occupation;
+    /// @brief The offset of this lane from the best lane
+    int bestLaneOffset;
+    /// @brief Whether this lane allows continuing the route
+    bool allowsContinuation;
+    /// @brief The sequence of lanes that best allows continuing the route without lane change
+    std::vector<std::string> continuationLanes;
+};
+
+
+class TraCIStage {
+public:
+    TraCIStage() {} // only to make swig happy
+    TraCIStage(int _type) : type(_type) {}
+    /// @brief The type of stage (walking, driving, ...)
+    int type;
+    /// @brief The line or the id of the vehicle type
+    std::string line;
+    /// @brief The id of the destination stop
+    std::string destStop;
+    /// @brief The sequence of edges to travel
+    std::vector<std::string> edges;
+    /// @brief duration of the stage
+    double travelTime;
+    /// @brief effort needed
+    double cost;
+};
+}
 
 
 #endif

@@ -16,7 +16,7 @@ namespace constants {
 // VERSION
 // ****************************************
 
-constexpr integer TRACI_VERSION = 15;
+constexpr integer TRACI_VERSION = 17;
 
 // ****************************************
 // COMMANDS
@@ -30,6 +30,9 @@ constexpr ubyte CMD_LOAD = 0x01;
 
 // command: simulation step
 constexpr ubyte CMD_SIMSTEP = 0x02;
+
+// command: set connection priority (execution order)
+constexpr ubyte CMD_SETORDER = 0x03;
 
 // command: stop node
 constexpr ubyte CMD_STOP = 0x12;
@@ -433,6 +436,9 @@ constexpr ubyte RTYPE_ERR = 0xFF;
 // return value for invalid queries (especially vehicle is not on the road)
 constexpr integer INVALID_INT_VALUE = -1;
 
+// maximum value for client ordering (2 ^ 30 - 1)
+constexpr integer MAX_ORDER = 1073741823;
+
 // ****************************************
 // TRAFFIC LIGHT PHASES
 // ****************************************
@@ -541,6 +547,34 @@ constexpr ubyte DEPARTFLAG_LANE_BEST_FREE = -0x05;
 
 constexpr ubyte DEPARTFLAG_LANE_FIRST_ALLOWED = -0x06;
 
+constexpr ubyte DEPARTFLAG_POS_RANDOM = -0x02;
+
+constexpr ubyte DEPARTFLAG_POS_FREE = -0x03;
+
+constexpr ubyte DEPARTFLAG_POS_BASE = -0x04;
+
+constexpr ubyte DEPARTFLAG_POS_LAST = -0x05;
+
+constexpr ubyte DEPARTFLAG_POS_RANDOM_FREE = -0x06;
+
+constexpr ubyte ARRIVALFLAG_LANE_CURRENT = -0x02;
+
+constexpr ubyte ARRIVALFLAG_SPEED_CURRENT = -0x02;
+
+constexpr ubyte ARRIVALFLAG_POS_RANDOM = -0x02;
+
+constexpr ubyte ARRIVALFLAG_POS_MAX = -0x03;
+
+// ****************************************
+// Routing modes
+// ****************************************
+
+// use custom weights if available, fall back to loaded weights and then to free-flow speed
+constexpr ubyte ROUTING_MODE_DEFAULT = 0x00;
+
+// use aggregated travel times from device.rerouting
+constexpr ubyte ROUTING_MODE_AGGREGATED = 0x01;
+
 // ****************************************
 // VARIABLE TYPES (for CMD_GET_*_VARIABLE)
 // ****************************************
@@ -647,6 +681,9 @@ constexpr ubyte LANE_ALLOWED = 0x34;
 // list of not allowed vehicle classes (get&set: lanes)
 constexpr ubyte LANE_DISALLOWED = 0x35;
 
+// list of foe lanes (get: lanes)
+constexpr ubyte VAR_FOES = 0x37;
+
 // slope (get: edge, lane, vehicle, person)
 constexpr ubyte VAR_SLOPE = 0x36;
 
@@ -671,13 +708,25 @@ constexpr ubyte VAR_LENGTH = 0x44;
 // color (get: vehicles, vehicle types, polygons, pois)
 constexpr ubyte VAR_COLOR = 0x45;
 
-// max. acceleration (get: vehicle types)
+// max. acceleration (get: vehicles, vehicle types)
 constexpr ubyte VAR_ACCEL = 0x46;
 
-// max. deceleration (get: vehicle types)
+// max. comfortable deceleration (get: vehicles, vehicle types)
 constexpr ubyte VAR_DECEL = 0x47;
 
-// driver reaction time (get: vehicle types)
+// max. (physically possible) deceleration (get: vehicles, vehicle types)
+constexpr ubyte VAR_EMERGENCY_DECEL = 0x7b;
+
+// apparent deceleration (get: vehicles, vehicle types)
+constexpr ubyte VAR_APPARENT_DECEL = 0x7c;
+
+// action step length (get: vehicles, vehicle types)
+constexpr ubyte VAR_ACTIONSTEPLENGTH = 0x7d;
+
+// last action time (get: vehicles)
+constexpr ubyte VAR_LASTACTIONTIME = 0x7f;
+
+// driver's desired headway (get: vehicle types)
 constexpr ubyte VAR_TAU = 0x48;
 
 // vehicle class (get: vehicle types)
@@ -713,7 +762,7 @@ constexpr ubyte VAR_LANE_INDEX = 0x52;
 // route id (get & set: vehicles)
 constexpr ubyte VAR_ROUTE_ID = 0x53;
 
-// edges (get: routes)
+// edges (get: routes, vehicles)
 constexpr ubyte VAR_EDGES = 0x54;
 
 // filled? (get: polygons)
@@ -749,6 +798,9 @@ constexpr ubyte VAR_SPEED_FACTOR = 0x5e;
 // speed deviation (set: vehicle)
 constexpr ubyte VAR_SPEED_DEVIATION = 0x5f;
 
+// routing mode (get/set: vehicle)
+constexpr ubyte VAR_ROUTING_MODE = 0x89;
+
 // speed without TraCI influence (get: vehicle)
 constexpr ubyte VAR_SPEED_WITHOUT_TRACI = 0xb1;
 
@@ -758,13 +810,13 @@ constexpr ubyte VAR_BEST_LANES = 0xb2;
 // how speed is set (set: vehicle)
 constexpr ubyte VAR_SPEEDSETMODE = 0xb3;
 
-// move vehicle, VTD version (set: vehicle)
+// move vehicle to explicit (remote controlled) position (set: vehicle)
 constexpr ubyte MOVE_TO_XY = 0xb4;
 
 // value = stopped + 2 * parking + 4 * triggered
 constexpr ubyte VAR_STOPSTATE = 0xb5;
 
-// how lane changing is performed (set: vehicle)
+// how lane changing is performed (get/set: vehicle)
 constexpr ubyte VAR_LANECHANGE_MODE = 0xb6;
 
 // maximum speed regarding max speed on the current lane and speed factor (get: vehicle)
@@ -826,6 +878,9 @@ constexpr ubyte VAR_ROUTE_INDEX = 0x69;
 
 // current waiting time (get: vehicle, lane)
 constexpr ubyte VAR_WAITING_TIME = 0x7a;
+
+// current waiting time (get: vehicle)
+constexpr ubyte VAR_ACCUMULATED_WAITING_TIME = 0x87;
 
 // upcoming traffic lights (get: vehicle)
 constexpr ubyte VAR_NEXT_TLS = 0x70;
@@ -914,6 +969,9 @@ constexpr ubyte ADD = 0x80;
 // remove an instance (poi, polygon, vehicle, person)
 constexpr ubyte REMOVE = 0x81;
 
+// copy an instance (vehicle type, other TBD.)
+constexpr ubyte COPY = 0x88;
+
 // convert coordinates
 constexpr ubyte POSITION_CONVERSION = 0x82;
 
@@ -925,6 +983,12 @@ constexpr ubyte VAR_DISTANCE = 0x84;
 
 // add a fully specified instance (vehicle)
 constexpr ubyte ADD_FULL = 0x85;
+
+// find a car based route
+constexpr ubyte FIND_ROUTE = 0x86;
+
+// find an intermodal route
+constexpr ubyte FIND_INTERMODAL_ROUTE = 0x87;
 
 // force rerouting based on travel time (vehicles)
 constexpr ubyte CMD_REROUTE_TRAVELTIME = 0x90;

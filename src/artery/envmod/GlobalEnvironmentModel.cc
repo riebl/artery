@@ -274,7 +274,7 @@ void GlobalEnvironmentModel::fetchObstacles(traci::LiteAPI& traci)
     auto boundary = traci.simulation().getNetBoundary();
     for (const std::string& id : polygons.getIDList()) {
         std::vector<Position> shape;
-        for (const TraCIPosition& traci_point : polygons.getShape(id)) {
+        for (const traci::TraCIPosition& traci_point : polygons.getShape(id)) {
             shape.push_back(traci::position_cast(boundary, traci_point));
         }
         addObstacle(id, shape);

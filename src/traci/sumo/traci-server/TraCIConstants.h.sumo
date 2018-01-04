@@ -1,4 +1,14 @@
 /****************************************************************************/
+// Eclipse SUMO, Simulation of Urban MObility; see https://eclipse.org/sumo
+// Copyright (C) 2007-2017 German Aerospace Center (DLR) and others.
+/****************************************************************************/
+//
+//   This program and the accompanying materials
+//   are made available under the terms of the Eclipse Public License v2.0
+//   which accompanies this distribution, and is available at
+//   http://www.eclipse.org/legal/epl-v20.html
+//
+/****************************************************************************/
 /// @file    TraCIConstants.h
 /// @author  Axel Wegener
 /// @author  Friedemann Wesner
@@ -12,20 +22,9 @@
 /// @author  Jakob Erdmann
 /// @author  Laura Bieker
 /// @date    2007/10/24
-/// @version $Id: TraCIConstants.h 24087 2017-04-27 11:15:10Z behrisch $
+/// @version $Id$
 ///
-/// holds codes used for TraCI
-/****************************************************************************/
-// SUMO, Simulation of Urban MObility; see http://sumo.dlr.de/
-// Copyright (C) 2007-2017 DLR (http://www.dlr.de/) and contributors
-/****************************************************************************/
-//
-//   This file is part of SUMO.
-//   SUMO is free software: you can redistribute it and/or modify
-//   it under the terms of the GNU General Public License as published by
-//   the Free Software Foundation, either version 3 of the License, or
-//   (at your option) any later version.
-//
+// holds codes used for TraCI
 /****************************************************************************/
 #ifndef TRACICONSTANTS_H
 #define TRACICONSTANTS_H
@@ -33,7 +32,7 @@
 // ****************************************
 // VERSION
 // ****************************************
-#define TRACI_VERSION 15
+#define TRACI_VERSION 17
 
 // ****************************************
 // COMMANDS
@@ -46,6 +45,9 @@
 
 // command: simulation step
 #define CMD_SIMSTEP 0x02
+
+// command: set connection priority (execution order)
+#define CMD_SETORDER 0x03
 
 // command: stop node
 #define CMD_STOP 0x12
@@ -347,7 +349,8 @@
 #define INVALID_DOUBLE_VALUE -1001.
 // return value for invalid queries (especially vehicle is not on the road)
 #define INVALID_INT_VALUE -1
-
+// maximum value for client ordering (2 ^ 30 - 1)
+#define MAX_ORDER 1073741823
 
 // ****************************************
 // TRAFFIC LIGHT PHASES
@@ -426,6 +429,26 @@
 #define DEPARTFLAG_LANE_ALLOWED_FREE -0x04
 #define DEPARTFLAG_LANE_BEST_FREE -0x05
 #define DEPARTFLAG_LANE_FIRST_ALLOWED -0x06
+
+#define DEPARTFLAG_POS_RANDOM -0x02
+#define DEPARTFLAG_POS_FREE -0x03
+#define DEPARTFLAG_POS_BASE -0x04
+#define DEPARTFLAG_POS_LAST -0x05
+#define DEPARTFLAG_POS_RANDOM_FREE -0x06
+
+#define ARRIVALFLAG_LANE_CURRENT -0x02
+#define ARRIVALFLAG_SPEED_CURRENT -0x02
+
+#define ARRIVALFLAG_POS_RANDOM -0x02
+#define ARRIVALFLAG_POS_MAX -0x03
+
+// ****************************************
+// Routing modes
+// ****************************************
+// use custom weights if available, fall back to loaded weights and then to free-flow speed
+#define ROUTING_MODE_DEFAULT 0x00
+// use aggregated travel times from device.rerouting
+#define ROUTING_MODE_AGGREGATED 0x01
 
 // ****************************************
 // VARIABLE TYPES (for CMD_GET_*_VARIABLE)
@@ -518,7 +541,6 @@
 // current state, using external signal names (get: traffic lights)
 #define TL_EXTERNAL_STATE 0x2e
 
-
 // outgoing link number (get: lanes)
 #define LANE_LINK_NUMBER 0x30
 
@@ -533,6 +555,9 @@
 
 // list of not allowed vehicle classes (get&set: lanes)
 #define LANE_DISALLOWED 0x35
+
+// list of foe lanes (get: lanes)
+#define VAR_FOES 0x37
 
 // slope (get: edge, lane, vehicle, person)
 #define VAR_SLOPE 0x36
@@ -558,13 +583,25 @@
 // color (get: vehicles, vehicle types, polygons, pois)
 #define VAR_COLOR 0x45
 
-// max. acceleration (get: vehicle types)
+// max. acceleration (get: vehicles, vehicle types)
 #define VAR_ACCEL 0x46
 
-// max. deceleration (get: vehicle types)
+// max. comfortable deceleration (get: vehicles, vehicle types)
 #define VAR_DECEL 0x47
 
-// driver reaction time (get: vehicle types)
+// max. (physically possible) deceleration (get: vehicles, vehicle types)
+#define VAR_EMERGENCY_DECEL 0x7b
+
+// apparent deceleration (get: vehicles, vehicle types)
+#define VAR_APPARENT_DECEL 0x7c
+
+// action step length (get: vehicles, vehicle types)
+#define VAR_ACTIONSTEPLENGTH 0x7d
+
+// last action time (get: vehicles)
+#define VAR_LASTACTIONTIME 0x7f
+
+// driver's desired headway (get: vehicle types)
 #define VAR_TAU 0x48
 
 // vehicle class (get: vehicle types)
@@ -600,7 +637,7 @@
 // route id (get & set: vehicles)
 #define VAR_ROUTE_ID 0x53
 
-// edges (get: routes)
+// edges (get: routes, vehicles)
 #define VAR_EDGES 0x54
 
 // filled? (get: polygons)
@@ -636,6 +673,8 @@
 // speed deviation (set: vehicle)
 #define VAR_SPEED_DEVIATION 0x5f
 
+// routing mode (get/set: vehicle)
+#define VAR_ROUTING_MODE 0x89
 
 // speed without TraCI influence (get: vehicle)
 #define VAR_SPEED_WITHOUT_TRACI 0xb1
@@ -646,14 +685,14 @@
 // how speed is set (set: vehicle)
 #define VAR_SPEEDSETMODE 0xb3
 
-// move vehicle, VTD version (set: vehicle)
+// move vehicle to explicit (remote controlled) position (set: vehicle)
 #define MOVE_TO_XY 0xb4
 
 // is the vehicle stopped, and if so parked and/or triggered?
 // value = stopped + 2 * parking + 4 * triggered
 #define VAR_STOPSTATE 0xb5
 
-// how lane changing is performed (set: vehicle)
+// how lane changing is performed (get/set: vehicle)
 #define VAR_LANECHANGE_MODE 0xb6
 
 // maximum speed regarding max speed on the current lane and speed factor (get: vehicle)
@@ -715,6 +754,9 @@
 
 // current waiting time (get: vehicle, lane)
 #define VAR_WAITING_TIME 0x7a
+
+// current waiting time (get: vehicle)
+#define VAR_ACCUMULATED_WAITING_TIME 0x87
 
 // upcoming traffic lights (get: vehicle)
 #define VAR_NEXT_TLS 0x70
@@ -804,6 +846,9 @@
 // remove an instance (poi, polygon, vehicle, person)
 #define REMOVE 0x81
 
+// copy an instance (vehicle type, other TBD.)
+#define COPY 0x88
+
 // convert coordinates
 #define POSITION_CONVERSION 0x82
 
@@ -815,6 +860,12 @@
 
 // add a fully specified instance (vehicle)
 #define ADD_FULL 0x85
+
+// find a car based route
+#define FIND_ROUTE 0x86
+
+// find an intermodal route
+#define FIND_INTERMODAL_ROUTE 0x87
 
 // force rerouting based on travel time (vehicles)
 #define CMD_REROUTE_TRAVELTIME 0x90

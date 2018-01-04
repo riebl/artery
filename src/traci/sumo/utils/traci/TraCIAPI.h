@@ -1,23 +1,22 @@
 /****************************************************************************/
+// Eclipse SUMO, Simulation of Urban MObility; see https://eclipse.org/sumo
+// Copyright (C) 2012-2017 German Aerospace Center (DLR) and others.
+/****************************************************************************/
+//
+//   This program and the accompanying materials
+//   are made available under the terms of the Eclipse Public License v2.0
+//   which accompanies this distribution, and is available at
+//   http://www.eclipse.org/legal/epl-v20.html
+//
+/****************************************************************************/
 /// @file    TraCIAPI.h
 /// @author  Daniel Krajzewicz
 /// @author  Mario Krumnow
 /// @author  Michael Behrisch
 /// @date    30.05.2012
-/// @version $Id: TraCIAPI.h 23965 2017-04-18 12:41:56Z namdre $
+/// @version $Id$
 ///
 // C++ TraCI client API implementation
-/****************************************************************************/
-// SUMO, Simulation of Urban MObility; see http://sumo.dlr.de/
-// Copyright (C) 2012-2017 DLR (http://www.dlr.de/) and contributors
-/****************************************************************************/
-//
-//   This file is part of SUMO.
-//   SUMO is free software: you can redistribute it and/or modify
-//   it under the terms of the GNU General Public License as published by
-//   the Free Software Foundation, either version 3 of the License, or
-//   (at your option) any later version.
-//
 /****************************************************************************/
 #ifndef TraCIAPI_h
 #define TraCIAPI_h
@@ -39,7 +38,7 @@
 #include <iomanip>
 #include <foreign/tcpip/socket.h>
 #include <traci-server/TraCIConstants.h>
-#include <traci-server/TraCIDefs.h>
+#include <libsumo/TraCIDefs.h>
 
 // ===========================================================================
 // global definitions
@@ -54,10 +53,6 @@
  * @class TraCIAPI
  * @brief C++ TraCI client API implementation
  */
-
-
-typedef long long int SUMOTime; // <utils/common/SUMOTime.h>
-#define SUMOTime_MAX std::numeric_limits<SUMOTime>::max()
 
 
 class TraCIAPI {
@@ -81,6 +76,8 @@ public:
      */
     void connect(const std::string& host, int port);
 
+    /// @brief set priority (execution order) for the client
+    void setOrder(int order);
 
     /// @brief ends the simulation and closes the connection
     void close();
@@ -101,12 +98,13 @@ public:
     int getInt(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
     double getFloat(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
     double getDouble(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
-    TraCIBoundary getBoundingBox(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
-    TraCIPositionVector getPolygon(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
-    TraCIPosition getPosition(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
+    libsumo::TraCIBoundary getBoundingBox(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
+    libsumo::TraCIPositionVector getPolygon(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
+    libsumo::TraCIPosition getPosition(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
+    libsumo::TraCIPosition getPosition3D(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
     std::string getString(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
     std::vector<std::string> getStringVector(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
-    TraCIColor getColor(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
+    libsumo::TraCIColor getColor(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
     /// @}
 
 
@@ -172,8 +170,8 @@ public:
         double getLastStepHaltingNumber(const std::string& edgeID) const;
         std::vector<std::string> getLastStepVehicleIDs(const std::string& edgeID) const;
 
-        void adaptTraveltime(const std::string& edgeID, double time, double begin = 0, double end = SUMOTime_MAX / 1000.0) const;
-        void setEffort(const std::string& edgeID, double effort, SUMOTime begin = 0, SUMOTime end = SUMOTime_MAX) const;
+        void adaptTraveltime(const std::string& edgeID, double time, int beginSeconds = 0, int endSeconds = std::numeric_limits<int>::max()) const;
+        void setEffort(const std::string& edgeID, double effort, int beginSeconds = 0, int endSeconds = std::numeric_limits<int>::max()) const;
         void setMaxSpeed(const std::string& edgeID, double speed) const;
 
     private:
@@ -199,9 +197,9 @@ public:
 
         std::vector<std::string> getIDList() const;
         double getZoom(const std::string& viewID = DEFAULT_VIEW) const;
-        TraCIPosition getOffset(const std::string& viewID = DEFAULT_VIEW) const;
+        libsumo::TraCIPosition getOffset(const std::string& viewID = DEFAULT_VIEW) const;
         std::string getSchema(const std::string& viewID = DEFAULT_VIEW) const;
-        TraCIBoundary getBoundary(const std::string& viewID = DEFAULT_VIEW) const;
+        libsumo::TraCIBoundary getBoundary(const std::string& viewID = DEFAULT_VIEW) const;
         void setZoom(const std::string& viewID, double zoom) const;
         void setOffset(const std::string& viewID, double x, double y) const;
         void setSchema(const std::string& viewID, const std::string& schemeName) const;
@@ -239,7 +237,7 @@ public:
         double getLastStepOccupancy(const std::string& loopID) const;
         double getLastStepMeanLength(const std::string& loopID) const;
         double getTimeSinceDetection(const std::string& loopID) const;
-        std::vector<TraCIVehicleData> getVehicleData(const std::string& loopID) const;
+        std::vector<libsumo::TraCIVehicleData> getVehicleData(const std::string& loopID) const;
 
 
     private:
@@ -264,7 +262,7 @@ public:
         virtual ~JunctionScope() {}
 
         std::vector<std::string> getIDList() const;
-        TraCIPosition getPosition(const std::string& junctionID) const;
+        libsumo::TraCIPosition getPosition(const std::string& junctionID) const;
 
     private:
         /// @brief invalidated copy constructor
@@ -288,13 +286,15 @@ public:
         virtual ~LaneScope() {}
 
         std::vector<std::string> getIDList() const;
+        int getIDCount() const;
         double getLength(const std::string& laneID) const;
         double getMaxSpeed(const std::string& laneID) const;
         double getWidth(const std::string& laneID) const;
         std::vector<std::string> getAllowed(const std::string& laneID) const;
         std::vector<std::string> getDisallowed(const std::string& laneID) const;
         int getLinkNumber(const std::string& laneID) const;
-        TraCIPositionVector getShape(const std::string& laneID) const;
+        std::vector<libsumo::TraCIConnection> getLinks(const std::string& laneID) const;
+        libsumo::TraCIPositionVector getShape(const std::string& laneID) const;
         std::string getEdgeID(const std::string& laneID) const;
         double getCO2Emission(const std::string& laneID) const;
         double getCOEmission(const std::string& laneID) const;
@@ -311,6 +311,8 @@ public:
         int getLastStepVehicleNumber(const std::string& laneID) const;
         int getLastStepHaltingNumber(const std::string& laneID) const;
         std::vector<std::string> getLastStepVehicleIDs(const std::string& laneID) const;
+        std::vector<std::string> getFoes(const std::string& laneID, const std::string& toLaneID) const;
+        std::vector<std::string> getInternalFoes(const std::string& laneID) const;
 
         void setAllowed(const std::string& laneID, const std::vector<std::string>& allowedClasses) const;
         void setDisallowed(const std::string& laneID, const std::vector<std::string>& disallowedClasses) const;
@@ -384,13 +386,13 @@ public:
 
         std::vector<std::string> getIDList() const;
         std::string getType(const std::string& poiID) const;
-        TraCIPosition getPosition(const std::string& poiID) const;
-        TraCIColor getColor(const std::string& poiID) const;
+        libsumo::TraCIPosition getPosition(const std::string& poiID) const;
+        libsumo::TraCIColor getColor(const std::string& poiID) const;
 
         void setType(const std::string& poiID, const std::string& setType) const;
         void setPosition(const std::string& poiID, double x, double y) const;
-        void setColor(const std::string& poiID, const TraCIColor& c) const;
-        void add(const std::string& poiID, double x, double y, const TraCIColor& c, const std::string& type, int layer) const;
+        void setColor(const std::string& poiID, const libsumo::TraCIColor& c) const;
+        void add(const std::string& poiID, double x, double y, const libsumo::TraCIColor& c, const std::string& type, int layer) const;
         void remove(const std::string& poiID, int layer = 0) const;
 
     private:
@@ -416,12 +418,12 @@ public:
 
         std::vector<std::string> getIDList() const;
         std::string getType(const std::string& polygonID) const;
-        TraCIPositionVector getShape(const std::string& polygonID) const;
-        TraCIColor getColor(const std::string& polygonID) const;
+        libsumo::TraCIPositionVector getShape(const std::string& polygonID) const;
+        libsumo::TraCIColor getColor(const std::string& polygonID) const;
         void setType(const std::string& polygonID, const std::string& setType) const;
-        void setShape(const std::string& polygonID, const TraCIPositionVector& shape) const;
-        void setColor(const std::string& polygonID, const TraCIColor& c) const;
-        void add(const std::string& polygonID, const TraCIPositionVector& shape, const TraCIColor& c, bool fill, const std::string& type, int layer) const;
+        void setShape(const std::string& polygonID, const libsumo::TraCIPositionVector& shape) const;
+        void setColor(const std::string& polygonID, const libsumo::TraCIColor& c) const;
+        void add(const std::string& polygonID, const libsumo::TraCIPositionVector& shape, const libsumo::TraCIColor& c, bool fill, const std::string& type, int layer) const;
         void remove(const std::string& polygonID, int layer = 0) const;
 
     private:
@@ -462,7 +464,7 @@ public:
 
 
     /// @brief {object->{variable->value}}
-    typedef std::map<int, TraCIValue> TraCIValues;
+    typedef std::map<int, libsumo::TraCIValue> TraCIValues;
     typedef std::map<std::string, TraCIValues> SubscribedValues;
     typedef std::map<std::string, SubscribedValues> SubscribedContextValues;
 
@@ -487,7 +489,7 @@ public:
         int getEndingTeleportNumber() const;
         std::vector<std::string> getEndingTeleportIDList() const;
         SUMOTime getDeltaT() const;
-        TraCIBoundary getNetBoundary() const;
+        libsumo::TraCIBoundary getNetBoundary() const;
         int getMinExpectedNumber() const;
 
         void subscribe(int domID, const std::string& objID, SUMOTime beginTime, SUMOTime endTime, const std::vector<int>& vars) const;
@@ -522,9 +524,9 @@ public:
 
         std::vector<std::string> getIDList() const;
         std::string getRedYellowGreenState(const std::string& tlsID) const;
-        std::vector<TraCILogic> getCompleteRedYellowGreenDefinition(const std::string& tlsID) const;
+        std::vector<libsumo::TraCILogic> getCompleteRedYellowGreenDefinition(const std::string& tlsID) const;
         std::vector<std::string> getControlledLanes(const std::string& tlsID) const;
-        std::vector<TraCILink> getControlledLinks(const std::string& tlsID) const;
+        std::vector<std::vector<libsumo::TraCILink> > getControlledLinks(const std::string& tlsID) const;
         std::string getProgram(const std::string& tlsID) const;
         int getPhase(const std::string& tlsID) const;
         int getNextSwitch(const std::string& tlsID) const;
@@ -533,7 +535,7 @@ public:
         void setPhase(const std::string& tlsID, int index) const;
         void setProgram(const std::string& tlsID, const std::string& programID) const;
         void setPhaseDuration(const std::string& tlsID, int phaseDuration) const;
-        void setCompleteRedYellowGreenDefinition(const std::string& tlsID, const TraCILogic& logic) const;
+        void setCompleteRedYellowGreenDefinition(const std::string& tlsID, const libsumo::TraCILogic& logic) const;
 
     private:
         /// @brief invalidated copy constructor
@@ -563,6 +565,8 @@ public:
         double getSpeedDeviation(const std::string& typeID) const;
         double getAccel(const std::string& typeID) const;
         double getDecel(const std::string& typeID) const;
+        double getEmergencyDecel(const std::string& typeID) const;
+        double getApparentDecel(const std::string& typeID) const;
         double getImperfection(const std::string& typeID) const;
         double getTau(const std::string& typeID) const;
         std::string getVehicleClass(const std::string& typeID) const;
@@ -571,7 +575,7 @@ public:
         double getMinGap(const std::string& typeID) const;
         double getWidth(const std::string& typeID) const;
         double getHeight(const std::string& typeID) const;
-        TraCIColor getColor(const std::string& typeID) const;
+        libsumo::TraCIColor getColor(const std::string& typeID) const;
         double getMinGapLat(const std::string& typeID) const;
         double getMaxSpeedLat(const std::string& typeID) const;
         std::string getLateralAlignment(const std::string& typeID) const;
@@ -588,12 +592,15 @@ public:
         void setMinGap(const std::string& typeID, double minGap) const;
         void setAccel(const std::string& typeID, double accel) const;
         void setDecel(const std::string& typeID, double decel) const;
+        void setEmergencyDecel(const std::string& typeID, double decel) const;
+        void setApparentDecel(const std::string& typeID, double decel) const;
         void setImperfection(const std::string& typeID, double imperfection) const;
         void setTau(const std::string& typeID, double tau) const;
-        void setColor(const std::string& typeID, const TraCIColor& c) const;
+        void setColor(const std::string& typeID, const libsumo::TraCIColor& c) const;
         void setMinGapLat(const std::string& typeID, double minGapLat) const;
         void setMaxSpeedLat(const std::string& typeID, double speed) const;
         void setLateralAlignment(const std::string& typeID, const std::string& latAlignment) const;
+        void copy(const std::string& origTypeID, const std::string& newTypeID) const;
 
     private:
         /// @brief invalidated copy constructor
@@ -613,29 +620,16 @@ public:
      */
     class VehicleScope : public TraCIScopeWrapper {
     public:
-        VehicleScope(TraCIAPI& parent) : TraCIScopeWrapper(parent) {}
+        VehicleScope(TraCIAPI& parent) : TraCIScopeWrapper(parent), LAST_TRAVEL_TIME_UPDATE(-1) {}
         virtual ~VehicleScope() {}
 
-
-        struct NextTLSData {
-            /* @brief Constructor */
-            NextTLSData() {}
-            /// @brief The id of the next tls
-            std::string id;
-            /// @brief The tls index of the controlled link
-            int tlIndex;
-            /// @brief The distance to the tls
-            double dist;
-            /// @brief The current state of the tls
-            char state;
-        };
-
-
+        /// @name vehicle value retrieval
+        /// @{
         std::vector<std::string> getIDList() const;
         int getIDCount() const;
         double getSpeed(const std::string& vehicleID) const;
-        double getMaxSpeed(const std::string& vehicleID) const;
-        TraCIPosition getPosition(const std::string& vehicleID) const;
+        libsumo::TraCIPosition getPosition(const std::string& vehicleID) const;
+        libsumo::TraCIPosition getPosition3D(const std::string& vehicleID) const;
         double getAngle(const std::string& vehicleID) const;
         std::string getRoadID(const std::string& vehicleID) const;
         std::string getLaneID(const std::string& vehicleID) const;
@@ -643,10 +637,12 @@ public:
         std::string getTypeID(const std::string& vehicleID) const;
         std::string getRouteID(const std::string& vehicleID) const;
         int getRouteIndex(const std::string& vehicleID) const;
-        std::vector<std::string> getEdges(const std::string& vehicleID) const;
-        TraCIColor getColor(const std::string& vehicleID) const;
+        std::vector<std::string> getEdges(const std::string& vehicleID) const; /*< deprecated in favour of getRoute */
+        std::vector<std::string> getRoute(const std::string& vehicleID) const;
+        libsumo::TraCIColor getColor(const std::string& vehicleID) const;
         double getLanePosition(const std::string& vehicleID) const;
-        double getLateralLanePosition(const std::string& vehicleID) const;
+        double getDistance(const std::string& vehicleID) const;
+        int getSignalStates(const std::string& vehicleID) const;
         double getCO2Emission(const std::string& vehicleID) const;
         double getCOEmission(const std::string& vehicleID) const;
         double getHCEmission(const std::string& vehicleID) const;
@@ -655,31 +651,48 @@ public:
         double getFuelConsumption(const std::string& vehicleID) const;
         double getNoiseEmission(const std::string& vehicleID) const;
         double getElectricityConsumption(const std::string& vehicleID) const;
-        int getSignalStates(const std::string& vehicleID) const;
-        double getWaitingTime(const std::string& vehicleID) const;
-        std::vector<NextTLSData> getNextTLS(const std::string& vehID) const;
         int getSpeedMode(const std::string& vehicleID) const;
+        int getStopState(const std::string& vehicleID) const;
+        double getWaitingTime(const std::string& vehicleID) const;
+        double getAccumulatedWaitingTime(const std::string& vehicleID) const;
         double getSlope(const std::string& vehicleID) const;
+        double getAllowedSpeed(const std::string& vehicleID) const;
+        int getPersonNumber(const std::string& vehicleID) const;
+        double getSpeedWithoutTraCI(const std::string& vehicleID) const;
+        bool isRouteValid(const std::string& vehicleID) const;
+        double getLateralLanePosition(const std::string& vehicleID) const;
+        double getSpeedFactor(const std::string& vehicleID) const;
         std::string getLine(const std::string& vehicleID) const;
         std::vector<std::string> getVia(const std::string& vehicleID) const;
-        std::string getEmissionClass(const std::string& vehicleID) const;
-        std::string getShapeClass(const std::string& vehicleID) const;
+        std::vector<libsumo::TraCINextTLSData> getNextTLS(const std::string& vehID) const;
+        std::vector<libsumo::TraCIBestLanesData> getBestLanes(const std::string& vehicleID) const;
+        std::pair<std::string, double> getLeader(const std::string& vehicleID, double dist) const;
+        /// @}
 
-        /* /// not yet implemented
-        int getBestLanes(const std::string& vehicleID) const;
-        int getStopState(const std::string& vehicleID) const;
+        /// @name vehicle type value retrieval shortcuts
+        /// @{
         double getLength(const std::string& vehicleID) const;
+        double getMaxSpeed(const std::string& vehicleID) const;
         double getAccel(const std::string& vehicleID) const;
         double getDecel(const std::string& vehicleID) const;
+        double getEmergencyDecel(const std::string& vehicleID) const;
+        double getApparentDecel(const std::string& vehicleID) const;
         double getTau(const std::string& vehicleID) const;
         double getImperfection(const std::string& vehicleID) const;
-        double getSpeedFactor(const std::string& vehicleID) const;
         double getSpeedDeviation(const std::string& vehicleID) const;
-        std::string getVClass(const std::string& vehicleID) const;
         double getMinGap(const std::string& vehicleID) const;
         double getWidth(const std::string& vehicleID) const;
-        */
+        double getHeight(const std::string& veihcleID) const;
+        double getMaxSpeedLat(const std::string& vehicleID) const;
+        double getMinGapLat(const std::string& vehicleID) const;
+        std::string getVehicleClass(const std::string& vehicleID) const;
+        std::string getEmissionClass(const std::string& vehicleID) const;
+        std::string getShapeClass(const std::string& vehicleID) const;
+        std::string getLateralAlignment(const std::string& vehicleID) const;
+        /// @}
 
+        /// @name vehicle state changing
+        /// @{
         void add(const std::string& vehicleID,
                  const std::string& routeID,
                  const std::string& typeID = "DEFAULT_VEHTYPE",
@@ -697,19 +710,30 @@ public:
                  int personNumber = 0) const;
 
         void changeTarget(const std::string& vehicleID, const std::string& edgeID) const;
+        void setRouteID(const std::string& vehicleID, const std::string& routeID) const;
+        void setRoute(const std::string& vehicleID, const std::vector<std::string>& edge) const;
+        void rerouteTraveltime(const std::string& vehicleID, bool currentTravelTimes = true) const;
         void moveTo(const std::string& vehicleID, const std::string& laneID, double position) const;
         void moveToXY(const std::string& vehicleID, const std::string& edgeID, const int lane, const double x, const double y, const double angle, const int keepRoute) const;
-        void slowDown(const std::string& vehicleID, double speed, int duration) const;
+        void slowDown(const std::string& vehicleID, double speed, SUMOTime duration) const;
         void setSpeed(const std::string& vehicleID, double speed) const;
-        void setMaxSpeed(const std::string& vehicleID, double speed) const;
+        void setType(const std::string& vehicleID, const std::string& typeID) const;
         void remove(const std::string& vehicleID, char reason = REMOVE_VAPORIZED) const;
-        void setColor(const std::string& vehicleID, const TraCIColor& c) const;
+        void setColor(const std::string& vehicleID, const libsumo::TraCIColor& c) const;
         void setLine(const std::string& vehicleID, const std::string& line) const;
         void setVia(const std::string& vehicleID, const std::vector<std::string>& via) const;
+        /// @}
+
+        /// @name vehicle type attribute changing shortcuts
+        /// @{
         void setShapeClass(const std::string& vehicleID, const std::string& clazz) const;
         void setEmissionClass(const std::string& vehicleID, const std::string& clazz) const;
+        void setMaxSpeed(const std::string& vehicleID, double speed) const;
+        /// @}
 
     private:
+        mutable SUMOTime LAST_TRAVEL_TIME_UPDATE;
+
         /// @brief invalidated copy constructor
         VehicleScope(const VehicleScope& src);
 
@@ -729,7 +753,7 @@ public:
         std::vector<std::string> getIDList() const;
         int getIDCount() const;
         double getSpeed(const std::string& personID) const;
-        TraCIPosition getPosition(const std::string& personID) const;
+        libsumo::TraCIPosition getPosition(const std::string& personID) const;
         std::string getRoadID(const std::string& personID) const;
         std::string getTypeID(const std::string& personID) const;
         double getWaitingTime(const std::string& personID) const;
@@ -738,6 +762,11 @@ public:
         int getRemainingStages(const std::string& personID) const;
         int getStage(const std::string& personID, int nextStageIndex = 0) const;
         std::vector<std::string> getEdges(const std::string& personID, int nextStageIndex = 0) const;
+        // TODO:
+        // double getAngle(const std::string& personID) const;
+        // double getLanePosition(const std::string& personID) const;
+        // libsumo::TraCIColor getColor(const std::string& personID) const;
+
 
         void removeStages(const std::string& personID) const;
         void add(const std::string& personID, const std::string& edgeID, double pos, double depart = DEPARTFLAG_NOW, const std::string typeID = "DEFAULT_PEDTYPE");
@@ -745,13 +774,14 @@ public:
         void appendWalkingStage(const std::string& personID, const std::vector<std::string>& edges, double arrivalPos, double duration = -1, double speed = -1, const std::string& stopID = "");
         void appendDrivingStage(const std::string& personID, const std::string& toEdge, const std::string& lines, const std::string& stopID = "");
         void removeStage(const std::string& personID, int nextStageIndex) const;
+        void rerouteTraveltime(const std::string& personID) const;
         void setSpeed(const std::string& personID, double speed) const;
         void setType(const std::string& personID, const std::string& typeID) const;
         void setLength(const std::string& personID, double length) const;
         void setWidth(const std::string& personID, double width) const;
         void setHeight(const std::string& personID, double height) const;
         void setMinGap(const std::string& personID, double minGap) const;
-        void setColor(const std::string& personID, const TraCIColor& c) const;
+        void setColor(const std::string& personID, const libsumo::TraCIColor& c) const;
 
     private:
         /// @brief invalidated copy constructor
@@ -809,6 +839,10 @@ protected:
      */
     void send_commandClose() const;
 
+
+    /** @brief Sends a SetOrder command
+     */
+    void send_commandSetOrder(int order) const;
 
     /** @brief Sends a GetVariable request
      * @param[in] domID The domain of the variable
