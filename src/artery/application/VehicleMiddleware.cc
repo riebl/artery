@@ -44,9 +44,35 @@ void VehicleMiddleware::initializeIdentity(Identity& id)
 
 void VehicleMiddleware::initializeManagementInformationBase(vanetza::geonet::MIB& mib)
 {
+	using vanetza::geonet::StationType;
 	Middleware::initializeManagementInformationBase(mib);
-	// TODO derive station type from SUMO vehicle class
-	mGnStationType = vanetza::geonet::StationType::PASSENGER_CAR;
+	assert(mVehicleController);
+	const std::string vclass = mVehicleController->getVehicleClass();
+	if (vclass == "passenger" || vclass == "private" || vclass == "taxi") {
+		mGnStationType = StationType::PASSENGER_CAR;
+	} else if (vclass == "coach" || vclass == "delivery") {
+		mGnStationType = StationType::LIGHT_TRUCK;
+	} else if (vclass == "truck") {
+		mGnStationType = StationType::HEAVY_TRUCK;
+	} else if (vclass == "trailer") {
+		mGnStationType = StationType::TRAILER;
+	} else if (vclass == "bus") {
+		mGnStationType = StationType::BUS;
+	} else if (vclass == "emergency" || vclass == "authority") {
+		mGnStationType = StationType::SPECIAL_VEHICLE;
+	} else if (vclass == "moped") {
+		mGnStationType = StationType::MOPED;
+	} else if (vclass == "motorcycle") {
+		mGnStationType = StationType::MOTORCYCLE;
+	} else if (vclass == "tram") {
+		mGnStationType = StationType::TRAM;
+	} else if (vclass == "bicycle") {
+		mGnStationType = StationType::CYCLIST;
+	} else if (vclass == "pedestrian") {
+		mGnStationType = StationType::PEDESTRIAN;
+	} else {
+		mGnStationType = StationType::UNKNOWN;
+	}
 }
 
 void VehicleMiddleware::initializeVehicleController()
