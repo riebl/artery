@@ -73,6 +73,8 @@ void VehicleMiddleware::initializeManagementInformationBase(vanetza::geonet::MIB
 	} else {
 		mGnStationType = StationType::UNKNOWN;
 	}
+
+	mVehicleDataProvider.setStationType(mGnStationType);
 }
 
 void VehicleMiddleware::initializeVehicleController()

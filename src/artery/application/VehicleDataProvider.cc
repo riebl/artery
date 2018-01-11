@@ -68,7 +68,8 @@ VehicleDataProvider::VehicleDataProvider() : VehicleDataProvider(rand())
 }
 
 VehicleDataProvider::VehicleDataProvider(uint32_t id) :
-	mStationId(id), mConfidence(0.0), mLastUpdate(omnetpp::simTime()),
+	mStationId(id), mStationType(StationType::UNKNOWN),
+	mConfidence(0.0), mLastUpdate(omnetpp::simTime()),
 	mCurvatureOutput(2), mCurvatureConfidenceOutput(2)
 {
 	while (!mCurvatureConfidenceOutput.full()) {
@@ -180,4 +181,14 @@ double VehicleDataProvider::mapOntoConfidence(AngularAcceleration x) const
 		throw std::domain_error("input value is less than smallest entry in confidence table");
 	}
 	return it->second;
+}
+
+void VehicleDataProvider::setStationType(StationType type)
+{
+	mStationType = type;
+}
+
+auto VehicleDataProvider::getStationType() const -> StationType
+{
+	return mStationType;
 }

@@ -24,6 +24,7 @@
 #include <omnetpp/simtime.h>
 #include <boost/circular_buffer.hpp>
 #include <boost/units/systems/si/angular_acceleration.hpp>
+#include <vanetza/geonet/station_type.hpp>
 #include <vanetza/units/acceleration.hpp>
 #include <vanetza/units/angle.hpp>
 #include <vanetza/units/velocity.hpp>
@@ -35,6 +36,8 @@
 class VehicleDataProvider
 {
 	public:
+		using StationType = vanetza::geonet::StationType;
+
 		VehicleDataProvider();
 		VehicleDataProvider(uint32_t id);
 
@@ -56,6 +59,9 @@ class VehicleDataProvider
 		vanetza::units::Curvature curvature() const { return mCurvature; } // 1/m radius, left turn positive
 		double confidence() const { return mConfidence; } // percentage value
 
+		void setStationType(StationType);
+		StationType getStationType() const;
+
 	private:
 		typedef boost::units::quantity<boost::units::si::angular_acceleration> AngularAcceleration;
 		void calculateCurvature();
@@ -63,6 +69,7 @@ class VehicleDataProvider
 		double mapOntoConfidence(AngularAcceleration) const;
 
 		uint32_t mStationId;
+		StationType mStationType;
 		Position mPosition;
 		GeoPosition mGeoPosition;
 		vanetza::units::Velocity mSpeed;
