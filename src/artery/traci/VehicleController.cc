@@ -29,6 +29,11 @@ const VehicleType& VehicleController::getVehicleType() const
     return m_type;
 }
 
+const std::string VehicleController::getVehicleClass() const
+{
+    return m_api.vehicle().getVehicleClass(m_id);
+}
+
 Position VehicleController::getPosition() const
 {
     return traci::position_cast(m_boundary, m_api.vehicle().getPosition(m_id));
