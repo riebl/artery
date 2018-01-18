@@ -34,8 +34,8 @@ private:
     inet::Coord mSpeed;
     inet::EulerAngles mOrientation;
     double mAntennaHeight;
-    omnetpp::cModule* mVisualRepresentation;
-    const inet::CanvasProjection* mCanvasProjection;
+    omnetpp::cModule* mVisualRepresentation = nullptr;
+    const inet::CanvasProjection* mCanvasProjection = nullptr;
 };
 
 #endif /* INETMOBILITY_H_SKZPGILS */
