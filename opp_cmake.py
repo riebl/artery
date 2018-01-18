@@ -134,6 +134,7 @@ class CMakeTarget:
             if ned_folders_property and self.ned_folders:
                 ned_folders = ';'.join(self.ned_folders)
                 props.append("  NED_FOLDERS \"{}\"".format(ned_folders))
+            props.append("  OMNETPP_LIBRARY TRUE")
         props.append(")")
         props.append("set_property(TARGET {target} PROPERTY IMPORTED_CONFIGURATIONS {configs})"
                      .format(target=self.name, configs=" ".join(configurations)))
