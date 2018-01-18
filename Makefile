@@ -1,6 +1,7 @@
 PYTHON ?= python
 INET_DIR = extern/inet
 INET_DISABLE_FEATURES ?= packetdrill SCTP SCTP_examples
+SIMULTE_DIR = extern/simulte
 VANETZA_DIR = extern/vanetza
 VANETZA_BUILD_TYPE ?= Release
 VANETZA_BUILD_DIR ?= $(VANETZA_DIR)/build
@@ -21,6 +22,13 @@ $(INET_DIR)/src/Makefile: $(INET_DIR)/.oppfeaturestate
 
 inet: $(INET_DIR)/src/Makefile
 	$(MAKE) -C $(INET_DIR)/src
+
+$(SIMULTE_DIR)/src/Makefile: $(SIMULTE_DIR)/Version
+	$(MAKE) -C $(SIMULTE_DIR) makefiles INET_PROJ=$(INET_DIR)
+	$(MAKE) -C $(SIMULTE_DIR)/src depend
+
+simulte: $(SIMULTE_DIR)/src/Makefile
+	$(MAKE) -C $(SIMULTE_DIR)/src
 
 $(VEINS_DIR)/src/Makefile: $(VEINS_DIR)/configure
 	cd $(VEINS_DIR); $(PYTHON) configure
