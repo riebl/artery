@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 find_package(OmnetPP 5.1 REQUIRED)
 include(cmake/ImportOppTarget.cmake)
 include(cmake/GetNedFolders.cmake)
+include(cmake/AddOppBuildTarget.cmake)
 include(cmake/AddOppRun.cmake)
 
 find_package(Vanetza CONFIG PATHS extern/vanetza/build REQUIRED NO_CMAKE_PACKAGE_REGISTRY)
@@ -42,59 +43,17 @@ if("${Vanetza_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/vanetza/build")
 endif()
 
 if("${Veins_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/veins")
-    set(_veins_mode "release")
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(_veins_mode "debug")
-    endif()
-
-    set(_make_command ${MAKE_COMMAND})
-    if(CMAKE_GENERATOR MATCHES "Makefiles")
-        set(_make_command \$\(MAKE\))
-    endif()
-
-    add_custom_target(build_veins
-        COMMAND ${_make_command} ${MAKE_ARGUMENTS} veins MODE=${_veins_mode}
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-        COMMENT "Building Veins (external dependency)"
-        VERBATIM)
+    add_opp_build_target(Veins)
     add_dependencies(veins build_veins)
 endif()
 
 if("${INET_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/inet")
-    set(_inet_mode "release")
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(_inet_mode "debug")
-    endif()
-
-    set(_make_command ${MAKE_COMMAND})
-    if(CMAKE_GENERATOR MATCHES "Makefiles")
-        set(_make_command \$\(MAKE\))
-    endif()
-
-    add_custom_target(build_inet
-        COMMAND ${_make_command} ${MAKE_ARGUMENTS} inet MODE=${_inet_mode}
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-        COMMENT "Building INET (external dependency)"
-        VERBATIM)
+    add_opp_build_target(INET)
     add_dependencies(INET build_inet)
 endif()
 
 if("${SimuLTE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}/extern/simulte")
-    set(_simulte_mode "release")
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(_simulte_mode "debug")
-    endif()
-
-    set(_make_command ${MAKE_COMMAND})
-    if(CMAKE_GENERATOR MATCHES "Makefiles")
-        set(_make_command \$\(MAKE\))
-    endif()
-
-    add_custom_target(build_simulte
-        COMMAND ${_make_command} ${MAKE_ARGUMENTS} simulte MODE=${_simulte_mode}
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-        COMMENT "Building SimuLTE (external dependency)"
-        VERBATIM)
+    add_opp_build_target(SimuLTE)
     add_dependencies(lte build_simulte)
 endif()
 
