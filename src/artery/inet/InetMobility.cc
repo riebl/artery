@@ -33,6 +33,7 @@ void InetMobility::initialize(int stage)
             auto visualizationTarget = mVisualRepresentation->getParentModule();
             mCanvasProjection = inet::CanvasProjection::getCanvasProjection(visualizationTarget->getCanvas());
         }
+        emit(MobilityBase::stateChangedSignal, this);
         updateVisualRepresentation();
     }
 }
