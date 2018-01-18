@@ -27,7 +27,7 @@ public:
 
 protected:
     std::string mVehicleId;
-    traci::LiteAPI* mTraci;
+    traci::LiteAPI* mTraci = nullptr;
     traci::TraCIBoundary mNetBoundary;
 
 private:
