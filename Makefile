@@ -1,6 +1,6 @@
 PYTHON ?= python
 INET_DIR = extern/inet
-INET_DISABLE_FEATURES ?= packetdrill SCTP SCTP_examples
+INET_DISABLE_FEATURES ?= packetdrill
 SIMULTE_DIR = extern/simulte
 VANETZA_DIR = extern/vanetza
 VANETZA_BUILD_TYPE ?= Release
