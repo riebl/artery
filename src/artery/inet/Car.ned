@@ -25,26 +25,28 @@ module Car like INetworkNode
     submodules:
         interfaceTable: InterfaceTable {
             parameters:
-                @display("p=53,300;is=s");
+                @display("p=50,300");
         }
 
         wlan[numRadios]: <default("VanetNic")> like IWirelessNic {
             parameters:
-                @display("p=216,406,row,60;q=queue");
+                @display("p=250,400,row,100;q=queue");
         }
 
         mobility: <default("artery.inet.Mobility")> like IMobility {
             parameters:
-                @display("p=53,200");
+                @display("p=50,200");
         }
 
         radioDriver[numRadios]: InetRadioDriver {
             parameters:
+                @display("p=250,300,row,100");
                 macModule = ".wlan[" + string(index) + "].mac";
         }
 
         middleware: VehicleMiddleware {
             parameters:
+                @display("p=250,200");
                 radioDriverModule = ".radioDriver[0]";
                 mobilityModule = ".mobility";
         }
