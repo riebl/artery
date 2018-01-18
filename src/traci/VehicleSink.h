@@ -11,7 +11,8 @@ class LiteAPI;
 class VehicleSink
 {
 public:
-    virtual void initializeVehicle(LiteAPI*, const std::string& id, const TraCIBoundary&) = 0;
+    virtual void initializeSink(LiteAPI*, const std::string& id, const TraCIBoundary&) = 0;
+    virtual void initializeVehicle(const TraCIPosition&, TraCIAngle, double speed) = 0;
     virtual void updateVehicle(const TraCIPosition&, TraCIAngle, double speed) = 0;
     virtual ~VehicleSink() = default;
 };

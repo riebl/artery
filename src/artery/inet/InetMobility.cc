@@ -73,7 +73,7 @@ inet::Coord InetMobility::getConstraintAreaMin() const
     return inet::Coord { mNetBoundary.xMin, mNetBoundary.yMin, mNetBoundary.zMin };
 }
 
-void InetMobility::update(const Position& pos, Angle heading, double speed)
+void InetMobility::initialize(const Position& pos, Angle heading, double speed)
 {
     using boost::units::si::meter;
     const double rad = heading.radian();
@@ -81,7 +81,11 @@ void InetMobility::update(const Position& pos, Angle heading, double speed)
     mPosition = inet::Coord { pos.x / meter, pos.y / meter, mAntennaHeight };
     mSpeed = direction * speed;
     mOrientation.alpha = -rad;
+}
 
+void InetMobility::update(const Position& pos, Angle heading, double speed)
+{
+    initialize(pos, heading, speed);
     ASSERT(inet::IMobility::mobilityStateChangedSignal == MobilityBase::stateChangedSignal);
     emit(MobilityBase::stateChangedSignal, this);
     updateVisualRepresentation();

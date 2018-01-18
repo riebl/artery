@@ -11,6 +11,7 @@ public:
     void initialize(int stage) override;
 
 private:
+    void initialize(const Position&, Angle, double speed) override;
     void update(const Position&, Angle, double speed) override;
 
     Coord mPosition;

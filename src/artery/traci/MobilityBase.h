@@ -15,7 +15,8 @@ class MobilityBase :
 {
 public:
     // traci::VehicleSink interface
-    void initializeVehicle(traci::LiteAPI*, const std::string& id, const traci::TraCIBoundary&) override;
+    void initializeSink(traci::LiteAPI*, const std::string& id, const traci::TraCIBoundary&) override;
+    void initializeVehicle(const traci::TraCIPosition&, traci::TraCIAngle, double speed) override;
     void updateVehicle(const traci::TraCIPosition&, traci::TraCIAngle, double speed) override;
 
     // ControllableVehicle
@@ -30,6 +31,7 @@ protected:
     traci::TraCIBoundary mNetBoundary;
 
 private:
+    virtual void initialize(const Position&, Angle, double speed) = 0;
     virtual void update(const Position&, Angle, double speed) = 0;
 
     std::unique_ptr<traci::VehicleController> mController;

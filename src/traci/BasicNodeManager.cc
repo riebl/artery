@@ -83,7 +83,9 @@ void BasicNodeManager::addVehicle(const std::string& id)
 {
     NodeInitializer init = [this, &id](cModule* module) {
         VehicleSink* vehicle = getVehicleSink(module);
-        vehicle->initializeVehicle(m_api, id, m_boundary);
+        auto& traci = m_api->vehicle();
+        vehicle->initializeSink(m_api, id, m_boundary);
+        vehicle->initializeVehicle(traci.getPosition(id), TraCIAngle { traci.getAngle(id) }, traci.getSpeed(id));
         m_vehicles[id] = vehicle;
     };
 

@@ -18,7 +18,7 @@ void VeinsMobility::initialize(int stage)
     }
 }
 
-void VeinsMobility::update(const Position& pos, Angle heading, double speed)
+void VeinsMobility::initialize(const Position& pos, Angle heading, double speed)
 {
     using boost::units::si::meter;
     mPosition.x = pos.x / meter;
@@ -30,6 +30,11 @@ void VeinsMobility::update(const Position& pos, Angle heading, double speed)
 
     mDirection = Coord { cos(heading.radian()), -sin(heading.radian()) };
     move.setDirectionByVector(mDirection);
+}
+
+void VeinsMobility::update(const Position& pos, Angle heading, double speed)
+{
+    initialize(pos, heading, speed);
 
     BaseMobility::updatePosition(); // emits update signal for Veins
     // assert there is no identical signal emitted twice

@@ -28,6 +28,7 @@ protected:
     virtual void updateVisualRepresentation();
 
 private:
+    void initialize(const Position& pos, Angle heading, double speed) override;
     void update(const Position& pos, Angle heading, double speed) override;
 
     inet::Coord mPosition;
