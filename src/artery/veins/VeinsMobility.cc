@@ -7,11 +7,14 @@ void VeinsMobility::initialize(int stage)
 {
     BaseMobility::initialize(stage);
     if (stage == 0) {
-        mPosition.z = par("z");
         WATCH(mVehicleId);
         WATCH(mPosition);
         WATCH(mDirection);
         WATCH(mSpeed);
+    } else if (stage == 1) {
+        mPosition = move.getStartPos();
+        mDirection = move.getDirection();
+        mSpeed = move.getSpeed();
     }
 }
 

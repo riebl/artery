@@ -5,8 +5,12 @@
 
 package artery.application;
 
+moduleinterface IMiddleware
+{
+}
+
 // Middleware for ITS G5 services
-simple Middleware
+simple Middleware like IMiddleware
 {
 	parameters:
 		@class(artery::Middleware);

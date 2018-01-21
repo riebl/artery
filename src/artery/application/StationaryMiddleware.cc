@@ -11,6 +11,7 @@
 #include <boost/units/systems/si/plane_angle.hpp>
 #include <inet/common/ModuleAccess.h>
 #include <inet/mobility/contract/IMobility.h>
+#include <veins/base/modules/BaseMobility.h>
 #include <cmath>
 
 namespace artery
@@ -41,9 +42,18 @@ void StationaryMiddleware::traciInit()
 
 void StationaryMiddleware::initializePosition()
 {
+	Position pos;
 	auto host = findHost();
-	auto mobility = inet::getModuleFromPar<inet::IMobility>(par("mobilityModule"), host);
-	inet::Coord pos = mobility->getCurrentPosition();
+	auto mobilityModule = host->getModuleByPath(par("mobilityModule").stringValue());
+	if (auto mobility = dynamic_cast<inet::IMobility*>(mobilityModule)) {
+		inet::Coord inet_pos = mobility->getCurrentPosition();
+		pos = Position { inet_pos.x, inet_pos.y };
+	} else if (auto mobility = dynamic_cast<BaseMobility*>(mobilityModule)) {
+		Coord veins_pos = mobility->getCurrentPosition();
+		pos = Position { veins_pos.x, veins_pos.y };
+	} else {
+		throw cRuntimeError("no suitable mobility module found");
+	}
 
 	// TODO inet::IGeographicCoordinateSystem provided by TraCI module would be nice
 	auto traci = inet::getModuleFromPar<traci::Core>(par("traciCoreModule"), host);
