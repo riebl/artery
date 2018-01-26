@@ -47,8 +47,8 @@ class CaService : public ItsG5BaseService
 		const VehicleDataProvider* mVehicleDataProvider;
 		const Timer* mTimer;
 		artery::LocalDynamicMap* mLocalDynamicMap;
-		const omnetpp::SimTime mGenCamMin;
-		const omnetpp::SimTime mGenCamMax;
+		omnetpp::SimTime mGenCamMin;
+		omnetpp::SimTime mGenCamMax;
 		omnetpp::SimTime mGenCam;
 		unsigned mGenCamLowDynamicsCounter;
 		unsigned mGenCamLowDynamicsLimit;

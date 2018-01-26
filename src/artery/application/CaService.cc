@@ -56,6 +56,10 @@ void CaService::initialize()
 	mLastLowCamTimestamp = mLastCamTimestamp - artery::simtime_cast(scLowFrequencyContainerInterval);
 	mLocalDynamicMap = &getFacilities().get_mutable<artery::LocalDynamicMap>();
 
+	// generation rate boundaries
+	mGenCamMin = par("minInterval");
+	mGenCamMax = par("maxInterval");
+
 	// vehicle dynamics thresholds
 	mHeadingDelta = vanetza::units::Angle { par("headingDelta").doubleValue() * vanetza::units::degree };
 	mPositionDelta = par("positionDelta").doubleValue() * vanetza::units::si::meter;
