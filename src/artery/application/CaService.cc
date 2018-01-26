@@ -60,6 +60,8 @@ void CaService::initialize()
 	mHeadingDelta = vanetza::units::Angle { par("headingDelta").doubleValue() * vanetza::units::degree };
 	mPositionDelta = par("positionDelta").doubleValue() * vanetza::units::si::meter;
 	mSpeedDelta = par("speedDelta").doubleValue() * vanetza::units::si::meter_per_second;
+
+	mDccRestriction = par("withDccRestriction");
 }
 
 void CaService::trigger()
@@ -84,7 +86,7 @@ void CaService::checkTriggeringConditions(const SimTime& T_now)
 	SimTime& T_GenCam = mGenCam;
 	const SimTime& T_GenCamMin = mGenCamMin;
 	const SimTime& T_GenCamMax = mGenCamMax;
-	const SimTime T_GenCamDcc = genCamDcc();
+	const SimTime T_GenCamDcc = mDccRestriction ? genCamDcc() : mGenCamMin;
 	const SimTime T_elapsed = T_now - mLastCamTimestamp;
 
 	if (T_elapsed >= T_GenCamDcc) {

@@ -20,6 +20,10 @@ simple CaService like ItsG5Service
     parameters:
         @signal[CaService.received](type=CaObject);
         @signal[CaService.sent](type=unsigned long);
+
+        // evaluate DCC transmission interval restrictions
+        bool withDccRestriction = default(true);
+
         // change in orientation triggering CAM generation (in degree)
         double headingDelta = default(4.0);
 
