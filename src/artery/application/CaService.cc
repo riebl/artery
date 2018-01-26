@@ -66,6 +66,7 @@ void CaService::initialize()
 	mSpeedDelta = par("speedDelta").doubleValue() * vanetza::units::si::meter_per_second;
 
 	mDccRestriction = par("withDccRestriction");
+	mFixedRate = par("fixedRate");
 }
 
 void CaService::trigger()
@@ -94,7 +95,9 @@ void CaService::checkTriggeringConditions(const SimTime& T_now)
 	const SimTime T_elapsed = T_now - mLastCamTimestamp;
 
 	if (T_elapsed >= T_GenCamDcc) {
-		if (checkHeadingDelta() || checkPositionDelta() || checkSpeedDelta()) {
+		if (mFixedRate) {
+			sendCam(T_now);
+		} else if (checkHeadingDelta() || checkPositionDelta() || checkSpeedDelta()) {
 			sendCam(T_now);
 			T_GenCam = std::min(T_elapsed, T_GenCamMax); /*< if middleware update interval is too long */
 			mGenCamLowDynamicsCounter = 0;

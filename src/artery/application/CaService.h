@@ -61,6 +61,7 @@ class CaService : public ItsG5BaseService
 		vanetza::units::Length mPositionDelta;
 		vanetza::units::Velocity mSpeedDelta;
 		bool mDccRestriction;
+		bool mFixedRate;
 };
 
 vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider&, uint16_t genDeltaTime);
