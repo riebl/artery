@@ -14,3 +14,5 @@ if(TARGET lte)
         DEPENDENCY artery-lte
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/simulte)
 endif()
+
+add_opp_run(car2car-grid WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/car2car-grid)
