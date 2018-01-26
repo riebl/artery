@@ -14,7 +14,7 @@
 
 <net version="0.27" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
 
-    <location netOffset="0.00,0.00" convBoundary="0.00,0.00,400.00,400.00" origBoundary="0.00,0.00,400.00,400.00" projParameter="!"/>
+    <location netOffset="0.00,0.00" convBoundary="0.00,0.00,400.00,400.00" origBoundary="0.00,0.00,400.00,400.00" projParameter="+proj=tmerc +ellps=WGS84 +datum=WGS84 +units=m +no_defs"/>
 
     <edge id=":0/0_0" function="internal">
         <lane id=":0/0_0_0" index="0" speed="13.90" length="7.90" shape="-1.65,3.25 -1.34,1.11 -0.43,-0.43 1.11,-1.34 3.25,-1.65"/>
