@@ -20,4 +20,12 @@ simple CaService like ItsG5Service
     parameters:
         @signal[CaService.received](type=CaObject);
         @signal[CaService.sent](type=unsigned long);
+        // change in orientation triggering CAM generation (in degree)
+        double headingDelta = default(4.0);
+
+        // change in position triggering CAM generation
+        double positionDelta @unit(m) = default(4.0m);
+
+        // change in speed triggering CAM generation (in meter/second)
+        double speedDelta @unit(mps) = default(0.5mps);
 }

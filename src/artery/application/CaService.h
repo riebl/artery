@@ -38,6 +38,9 @@ class CaService : public ItsG5BaseService
 
 	private:
 		void checkTriggeringConditions(const omnetpp::SimTime&);
+		bool checkHeadingDelta() const;
+		bool checkPositionDelta() const;
+		bool checkSpeedDelta() const;
 		void sendCam(const omnetpp::SimTime&);
 		omnetpp::SimTime genCamDcc();
 
@@ -54,6 +57,9 @@ class CaService : public ItsG5BaseService
 		vanetza::units::Angle mLastCamHeading;
 		omnetpp::SimTime mLastCamTimestamp;
 		omnetpp::SimTime mLastLowCamTimestamp;
+		vanetza::units::Angle mHeadingDelta;
+		vanetza::units::Length mPositionDelta;
+		vanetza::units::Velocity mSpeedDelta;
 };
 
 vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider&, uint16_t genDeltaTime);

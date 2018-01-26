@@ -23,23 +23,6 @@ static const simsignal_t scSignalCamSent = cComponent::registerSignal("CaService
 Define_Module(CaService)
 
 
-bool checkHeadingDelta(vanetza::units::Angle& prev, vanetza::units::Angle now)
-{
-	static const vanetza::units::Angle scHeadingDelta { 4.0 * vanetza::units::degree };
-	return abs(prev - now) > scHeadingDelta;
-}
-
-bool checkPositionDelta(const Position& prev, const Position& now)
-{
-	static const vanetza::units::Length scPositionDelta { 4.0 * vanetza::units::si::meter };
-	return (distance(prev, now) > scPositionDelta);
-}
-
-bool checkSpeedDelta(vanetza::units::Velocity prev, vanetza::units::Velocity now)
-{
-	static const vanetza::units::Velocity scSpeedDelta = 0.5 * vanetza::units::si::meter_per_second;
-	return abs(prev - now) > scSpeedDelta;
-}
 
 static const auto scLowFrequencyContainerInterval = std::chrono::milliseconds(500);
 
@@ -72,6 +55,11 @@ void CaService::initialize()
 	// first generated CAM shall include the low frequency container
 	mLastLowCamTimestamp = mLastCamTimestamp - artery::simtime_cast(scLowFrequencyContainerInterval);
 	mLocalDynamicMap = &getFacilities().get_mutable<artery::LocalDynamicMap>();
+
+	// vehicle dynamics thresholds
+	mHeadingDelta = vanetza::units::Angle { par("headingDelta").doubleValue() * vanetza::units::degree };
+	mPositionDelta = par("positionDelta").doubleValue() * vanetza::units::si::meter;
+	mSpeedDelta = par("speedDelta").doubleValue() * vanetza::units::si::meter_per_second;
 }
 
 void CaService::trigger()
@@ -100,9 +88,7 @@ void CaService::checkTriggeringConditions(const SimTime& T_now)
 	const SimTime T_elapsed = T_now - mLastCamTimestamp;
 
 	if (T_elapsed >= T_GenCamDcc) {
-		if (checkHeadingDelta(mLastCamHeading, mVehicleDataProvider->heading()) ||
-			checkPositionDelta(mLastCamPosition, mVehicleDataProvider->position()) ||
-			checkSpeedDelta(mLastCamSpeed, mVehicleDataProvider->speed())) {
+		if (checkHeadingDelta() || checkPositionDelta() || checkSpeedDelta()) {
 			sendCam(T_now);
 			T_GenCam = std::min(T_elapsed, T_GenCamMax); /*< if middleware update interval is too long */
 			mGenCamLowDynamicsCounter = 0;
@@ -113,6 +99,21 @@ void CaService::checkTriggeringConditions(const SimTime& T_now)
 			}
 		}
 	}
+}
+
+bool CaService::checkHeadingDelta() const
+{
+	return abs(mLastCamHeading - mVehicleDataProvider->heading()) > mHeadingDelta;
+}
+
+bool CaService::checkPositionDelta() const
+{
+	return (distance(mLastCamPosition, mVehicleDataProvider->position()) > mPositionDelta);
+}
+
+bool CaService::checkSpeedDelta() const
+{
+	return abs(mLastCamSpeed - mVehicleDataProvider->speed()) > mSpeedDelta;
 }
 
 void CaService::sendCam(const SimTime& T_now)
