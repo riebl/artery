@@ -196,7 +196,8 @@ void Middleware::initializeSecurity()
 	} else if (vanetzaCertificateProvider == "Naive") {
 		mSecurityCertificates.reset(new NaiveCertificateProvider(mRuntime.now()));
 	} else {
-		throw cRuntimeError("No certificate provider available with name \"%s\"", vanetzaCertificateProvider);
+		throw cRuntimeError("No certificate provider available with name \"%s\"",
+			vanetzaCertificateProvider.c_str());
 	}
 
 	const std::string vanetzaCertificateValidator = par("vanetzaCertificateValidator");
@@ -209,7 +210,8 @@ void Middleware::initializeSecurity()
 		validator->certificate_check_result(ok);
 		mSecurityCertificateValidator = std::move(validator);
 	} else {
-		throw cRuntimeError("No certificate validator available with name \"%s\"", vanetzaCertificateValidator);
+		throw cRuntimeError("No certificate validator available with name \"%s\"",
+			vanetzaCertificateValidator.c_str());
 	}
 
 	mSecurityCertificateCache.reset(new CertificateCache(mRuntime));
@@ -224,7 +226,8 @@ void Middleware::initializeSecurity()
 	} else if (vanetzaSecuritySignService == "dummy") {
 		sign_service = dummy_sign_service(mRuntime, NullCertificateProvider::null_certificate());
 	} else {
-		throw cRuntimeError("No security sign service available with name \"%s\"", vanetzaSecuritySignService);
+		throw cRuntimeError("No security sign service available with name \"%s\"",
+			vanetzaSecuritySignService.c_str());
 	}
 
 	VerifyService verify_service;
@@ -235,7 +238,8 @@ void Middleware::initializeSecurity()
 	} else if (vanetzaSecurityVerifyService == "dummy") {
 		verify_service = dummy_verify_service(VerificationReport::Success, CertificateValidity::valid());
 	} else {
-		throw cRuntimeError("No security verify service available with name \"%s\"", vanetzaSecurityVerifyService);
+		throw cRuntimeError("No security verify service available with name \"%s\"",
+			vanetzaSecurityVerifyService.c_str());
 	}
 
 	mSecurityEntity.reset(new SecurityEntity(sign_service, verify_service));
