@@ -17,7 +17,7 @@ using namespace omnetpp;
 namespace artery
 {
 
-static const simsignal_t CamReceivedSignal = cComponent::registerSignal("CaService.received");
+static const simsignal_t CamReceivedSignal = cComponent::registerSignal("CamReceived");
 
 Define_Module(CamSensor);
 

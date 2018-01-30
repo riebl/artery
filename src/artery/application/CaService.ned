@@ -18,8 +18,8 @@ package artery.application;
 simple CaService like ItsG5Service
 {
     parameters:
-        @signal[CaService.received](type=CaObject);
-        @signal[CaService.sent](type=unsigned long);
+        @signal[CamReceived](type=CaObject);
+        @signal[CamSent](type=unsigned long);
 
         // evaluate DCC transmission interval restrictions
         bool withDccRestriction = default(true);

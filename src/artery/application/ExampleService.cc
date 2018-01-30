@@ -23,7 +23,7 @@
 using namespace omnetpp;
 using namespace vanetza;
 
-static const simsignal_t scSignalCamReceived = cComponent::registerSignal("CaService.received");
+static const simsignal_t scSignalCamReceived = cComponent::registerSignal("CamReceived");
 
 Define_Module(ExampleService)
 
