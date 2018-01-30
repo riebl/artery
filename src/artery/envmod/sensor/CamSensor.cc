@@ -44,7 +44,7 @@ void CamSensor::receiveSignal(cComponent*, simsignal_t signal, cObject *obj, cOb
     if (signal == CamReceivedSignal) {
         auto* cam = dynamic_cast<CaObject*>(obj);
         if (cam) {
-            uint32_t stationID = (*cam->asn1())->header.stationID;
+            uint32_t stationID = cam->asn1()->header.stationID;
             auto identity = mIdentityRegistry->lookup<IdentityRegistry::application>(stationID);
             if (identity) {
                 auto object = mGlobalEnvironmentModel->getObject(identity->traci);

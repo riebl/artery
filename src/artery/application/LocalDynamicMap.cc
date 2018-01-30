@@ -14,7 +14,7 @@ LocalDynamicMap::LocalDynamicMap(const Timer& timer) :
 
 void LocalDynamicMap::updateAwareness(const CaObject& obj)
 {
-    const vanetza::asn1::Cam& msg = *obj.asn1();
+    const vanetza::asn1::Cam& msg = obj.asn1();
 
     static const omnetpp::SimTime lifetime { 1100, omnetpp::SIMTIME_MS };
     auto tai = mTimer.reconstructMilliseconds(msg->cam.generationDeltaTime);
@@ -47,7 +47,7 @@ unsigned LocalDynamicMap::count(const CamPredicate& predicate) const
 {
     return std::count_if(mCaMessages.begin(), mCaMessages.end(),
             [&predicate](const std::pair<const StationID, AwarenessEntry>& map_entry) {
-                const Cam& cam = *map_entry.second.object.asn1();
+                const Cam& cam = map_entry.second.object.asn1();
                 return predicate(cam);
             });
 }

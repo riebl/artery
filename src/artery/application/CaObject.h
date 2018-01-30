@@ -17,16 +17,16 @@ public:
     CaObject(const vanetza::asn1::Cam&);
     CaObject& operator=(const vanetza::asn1::Cam&);
 
-    CaObject(std::shared_ptr<const vanetza::asn1::Cam>);
-    CaObject& operator=(std::shared_ptr<const vanetza::asn1::Cam>);
+    CaObject(const std::shared_ptr<vanetza::asn1::Cam>&);
+    CaObject& operator=(const std::shared_ptr<vanetza::asn1::Cam>&);
 
-    CaObject(std::shared_ptr<vanetza::asn1::Cam>);
-    CaObject& operator=(std::shared_ptr<vanetza::asn1::Cam>);
+    vanetza::asn1::Cam& asn1();
+    const vanetza::asn1::Cam& asn1() const;
 
-    std::shared_ptr<const vanetza::asn1::Cam> asn1() const;
+    std::shared_ptr<const vanetza::asn1::Cam> shared_ptr() const;
 
 private:
-    std::shared_ptr<const vanetza::asn1::Cam> m_cam_wrapper;
+    std::shared_ptr<vanetza::asn1::Cam> m_cam_wrapper;
 };
 
 #endif /* ARTERY_CAOBJECT_H_ */
