@@ -68,7 +68,7 @@ struct Asn1PacketVisitor : public boost::static_visitor<const T*>
         }
     }
 
-    std::shared_ptr<T> shared_wrapper;
+    std::shared_ptr<const T> shared_wrapper;
 };
 
 #endif /* __ARTERY_ASN1PACKETVISITOR_H_ */

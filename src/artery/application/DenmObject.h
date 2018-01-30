@@ -53,15 +53,14 @@ class DenmObject : public omnetpp::cObject
     public:
         DenmObject(vanetza::asn1::Denm&&);
         DenmObject(const vanetza::asn1::Denm&);
-        DenmObject(const std::shared_ptr<vanetza::asn1::Denm>&);
+        DenmObject(const std::shared_ptr<const vanetza::asn1::Denm>&);
         boost::optional<denm::CauseCode> situation_cause_code() const;
-        vanetza::asn1::Denm& asn1();
         const vanetza::asn1::Denm& asn1() const;
 
         std::shared_ptr<const vanetza::asn1::Denm> shared_ptr() const;
 
     private:
-        std::shared_ptr<vanetza::asn1::Denm> m_denm_wrapper;
+        std::shared_ptr<const vanetza::asn1::Denm> m_denm_wrapper;
 };
 
 bool operator&(const DenmObject&, denm::CauseCode);
