@@ -13,6 +13,8 @@ module Car like INetworkNode
         @display("i=block/wrxtx;is=vs");
         @networkNode;
         @labels(node,ethernet-node,wireless-node);
+        @statistic[posX](source="xCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
+        @statistic[posY](source="yCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
         int numRadios = default(1);
         *.interfaceTableModule = default(absPath(".interfaceTable"));
         mobility.visualRepresentation = "^";
