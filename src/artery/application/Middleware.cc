@@ -213,7 +213,7 @@ void Middleware::initializeSecurity()
 	}
 
 	mSecurityCertificateCache.reset(new CertificateCache(mRuntime));
-	mSecuritySignHeaderPolicy.reset(new SignHeaderPolicy(mRuntime.now()));
+	mSecuritySignHeaderPolicy.reset(new DefaultSignHeaderPolicy(mRuntime.now(), mPositionProvider));
 
 	SignService sign_service;
 	const std::string vanetzaSecuritySignService = par("vanetzaSecuritySignService");
@@ -231,7 +231,7 @@ void Middleware::initializeSecurity()
 	const std::string vanetzaSecurityVerifyService = par("vanetzaSecurityVerifyService");
 	if (vanetzaSecurityVerifyService == "straight") {
 		verify_service = straight_verify_service(mRuntime, *mSecurityCertificates, *mSecurityCertificateValidator,
-			*mSecurityBackend, *mSecurityCertificateCache, *mSecuritySignHeaderPolicy);
+			*mSecurityBackend, *mSecurityCertificateCache, *mSecuritySignHeaderPolicy, mPositionProvider);
 	} else if (vanetzaSecurityVerifyService == "dummy") {
 		verify_service = dummy_verify_service(VerificationReport::Success, CertificateValidity::valid());
 	} else {

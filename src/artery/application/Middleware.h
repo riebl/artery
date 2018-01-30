@@ -31,6 +31,7 @@
 #include <vanetza/btp/data_interface.hpp>
 #include <vanetza/btp/port_dispatcher.hpp>
 #include <vanetza/common/clock.hpp>
+#include <vanetza/common/stored_position_provider.hpp>
 #include <vanetza/common/runtime.hpp>
 #include <vanetza/dcc/flow_control.hpp>
 #include <vanetza/dcc/scheduler.hpp>
@@ -42,6 +43,7 @@
 #include <vanetza/security/certificate_provider.hpp>
 #include <vanetza/security/certificate_validator.hpp>
 #include <vanetza/security/security_entity.hpp>
+#include <vanetza/security/sign_header_policy.hpp>
 #include <map>
 #include <memory>
 
@@ -85,6 +87,7 @@ class Middleware :
 		const vanetza::Runtime& getRuntime() const { return mRuntime; }
 		vanetza::geonet::Router& getRouter() const { ASSERT(mGeoRouter); return *mGeoRouter; }
 
+		vanetza::StoredPositionProvider mPositionProvider;
 		vanetza::geonet::StationType mGnStationType;
 
 	private:

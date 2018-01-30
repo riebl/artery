@@ -69,6 +69,7 @@ void StationaryMiddleware::initializePosition()
 	position_fix.confidence.semi_minor = 1.0 * si::meter;
 	position_fix.confidence.semi_major = 1.0 * si::meter;
 	position_fix.speed.assign(0.0 * si::meter_per_second, 0.0 * si::meter_per_second);
+	mPositionProvider.position_fix(position_fix);
 	getRouter().update_position(position_fix);
 }
 

@@ -95,6 +95,7 @@ void VehicleMiddleware::updatePosition()
 	position_fix.confidence.semi_major = 5.0 * si::meter;
 	position_fix.course.assign(north + GeoAngle { mVehicleDataProvider.heading() }, north + 3.0 * degree);
 	position_fix.speed.assign(mVehicleDataProvider.speed(), 1.0 * si::meter_per_second);
+	mPositionProvider.position_fix(position_fix);
 	getRouter().update_position(position_fix);
 }
 
