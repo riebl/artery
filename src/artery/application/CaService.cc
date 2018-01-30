@@ -148,12 +148,14 @@ void CaService::sendCam(const SimTime& T_now)
 	request.gn.traffic_class.tc_id(static_cast<unsigned>(dcc::Profile::DP2));
 	request.gn.communication_profile = geonet::CommunicationProfile::ITS_G5;
 
-	std::unique_ptr<geonet::DownPacket> payload { new geonet::DownPacket };
-	payload->layer(OsiLayer::Application) = std::move(cam);
-	const std::size_t payload_length = payload->size();
-	this->request(request, std::move(payload));
+	CaObject obj(std::move(cam));
+	emit(scSignalCamSent, &obj);
 
-	emit(scSignalCamSent, payload_length);
+	using CamByteBuffer = convertible::byte_buffer_impl<asn1::Cam>;
+	std::unique_ptr<geonet::DownPacket> payload { new geonet::DownPacket() };
+	std::unique_ptr<convertible::byte_buffer> buffer { new CamByteBuffer(obj.shared_ptr()) };
+	payload->layer(OsiLayer::Application) = std::move(buffer);
+	this->request(request, std::move(payload));
 }
 
 SimTime CaService::genCamDcc()

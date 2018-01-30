@@ -19,7 +19,7 @@ simple CaService like ItsG5Service
 {
     parameters:
         @signal[CamReceived](type=CaObject);
-        @signal[CamSent](type=unsigned long);
+        @signal[CamSent](type=CaObject);
 
         // evaluate DCC transmission interval restrictions
         bool withDccRestriction = default(true);
