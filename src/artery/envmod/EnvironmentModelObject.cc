@@ -34,7 +34,7 @@ const std::vector<Position> squareAttachmentPoints = {
 
 const Position squareCentrePoint(-0.5, 0.0);
 
-#if BOOST_VERSION <= 106400
+#if BOOST_VERSION < 106400
 boost::geometry::strategy::transform::ublas_transformer<double, 2, 2>
 transformVehicle(double length, double width, const Position& pos, Angle alpha)
 {
