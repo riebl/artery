@@ -1,4 +1,5 @@
 PYTHON ?= python
+PYTHON2 ?= python2
 INET_DIR = extern/inet
 INET_DISABLE_FEATURES ?= packetdrill
 SIMULTE_DIR = extern/simulte
@@ -31,7 +32,7 @@ simulte: $(SIMULTE_DIR)/src/Makefile
 	$(MAKE) -C $(SIMULTE_DIR)/src
 
 $(VEINS_DIR)/src/Makefile: $(VEINS_DIR)/configure
-	cd $(VEINS_DIR); $(PYTHON) configure
+	cd $(VEINS_DIR); $(PYTHON2) configure
 	$(MAKE) -C $(VEINS_DIR)/src depend
 
 veins: $(VEINS_DIR)/src/Makefile
