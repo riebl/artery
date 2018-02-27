@@ -74,8 +74,8 @@ void BasicNodeManager::traciStep()
 
 void BasicNodeManager::traciClose()
 {
-    for (auto& node : m_nodes) {
-        removeNodeModule(node.first);
+    for (unsigned i = m_nodes.size(); i > 0; --i) {
+        removeNodeModule(m_nodes.begin()->first);
     }
 }
 
