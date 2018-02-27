@@ -1,1 +1,0 @@
-/* begin of packed structure */

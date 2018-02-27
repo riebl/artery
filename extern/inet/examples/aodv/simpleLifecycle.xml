@@ -1,5 +1,0 @@
-<scenario>
-    <at t="12.3">
-        <tell module="lifecycleController" target="intermediateNodeA" operation="NodeShutdownOperation"/>
-    </at>
-</scenario>

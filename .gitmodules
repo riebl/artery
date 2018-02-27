@@ -1,6 +1,10 @@
 [submodule "scenario_mt-its2017"]
 	path = scenarios/mt-its2017
 	url = https://github.com/riebl/artery_scenario_mt-its2017.git
+[submodule "extern/inet"]
+	path = extern/inet
+	url = https://github.com/riebl/inet.git
+	branch = artery-v3.6.3
 [submodule "extern/vanetza"]
 	path = extern/vanetza
 	url = https://github.com/riebl/vanetza.git

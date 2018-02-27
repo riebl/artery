@@ -1,5 +1,0 @@
-run 1 "Net"
-scalar Net.A.bgp 	OPENMsgSent 	1
-scalar Net.A.bgp 	OPENMsgRecv 	1
-scalar Net.B.bgp 	OPENMsgSent 	1
-scalar Net.B.bgp 	OPENMsgRecv 	1
