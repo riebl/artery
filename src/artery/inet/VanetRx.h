@@ -13,7 +13,7 @@ public:
     static const simsignal_t ChannelLoadSignal;
 
 protected:
-    void initialize() override;
+    void initialize(int stage) override;
     void handleMessage(cMessage*) override;
     void recomputeMediumFree() override;
     virtual void reportChannelLoad();

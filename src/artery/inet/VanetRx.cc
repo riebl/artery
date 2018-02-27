@@ -14,17 +14,19 @@ VanetRx::~VanetRx()
     cancelAndDelete(channelReportTrigger);
 }
 
-void VanetRx::initialize()
+void VanetRx::initialize(int stage)
 {
-    Rx::initialize();
-    channelLoadSamples.resize(12500);
-    channelLoadLastUpdate = simTime();
-    channelBusyRatio = 0.0;
-    channelReportInterval = simtime_t { 100, SIMTIME_MS };
-    channelReportTrigger = new cMessage("report CL");
-    scheduleAt(simTime() + channelReportInterval, channelReportTrigger);
+    Rx::initialize(stage);
+    if (stage == 0) {
+        channelLoadSamples.resize(12500);
+        channelLoadLastUpdate = simTime();
+        channelBusyRatio = 0.0;
+        channelReportInterval = simtime_t { 100, SIMTIME_MS };
+        channelReportTrigger = new cMessage("report CL");
+        scheduleAt(simTime() + channelReportInterval, channelReportTrigger);
 
-    WATCH(channelBusyRatio);
+        WATCH(channelBusyRatio);
+    }
 }
 
 void VanetRx::handleMessage(cMessage* msg)
