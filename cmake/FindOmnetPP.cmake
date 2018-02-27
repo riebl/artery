@@ -28,7 +28,7 @@ set(_libraries cmdenv common envir eventlog layout main nedxml scave sim tkenv)
 foreach(_library IN LISTS _libraries)
     string(TOUPPER ${_library} _LIBRARY)
     find_library(OMNETPP_${_LIBRARY}_LIBRARY_RELEASE opp${_library} PATHS ${OMNETPP_ROOT}/lib)
-    find_library(OMNETPP_${_LIBRARY}_LIBRARY_DEBUG opp${_library}d PATHS ${OMNETPP_ROOT}/lib)
+    find_library(OMNETPP_${_LIBRARY}_LIBRARY_DEBUG NAMES opp${_library}d opp${_library}_dbg PATHS ${OMNETPP_ROOT}/lib)
     add_library(opp_${_library} SHARED IMPORTED)
     list(APPEND OMNETPP_LIBRARIES opp_${_library})
     set_target_properties(opp_${_library} PROPERTIES
