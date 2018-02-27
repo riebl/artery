@@ -224,7 +224,7 @@ void addLowFrequencyContainer(vanetza::asn1::Cam& message)
 	lfc->present = LowFrequencyContainer_PR_basicVehicleContainerLowFrequency;
 	BasicVehicleContainerLowFrequency& bvc = lfc->choice.basicVehicleContainerLowFrequency;
 	bvc.vehicleRole = VehicleRole_default;
-	bvc.exteriorLights.buf = static_cast<uint8_t*>(malloc(1));
+	bvc.exteriorLights.buf = static_cast<uint8_t*>(vanetza::asn1::allocate(1));
 	assert(nullptr != bvc.exteriorLights.buf);
 	bvc.exteriorLights.size = 1;
 	bvc.exteriorLights.buf[0] |= 1 << (7 - ExteriorLights_daytimeRunningLightsOn);
