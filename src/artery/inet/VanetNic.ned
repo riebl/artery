@@ -8,38 +8,41 @@ module VanetNic extends Ieee80211Nic
         macType = "Ieee80211Mac";
         mgmtType = "Ieee80211MgmtAdhoc";
         opMode = "p";
-        bitrate = 6 Mbps;
+        bitrate = default(6 Mbps);
+
+        mac.modeSet = opMode;
+        mac.qosStation = true;
         mac.rx.typename = "VanetRx";
-        mac.rateSelection.modeSet = "p";
-        mac.rateSelection.dataBitrate = 6 Mbps;
-        mac.rateSelection.multicastBitrate = 6 Mbps;
+
         radio.bandName = "5 GHz";
         radio.bandwidth = 10 MHz;
         radio.channelNumber = 180;
         radio.carrierFrequency = 5.9 GHz;
 
+        mac.hcf.rateSelection.dataFrameBitrate = bitrate;
+        mac.hcf.rateSelection.mgmtFrameBitrate = bitrate;
+        mac.hcf.rateSelection.multicastFrameBitrate = bitrate;
+
         // EDCA settings for activated OCB mode (see table 8-106 in IEEE 802.11-2012)
+        mac.hcf.edcaTxopProcedures[*].txopLimit = 0;
+
         // AC_BK
-        mac.upperMac.txopLimit0 = 0;
-        mac.upperMac.aifsn0 = 9;
-        mac.upperMac.cwMin0 = 15;
-        mac.upperMac.cwMax0 = 1023;
+        mac.hcf.edca.edcaf[0].aifsn = 9;
+        mac.hcf.edca.edcaf[0].cwMin = 15;
+        mac.hcf.edca.edcaf[0].cwMax = 1023;
 
         // AC_BE
-        mac.upperMac.txopLimit1 = 0;
-        mac.upperMac.aifsn1 = 6;
-        mac.upperMac.cwMin1 = 15;
-        mac.upperMac.cwMax1 = 1023;
+        mac.hcf.edca.edcaf[1].aifsn = 6;
+        mac.hcf.edca.edcaf[1].cwMin = 15;
+        mac.hcf.edca.edcaf[1].cwMax = 1023;
 
         // AC_VI
-        mac.upperMac.txopLimit2 = 0;
-        mac.upperMac.aifsn2 = 3;
-        mac.upperMac.cwMin2 = 7;
-        mac.upperMac.cwMax2 = 15;
+        mac.hcf.edca.edcaf[2].aifsn = 3;
+        mac.hcf.edca.edcaf[2].cwMin = 7;
+        mac.hcf.edca.edcaf[2].cwMax = 15;
 
         // AC_VO
-        mac.upperMac.txopLimit3 = 0;
-        mac.upperMac.aifsn3 = 2;
-        mac.upperMac.cwMin3 = 3;
-        mac.upperMac.cwMax3 = 7;
+        mac.hcf.edca.edcaf[3].aifsn = 2;
+        mac.hcf.edca.edcaf[3].cwMin = 3;
+        mac.hcf.edca.edcaf[3].cwMax = 7;
 }
