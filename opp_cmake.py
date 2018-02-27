@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from functools import partial
+from distutils.version import StrictVersion
 import os
 import re
 import subprocess
@@ -42,10 +43,11 @@ class OmnetProject:
 
 class CMakeTarget:
 
-    def __init__(self, project, toolchain='gcc'):
+    def __init__(self, project, toolchain='gcc', debug_suffix=''):
 
         self._project = project
         self._toolchain = toolchain
+        self._debug_suffix = debug_suffix
         self.include_directories = [self._make_absolute_path(self._makefile_path(), d) for d in self._project.include_directories]
         for dd in self._project.include_directories_deep:
             self.include_directories.append(dd)
@@ -68,7 +70,8 @@ class CMakeTarget:
             'shared': "${{CMAKE_SHARED_LIBRARY_PREFIX}}{}${{CMAKE_SHARED_LIBRARY_SUFFIX}}",
             'static': "${{CMAKE_STATIC_LIBRARY_PREFIX}}{}${{CMAKE_STATIC_LIBRARY_SUFFIX}}"
         }
-        return binary[self._project.binary].format(self._project.name)
+        name = self._project.name + (self._debug_suffix if mode == 'debug' else '')
+        return binary[self._project.binary].format(name)
 
     def _import_location(self, mode):
         filename = self._filename(mode)
@@ -188,7 +191,9 @@ class FlagsHandler:
 
     def target(self):
         self._project.read_ned_folders()
-        return CMakeTarget(self._project, which_opp_toolchain(self._configfile))
+        opp_version = StrictVersion(which_opp_version(self._configfile))
+        debug_suffix = '_dbg' if opp_version >= StrictVersion('5.2.0') else ''
+        return CMakeTarget(self._project, which_opp_toolchain(self._configfile), debug_suffix)
 
     def ignore(self):
         pass
@@ -250,9 +255,18 @@ def find_opp_configfile():
 
 def which_opp_toolchain(configfile_path):
     with open(configfile_path, "r", encoding="utf-8") as configfile:
-        toolchain_pattern = re.compile("TOOLCHAIN_NAME = (\w+)")
+        toolchain_pattern = re.compile(r"TOOLCHAIN_NAME = (\w+)")
         for line in configfile:
             line_match = toolchain_pattern.match(line)
+            if line_match:
+                return line_match.group(1)
+
+
+def which_opp_version(configfile_path):
+    with open(configfile_path, "r", encoding="utf-8") as configfile:
+        version_pattern = re.compile(r"OMNETPP_VERSION = ([0-9\.]+)")
+        for line in configfile:
+            line_match = version_pattern.match(line)
             if line_match:
                 return line_match.group(1)
 
