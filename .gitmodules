@@ -12,3 +12,9 @@
 	path = extern/pybind11
 	url = https://github.com/pybind/pybind11.git
 	branch = stable
+[submodule "extern/vanetza"]
+	path = extern/vanetza
+	url = https://github.com/riebl/vanetza.git
+[submodule "extern/veins"]
+	path = extern/veins
+	url = https://github.com/sommer/veins.git
