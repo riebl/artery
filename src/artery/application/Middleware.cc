@@ -153,8 +153,9 @@ void Middleware::initializeMiddleware()
 
 	using vanetza::geonet::UpperProtocol;
 	vanetza::geonet::Address gn_addr;
+	mGnStationType = vanetza::geonet::StationType::UNKNOWN;
 	gn_addr.is_manually_configured(true);
-	gn_addr.station_type(mGeoMib.itsGnStationType);
+	gn_addr.station_type(mGnStationType);
 	gn_addr.country_code(0);
 	gn_addr.mid(mRadioDriver->getMacAddress());
 	mGeoRouter.reset(new vanetza::geonet::Router {mRuntime, mGeoMib});
@@ -176,7 +177,6 @@ void Middleware::initializeIdentity(Identity& id)
 
 void Middleware::initializeManagementInformationBase(vanetza::geonet::MIB& mib)
 {
-	mib.itsGnStationType = vanetza::geonet::StationType::UNKNOWN;
 	mib.itsGnDefaultTrafficClass.tc_id(3); // send BEACONs with DP3
 	mib.itsGnSecurity = par("vanetzaEnableSecurity").boolValue();
 }
@@ -212,12 +212,15 @@ void Middleware::initializeSecurity()
 		throw cRuntimeError("No certificate validator available with name \"%s\"", vanetzaCertificateValidator);
 	}
 
+	mSecurityCertificateCache.reset(new CertificateCache(mRuntime));
+	mSecuritySignHeaderPolicy.reset(new SignHeaderPolicy(mRuntime.now()));
+
 	SignService sign_service;
 	const std::string vanetzaSecuritySignService = par("vanetzaSecuritySignService");
 	if (vanetzaSecuritySignService == "straight") {
-		sign_service = straight_sign_service(mRuntime, *mSecurityCertificates, *mSecurityBackend);
+		sign_service = straight_sign_service(*mSecurityCertificates, *mSecurityBackend, *mSecuritySignHeaderPolicy);
 	} else if (vanetzaSecuritySignService == "deferred") {
-		sign_service = deferred_sign_service(mRuntime, *mSecurityCertificates, *mSecurityBackend);
+		sign_service = deferred_sign_service(*mSecurityCertificates, *mSecurityBackend, *mSecuritySignHeaderPolicy);
 	} else if (vanetzaSecuritySignService == "dummy") {
 		sign_service = dummy_sign_service(mRuntime, NullCertificateProvider::null_certificate());
 	} else {
@@ -227,7 +230,8 @@ void Middleware::initializeSecurity()
 	VerifyService verify_service;
 	const std::string vanetzaSecurityVerifyService = par("vanetzaSecurityVerifyService");
 	if (vanetzaSecurityVerifyService == "straight") {
-		verify_service = straight_verify_service(mRuntime, *mSecurityCertificateValidator, *mSecurityBackend);
+		verify_service = straight_verify_service(mRuntime, *mSecurityCertificates, *mSecurityCertificateValidator,
+			*mSecurityBackend, *mSecurityCertificateCache, *mSecuritySignHeaderPolicy);
 	} else if (vanetzaSecurityVerifyService == "dummy") {
 		verify_service = dummy_verify_service(VerificationReport::Success, CertificateValidity::valid());
 	} else {

@@ -10,6 +10,7 @@
 #include "artery/traci/ControllableVehicle.h"
 #include "artery/traci/MobilityBase.h"
 #include "inet/common/ModuleAccess.h"
+#include <vanetza/common/position_fix.hpp>
 
 namespace artery
 {
@@ -45,7 +46,7 @@ void VehicleMiddleware::initializeManagementInformationBase(vanetza::geonet::MIB
 {
 	Middleware::initializeManagementInformationBase(mib);
 	// TODO derive station type from SUMO vehicle class
-	mib.itsGnStationType = vanetza::geonet::StationType::PASSENGER_CAR;
+	mGnStationType = vanetza::geonet::StationType::PASSENGER_CAR;
 }
 
 void VehicleMiddleware::initializeVehicleController()
@@ -84,14 +85,17 @@ void VehicleMiddleware::update()
 
 void VehicleMiddleware::updatePosition()
 {
-	vanetza::geonet::LongPositionVector lpv;
-	lpv.timestamp = vanetza::geonet::Timestamp(getRuntime().now());
-	lpv.latitude = static_cast<decltype(lpv.latitude)>(mVehicleDataProvider.latitude());
-	lpv.longitude = static_cast<decltype(lpv.longitude)>(mVehicleDataProvider.longitude());
-	lpv.heading = static_cast<decltype(lpv.heading)>(mVehicleDataProvider.heading());
-	lpv.speed = static_cast<decltype(lpv.speed)>(mVehicleDataProvider.speed());
-	lpv.position_accuracy_indicator = true;
-	getRouter().update(lpv);
+	using namespace vanetza::units;
+	static const TrueNorth north;
+	vanetza::PositionFix position_fix;
+	position_fix.timestamp = getRuntime().now();
+	position_fix.latitude = mVehicleDataProvider.latitude();
+	position_fix.longitude = mVehicleDataProvider.longitude();
+	position_fix.confidence.semi_minor = 5.0 * si::meter;
+	position_fix.confidence.semi_major = 5.0 * si::meter;
+	position_fix.course.assign(north + GeoAngle { mVehicleDataProvider.heading() }, north + 3.0 * degree);
+	position_fix.speed.assign(mVehicleDataProvider.speed(), 1.0 * si::meter_per_second);
+	getRouter().update_position(position_fix);
 }
 
 } // namespace artery

@@ -132,7 +132,7 @@ void CaService::sendCam(const SimTime& T_now)
 	using namespace vanetza;
 	btp::DataRequestB request;
 	request.destination_port = btp::ports::CAM;
-	request.gn.security_profile = security::Profile::CAM;
+	request.gn.its_aid = aid::CA;
 	request.gn.transport_type = geonet::TransportType::SHB;
 	request.gn.maximum_lifetime = geonet::Lifetime { geonet::Lifetime::Base::_1_S, 1 };
 	request.gn.traffic_class.tc_id(static_cast<unsigned>(dcc::Profile::DP2));

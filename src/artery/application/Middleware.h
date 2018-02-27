@@ -38,6 +38,7 @@
 #include <vanetza/geonet/packet.hpp>
 #include <vanetza/geonet/router.hpp>
 #include <vanetza/security/backend.hpp>
+#include <vanetza/security/certificate_cache.hpp>
 #include <vanetza/security/certificate_provider.hpp>
 #include <vanetza/security/certificate_validator.hpp>
 #include <vanetza/security/security_entity.hpp>
@@ -84,6 +85,8 @@ class Middleware :
 		const vanetza::Runtime& getRuntime() const { return mRuntime; }
 		vanetza::geonet::Router& getRouter() const { ASSERT(mGeoRouter); return *mGeoRouter; }
 
+		vanetza::geonet::StationType mGnStationType;
+
 	private:
 		void updateServices();
 		void initializeMiddleware();
@@ -105,6 +108,8 @@ class Middleware :
 		std::unique_ptr<vanetza::security::Backend> mSecurityBackend;
 		std::unique_ptr<vanetza::security::CertificateProvider> mSecurityCertificates;
 		std::unique_ptr<vanetza::security::CertificateValidator> mSecurityCertificateValidator;
+		std::unique_ptr<vanetza::security::CertificateCache> mSecurityCertificateCache;
+		std::unique_ptr<vanetza::security::SignHeaderPolicy> mSecuritySignHeaderPolicy;
 		std::unique_ptr<vanetza::security::SecurityEntity> mSecurityEntity;
 		vanetza::geonet::MIB mGeoMib;
 		std::unique_ptr<vanetza::geonet::Router> mGeoRouter;

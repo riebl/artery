@@ -8,9 +8,9 @@
 #include "traci/Core.h"
 #include "traci/LiteAPI.h"
 #include "traci/Position.h"
-#include <boost/units/systems/si/plane_angle.hpp>
 #include <inet/common/ModuleAccess.h>
 #include <inet/mobility/contract/IMobility.h>
+#include <vanetza/common/position_fix.hpp>
 #include <veins/base/modules/BaseMobility.h>
 #include <cmath>
 
@@ -31,7 +31,7 @@ void StationaryMiddleware::initialize(int stage)
 void StationaryMiddleware::initializeManagementInformationBase(vanetza::geonet::MIB& mib)
 {
 	Middleware::initializeManagementInformationBase(mib);
-	mib.itsGnStationType = vanetza::geonet::StationType::RSU;
+	mGnStationType = vanetza::geonet::StationType::RSU;
 	mib.itsGnIsMobile = false;
 }
 
@@ -61,13 +61,15 @@ void StationaryMiddleware::initializePosition()
 	const traci::TraCIBoundary& boundary = api.simulation().getNetBoundary();
 	traci::TraCIGeoPosition geopos = api.convertGeo(traci::position_cast(boundary, Position { pos.x, pos.y }));
 
-	using boost::units::degree::degree;
-	vanetza::geonet::LongPositionVector lpv;
-	lpv.timestamp = vanetza::geonet::Timestamp(getRuntime().now());
-	lpv.latitude = static_cast<decltype(lpv.latitude)>(geopos.latitude * degree);
-	lpv.longitude = static_cast<decltype(lpv.longitude)>(geopos.longitude * degree);
-	lpv.position_accuracy_indicator = true;
-	getRouter().update(lpv);
+	using namespace vanetza::units;
+	vanetza::PositionFix position_fix;
+	position_fix.timestamp = getRuntime().now();
+	position_fix.latitude = geopos.latitude * degree;
+	position_fix.longitude = geopos.longitude * degree;
+	position_fix.confidence.semi_minor = 1.0 * si::meter;
+	position_fix.confidence.semi_major = 1.0 * si::meter;
+	position_fix.speed.assign(0.0 * si::meter_per_second, 0.0 * si::meter_per_second);
+	getRouter().update_position(position_fix);
 }
 
 } // namespace artery

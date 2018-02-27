@@ -122,7 +122,7 @@ vanetza::btp::DataRequestB DenmService::createRequest(artery::denm::UseCase& uc)
     uc.dissemination(request);
 
     request.destination_port = btp::ports::DENM;
-    request.gn.security_profile = security::Profile::DENM;
+    request.gn.its_aid = aid::DEN;
     request.gn.transport_type = geonet::TransportType::GBC;
     request.gn.communication_profile = geonet::CommunicationProfile::ITS_G5;
 
