@@ -3,19 +3,27 @@
 Artery enables V2X simulations based on ETSI ITS-G5 protocols like GeoNetworking and BTP.
 Single vehicles can be equipped with multiple ITS-G5 services through Artery's middleware, which also provides common Facilities for these services.
 
-Artery is an extension to the [Veins framework](http://veins.car2x.org).
+Artery started as an extension of the [Veins framework](http://veins.car2x.org) but can be used independently nowadays.
 Please refer to its [documentation](http://veins.car2x.org/documentation) for details about Veins.
 
 ## Requirements
 You need a C++ Compiler with C++11 support, Boost and Vanetza libraries for building Artery along with Veins.
 Artery and Veins build upon the discrete event simulator [OMNeT++](https://omnetpp.org), which you need to obtain as well.
-We have tested Artery with OMNeT++ 5.1, GNU GCC 6.3 and Boost 1.62 successfully.
+We have tested Artery with OMNeT++ 5.2, GNU GCC 7.3 and Boost 1.65.1 successfully.
 Only [CMake](http://www.cmake.org) is the officially supported way for building Artery.
 
-Compatible versions of Veins and Vanetza are part of the Artery repository, see the *extern* subdirectory.
-These dependencies are managed with the help of [git-subrepo](https://github.com/ingydotnet/git-subrepo), i.e. you can just clone our Artery repository and get appropriate Veins and Vanetza sources automatically.
+Compatible versions of INET, Veins, Vanetza, and other components are managed as [git submodules](https://git-scm.com/docs/git-submodule) in the *extern* subdirectory.
+Please make sure to fetch these submodules when cloning our repository!
+
+    git clone --recurse-submodule https://github.com/riebl/artery.git
+
+Alternatively, you can also load these submodules after cloning:
+
+    git submodule update --init --recursive
+
 You might obtain more recent versions from their upstream repositories:
 
+- [INET](https://github.com/inet-framework/inet)
 - [Veins](https://github.com/sommer/veins)
 - [Vanetza](https://github.com/riebl/vanetza)
 
@@ -44,7 +52,7 @@ See the Vanetza [Readme](extern/vanetza/README.md) for details.
 
 ### INET
 As the next step, you need to build INET. Make sure you are in the root directory of Artery and simply call `make inet` there.
-INET's build dependencies are listed in the INET [Install manual](extern/inet/INSTALL).
+INET's build dependencies are listed in [its install manual](extern/inet/INSTALL).
 
 ### Artery
 Are you still with us? Congratulations, you are almost done!
