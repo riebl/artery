@@ -1,4 +1,5 @@
 add_artery_feature(envmod
+    CarIdentityRegistrant.cc
     EnvironmentModelObject.cc
     GlobalEnvironmentModel.cc
     InterdistanceMatrix.cc
