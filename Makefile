@@ -22,7 +22,7 @@ $(INET_DIR)/src/Makefile: $(INET_DIR)/.oppfeaturestate
 inet: $(INET_DIR)/src/Makefile
 	$(MAKE) -C $(INET_DIR)/src
 
-$(VEINS_DIR)/src/Makefile: $(VEINS_DIR)/.gitrepo
+$(VEINS_DIR)/src/Makefile: $(VEINS_DIR)/configure
 	cd $(VEINS_DIR); $(PYTHON) configure
 	$(MAKE) -C $(VEINS_DIR)/src depend
 
