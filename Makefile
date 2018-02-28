@@ -13,8 +13,10 @@ clean:
 	-$(MAKE) -C $(VEINS_DIR) cleanall
 	-rm -rf $(VANETZA_BUILD_DIR)
 
-$(INET_DIR)/src/Makefile: $(INET_DIR)/.gitrepo
+$(INET_DIR)/.oppfeaturestate: $(INET_DIR)/.oppfeatures
 	cd $(INET_DIR); $(PYTHON) inet_featuretool disable $(INET_DISABLE_FEATURES)
+
+$(INET_DIR)/src/Makefile: $(INET_DIR)/.oppfeaturestate
 	$(MAKE) -C $(INET_DIR) makefiles
 
 inet: $(INET_DIR)/src/Makefile
