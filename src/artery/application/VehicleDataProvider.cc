@@ -69,7 +69,7 @@ VehicleDataProvider::VehicleDataProvider() : VehicleDataProvider(rand())
 
 VehicleDataProvider::VehicleDataProvider(uint32_t id) :
 	mStationId(id), mStationType(StationType::UNKNOWN),
-	mConfidence(0.0), mLastUpdate(omnetpp::simTime()),
+	mConfidence(0.0), mLastUpdate(omnetpp::SimTime::getMaxTime()),
 	mCurvatureOutput(2), mCurvatureConfidenceOutput(2)
 {
 	while (!mCurvatureConfidenceOutput.full()) {
@@ -145,10 +145,7 @@ void VehicleDataProvider::update(const traci::VehicleController* controller)
 		(simTime() - mLastUpdate).inUnit(SIMTIME_MS) * milli * seconds
 	};
 
-	if (delta <= 0.0 * seconds) {
-		mSpeed = controller->getSpeed();
-		mHeading = convertMobilityAngle(controller->getHeading());
-	} else {
+	if (delta > 0.0 * seconds) {
 		using boost::units::abs;
 		auto new_speed = controller->getSpeed();
 		mAccel = (new_speed - mSpeed) / delta;
@@ -164,6 +161,13 @@ void VehicleDataProvider::update(const traci::VehicleController* controller)
 
 		mYawRate = diff_heading / delta;
 		mHeading = new_heading;
+	} else if (delta < 0.0 * seconds) {
+		// initialization
+		mSpeed = controller->getSpeed();
+		mHeading = convertMobilityAngle(controller->getHeading());
+	} else {
+		// update has been called for this time step already before
+		return;
 	}
 
 	mPosition = controller->getPosition();
