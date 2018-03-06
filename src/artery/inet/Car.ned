@@ -1,6 +1,7 @@
 package artery.inet;
 
 import artery.application.VehicleMiddleware;
+import artery.inet.AntennaMobility;
 import artery.nic.IRadioDriver;
 import inet.node.inet.INetworkNode;
 import inet.linklayer.contract.IWirelessNic;
@@ -16,6 +17,7 @@ module Car extends PlainVehicle like INetworkNode
         @statistic[posX](source="xCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
         @statistic[posY](source="yCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
         int numRadios = default(1);
+        bool withAntennaMobility = default(false);
         *.interfaceTableModule = default(absPath(".interfaceTable"));
 
     gates:
@@ -32,6 +34,13 @@ module Car extends PlainVehicle like INetworkNode
         wlan[numRadios]: <default("VanetNic")> like IWirelessNic {
             parameters:
                 @display("p=250,400,row,100;q=queue");
+                radio.antenna.mobilityModule = withAntennaMobility ? ".antennaMobility" : ".mobility";
+        }
+
+        antennaMobility: AntennaMobility if withAntennaMobility == true {
+            parameters:
+                @display("p=100,200");
+                mobilityModule = "^.mobility";
         }
 
         radioDriver[numRadios]: InetRadioDriver {
