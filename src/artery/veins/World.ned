@@ -47,7 +47,7 @@ network World
 
         storyboard: Storyboard if withStoryboard {
             parameters:
-                middlewareModule = default(".middleware");
+                middlewareModule = default(".appl.middleware");
                 @display("p=100,20");
         }
 
