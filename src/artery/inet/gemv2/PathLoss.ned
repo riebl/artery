@@ -20,6 +20,8 @@ module Gemv2 like IPathLoss
 
         NLOSb: <default("LogNormalShadowing")> like IPathLoss {
             @display("p=20,40");
+            alpha = default(2.9); // path loss exponent
+            sigma = default(0.0); // no flat fading
         }
 
         NLOSv: <default("NLOSv")> like IPathLoss {
