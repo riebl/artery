@@ -8,7 +8,7 @@ module Gemv2 like IPathLoss
         @class(artery::gemv2::PathLoss);
         *.traciModule = default("traci");
         bool withSmallScaleVariations = default(true);
-        double rangeLOS @unit(m) = default(1000 m);
+        double rangeLOS @unit(m) = default(500 m);
         double rangeNLOSv @unit(m) = default(400 m);
         double rangeNLOSb @unit(m) = default(300 m);
 
