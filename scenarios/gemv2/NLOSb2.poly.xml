@@ -1,0 +1,6 @@
+<additionals>
+    <poly id="build_w" type="building" color="230,230,230" fill="1" layer="1.00" shape="15.61,67.41 15.61,47.41 45.61,67.41 15.61,67.41"/>
+    <poly id="build_x" type="building" color="230,230,230" fill="1" layer="1.00" shape="1.11,81.09 -46.31,81.09 -46.31,114.48 1.11,114.48 1.11,81.09"/>
+    <poly id="build_y" type="building" color="230,230,230" fill="1" layer="1.00" shape="3.89,65.71 -2.53,25.46 -42.21,63.25 3.89,65.71"/>
+    <poly id="build_z" type="building" color="230,230,230" fill="1" layer="1.00" shape="21.09,82.53 28.27,82.53 28.27,112.19 21.09,112.19 21.09,82.53"/>
+</additionals>

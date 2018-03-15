@@ -1,4 +1,5 @@
 add_subdirectory(artery)
+add_subdirectory(gemv2)
 add_subdirectory(highway-police)
 if(WITH_STORYBOARD)
     add_subdirectory(storyboard)
