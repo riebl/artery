@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 find_package(OmnetPP 5.1 REQUIRED)
 include(cmake/ImportOppTarget.cmake)
+include(cmake/GenerateOppMessage.cmake)
 include(cmake/GetNedFolders.cmake)
 include(cmake/AddOppBuildTarget.cmake)
 include(cmake/AddOppRun.cmake)

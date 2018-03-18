@@ -1,43 +1,3 @@
-# generate sources for messages via opp_msgc
-macro(generate_opp_message _msg)
-    set(_msg_input messages/${_msg}.msg)
-    set(_msg_output
-        ${CMAKE_CURRENT_SOURCE_DIR}/messages/${_msg}_m.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/messages/${_msg}_m.h)
-    set(_msg_include ${PROJECT_SOURCE_DIR}/src/artery)
-    add_custom_command(OUTPUT ${_msg_output}
-        COMMAND ${OMNETPP_MSGC} ARGS -s _m.cc -I${_msg_include} ${_msg_input}
-        DEPENDS ${_msg_input}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        VERBATIM)
-    set_property(DIRECTORY APPEND PROPERTY GENERATED_OPP_MESSAGES ${_msg})
-endmacro()
-
-macro(clean_generated_opp_messages)
-    execute_process(COMMAND "${OMNETPP_MSGC}" ERROR_VARIABLE _output)
-    string(REGEX MATCH "Version: [0-9\.]+, build: [^ ,]+" _opp_msgc_identifier "${_output}")
-    if (NOT "${_opp_msgc_identifier}" STREQUAL "${OMNETPP_MSGC_IDENTIFIER}")
-        get_property(_generated_messages DIRECTORY PROPERTY GENERATED_OPP_MESSAGES)
-        foreach(_message IN LISTS _generated_messages)
-            file(REMOVE messages/${_message}_m.cc messages/${_message}_m.h)
-        endforeach()
-    endif()
-    set(OMNETPP_MSGC_IDENTIFIER ${_opp_msgc_identifier} CACHE INTERNAL "identification of OMNeT++ message compiler" FORCE)
-endmacro()
-variable_watch(OMNETPP_MSGC clean_generated_opp_messages)
-
-generate_opp_message(AsioData)
-generate_opp_message(ChannelLoadReport)
-generate_opp_message(GeoNetPacket)
-
-add_library(messages OBJECT
-    messages/AsioData_m.cc
-    messages/ChannelLoadReport_m.cc
-    messages/GeoNetPacket_m.cc)
-set_target_properties(messages PROPERTIES
-    POSITION_INDEPENDENT_CODE ON
-    INCLUDE_DIRECTORIES $<TARGET_PROPERTY:core,INCLUDE_DIRECTORIES>)
-
 find_package(Boost COMPONENTS date_time system REQUIRED)
 
 add_library(artery INTERFACE)
@@ -72,10 +32,13 @@ add_library(core SHARED
     utility/IdentityRegistry.cc
     utility/FilterRules.cc
     utility/Geometry.cc
-    $<TARGET_OBJECTS:messages>
 )
 target_link_libraries(artery INTERFACE core)
 add_library(Artery::Core ALIAS core)
+
+generate_opp_message(messages/AsioData.msg TARGET core)
+generate_opp_message(messages/ChannelLoadReport.msg TARGET core)
+generate_opp_message(messages/GeoNetPacket.msg TARGET core)
 
 set_target_properties(core PROPERTIES
     OUTPUT_NAME artery_core
