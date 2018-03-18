@@ -1,5 +1,5 @@
-find_program(OMNETPP_RUN NAMES opp_run opp_run_release PATHS ${OMNETPP_ROOT}/bin DOC "OMNeT++ opp_run executable")
-find_program(OMNETPP_RUN_DEBUG NAMES opp_run_dbg PATHS ${OMNETPP_ROOT}/bin DOC "OMNeT++ opp_run_dbg executable")
+find_program(OMNETPP_RUN NAMES opp_run_release opp_run PATHS ${OMNETPP_ROOT}/bin DOC "OMNeT++ opp_run executable")
+find_program(OMNETPP_RUN_DEBUG NAMES opp_run_dbg opp_run PATHS ${OMNETPP_ROOT}/bin DOC "OMNeT++ opp_run_dbg executable")
 include(CMakeParseArguments)
 
 function(_add_opp_run_libraries _target _output)
