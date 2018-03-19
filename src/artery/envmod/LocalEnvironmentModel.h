@@ -22,6 +22,7 @@ namespace artery
 
 class EnvironmentModelObject;
 class GlobalEnvironmentModel;
+class Middleware;
 class Sensor;
 class SensorDetection;
 
@@ -102,6 +103,7 @@ public:
 private:
     void initializeSensors();
 
+    Middleware* mMiddleware;
     GlobalEnvironmentModel* mGlobalEnvironmentModel;
     TrackedObjects mObjects;
     std::vector<Sensor*> mSensors;

@@ -13,10 +13,6 @@
 namespace artery
 {
 
-// forward declarations
-class GlobalEnvironmentModel;
-class LocalEnvironmentModel;
-
 class VehicleMiddleware : public Middleware
 {
 	public:
@@ -30,14 +26,11 @@ class VehicleMiddleware : public Middleware
 		void update() override;
 
 	private:
-		void initializeEnvironmentModel();
 		void initializeVehicleController();
 		void updatePosition();
 
 		traci::VehicleController* mVehicleController;
 		VehicleDataProvider mVehicleDataProvider;
-		GlobalEnvironmentModel* mGlobalEnvironmentModel;
-		LocalEnvironmentModel* mLocalEnvironmentModel;
 };
 
 } // namespace artery

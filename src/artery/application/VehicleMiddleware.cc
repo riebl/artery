@@ -5,8 +5,6 @@
  */
 
 #include "artery/application/VehicleMiddleware.h"
-#include "artery/envmod/LocalEnvironmentModel.h"
-#include "artery/envmod/GlobalEnvironmentModel.h"
 #include "artery/traci/ControllableVehicle.h"
 #include "artery/traci/MobilityBase.h"
 #include "inet/common/ModuleAccess.h"
@@ -23,7 +21,6 @@ void VehicleMiddleware::initialize(int stage)
 		findHost()->subscribe(MobilityBase::stateChangedSignal, this);
 		getFacilities().register_const(&mVehicleDataProvider);
 		initializeVehicleController();
-		initializeEnvironmentModel();
 	}
 
 	Middleware::initialize(stage);
@@ -83,19 +80,6 @@ void VehicleMiddleware::initializeVehicleController()
 	mVehicleController = mobility->getVehicleController();
 	ASSERT(mVehicleController);
 	getFacilities().register_mutable(mVehicleController);
-}
-
-void VehicleMiddleware::initializeEnvironmentModel()
-{
-#ifdef WITH_ENVMOD
-	mLocalEnvironmentModel = inet::findModuleFromPar<artery::LocalEnvironmentModel>(par("localEnvironmentModule"), findHost());
-	if (mLocalEnvironmentModel) {
-		mGlobalEnvironmentModel = inet::getModuleFromPar<artery::GlobalEnvironmentModel>(par("globalEnvironmentModule"), findHost());
-		Facilities& fac = getFacilities();
-		fac.register_mutable(mLocalEnvironmentModel);
-		fac.register_mutable(mGlobalEnvironmentModel);
-	}
-#endif
 }
 
 void VehicleMiddleware::receiveSignal(cComponent* component, simsignal_t signal, cObject* obj, cObject* details)

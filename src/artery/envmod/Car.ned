@@ -11,9 +11,6 @@ import artery.inet.Car;
 
 module Car extends artery.inet.Car
 {
-    parameters:
-        *.localEnvironmentModule = default(".environmentModel");
-
     submodules:
         environmentModel: LocalEnvironmentModel {
             @display("p=214,57");

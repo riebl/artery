@@ -38,6 +38,12 @@ void LocalEnvironmentModel::initialize(int stage)
     if (stage == 0) {
         mGlobalEnvironmentModel = inet::getModuleFromPar<GlobalEnvironmentModel>(par("globalEnvironmentModule"), this);
         mGlobalEnvironmentModel->subscribe(EnvironmentModelRefreshSignal, this);
+
+        auto vehicle = inet::findContainingNode(this);
+        mMiddleware = inet::getModuleFromPar<Middleware>(par("middlewareModule"), vehicle);
+        Facilities& fac = mMiddleware->getFacilities();
+        fac.register_mutable(mGlobalEnvironmentModel);
+        fac.register_mutable(this);
     } else if (stage == 1) {
         initializeSensors();
     }
@@ -95,9 +101,7 @@ void LocalEnvironmentModel::initializeSensors()
         cXMLElement* sensor_filters = sensor_cfg->getFirstChildWithTag("filters");
         bool sensor_applicable = true;
         if (sensor_filters) {
-            auto vehicle = inet::findContainingNode(this);
-            auto middleware = inet::getModuleFromPar<Middleware>(par("middlewareModule"), vehicle);
-            auto identity = middleware->getIdentity();
+            auto identity = mMiddleware->getIdentity();
             FilterRules rules(getRNG(0), identity);
             sensor_applicable = rules.applyFilterConfig(*sensor_filters);
         }
