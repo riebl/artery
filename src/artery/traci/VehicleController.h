@@ -41,6 +41,7 @@ public:
     void changeTarget(const std::string& edge);
 
     traci::LiteAPI& getLiteAPI() { return m_api; }
+    const traci::LiteAPI& getLiteAPI() const { return m_api; }
 
 private:
     std::string m_id;
