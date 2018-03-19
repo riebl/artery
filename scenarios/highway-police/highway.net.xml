@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<net version="0.27" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
+
+    <location netOffset="0.00,0.00" convBoundary="0.00,0.00,1000.00,0.00" origBoundary="-10000000000.000000,-10000000000.000000,10000000000.000000,10000000000.000000" projParameter="+proj=tmerc +ellps=WGS84 +datum=WGS84 +lat_0=49 +lon_0=11 +units=m +no_defs"/>
+
+    <edge id="hw0" from="hwStart" to="hwEnd" priority="1" type="highway">
+        <lane id="hw0_0" index="0" allow="private emergency authority army vip passenger hov taxi bus coach delivery truck trailer motorcycle evehicle" speed="33.33" length="1000.00" width="3.00" shape="1000.00,7.75 0.00,7.75"/>
+        <lane id="hw0_1" index="1" allow="private emergency authority army vip passenger hov taxi bus coach delivery truck trailer motorcycle evehicle" speed="33.33" length="1000.00" width="3.00" shape="1000.00,4.65 0.00,4.65"/>
+        <lane id="hw0_2" index="2" allow="private emergency authority army vip passenger hov taxi bus coach delivery truck trailer motorcycle evehicle" speed="33.33" length="1000.00" width="3.00" shape="1000.00,1.55 0.00,1.55"/>
+    </edge>
+
+    <junction id="hwEnd" type="dead_end" x="0.00" y="0.00" incLanes="hw0_0 hw0_1 hw0_2" intLanes="" shape="0.00,9.25 0.00,0.05"/>
+    <junction id="hwStart" type="dead_end" x="1000.00" y="0.00" incLanes="" intLanes="" shape="1000.00,0.05 1000.00,9.25"/>
+
+</net>
