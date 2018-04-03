@@ -31,12 +31,6 @@ network World extends artery.inet.World
                 @display("p=60,60");
         }
 
-        pgw: PgwStandardSimplified {
-            parameters:
-                @display("p=140,100");
-                nodeType = "PGW";
-        }
-
         eNodeB[numLteBaseStations]: eNodeB {
             parameters:
                 mobility.initFromDisplayString = false;
@@ -45,12 +39,18 @@ network World extends artery.inet.World
                 **.eNodeBCount = default(numLteBaseStations);
         }
 
+        pgw: PgwStandardSimplified {
+            parameters:
+                @display("p=220,100");
+                nodeType = "PGW";
+        }
+
         server: StandardHost {
-            @display("p=220,60;is=n;i=device/server");
+            @display("p=220,20;is=n;i=device/server");
         }
 
         router: Router {
-            @display("p=220,20;i=device/smallrouter");
+            @display("p=220,60;i=device/smallrouter");
         }
 
     connections allowunconnected:
