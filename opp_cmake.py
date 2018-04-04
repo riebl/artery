@@ -256,7 +256,7 @@ def find_opp_configfile():
 
 def which_opp_toolchain(configfile_path):
     with open(configfile_path, "r", encoding="utf-8") as configfile:
-        toolchain_pattern = re.compile(r"TOOLCHAIN_NAME = (\w+)")
+        toolchain_pattern = re.compile(r"TOOLCHAIN_NAME = (\S+)")
         for line in configfile:
             line_match = toolchain_pattern.match(line)
             if line_match:
