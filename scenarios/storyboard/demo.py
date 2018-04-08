@@ -6,7 +6,7 @@ import timeline
 
 print ("demo.py successfully imported...")
 
-def createStories():
+def createStories(board):
 	# Create coordinates needed for the PolygonCondition
 	coord0 = storyboard.Coord(0.0, 0.0)
 	coord1 = storyboard.Coord(3000.0, 0.0)
