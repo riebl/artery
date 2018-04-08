@@ -38,6 +38,7 @@ public:
     Velocity getMaxSpeed() const;
     void setMaxSpeed(Velocity);
     void setSpeed(Velocity);
+    void setSpeedFactor(double);
 
     Length getLength() const;
     Length getWidth() const;

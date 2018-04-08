@@ -89,6 +89,11 @@ void VehicleController::setSpeed(Velocity v)
     m_api.vehicle().setSpeed(m_id, v / si::meter_per_second);
 }
 
+void VehicleController::setSpeedFactor(double f)
+{
+    m_api.vehicle().setSpeedFactor(m_id, f);
+}
+
 auto VehicleController::getLength() const -> Length
 {
     return m_cache->get<VAR_LENGTH>() * si::meter;
