@@ -10,8 +10,6 @@ class PoliceService : public ItsG5Service
 
     protected:
         void initialize() override;
-
-    private:
         const traci::VehicleController* mVehicleController = nullptr;
 };
 
