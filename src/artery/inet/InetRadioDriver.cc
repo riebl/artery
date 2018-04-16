@@ -60,6 +60,7 @@ void InetRadioDriver::handleUpperMessage(cMessage* packet)
 	auto request = check_and_cast<GeoNetRequest*>(packet->removeControlInfo());
 	auto ctrl = new inet::Ieee802Ctrl();
 	ctrl->setDest(convert(request->destination_addr));
+	ctrl->setSourceAddress(convert(request->source_addr));
 	ctrl->setEtherType(request->ether_type.host());
 	switch (request->access_category) {
 		case vanetza::AccessCategory::VO:
