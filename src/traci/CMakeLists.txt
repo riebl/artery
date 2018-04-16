@@ -11,6 +11,7 @@ set(SOURCES
     MultiTypeModuleMapper.cc
     Position.cc
     PosixLauncher.cc
+    TestbedNodeManager.cc
     ValueUtils.cc
     VariableCache.cc
     sumo/foreign/tcpip/socket.cpp

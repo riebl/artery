@@ -38,6 +38,7 @@ protected:
     virtual void removeVehicle(const std::string&);
     virtual void updateVehicle(const std::string&);
     virtual void updateVehicle(const std::string&, VehicleSink*);
+    virtual omnetpp::cModule* createModule(const std::string&, omnetpp::cModuleType*);
     virtual omnetpp::cModule* addNodeModule(const std::string&, omnetpp::cModuleType*, NodeInitializer&);
     virtual void removeNodeModule(const std::string&);
     virtual omnetpp::cModule* getNodeModule(const std::string&);
@@ -52,9 +53,9 @@ private:
     ModuleMapper* m_mapper;
     TraCIBoundary m_boundary;
     SubscriptionManager* m_subscriptions;
+    unsigned m_nodeIndex;
     std::map<std::string, omnetpp::cModule*> m_nodes;
     std::map<std::string, VehicleSink*> m_vehicles;
-    unsigned m_nodeIndex;
     std::string m_vehicleSinkModule;
 };
 

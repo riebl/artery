@@ -126,10 +126,15 @@ void BasicNodeManager::updateVehicle(const std::string& id, VehicleSink* sink)
             vehicle->get<VAR_SPEED>() );
 }
 
-cModule* BasicNodeManager::addNodeModule(const std::string& id, cModuleType* type, NodeInitializer& init)
+cModule* BasicNodeManager::createModule(const std::string&, cModuleType* type)
 {
     ++m_nodeIndex;
-    cModule* module = type->create("node", getSystemModule(), m_nodeIndex, m_nodeIndex);
+    return type->create("node", getSystemModule(), m_nodeIndex, m_nodeIndex);
+}
+
+cModule* BasicNodeManager::addNodeModule(const std::string& id, cModuleType* type, NodeInitializer& init)
+{
+    cModule* module = createModule(id, type);
     module->finalizeParameters();
     module->buildInside();
     m_nodes[id] = module;
