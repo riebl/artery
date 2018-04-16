@@ -1,29 +1,25 @@
 #!/usr/bin/env python
 
-# reference variable to Storyboard Omnet++ module: board
 import storyboard
 import timeline
 
 print ("story.py successfully imported...")
 
 def createStories(board):
-    #create a timeCondition
+    # condition triggering after 10 simulated seconds
     timeCondition = storyboard.TimeCondition(timeline.seconds(10))
 
-    #choose cars where the story should be active (police car)
+    # select police car
     carSetCondition = storyboard.CarSetCondition("police0")
 
-    #create signal Effect
-    signalEffect = storyboard.SignalEffect("policeTrigger")
+    # create signal effect
+    signalEffect = storyboard.SignalEffect("siren on")
 
-    #combine conditions
+    # combine conditions
     condition = storyboard.AndCondition(timeCondition, carSetCondition)
 
-    #create signal Effect
-    signalEffect = storyboard.SignalEffect("policeTrigger")
-
-    #create story by linking effect and conditions together
+    # create story by linking effect and conditions together
     story = storyboard.Story(condition, [signalEffect])
 
-    #activate story
+    # activate story
     board.registerStory(story)
