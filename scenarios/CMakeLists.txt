@@ -1,6 +1,7 @@
 add_subdirectory(artery)
 if(WITH_STORYBOARD)
 add_subdirectory(storyboard)
+add_subdirectory(testbed)
 endif()
 
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mt-its2017/omnetpp.ini)

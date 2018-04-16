@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on Fri Nov  4 13:10:07 2016 by SUMO netconvert Version 0.26.0
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <type-files value="osmNetconvertUrbanDe.typ.xml"/>
+        <osm-files value="ingolstadt-north.osm"/>
+    </input>
+
+    <output>
+        <plain-output-prefix value="ingolstadt-north"/>
+    </output>
+
+    <projection>
+        <proj.utm value="true"/>
+    </projection>
+
+    <tls_building>
+        <tls.discard-simple value="true"/>
+        <tls.join value="true"/>
+        <tls.guess-signals value="true"/>
+    </tls_building>
+
+    <ramp_guessing>
+        <ramps.guess value="true"/>
+    </ramp_guessing>
+
+    <processing>
+        <no-turnarounds value="true"/>
+        <geometry.remove value="true"/>
+        <roundabouts.guess value="true"/>
+    </processing>
+
+</configuration>
+-->
+
+<types version="0.25" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/types_file.xsd">
+    <type id="highway.motorway" speed="27.78"/>
+    <type id="highway.motorway_link" speed="16.67"/>
+    <type id="highway.primary" speed="13.89"/>
+    <type id="highway.primary_link" speed="13.89"/>
+    <type id="highway.secondary" speed="13.89"/>
+    <type id="highway.secondary_link" speed="13.89"/>
+    <type id="highway.tertiary" speed="13.89"/>
+    <type id="highway.tertiary_link" speed="13.89"/>
+    <type id="highway.trunk" speed="13.89"/>
+    <type id="highway.trunk_link" speed="13.89"/>
+
+</types>

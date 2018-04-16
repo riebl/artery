@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- 
+194 Cars leaving the Computer Science Building and campus of the University of Erlangen-Nuremberg
+Copyright (C) 2008 Christoph Sommer <christoph.sommer@informatik.uni-erlangen.de>
+Licensed under the Creative Commons Attribution-ShareAlike 2.0 license <http://creativecommons.org/licenses/by-sa/2.0/>
+-->
+<routes>
+    <vType id="vtype0" accel="2.6" decel="4.5" length="2.5" minGap="2.5" sigma="0.1" tau="0.2" maxSpeed="14" color="1,1,0"/>
+    <route id="route0" edges="146973170 -266507543 266507533"/>
+
+    <flow id="flowNorthSouth" type="private" from="39697943" to="266507536" begin="0" period="0.5" number="5" departPos="random_free"/>
+
+</routes>
