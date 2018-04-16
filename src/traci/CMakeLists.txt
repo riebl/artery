@@ -11,6 +11,7 @@ set(SOURCES
     MultiTypeModuleMapper.cc
     Position.cc
     PosixLauncher.cc
+    TestbedModuleMapper.cc
     TestbedNodeManager.cc
     ValueUtils.cc
     VariableCache.cc

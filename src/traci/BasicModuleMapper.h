@@ -14,9 +14,10 @@ public:
     void initialize() override;
     omnetpp::cModuleType* vehicle(NodeManager&, const std::string&) override;
 
-private:
+protected:
     virtual bool equipVehicle();
 
+private:
     omnetpp::cModuleType* m_type;
     omnetpp::cRNG* m_rng;
     double m_penetration;
