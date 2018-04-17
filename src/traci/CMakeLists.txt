@@ -3,6 +3,7 @@ set(SOURCES
     API.cc
     BasicModuleMapper.cc
     BasicNodeManager.cc
+    BasicSubscriptionManager.cc
     Core.cc
     ConnectLauncher.cc
     Listener.cc
