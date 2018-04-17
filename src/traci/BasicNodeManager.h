@@ -4,6 +4,7 @@
 #include "traci/Boundary.h"
 #include "traci/NodeManager.h"
 #include "traci/Listener.h"
+#include "traci/SubscriptionManager.h"
 #include <omnetpp/ccomponent.h>
 #include <omnetpp/csimplemodule.h>
 #include <functional>
@@ -41,9 +42,6 @@ protected:
     virtual void removeNodeModule(const std::string&);
     virtual omnetpp::cModule* getNodeModule(const std::string&);
     virtual VehicleSink* getVehicleSink(omnetpp::cModule*);
-    virtual void subscribeVehicle(const std::string&);
-    virtual void unsubscribeVehicle(const std::string&);
-    virtual const std::vector<int>& vehicleSubscriptionVariables(const std::string&);
 
 private:
     void traciInit() override;
@@ -53,6 +51,7 @@ private:
     LiteAPI* m_api;
     ModuleMapper* m_mapper;
     TraCIBoundary m_boundary;
+    SubscriptionManager* m_subscriptions;
     std::map<std::string, omnetpp::cModule*> m_nodes;
     std::map<std::string, VehicleSink*> m_vehicles;
     unsigned m_nodeIndex;

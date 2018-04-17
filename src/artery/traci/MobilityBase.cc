@@ -5,13 +5,16 @@ using namespace traci;
 
 omnetpp::simsignal_t MobilityBase::stateChangedSignal = omnetpp::cComponent::registerSignal("mobilityStateChanged");
 
-void MobilityBase::initializeSink(LiteAPI* api, const std::string& id, const TraCIBoundary& boundary)
+void MobilityBase::initializeSink(LiteAPI* api, const std::string& id, const TraCIBoundary& boundary, std::shared_ptr<VehicleCache> cache)
 {
     ASSERT(api);
+    ASSERT(cache);
+    ASSERT(cache->getVehicleId() == id);
+    ASSERT(&cache->getLiteAPI() == api);
     mTraci = api;
     mVehicleId= id;
     mNetBoundary = boundary;
-    mController.reset(new VehicleController(id, *api));
+    mController.reset(new VehicleController(cache));
 }
 
 void MobilityBase::initializeVehicle(const TraCIPosition& traci_pos, TraCIAngle traci_heading, double traci_speed)

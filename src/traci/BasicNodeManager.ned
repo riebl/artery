@@ -10,4 +10,5 @@ simple BasicNodeManager like NodeManager
         string coreModule;
         string mapperModule;
         string vehicleSinkModule;
+        string subscriptionsModule;
 }

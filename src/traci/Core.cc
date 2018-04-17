@@ -2,6 +2,7 @@
 #include "traci/Launcher.h"
 #include "traci/LiteAPI.h"
 #include "traci/API.h"
+#include "traci/SubscriptionManager.h"
 #include <inet/common/ModuleAccess.h>
 
 Define_Module(traci::Core)
@@ -16,7 +17,7 @@ const simsignal_t closeSignal = omnetpp::cComponent::registerSignal("traci.close
 namespace traci
 {
 
-Core::Core() : m_traci(new API()), m_lite(new LiteAPI(*m_traci))
+Core::Core() : m_traci(new API()), m_lite(new LiteAPI(*m_traci)), m_subscriptions(nullptr)
 {
 }
 
@@ -28,6 +29,7 @@ void Core::initialize()
     m_launcher = inet::getModuleFromPar<Launcher>(par("launcherModule"), manager);
     m_stopping = par("selfStopping");
     scheduleAt(par("startTime"), m_connectEvent);
+    m_subscriptions = inet::getModuleFromPar<SubscriptionManager>(par("subscriptionsModule"), manager, false);
 }
 
 void Core::finish()
@@ -44,6 +46,9 @@ void Core::handleMessage(omnetpp::cMessage* msg)
 {
     if (msg == m_updateEvent) {
         m_traci->simulationStep();
+        if (m_subscriptions) {
+            m_subscriptions->step();
+        }
         emit(stepSignal, simTime());
 
         if (!m_stopping || m_traci->simulation.getMinExpectedNumber() > 0) {

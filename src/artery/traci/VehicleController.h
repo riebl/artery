@@ -4,6 +4,7 @@
 #include "artery/traci/VehicleType.h"
 #include "artery/utility/Geometry.h"
 #include "traci/LiteAPI.h"
+#include "traci/VariableCache.h"
 #include <vanetza/units/acceleration.hpp>
 #include <vanetza/units/angle.hpp>
 #include <vanetza/units/length.hpp>
@@ -13,6 +14,8 @@
 namespace traci
 {
 
+class VehicleCache;
+
 class VehicleController
 {
 public:
@@ -21,6 +24,7 @@ public:
     using Velocity = vanetza::units::Velocity;
 
     VehicleController(const std::string& id, traci::LiteAPI&);
+    VehicleController(std::shared_ptr<VehicleCache> cache);
 
     const std::string& getVehicleId() const;
     std::string getTypeId() const;
@@ -44,10 +48,13 @@ public:
     const traci::LiteAPI& getLiteAPI() const { return m_api; }
 
 private:
+    VehicleController(const std::string& id, traci::LiteAPI& api, std::shared_ptr<VehicleCache> cache);
+
     std::string m_id;
     traci::LiteAPI& m_api;
     traci::TraCIBoundary m_boundary;
     VehicleType m_type;
+    std::shared_ptr<VehicleCache> m_cache;
 };
 
 } // namespace traci

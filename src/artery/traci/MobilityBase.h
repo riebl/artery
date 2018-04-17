@@ -4,6 +4,7 @@
 #include "artery/traci/ControllableVehicle.h"
 #include "traci/LiteAPI.h"
 #include "traci/VehicleSink.h"
+#include "traci/VariableCache.h"
 #include <omnetpp/clistener.h>
 #include <memory>
 #include <string>
@@ -15,7 +16,7 @@ class MobilityBase :
 {
 public:
     // traci::VehicleSink interface
-    void initializeSink(traci::LiteAPI*, const std::string& id, const traci::TraCIBoundary&) override;
+    void initializeSink(traci::LiteAPI*, const std::string& id, const traci::TraCIBoundary&, std::shared_ptr<traci::VehicleCache>) override;
     void initializeVehicle(const traci::TraCIPosition&, traci::TraCIAngle, double speed) override;
     void updateVehicle(const traci::TraCIPosition&, traci::TraCIAngle, double speed) override;
 

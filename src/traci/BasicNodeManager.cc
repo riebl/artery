@@ -2,6 +2,7 @@
 #include "traci/Core.h"
 #include "traci/LiteAPI.h"
 #include "traci/ModuleMapper.h"
+#include "traci/VariableCache.h"
 #include "traci/VehicleSink.h"
 #include <inet/common/ModuleAccess.h>
 
@@ -9,6 +10,15 @@ using namespace omnetpp;
 
 namespace traci
 {
+namespace
+{
+static const std::set<int> sVehicleVariables {
+    VAR_POSITION, VAR_SPEED, VAR_ANGLE
+};
+static const std::set<int> sSimulationVariables {
+    VAR_DEPARTED_VEHICLES_IDS, VAR_ARRIVED_VEHICLES_IDS, VAR_TIME_STEP
+};
+} // namespace
 
 Define_Module(BasicNodeManager)
 
@@ -24,6 +34,7 @@ void BasicNodeManager::initialize()
     m_mapper = inet::getModuleFromPar<ModuleMapper>(par("mapperModule"), this);
     m_nodeIndex = 0;
     m_vehicleSinkModule = par("vehicleSinkModule").stringValue();
+    m_subscriptions = inet::getModuleFromPar<SubscriptionManager>(par("subscriptionsModule"), this);
 }
 
 void BasicNodeManager::finish()
@@ -36,14 +47,9 @@ void BasicNodeManager::finish()
 void BasicNodeManager::traciInit()
 {
     using namespace traci::constants;
-
-    static const std::vector<int> vars {
-        VAR_DEPARTED_VEHICLES_IDS,
-        VAR_ARRIVED_VEHICLES_IDS,
-        VAR_TIME_STEP
-    };
-    m_api->simulation().subscribe(CMD_SUBSCRIBE_SIM_VARIABLE, "", TraCITime::min(), TraCITime::max(), vars);
     m_boundary = m_api->simulation().getNetBoundary();
+    m_subscriptions->subscribeSimulationVariables(sSimulationVariables);
+    m_subscriptions->subscribeVehicleVariables(sVehicleVariables);
 
     // insert already running vehicles
     for (const std::string& id : m_api->vehicle().getIDList()) {
@@ -53,16 +59,16 @@ void BasicNodeManager::traciInit()
 
 void BasicNodeManager::traciStep()
 {
-    auto results = m_api->simulation().getSubscriptionResults("");
-    ASSERT(time_cast(results[VAR_TIME_STEP].scalar) == simTime());
+    auto sim_cache = m_subscriptions->getSimulationCache();
+    ASSERT(time_cast(sim_cache->get<VAR_TIME_STEP>()) == simTime());
 
-    const std::vector<std::string> departed = results[VAR_DEPARTED_VEHICLES_IDS].stringList;
+    const auto& departed = sim_cache->get<VAR_DEPARTED_VEHICLES_IDS>();
     EV_DETAIL << "TraCI: " << departed.size() << " vehicles departed" << endl;
     for (const auto& id : departed) {
         addVehicle(id);
     }
 
-    const std::vector<std::string> arrived = results[VAR_ARRIVED_VEHICLES_IDS].stringList;
+    const auto& arrived = sim_cache->get<VAR_ARRIVED_VEHICLES_IDS>();
     EV_DETAIL << "TraCI: " << arrived.size() << " vehicles arrived" << endl;
     for (const auto& id : arrived) {
         removeVehicle(id);
@@ -89,12 +95,11 @@ void BasicNodeManager::addVehicle(const std::string& id)
     NodeInitializer init = [this, &id](cModule* module) {
         VehicleSink* vehicle = getVehicleSink(module);
         auto& traci = m_api->vehicle();
-        vehicle->initializeSink(m_api, id, m_boundary);
+        vehicle->initializeSink(m_api, id, m_boundary, m_subscriptions->getVehicleCache(id));
         vehicle->initializeVehicle(traci.getPosition(id), TraCIAngle { traci.getAngle(id) }, traci.getSpeed(id));
         m_vehicles[id] = vehicle;
     };
 
-    subscribeVehicle(id);
     cModuleType* type = m_mapper->vehicle(*this, id);
     if (type != nullptr) {
         addNodeModule(id, type, init);
@@ -103,7 +108,6 @@ void BasicNodeManager::addVehicle(const std::string& id)
 
 void BasicNodeManager::removeVehicle(const std::string& id)
 {
-    unsubscribeVehicle(id);
     removeNodeModule(id);
     m_vehicles.erase(id);
 }
@@ -116,13 +120,10 @@ void BasicNodeManager::updateVehicle(const std::string& id)
 void BasicNodeManager::updateVehicle(const std::string& id, VehicleSink* sink)
 {
     ASSERT(sink);
-    auto vehicle = m_api->simulation().getSubscriptionResults(id);
-    if (vehicle.empty()) {
-        throw cRuntimeError("Vehicle subscription data are empty for %s", id.c_str());
-    }
-    sink->updateVehicle(vehicle[VAR_POSITION].position,
-            TraCIAngle {vehicle[VAR_ANGLE].scalar},
-            vehicle[VAR_SPEED].scalar);
+    auto vehicle = m_subscriptions->getVehicleCache(id);
+    sink->updateVehicle(vehicle->get<VAR_POSITION>(),
+            TraCIAngle { vehicle->get<VAR_ANGLE>() },
+            vehicle->get<VAR_SPEED>() );
 }
 
 cModule* BasicNodeManager::addNodeModule(const std::string& id, cModuleType* type, NodeInitializer& init)
@@ -178,30 +179,6 @@ VehicleSink* BasicNodeManager::getVehicleSink(cModule* node)
     }
 
     return mobility;
-}
-
-void BasicNodeManager::subscribeVehicle(const std::string& id)
-{
-    using namespace traci::constants;
-    const std::vector<int>& vars = vehicleSubscriptionVariables(id);
-    m_api->simulation().subscribe(CMD_SUBSCRIBE_VEHICLE_VARIABLE, id, TraCITime::min(), TraCITime::max(), vars);
-}
-
-void BasicNodeManager::unsubscribeVehicle(const std::string& id)
-{
-    using namespace traci::constants;
-    static const std::vector<int> vars {};
-    m_api->simulation().subscribe(CMD_SUBSCRIBE_VEHICLE_VARIABLE, id, TraCITime::min(), TraCITime::max(), vars);
-}
-
-const std::vector<int>& BasicNodeManager::vehicleSubscriptionVariables(const std::string& /* unused_id */)
-{
-    static const std::vector<int> vars {
-        VAR_POSITION,
-        VAR_SPEED,
-        VAR_ANGLE
-    };
-    return vars;
 }
 
 } // namespace traci

@@ -12,6 +12,7 @@ namespace traci
 class API;
 class Launcher;
 class LiteAPI;
+class SubscriptionManager;
 
 class Core : public omnetpp::cSimpleModule
 {
@@ -36,6 +37,7 @@ private:
     std::unique_ptr<API> m_traci;
     std::unique_ptr<LiteAPI> m_lite;
     bool m_stopping;
+    SubscriptionManager* m_subscriptions;
 };
 
 } // namespace traci
