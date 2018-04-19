@@ -94,3 +94,6 @@ if(WITH_ENVMOD)
     set_property(SOURCE application/VehicleMiddleware.cc APPEND PROPERTY COMPILE_DEFINITIONS "WITH_ENVMOD")
 endif()
 
+if(WITH_TESTBED)
+    add_subdirectory(testbed)
+endif()
