@@ -16,8 +16,9 @@ module VanetNic extends Ieee80211Nic
 
         radio.bandName = "5 GHz";
         radio.bandwidth = 10 MHz;
-        radio.channelNumber = 180;
-        radio.carrierFrequency = 5.9 GHz;
+        radio.channelNumber = default(180);
+        // carrierFrequency is automatically set by the radio
+        radio.carrierFrequency = default(5.9 GHz);
 
         mac.hcf.rateSelection.dataFrameBitrate = bitrate;
         mac.hcf.rateSelection.mgmtFrameBitrate = bitrate;
