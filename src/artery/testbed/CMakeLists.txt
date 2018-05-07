@@ -2,6 +2,7 @@ add_artery_feature(testbed
     GpsdServer.cc
     OtaIndicationQueue.cc
     OtaInterfaceLayer.cc
+    OtaInterfaceStub.cc
     TestbedContention.cc
     TestbedRadio.cc
     TestbedScheduler.cc
