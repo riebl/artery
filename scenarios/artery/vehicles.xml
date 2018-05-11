@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vehicles>
+    <vehicle type="artery.envmod.Car">
+        <penetration rate="0.5" />
+    </vehicle>
+    <vehicle type="artery.envmod.CarPlain">
+        <penetration rate="0.5" />
+    </vehicle>
+</vehicles>
