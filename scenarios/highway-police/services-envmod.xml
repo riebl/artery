@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<services>
+    <service type="PoliceServiceEnvmod">
+        <listener port="8001" />
+        <filters><name pattern="police0" /></filters>
+    </service>
+    <service type="ClearLaneService">
+        <listener port="8001" />
+        <filters><name pattern="police0" match="inverse" /></filters>
+    </service>
+</services>
