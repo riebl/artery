@@ -20,6 +20,9 @@ network World extends artery.inet.World
         environmentModel: GlobalEnvironmentModel {
             parameters:
                 @display("p=140,20");
+                identityRegistryModule = default("idRegistry");
+                traciModule = default("traci");
+                nodeMobilityModule = default(".mobility");
         }
 
         idRegistry: IdentityRegistry {
