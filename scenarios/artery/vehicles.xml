@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vehicles>
+    <vehicle type="artery.inet.Car" rate="0.5" />
+    <vehicle type="artery.inet.PlainVehicle" rate="0.5" />
+</vehicles>
