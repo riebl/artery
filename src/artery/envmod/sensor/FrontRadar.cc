@@ -14,10 +14,7 @@ Define_Module(FrontRadar);
 void FrontRadar::initialize()
 {
     RadarSensor::initialize();
-    mRadarConfig.fieldOfView.range = 80.0 * boost::units::si::meter;
-    mRadarConfig.fieldOfView.angle = 60.0 * boost::units::degree::degrees;
     mRadarConfig.sensorPosition = SensorPosition::FRONT;
-    mRadarConfig.numSegments = 10;
     mRadarConfig.egoID = getEgoId();
     mRadarConfig.sensorID = getId();
 }

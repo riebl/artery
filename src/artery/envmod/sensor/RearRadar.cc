@@ -13,10 +13,7 @@ Define_Module(RearRadar);
 void RearRadar::initialize()
 {
     RadarSensor::initialize();
-    mRadarConfig.fieldOfView.range = 80.0 * boost::units::si::meters;
-    mRadarConfig.fieldOfView.angle = 60.0 * boost::units::degree::degrees;
     mRadarConfig.sensorPosition = SensorPosition::BACK;
-    mRadarConfig.numSegments = 10;
     mRadarConfig.egoID = getEgoId();
     mRadarConfig.sensorID = getId();
 }

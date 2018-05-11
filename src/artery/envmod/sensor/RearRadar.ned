@@ -6,6 +6,10 @@
 
 package artery.envmod.sensor;
 
-simple RearRadar
+simple RearRadar like Radar
 {
+    parameters:
+        double fovRange @unit(m) = default(80.0 m);
+        double fovAngle = default(60.0); // degree
+        int numSegments = default(10);
 }
