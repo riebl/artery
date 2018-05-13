@@ -15,6 +15,7 @@ class PoliceServiceEnvmod : public PoliceService
 
     private:
         const artery::LocalEnvironmentModel* localEnvmod;
+        unsigned skippedTrigger;
 };
 
 #endif /* POLICESERVICEENVMOD_H_L3L0PGCV */
