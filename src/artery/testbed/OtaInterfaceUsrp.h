@@ -1,3 +1,9 @@
+/*
+ * Artery V2X Simulation Framework
+ * Copyright 2017-2018 Christina Obermaier
+ * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
+ */
+
 #ifndef ARTERY_OTAINTERFACE_USRP_H
 #define ARTERY_OTAINTERFACE_USRP_H
 
