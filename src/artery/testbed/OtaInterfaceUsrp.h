@@ -48,16 +48,15 @@ public:
     void sendMessage(const vanetza::MacAddress& source, const vanetza::MacAddress& destination, const vanetza::byte_view_range& data) override;
 
     /**
-     * Receives a MA_UNITDATA_indication which was scheduled by the ThreadSafeScheduler
-     * Creates a GeoNet packet which will be sent via the registeredModule
+     * Receives a GeonetPacket which was scheduled by the ThreadSafeScheduler
      *
-     * \param MA_UNITDATA_indication which should be sent to the simulation
+     * \param GeonetPacket which should be sent to the simulation
      */
     void receiveMessage(std::unique_ptr<GeoNetPacket>) override;
 
     /**
      * Places a MA_UNITDATA_indication in the OtaIndicationQueue
-     * This method is called from the USRP Connection if a MA_UNITDATA_indication was received by the USPR
+     * This method is called from the USRP Connection if a MA_UNITDATA_indication was received by the USRP
      * -> called when a message was sent by the DUT and received from the USRP
      */
     virtual void notifyQueue(const sea_v2x::MA_UNITDATA_indication&);
