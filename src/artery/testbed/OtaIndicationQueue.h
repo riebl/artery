@@ -12,13 +12,28 @@ namespace artery
 
 class OtaInterface;
 
+/**
+ * The OtaIndicationQueue can be used to dispatch messages between an OtaInterface and an OMNeT++ scheduler
+ */
 class OtaIndicationQueue
 {
 public:
     OtaIndicationQueue(OtaInterface* interface);
 
+    /**
+     * Called by the scheduler to wait for the next event
+     */
     virtual void waitFor(std::chrono::microseconds);
+
+    /**
+     * Called by the OtaInterface when a new GeoNetPacket must be scheduled by OMNeT++
+     * \param GeoNetPacket to send
+     */
     virtual void trigger(std::unique_ptr<GeoNetPacket>);
+
+    /**
+     * Called by the scheduler if it is faster than real time and all packets in the queue can be sent
+     */
     virtual void flushQueue();
 
 private:
