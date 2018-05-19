@@ -44,6 +44,11 @@ void BasicNodeManager::traciInit()
     };
     m_api->simulation().subscribe(CMD_SUBSCRIBE_SIM_VARIABLE, "", TraCITime::min(), TraCITime::max(), vars);
     m_boundary = m_api->simulation().getNetBoundary();
+
+    // insert already running vehicles
+    for (const std::string& id : m_api->vehicle().getIDList()) {
+        addVehicle(id);
+    }
 }
 
 void BasicNodeManager::traciStep()
