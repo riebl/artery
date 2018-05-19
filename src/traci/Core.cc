@@ -52,6 +52,7 @@ void Core::handleMessage(omnetpp::cMessage* msg)
     } else if (msg == m_connectEvent) {
         m_traci->connect(m_launcher->launch());
         checkVersion();
+        syncTime();
         emit(initSignal, simTime());
         m_updateInterval = time_cast(m_traci->simulation.getDeltaT());
         scheduleAt(simTime() + m_updateInterval, m_updateEvent);
@@ -74,6 +75,15 @@ void Core::checkVersion()
     } else if (expected != actual.first) {
         EV_FATAL << "Reported TraCI server version does not match expected version " << expected << endl;
         throw cRuntimeError("TraCI server version mismatch (expected: %i, actual: %i)", expected, actual.first);
+    }
+}
+
+void Core::syncTime()
+{
+    const omnetpp::SimTime now = simTime();
+    ASSERT(now.remainderForUnit(SIMTIME_MS).isZero());
+    if (!now.isZero()) {
+        m_traci->simulationStep(now.inUnit(SIMTIME_MS));
     }
 }
 

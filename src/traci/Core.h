@@ -25,6 +25,7 @@ public:
 
 protected:
     virtual void checkVersion();
+    virtual void syncTime();
 
 private:
     omnetpp::cMessage* m_connectEvent;
