@@ -63,9 +63,9 @@ bool FilterRules::applyFilterConfig(const omnetpp::cXMLElement& filter_cfg)
 {
     std::list<Filter> filters;
 
-    cXMLElement* name_filter_cfg = filter_cfg.getFirstChildWithTag("name");
-    if (name_filter_cfg) {
-        filters.emplace_back(createFilterNamePattern(*name_filter_cfg));
+    cXMLElementList name_filter_cfg_list = filter_cfg.getChildrenByTagName("name");
+    for (cXMLElement* cfg : name_filter_cfg_list) {
+        filters.emplace_back(createFilterNamePattern(*cfg));
     }
 
     cXMLElement* penetration_filter_cfg = filter_cfg.getFirstChildWithTag("penetration");
