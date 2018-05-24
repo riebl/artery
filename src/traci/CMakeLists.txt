@@ -6,6 +6,7 @@ set(SOURCES
     Core.cc
     ConnectLauncher.cc
     Listener.cc
+    MultiTypeModuleMapper.cc
     Position.cc
     PosixLauncher.cc
     sumo/foreign/tcpip/socket.cpp
