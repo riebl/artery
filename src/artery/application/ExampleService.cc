@@ -79,6 +79,8 @@ void ExampleService::trigger()
 	req.gn.transport_type = geonet::TransportType::SHB;
 	req.gn.traffic_class.tc_id(static_cast<unsigned>(dcc::Profile::DP3));
 	req.gn.communication_profile = geonet::CommunicationProfile::ITS_G5;
+	// use ITS-AID assigned for testing
+	req.gn.its_aid = 16480;
 
 	cPacket* packet = new cPacket("Example Service Packet");
 	packet->setByteLength(42);
