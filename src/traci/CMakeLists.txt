@@ -6,6 +6,7 @@ set(SOURCES
     Core.cc
     ConnectLauncher.cc
     Listener.cc
+    LiteAPI.cc
     MultiTypeModuleMapper.cc
     Position.cc
     PosixLauncher.cc
