@@ -11,6 +11,7 @@ set(SOURCES
     Position.cc
     PosixLauncher.cc
     ValueUtils.cc
+    VariableCache.cc
     sumo/foreign/tcpip/socket.cpp
     sumo/foreign/tcpip/storage.cpp
     sumo/utils/traci/TraCIAPI.cpp
