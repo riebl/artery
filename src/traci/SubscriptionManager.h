@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 
 namespace traci
@@ -27,6 +28,7 @@ public:
     virtual void subscribeVehicleVariables(const std::set<int>& vehicleVariables) = 0;
     virtual void subscribeSimulationVariables(const std::set<int>& simulationVariables) = 0;
     virtual const std::unordered_set<std::string>& getSubscribedVehicles() const = 0;
+    virtual const std::unordered_map<std::string, std::shared_ptr<VehicleCache>>& getAllVehicleCaches() const = 0;
     virtual std::shared_ptr<VehicleCache> getVehicleCache(const std::string& id) = 0;
     virtual std::shared_ptr<SimulationCache> getSimulationCache() = 0;
 };

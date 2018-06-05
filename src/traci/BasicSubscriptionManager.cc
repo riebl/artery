@@ -149,4 +149,9 @@ const std::unordered_set<std::string>& BasicSubscriptionManager::getSubscribedVe
     return m_subscribed_vehicles;
 }
 
+const std::unordered_map<std::string, std::shared_ptr<VehicleCache>>& BasicSubscriptionManager::getAllVehicleCaches() const
+{
+    return m_vehicle_caches;
+}
+
 } // namespace traci
