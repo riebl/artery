@@ -26,7 +26,7 @@ public:
     virtual void step() = 0;
     virtual void subscribeVehicleVariables(const std::set<int>& vehicleVariables) = 0;
     virtual void subscribeSimulationVariables(const std::set<int>& simulationVariables) = 0;
-    virtual const std::unordered_set<std::string>& getSubscribedVehicles() = 0;
+    virtual const std::unordered_set<std::string>& getSubscribedVehicles() const = 0;
     virtual std::shared_ptr<VehicleCache> getVehicleCache(const std::string& id) = 0;
     virtual std::shared_ptr<SimulationCache> getSimulationCache() = 0;
 };

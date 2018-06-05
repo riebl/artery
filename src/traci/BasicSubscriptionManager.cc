@@ -144,7 +144,7 @@ std::shared_ptr<SimulationCache> BasicSubscriptionManager::getSimulationCache()
     return m_sim_cache;
 }
 
-const std::unordered_set<std::string>& BasicSubscriptionManager::getSubscribedVehicles()
+const std::unordered_set<std::string>& BasicSubscriptionManager::getSubscribedVehicles() const
 {
     return m_subscribed_vehicles;
 }

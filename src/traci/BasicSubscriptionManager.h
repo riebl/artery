@@ -29,7 +29,7 @@ public:
     void step() override;
     void subscribeVehicleVariables(const std::set<int>& vehicleVariables) override;
     void subscribeSimulationVariables(const std::set<int>& simulationVariables) override;
-    const std::unordered_set<std::string>& getSubscribedVehicles() override;
+    const std::unordered_set<std::string>& getSubscribedVehicles() const override;
     std::shared_ptr<VehicleCache> getVehicleCache(const std::string& id) override;
     std::shared_ptr<SimulationCache> getSimulationCache() override;
 
