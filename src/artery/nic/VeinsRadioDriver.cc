@@ -1,10 +1,10 @@
 #include "artery/nic/VeinsRadioDriver.h"
 #include "artery/netw/GeoNetIndication.h"
 #include "artery/netw/GeoNetRequest.h"
-#include "artery/netw/GeoNetToMacControlInfo.h"
-#include "artery/mac/MacToGeoNetControlInfo.h"
-#include "artery/mac/AccessCategoriesVanetza.h"
-#include "artery/messages/ChannelLoadReport_m.h"
+#include "veins/base/utils/FindModule.h"
+#include "veins/base/utils/SimpleAddress.h"
+#include "veins/modules/messages/WaveShortMessage_m.h"
+#include "veins/modules/utility/Consts80211p.h"
 
 Register_Class(VeinsRadioDriver)
 
@@ -38,29 +38,62 @@ vanetza::MacAddress convert(LAddress::L2Type addr)
     }
 }
 
+int user_priority(vanetza::AccessCategory ac)
+{
+    using AC = vanetza::AccessCategory;
+    int up = 0;
+    switch (ac) {
+        case AC::BK:
+            up = 1;
+            break;
+        case AC::BE:
+            up = 3;
+            break;
+        case AC::VI:
+            up = 5;
+            break;
+        case AC::VO:
+            up = 7;
+            break;
+    }
+    return up;
+}
+
+const simsignal_t channelBusySignal = cComponent::registerSignal("sigChannelBusy");
+
 } // namespace
 
 vanetza::MacAddress VeinsRadioDriver::getMacAddress()
 {
-    return vanetza::create_mac_address(this->getId());
+    // Mac1609_4 uses index of host as MAC address
+    return vanetza::create_mac_address(mHost->getIndex());
 }
 
 void VeinsRadioDriver::initialize()
 {
     RadioDriverBase::initialize();
+    mHost = FindModule<>::findHost(this);
+    mHost->subscribe(channelBusySignal, this);
+
     mLowerLayerOut = gate("lowerLayerOut");
     mLowerLayerIn = gate("lowerLayerIn");
-    mLowerControlIn = gate("lowerControlIn");
+
+    mChannelLoadMeasurements.reset();
+    mChannelLoadReport = new cMessage("report channel load");
+    mChannelLoadReportInterval = par("channelLoadReportInterval");
+    scheduleAt(simTime() + mChannelLoadReportInterval, mChannelLoadReport);
 }
 
 void VeinsRadioDriver::handleMessage(cMessage* msg)
 {
-    if (RadioDriverBase::isMiddlewareRequest(msg)) {
+    if (msg == mChannelLoadReport) {
+        double channel_load = mChannelLoadMeasurements.channel_load().fraction();
+        emit(RadioDriverBase::ChannelLoadSignal, channel_load);
+        scheduleAt(simTime() + mChannelLoadReportInterval, mChannelLoadReport);
+    } else if (RadioDriverBase::isMiddlewareRequest(msg)) {
         handleUpperMessage(msg);
     } else if (msg->getArrivalGate() == mLowerLayerIn) {
         handleLowerMessage(msg);
-    } else if (msg->getArrivalGate() == mLowerControlIn) {
-        handleLowerControl(msg);
     } else {
         throw cRuntimeError("unexpected message");
     }
@@ -68,32 +101,37 @@ void VeinsRadioDriver::handleMessage(cMessage* msg)
 
 void VeinsRadioDriver::handleLowerMessage(cMessage* packet)
 {
-    auto info = check_and_cast<MacToGeoNetControlInfo*>(packet->removeControlInfo());
+    auto wsm = check_and_cast<WaveShortMessage*>(packet);
+    auto gn = wsm->decapsulate();
     auto* indication = new GeoNetIndication();
-    indication->source = convert(info->source_addr);
-    indication->destination = convert(info->destination_addr);
-    packet->setControlInfo(indication);
-    delete info;
+    indication->source = convert(wsm->getSenderAddress());
+    indication->destination = convert(wsm->getRecipientAddress());
+    gn->setControlInfo(indication);
+    delete wsm;
 
-    indicatePacket(packet);
-}
-
-void VeinsRadioDriver::handleLowerControl(cMessage* msg)
-{
-    auto channelLoadReport = check_and_cast<ChannelLoadReport*>(msg);
-    double channelLoad = channelLoadReport->getChannelLoad().fraction();
-    emit(RadioDriverBase::ChannelLoadSignal, channelLoad);
-    delete msg;
+    indicatePacket(gn);
 }
 
 void VeinsRadioDriver::handleUpperMessage(cMessage* packet)
 {
     auto request = check_and_cast<GeoNetRequest*>(packet->removeControlInfo());
-    auto ctrl = new GeoNetToMacControlInfo();
-    ctrl->access_category = edca::map(request->access_category);
-    ctrl->destination_addr = convert(request->destination_addr);
-    ctrl->source_addr = convert(request->source_addr);
-    packet->setControlInfo(ctrl);
+    auto wsm = new WaveShortMessage();
+    wsm->encapsulate(check_and_cast<cPacket*>(packet));
+    wsm->setSenderAddress(convert(request->source_addr));
+    wsm->setRecipientAddress(convert(request->destination_addr));
+    wsm->setUserPriority(user_priority(request->access_category));
+    wsm->setChannelNumber(Channels::CCH);
 
-    send(packet, mLowerLayerOut);
+    delete request;
+    send(wsm, mLowerLayerOut);
+}
+
+void VeinsRadioDriver::receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t signal, bool busy, omnetpp::cObject*)
+{
+    ASSERT(signal == channelBusySignal);
+    if (busy) {
+        mChannelLoadMeasurements.busy();
+    } else {
+        mChannelLoadMeasurements.idle();
+    }
 }

@@ -27,8 +27,6 @@ module ApplicationLayer like IBaseApplLayer
 	connections allowunconnected:
 		lowerLayerIn --> radioDriver.lowerLayerIn;
 		lowerLayerOut <-- radioDriver.lowerLayerOut;
-		lowerControlIn --> radioDriver.lowerControlIn;
-		lowerControlOut <-- radioDriver.lowerControlOut;
 
 		middleware.radioDriverIn <-- radioDriver.middleware$o;
 		middleware.radioDriverOut --> radioDriver.middleware$i;
