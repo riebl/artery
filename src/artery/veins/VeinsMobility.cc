@@ -5,17 +5,18 @@ Define_Module(VeinsMobility)
 
 void VeinsMobility::initialize(int stage)
 {
-    BaseMobility::initialize(stage);
     if (stage == 0) {
         WATCH(mVehicleId);
         WATCH(mPosition);
         WATCH(mDirection);
         WATCH(mSpeed);
     } else if (stage == 1) {
-        mPosition = move.getStartPos();
-        mDirection = move.getDirection();
-        mSpeed = move.getSpeed();
+        mPosition.z = move.getStartPos().z;
+        move.setStart(mPosition);
+        move.setSpeed(mSpeed);
+        move.setDirectionByVector(mDirection);
     }
+    BaseMobility::initialize(stage);
 }
 
 void VeinsMobility::initialize(const Position& pos, Angle heading, double speed)
