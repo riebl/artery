@@ -46,10 +46,9 @@ private:
     void traciStep() override;
     void traciClose() override;
 
-    void subscribeVehicle(const std::string &id);
-    void unsubscribeVehicle(const std::string &id);
-    void addVehicle(const std::string &id);
-    void deleteVehicle(const std::string &id);
+    void subscribeVehicle(const std::string& id);
+    void unsubscribeVehicle(const std::string& id);
+    void updateVehicleSubscription(const std::string& id, const std::vector<int>& vars);
 
     LiteAPI* m_api;
     std::unordered_set<std::string> m_subscribed_vehicles;

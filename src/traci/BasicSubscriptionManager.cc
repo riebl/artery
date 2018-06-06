@@ -46,6 +46,11 @@ void BasicSubscriptionManager::traciInit()
         VAR_TIME_STEP
     };
     subscribeSimulationVariables(vars);
+
+    // subscribe already running vehicles
+    for (const std::string& id : m_api->vehicle().getIDList()) {
+        subscribeVehicle(id);
+    }
 }
 
 void BasicSubscriptionManager::traciStep()
@@ -56,27 +61,22 @@ void BasicSubscriptionManager::traciClose()
 {
 }
 
-void BasicSubscriptionManager::addVehicle(const std::string &id)
+void BasicSubscriptionManager::subscribeVehicle(const std::string& id)
 {
+    updateVehicleSubscription(id, m_vehicle_vars);
     m_subscribed_vehicles.insert(id);
-    subscribeVehicle(id);
 }
 
-void BasicSubscriptionManager::deleteVehicle(const std::string &id)
+void BasicSubscriptionManager::unsubscribeVehicle(const std::string& id)
 {
-    unsubscribeVehicle(id);
+    static const std::vector<int> empty;
+    updateVehicleSubscription(id, empty);
     m_subscribed_vehicles.erase(id);
 }
 
-void BasicSubscriptionManager::subscribeVehicle(const std::string &id)
+void BasicSubscriptionManager::updateVehicleSubscription(const std::string& id, const std::vector<int>& vars)
 {
-    m_api->simulation().subscribe(CMD_SUBSCRIBE_VEHICLE_VARIABLE, id, TraCITime::min(), TraCITime::max(), m_vehicle_vars);
-}
-
-void BasicSubscriptionManager::unsubscribeVehicle(const std::string &id)
-{
-    static const std::vector<int> empty;
-    m_api->simulation().subscribe(CMD_SUBSCRIBE_SIM_VARIABLE, id, TraCITime::min(), TraCITime::max(), empty);
+    m_api->simulation().subscribe(CMD_SUBSCRIBE_VEHICLE_VARIABLE, id, TraCITime::min(), TraCITime::max(), vars);
 }
 
 void BasicSubscriptionManager::subscribeVehicleVariables(const std::set<int>& add_vars)
@@ -88,7 +88,7 @@ void BasicSubscriptionManager::subscribeVehicleVariables(const std::set<int>& ad
 
     if (m_vehicle_vars.size() != tmp_vars.size()) {
         for (const std::string& vehicle : m_subscribed_vehicles) {
-            subscribeVehicle(vehicle);
+            updateVehicleSubscription(vehicle, m_vehicle_vars);
         }
     }
 }
@@ -115,12 +115,12 @@ void BasicSubscriptionManager::step()
 
     const auto& arrivedVehicles = m_sim_cache->get<VAR_ARRIVED_VEHICLES_IDS>();
     for (const auto& id : arrivedVehicles) {
-        deleteVehicle(id);
+        unsubscribeVehicle(id);
     }
 
     const auto& departedVehicles = m_sim_cache->get<VAR_DEPARTED_VEHICLES_IDS>();
     for (const auto& id : departedVehicles) {
-        addVehicle(id);
+        subscribeVehicle(id);
     }
 
     for (const std::string& vehicle : m_subscribed_vehicles) {
