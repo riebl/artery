@@ -20,9 +20,14 @@ void LocalDynamicMap::updateAwareness(const CaObject& obj)
     auto tai = mTimer.reconstructMilliseconds(msg->cam.generationDeltaTime);
     const omnetpp::SimTime expiry = mTimer.getTimeFor(tai) + lifetime;
 
-    AwarenessEntry entry(obj, expiry);
-    assert(entry.expiry > omnetpp::simTime() && entry.expiry < omnetpp::simTime() + 2.0);
+    const auto now = omnetpp::simTime();
+    if (expiry < now || expiry > now + 2 * lifetime) {
+        EV_STATICCONTEXT
+        EV_WARN << "Expiry of received CAM is out of bounds";
+        return;
+    }
 
+    AwarenessEntry entry(obj, expiry);
     auto found = mCaMessages.find(msg->header.stationID);
     if (found != mCaMessages.end()) {
         found->second = std::move(entry);
