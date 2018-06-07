@@ -19,8 +19,6 @@
 #include "artery/application/Middleware.h"
 #include "artery/application/ItsG5PromiscuousService.h"
 #include "artery/application/ItsG5Service.h"
-#include "artery/mac/AccessCategories.h"
-#include "artery/mac/AccessCategoriesVanetza.h"
 #include "artery/messages/GeoNetPacket_m.h"
 #include "artery/netw/GeoNetIndication.h"
 #include "artery/netw/GeoNetRequest.h"

@@ -54,11 +54,7 @@ target_link_libraries(core PUBLIC Vanetza::vanetza)
 if(TARGET veins)
     message(STATUS "Enable Veins integration")
     set_property(TARGET core APPEND PROPERTY SOURCES
-        mac/CarrierSensing.cc
         mac/ChannelLoadMeasurements.cc
-        mac/Edca.cc
-        mac/EdcaQueue.cc
-        mac/MacItsG5.cc
         nic/VeinsRadioDriver.cc
         veins/VeinsConnectionManager.cc
         veins/VeinsMobility.cc
