@@ -117,7 +117,6 @@ class Middleware :
 		vanetza::geonet::MIB mGeoMib;
 		std::unique_ptr<vanetza::geonet::Router> mGeoRouter;
 		vanetza::btp::PortDispatcher mBtpPortDispatcher;
-		boost::posix_time::ptime mTimebase;
 		omnetpp::SimTime mUpdateInterval;
 		omnetpp::cMessage* mUpdateMessage;
 		omnetpp::cMessage* mUpdateRuntimeMessage;
