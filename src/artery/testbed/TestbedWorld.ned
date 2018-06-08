@@ -5,7 +5,7 @@ import artery.inet.World;
 network TestbedWorld extends World
 {
     submodules:
-        otaInterface: <default("OtaInterfaceUsrp")> like OtaInterface {
+        otaInterface: <default("OtaInterfaceStub")> like OtaInterface {
             parameters:
                 @display("p=70,40");
         }
