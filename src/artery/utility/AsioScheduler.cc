@@ -68,6 +68,8 @@ cEvent* AsioScheduler::takeNextEvent()
 		cEvent* event = sim->getFES()->peekFirst();
 		if (event) {
 			if (event->isStale()) {
+				cEvent* tmp = sim->getFES()->removeFirst();
+				ASSERT(tmp == event);
 				delete event;
 			} else {
 				m_run_until = m_reference + steady_clock_duration(event->getArrivalTime());
