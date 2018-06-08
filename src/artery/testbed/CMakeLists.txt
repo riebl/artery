@@ -1,5 +1,6 @@
 add_artery_feature(testbed
     OtaIndicationQueue.cc
+    OtaInterfaceLayer.cc
     TestbedContention.cc
     TestbedRadio.cc
     TestbedScheduler.cc
