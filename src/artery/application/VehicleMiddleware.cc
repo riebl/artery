@@ -21,6 +21,9 @@ void VehicleMiddleware::initialize(int stage)
 		findHost()->subscribe(MobilityBase::stateChangedSignal, this);
 		getFacilities().register_const(&mVehicleDataProvider);
 		initializeVehicleController();
+	} else if (stage == 1) {
+		mVehicleDataProvider.update(mVehicleController);
+		updatePosition();
 	}
 
 	Middleware::initialize(stage);
