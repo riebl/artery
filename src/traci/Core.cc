@@ -21,6 +21,12 @@ Core::Core() : m_traci(new API()), m_lite(new LiteAPI(*m_traci)), m_subscription
 {
 }
 
+Core::~Core()
+{
+    cancelAndDelete(m_connectEvent);
+    cancelAndDelete(m_updateEvent);
+}
+
 void Core::initialize()
 {
     m_connectEvent = new omnetpp::cMessage("connect TraCI");
@@ -38,8 +44,6 @@ void Core::finish()
     if (!m_connectEvent->isScheduled()) {
         m_traci->close();
     }
-    cancelAndDelete(m_connectEvent);
-    cancelAndDelete(m_updateEvent);
 }
 
 void Core::handleMessage(omnetpp::cMessage* msg)

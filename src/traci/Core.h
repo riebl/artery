@@ -18,6 +18,7 @@ class Core : public omnetpp::cSimpleModule
 {
 public:
     Core();
+    virtual ~Core();
 
     void initialize() override;
     void finish() override;
