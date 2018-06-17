@@ -22,11 +22,15 @@ void BlackIceReporter::initialize()
     auto mw = inet::getModuleFromPar<artery::Middleware>(par("middlewareModule"), this);
     mw->subscribe(storyboardSignal, this);
     vehicleController = mw->getFacilities().get_const_ptr<traci::VehicleController>();
+
+    tractionLosses = 0;
+    WATCH(tractionLosses);
 }
 
 void BlackIceReporter::finish()
 {
     socket.close();
+    recordScalar("traction losses", tractionLosses);
 }
 
 void BlackIceReporter::receiveSignal(cComponent*, simsignal_t sig, cObject* obj, cObject*)
@@ -34,6 +38,7 @@ void BlackIceReporter::receiveSignal(cComponent*, simsignal_t sig, cObject* obj,
     if (sig == storyboardSignal) {
         auto sigobj = check_and_cast<StoryboardSignal*>(obj);
         if (sigobj->getCause() == "traction loss") {
+            ++tractionLosses;
             sendReport();
         }
     }

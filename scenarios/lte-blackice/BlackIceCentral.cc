@@ -31,6 +31,9 @@ void BlackIceCentral::finish()
 {
     reportSocket.close();
     querySocket.close();
+
+    recordScalar("numReceivedWarnings", numReceivedWarnings);
+    recordScalar("numReceivedQueries", numReceivedQueries);
 }
 
 void BlackIceCentral::handleMessage(cMessage* msg)

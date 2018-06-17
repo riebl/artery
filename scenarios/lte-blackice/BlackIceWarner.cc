@@ -36,6 +36,7 @@ void BlackIceWarner::initialize()
 void BlackIceWarner::finish()
 {
     socket.close();
+    recordScalar("numWarningsCentral", numWarningsCentral);
 }
 
 void BlackIceWarner::handleMessage(cMessage* msg)

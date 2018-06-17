@@ -54,11 +54,15 @@ void BlackIceWarnerD2D::initialize(int stage)
     warningDuration = par("warningDuration");
     numWarningsPeer = 0;
     WATCH(numWarningsPeer);
+    tractionLosses = 0;
+    WATCH(tractionLosses);
 }
 
 void BlackIceWarnerD2D::finish()
 {
     socket.close();
+    recordScalar("numWarningsPeer", numWarningsPeer);
+    recordScalar("traction losses", tractionLosses);
 }
 
 void BlackIceWarnerD2D::receiveSignal(cComponent*, simsignal_t sig, cObject* obj, cObject*)
@@ -66,6 +70,7 @@ void BlackIceWarnerD2D::receiveSignal(cComponent*, simsignal_t sig, cObject* obj
     if (sig == storyboardSignal) {
         auto sigobj = check_and_cast<StoryboardSignal*>(obj);
         if (sigobj->getCause() == "traction loss") {
+            ++tractionLosses;
             sendReport();
         }
     }

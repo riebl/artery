@@ -20,6 +20,7 @@ private:
 
     inet::UDPSocket socket;
     const traci::VehicleController* vehicleController = nullptr;
+    unsigned tractionLosses;
 };
 
 #endif /* BLACKICEREPORTER_H_COLABPR9 */

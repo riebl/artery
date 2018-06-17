@@ -29,6 +29,7 @@ private:
     inet::L3Address mcastAddress;
     int mcastPort;
     int numWarningsPeer;
+    int tractionLosses;
     double warningRadius;
     double warningDuration;
     traci::VehicleController* vehicleController = nullptr;
