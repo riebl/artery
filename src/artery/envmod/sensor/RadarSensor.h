@@ -32,7 +32,7 @@ protected:
     class Updatable
     {
     public:
-        T& operator=(T&& t) { mValue = std::move(t); mFlag = true; }
+        void operator=(T&& t) { mValue = std::move(t); mFlag = true; }
         operator bool() const { bool tmp = mFlag; mFlag = false; return tmp; }
         const T* operator->() const { return &mValue; }
         const T& operator*() const { return mValue; }
