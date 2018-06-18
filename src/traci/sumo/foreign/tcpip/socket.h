@@ -61,18 +61,18 @@ namespace tcpip
 	private:
 		std::string what_;
 	public:
-		SocketException( std::string what ) throw() 
+		SocketException( std::string what )
 		{
 			what_ = what;
 			//std::cerr << "tcpip::SocketException: " << what << std::endl << std::flush;
 		}
 
-		virtual const char* what() const throw()
+		virtual const char* what() const noexcept
 		{
 			return what_.c_str();
 		}
 
-		~SocketException() throw() {}
+		~SocketException() {}
 	};
 
 	class Socket
@@ -89,21 +89,21 @@ namespace tcpip
 		~Socket();
 
 		/// Connects to host_:port_
-		void connect() throw( SocketException );
+		void connect();
 
 		/// Wait for a incoming connection to port_
-        Socket* accept(const bool create = false) throw(SocketException);
+        Socket* accept(const bool create = false);
 
-		void send( const std::vector<unsigned char> &buffer) throw( SocketException );
-		void sendExact( const Storage & ) throw( SocketException );
+		void send( const std::vector<unsigned char> &buffer);
+		void sendExact( const Storage & );
 		/// Receive up to \p bufSize available bytes from Socket::socket_
-		std::vector<unsigned char> receive( int bufSize = 2048 ) throw( SocketException );
+		std::vector<unsigned char> receive( int bufSize = 2048 );
 		/// Receive a complete TraCI message from Socket::socket_
-		bool receiveExact( Storage &) throw( SocketException );
+		bool receiveExact( Storage &);
 		void close();
 		int port();
-		void set_blocking(bool) throw( SocketException );
-		bool is_blocking() throw();
+		void set_blocking(bool);
+		bool is_blocking();
 		bool has_client_connection() const;
 
 		// If verbose, each send and received data is written to stderr
@@ -123,12 +123,12 @@ namespace tcpip
 
 	private:
 		void init();
-		void BailOnSocketError( std::string ) const throw( SocketException );
+		void BailOnSocketError( std::string ) const;
 #ifdef WIN32
 		std::string GetWinsockErrorString(int err) const;
 #endif
 		bool atoaddr(std::string, struct sockaddr_in& addr);
-		bool datawaiting(int sock) const throw();
+		bool datawaiting(int sock) const;
 
 		std::string host_;
 		int port_;
