@@ -44,6 +44,7 @@ class ItsG5BaseService :
 		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::DownPacket>);
 		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::UpPacket>) override;
 		Facilities& getFacilities();
+		const Facilities& getFacilities() const;
 		port_type getPortNumber() const;
 		omnetpp::cModule* findHost();
 		void subscribe(const omnetpp::simsignal_t&);

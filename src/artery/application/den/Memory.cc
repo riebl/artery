@@ -4,7 +4,7 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
-#include "artery/application/DenmMemory.h"
+#include "artery/application/den/Memory.h"
 #include "artery/application/Timer.h"
 #include <omnetpp/csimulation.h>
 
@@ -12,7 +12,7 @@ using omnetpp::SimTime;
 
 namespace artery
 {
-namespace denm
+namespace den
 {
 
 ActionID::ActionID(const ActionID_t& asn1) :
@@ -99,12 +99,12 @@ void Memory::received(const DenmObject& denm)
     auto& idx_action_id = m_container.get<by_action_id>();
     auto found = idx_action_id.find(action_id);
     if (found == idx_action_id.end()) {
-        m_container.insert(denm::Reception {denm});
+        m_container.insert(den::Reception {denm});
     } else {
         const ManagementContainer_t& stored = (*found->message)->denm.management;
         const ManagementContainer_t& received = denm.asn1()->denm.management;
         if (stored.referenceTime < received.referenceTime) {
-            idx_action_id.replace(found, denm::Reception {denm});
+            idx_action_id.replace(found, den::Reception {denm});
         }
     }
 }
@@ -129,5 +129,5 @@ auto Memory::messages(CauseCode cause_code) const -> boost::iterator_range<cause
     return boost::make_iterator_range(equal_cause_code);
 }
 
-} // namespace denm
+} // namespace den
 } // namespace artery

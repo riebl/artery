@@ -141,6 +141,7 @@ void Middleware::initializeMiddleware()
 	mFacilities.register_mutable(&mDccScheduler);
 	mFacilities.register_const(&mTimer);
 	mFacilities.register_mutable(&mLocalDynamicMap);
+	mFacilities.register_const(&mIdentity);
 
 	mRuntime.reset(mTimer.getCurrentTime());
 	mUpdateInterval = par("updateInterval").doubleValue();

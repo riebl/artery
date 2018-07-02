@@ -39,6 +39,12 @@ Facilities& ItsG5BaseService::getFacilities()
 	return m_middleware->getFacilities();
 }
 
+const Facilities& ItsG5BaseService::getFacilities() const
+{
+	assert(m_middleware);
+	return m_middleware->getFacilities();
+}
+
 bool ItsG5BaseService::requiresListener() const
 {
 	return true;

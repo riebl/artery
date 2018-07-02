@@ -3,14 +3,7 @@
 	<service type="artery.application.CaService">
 		<listener port="2001" />
 	</service>
-	<service type="artery.application.DenmService">
+	<service type="artery.application.DenService">
 		<listener port="2002" />
-	</service>
-	<service type="artery.application.ExampleService">
-		<listener port="4711" />
-		<filters>
-			<name pattern="flow0\.1.*" />
-			<penetration rate="0.1" />
-		</filters>
 	</service>
 </services>

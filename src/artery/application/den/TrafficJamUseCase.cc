@@ -1,17 +1,19 @@
 /*
  * Artery V2X Simulation Framework
- * Copyright 2016-2017 Raphael Riebl
+ * Copyright 2016-2018 Raphael Riebl, Christina Obermaier
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
+#include "artery/application/DenService.h"
 #include "artery/application/LocalDynamicMap.h"
-#include "artery/application/TrafficJamUseCase.h"
+#include "artery/application/den/TrafficJamUseCase.h"
 #include "artery/application/SampleBufferAlgorithm.h"
 #include <boost/units/base_units/metric/hour.hpp>
 #include <boost/units/systems/si/length.hpp>
 #include <boost/units/systems/si/time.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
 #include <omnetpp/csimulation.h>
+#include <vanetza/btp/data_request.hpp>
 #include <vanetza/facilities/cam_functions.hpp>
 #include <vanetza/units/acceleration.hpp>
 #include <vanetza/units/time.hpp>
@@ -25,20 +27,37 @@ static const auto km_per_hour = boost::units::si::kilo * boost::units::si::meter
 using omnetpp::SIMTIME_S;
 using omnetpp::SIMTIME_MS;
 
+Define_Module(artery::den::TrafficJamEndOfQueue);
+Define_Module(artery::den::TrafficJamAhead);
+
 namespace artery
 {
-
-TrafficJamEndOfQueue::TrafficJamEndOfQueue(const VehicleDataProvider& vdp, const denm::Memory& memory) :
-    mVehicleDataProvider(vdp), mDenmMemory(memory), mNonUrbanEnvironment(false)
+namespace den
 {
-    setDetectionBlockingTime({60, SIMTIME_S});
-    mVelocitySampler.setDuration({10, SIMTIME_S});
-    mVelocitySampler.setInterval({100, SIMTIME_MS});
+
+void TrafficJamEndOfQueue::initialize(int stage)
+{
+    UseCase::initialize(stage);
+    if (stage == 0)
+    {
+        mNonUrbanEnvironment = par("nonUrbanEnvironment").boolValue();
+        mDenmMemory = mService->getMemory();
+        mVelocitySampler.setDuration(par("sampleDuration"));
+        mVelocitySampler.setInterval(par("sampleInterval"));
+        setDetectionBlockingTime(par("detectionBlockingTime"));
+    }
 }
 
-void TrafficJamEndOfQueue::update()
+void TrafficJamEndOfQueue::check()
 {
-    mVelocitySampler.feed(mVehicleDataProvider.speed(), mVehicleDataProvider.updated());
+    mVelocitySampler.feed(mVdp->speed(), mVdp->updated());
+    if (!isDetectionBlocked() && checkPreconditions() && checkConditions())
+    {
+        setDetectionBlockingSince(omnetpp::simTime());
+        auto message = createMessage();
+        auto request = createRequest();
+        mService->sendDenm(message, request);
+    }
 }
 
 bool TrafficJamEndOfQueue::checkPreconditions()
@@ -94,17 +113,18 @@ bool TrafficJamEndOfQueue::checkEgoDeceleration() const
 bool TrafficJamEndOfQueue::checkEndOfQueueReceived() const
 {
     // TODO relevance check for ego vehicle is missing
-    return mDenmMemory.count(denm::CauseCode::DangerousEndOfQueue) >= 1;
+    return mDenmMemory->count(CauseCode::DangerousEndOfQueue) >= 1;
 }
 
 bool TrafficJamEndOfQueue::checkJamAheadReceived() const
 {
     // TODO relevance check for ego vehicle is missing
-    return mDenmMemory.count(denm::CauseCode::TrafficCondition) >= 5;
+    return mDenmMemory->count(CauseCode::TrafficCondition) >= 5;
 }
 
-void TrafficJamEndOfQueue::message(vanetza::asn1::Denm& msg)
+vanetza::asn1::Denm TrafficJamEndOfQueue::createMessage()
 {
+    auto msg = createMessageSkeleton();
     msg->denm.management.relevanceDistance = vanetza::asn1::allocate<RelevanceDistance_t>();
     *msg->denm.management.relevanceDistance = RelevanceDistance_lessThan1000m;
     msg->denm.management.relevanceTrafficDirection = vanetza::asn1::allocate<RelevanceTrafficDirection_t>();
@@ -120,14 +140,16 @@ void TrafficJamEndOfQueue::message(vanetza::asn1::Denm& msg)
 
     // TODO set road type in Location container
     // TODO set lane position in Alacarte container
+    return msg;
 }
 
-void TrafficJamEndOfQueue::dissemination(vanetza::btp::DataRequestB& request)
+vanetza::btp::DataRequestB TrafficJamEndOfQueue::createRequest()
 {
     namespace geonet = vanetza::geonet;
     using vanetza::units::si::seconds;
     using vanetza::units::si::meter;
 
+    vanetza::btp::DataRequestB request;
     request.gn.traffic_class.tc_id(1);
 
     geonet::DataRequest::Repetition repetition;
@@ -139,26 +161,38 @@ void TrafficJamEndOfQueue::dissemination(vanetza::btp::DataRequestB& request)
     geonet::Circle destination_shape;
     destination_shape.r = 1000.0 * meter;
     destination.shape = destination_shape;
-    destination.position.latitude = mVehicleDataProvider.latitude();
-    destination.position.longitude = mVehicleDataProvider.longitude();
+    destination.position.latitude = mVdp->latitude();
+    destination.position.longitude = mVdp->longitude();
     request.gn.destination = destination;
+
+    return request;
 }
 
-TrafficJamAhead::TrafficJamAhead(
-        const VehicleDataProvider& vdp,
-        const denm::Memory& memory,
-        const LocalDynamicMap& ldm) :
-    mVehicleDataProvider(vdp), mDenmMemory(memory), mLocalDynamicMap(ldm),
-    mNonUrbanEnvironment(false), mUpdateCounter(0)
+
+void TrafficJamAhead::initialize(int stage)
 {
-    setDetectionBlockingTime({180, SIMTIME_S});
-    mVelocitySampler.setDuration({120, SIMTIME_S});
-    mVelocitySampler.setInterval({1, SIMTIME_S});
+    UseCase::initialize(stage);
+    if (stage == 0) {
+        mNonUrbanEnvironment = par("nonUrbanEnvironment").boolValue();
+        mDenmMemory = mService->getMemory();
+        mVelocitySampler.setDuration(par("sampleDuration"));
+        mVelocitySampler.setInterval(par("sampleInterval"));
+        setDetectionBlockingTime(par("detectionBlockingTime"));
+        mUpdateCounter = 0;
+        mLocalDynamicMap = &mService->getFacilities().get_const<LocalDynamicMap>();
+    }
 }
 
-void TrafficJamAhead::update()
+void TrafficJamAhead::check()
 {
-    mVelocitySampler.feed(mVehicleDataProvider.speed(), mVehicleDataProvider.updated());
+    mVelocitySampler.feed(mVdp->speed(), mVdp->updated());
+    if (!isDetectionBlocked() && checkPreconditions() && checkConditions())
+    {
+        setDetectionBlockingSince(omnetpp::simTime());
+        auto message = createMessage();
+        auto request = createRequest();
+        mService->sendDenm(message, request);
+    }
 }
 
 bool TrafficJamAhead::checkPreconditions()
@@ -216,7 +250,7 @@ bool TrafficJamAhead::checkStationaryEgo() const
 bool TrafficJamAhead::checkTrafficJamAheadReceived() const
 {
     // TODO relevance check is missing
-    return mDenmMemory.count(denm::CauseCode::TrafficCondition) >= 1;
+    return mDenmMemory->count(CauseCode::TrafficCondition) >= 1;
 }
 
 bool TrafficJamAhead::checkSlowVehiclesAheadByV2X() const
@@ -235,7 +269,7 @@ bool TrafficJamAhead::checkSlowVehiclesAheadByV2X() const
         const auto& hfc = msg->cam.camParameters.highFrequencyContainer;
         if (hfc.present == HighFrequencyContainer_PR_basicVehicleContainerHighFrequency) {
             const auto& bvc = hfc.choice.basicVehicleContainerHighFrequency;
-            const auto& vdp = mVehicleDataProvider;
+            const auto& vdp = *mVdp;
             if (bvc.speed.speedValue == SpeedValue_unavailable ||
                 bvc.speed.speedValue > speedLimit * SpeedValue_oneCentimeterPerSec) {
                 result = false;
@@ -250,11 +284,12 @@ bool TrafficJamAhead::checkSlowVehiclesAheadByV2X() const
 
         return result;
     };
-    return mLocalDynamicMap.count(slowVehicles) >= 5;
+    return mLocalDynamicMap->count(slowVehicles) >= 5;
 }
 
-void TrafficJamAhead::message(vanetza::asn1::Denm& msg)
+vanetza::asn1::Denm TrafficJamAhead::createMessage()
 {
+    auto msg = createMessageSkeleton();
     msg->denm.management.relevanceDistance = vanetza::asn1::allocate<RelevanceDistance_t>();
     *msg->denm.management.relevanceDistance = RelevanceDistance_lessThan1000m;
     msg->denm.management.relevanceTrafficDirection = vanetza::asn1::allocate<RelevanceTrafficDirection_t>();
@@ -270,28 +305,35 @@ void TrafficJamAhead::message(vanetza::asn1::Denm& msg)
 
     // TODO set road type in Location container
     // TODO set lane position in Alacarte container
+
+    return msg;
 }
 
-void TrafficJamAhead::dissemination(vanetza::btp::DataRequestB& request)
+vanetza::btp::DataRequestB TrafficJamAhead::createRequest()
 {
     namespace geonet = vanetza::geonet;
     using vanetza::units::si::seconds;
     using vanetza::units::si::meter;
 
+    vanetza::btp::DataRequestB request;
     request.gn.traffic_class.tc_id(1);
 
     geonet::DataRequest::Repetition repetition;
     repetition.interval = 1.0 * seconds;
     repetition.maximum = 60.0 * seconds;
+
     request.gn.repetition = repetition;
 
     geonet::Area destination;
     geonet::Circle destination_shape;
     destination_shape.r = 1000.0 * meter;
     destination.shape = destination_shape;
-    destination.position.latitude = mVehicleDataProvider.latitude();
-    destination.position.longitude = mVehicleDataProvider.longitude();
+    destination.position.latitude = mVdp->latitude();
+    destination.position.longitude = mVdp->longitude();
     request.gn.destination = destination;
+
+    return request;
 }
 
+} // namespace den
 } // namespace artery

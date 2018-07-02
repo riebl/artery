@@ -4,8 +4,8 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
-#ifndef ARTERY_DENM_MEMORY_H_NNPEDDM9
-#define ARTERY_DENM_MEMORY_H_NNPEDDM9
+#ifndef ARTERY_DEN_MEMORY_H_NNPEDDM9
+#define ARTERY_DEN_MEMORY_H_NNPEDDM9
 
 #include "artery/application/DenmObject.h"
 #include <boost/multi_index_container.hpp>
@@ -21,7 +21,7 @@ class Timer;
 
 namespace artery
 {
-namespace denm
+namespace den
 {
 
 struct ActionID
@@ -80,8 +80,8 @@ private:
     container_type m_container;
 };
 
-} // namespace denm
+} // namespace den
 } // namespace artery
 
-#endif /* ARTERY_DENM_MEMORY_H_NNPEDDM9 */
+#endif /* ARTERY_DEN_MEMORY_H_NNPEDDM9 */
 

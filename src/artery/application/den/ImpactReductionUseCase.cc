@@ -1,62 +1,61 @@
 /*
  * Artery V2X Simulation Framework
- * Copyright 2016-2017 Raphael Riebl
+ * Copyright 2016-2018 Raphael Riebl, Christina Obermaier
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
 #include "artery/application/DenmObject.h"
-#include "artery/application/ImpactReductionUseCase.h"
+#include "artery/application/DenService.h"
+#include "artery/application/den/ImpactReductionUseCase.h"
 #include "artery/application/StoryboardSignal.h"
 #include "artery/application/VehicleDataProvider.h"
 #include <omnetpp/cexception.h>
 
+Define_Module(artery::den::ImpactReductionContainerExchange);
+
 namespace artery
 {
-
-ImpactReductionContainerExchange::ImpactReductionContainerExchange(const VehicleDataProvider& vdp) :
-    mVehicleDataProvider(vdp), mTrigger(Trigger::NONE)
+namespace den
 {
+
+void ImpactReductionContainerExchange::check()
+{
+    if (mPendingRequest) {
+        transmitMessage(RequestResponseIndication_request);
+        mPendingRequest = false;
+    }
 }
 
-bool ImpactReductionContainerExchange::handleMessageReception(const DenmObject& denm)
+void ImpactReductionContainerExchange::indicate(const artery::DenmObject& denm)
 {
-    if (denm & denm::CauseCode::CollisionRisk) {
+    if (denm & CauseCode::CollisionRisk) {
         const vanetza::asn1::Denm& asn1 = denm.asn1();
         if (asn1->denm.alacarte && asn1->denm.alacarte->impactReduction) {
             auto& indication = asn1->denm.alacarte->impactReduction->requestResponseIndication;
             if (indication == RequestResponseIndication_request) {
-                mTrigger = Trigger::RESPONSE;
+                transmitMessage(RequestResponseIndication_response);
             }
         }
     }
+}
 
-    return mTrigger == Trigger::RESPONSE;
+void ImpactReductionContainerExchange::transmitMessage(RequestResponseIndication_t ind)
+{
+    auto denm = createMessage(ind);
+    auto request = createRequest();
+    mService->sendDenm(denm, request);
 }
 
 void ImpactReductionContainerExchange::handleStoryboardTrigger(const StoryboardSignal& signal)
 {
     if (signal.getCause() == "irc") {
-        mTrigger = Trigger::REQUEST;
+        mPendingRequest = true;
     }
 }
 
-void ImpactReductionContainerExchange::update()
+vanetza::asn1::Denm ImpactReductionContainerExchange::createMessage(RequestResponseIndication_t ind)
 {
-}
-
-bool ImpactReductionContainerExchange::checkPreconditions()
-{
-    // no preconditions for request (response requires only request reception)
-    return true;
-}
-
-bool ImpactReductionContainerExchange::checkConditions()
-{
-    return mTrigger != Trigger::NONE;
-}
-
-void ImpactReductionContainerExchange::message(vanetza::asn1::Denm& msg)
-{
+    auto msg = createMessageSkeleton();
     msg->denm.management.relevanceDistance = vanetza::asn1::allocate<RelevanceDistance_t>();
     *msg->denm.management.relevanceDistance = RelevanceDistance_lessThan100m;
     msg->denm.management.relevanceTrafficDirection = vanetza::asn1::allocate<RelevanceTrafficDirection_t>();
@@ -93,23 +92,18 @@ void ImpactReductionContainerExchange::message(vanetza::asn1::Denm& msg)
     irc.positionOfOccupants.buf[2] |= 1 << (23 - PositionOfOccupants_row4NotPresent);
     irc.posFrontAx = PosFrontAx_unavailable;
     irc.vehicleMass = VehicleMass_unavailable;
+    irc.requestResponseIndication = ind;
 
-    if (mTrigger == Trigger::REQUEST) {
-        irc.requestResponseIndication = RequestResponseIndication_request;
-    } else if (mTrigger == Trigger::RESPONSE) {
-        irc.requestResponseIndication = RequestResponseIndication_response;
-    } else {
-        throw omnetpp::cRuntimeError("Impact Reduction Container creation requested without proper trigger");
-    }
-    mTrigger = Trigger::NONE;
+    return msg;
 }
 
-void ImpactReductionContainerExchange::dissemination(vanetza::btp::DataRequestB& request)
+vanetza::btp::DataRequestB ImpactReductionContainerExchange::createRequest()
 {
     namespace geonet = vanetza::geonet;
     using vanetza::units::si::seconds;
     using vanetza::units::si::meter;
 
+    vanetza::btp::DataRequestB request;
     request.gn.traffic_class.tc_id(0);
     request.gn.maximum_hop_limit = 1;
 
@@ -122,9 +116,12 @@ void ImpactReductionContainerExchange::dissemination(vanetza::btp::DataRequestB&
     geonet::Circle destination_shape;
     destination_shape.r = 100.0 * meter;
     destination.shape = destination_shape;
-    destination.position.latitude = mVehicleDataProvider.latitude();
-    destination.position.longitude = mVehicleDataProvider.longitude();
+    destination.position.latitude = mVdp->latitude();
+    destination.position.longitude = mVdp->longitude();
     request.gn.destination = destination;
+
+    return request;
 }
 
+} // namespace den
 } // namespace artery

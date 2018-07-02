@@ -14,16 +14,6 @@ Register_Abstract_Class(artery::DenmObject)
 
 namespace artery
 {
-namespace denm
-{
-
-CauseCode convert(const CauseCodeType_t& type)
-{
-    return static_cast<CauseCode>(type);
-}
-
-} // namespace denm
-
 
 DenmObject::DenmObject(Denm&& denm) :
     m_denm_wrapper(std::make_shared<Denm>(std::move(denm)))
@@ -41,12 +31,12 @@ DenmObject::DenmObject(const std::shared_ptr<const Denm>& denm) :
     assert(m_denm_wrapper);
 }
 
-boost::optional<denm::CauseCode> DenmObject::situation_cause_code() const
+boost::optional<den::CauseCode> DenmObject::situation_cause_code() const
 {
-    boost::optional<denm::CauseCode> cause_code;
+    boost::optional<den::CauseCode> cause_code;
     const SituationContainer* situation = asn1()->denm.situation;
     if (situation) {
-        cause_code = denm::convert(situation->eventType.causeCode);
+        cause_code = den::convert(situation->eventType.causeCode);
     }
     return cause_code;
 }
@@ -61,7 +51,7 @@ std::shared_ptr<const Denm> DenmObject::shared_ptr() const
     return m_denm_wrapper;
 }
 
-bool operator&(const DenmObject& obj, denm::CauseCode cause)
+bool operator&(const DenmObject& obj, den::CauseCode cause)
 {
     const auto obj_cause = obj.situation_cause_code();
     return (obj_cause && obj_cause.get() == cause);
