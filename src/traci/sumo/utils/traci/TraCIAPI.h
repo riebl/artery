@@ -724,6 +724,7 @@ public:
         void setColor(const std::string& vehicleID, const libsumo::TraCIColor& c) const;
         void setLine(const std::string& vehicleID, const std::string& line) const;
         void setVia(const std::string& vehicleID, const std::vector<std::string>& via) const;
+        void setSignals(const std::string& vehicleID, const int signals) const;
         /// @}
 
         /// @name vehicle type attribute changing shortcuts

@@ -2713,6 +2713,16 @@ TraCIAPI::VehicleScope::setVia(const std::string& vehicleID, const std::vector<s
     myParent.check_resultState(inMsg, CMD_SET_VEHICLE_VARIABLE);
 }
 
+void
+TraCIAPI::VehicleScope::setSignals(const std::string& vehicleID, const int signals) const {
+    tcpip::Storage content;
+    content.writeUnsignedByte(TYPE_INTEGER);
+    content.writeInt(signals);
+    myParent.send_commandSetValue(CMD_SET_VEHICLE_VARIABLE, VAR_SIGNALS, vehicleID, content);
+    tcpip::Storage inMsg;
+    myParent.check_resultState(inMsg, CMD_SET_VEHICLE_VARIABLE);
+}
+
 
 void
 TraCIAPI::VehicleScope::setShapeClass(const std::string& vehicleID, const std::string& clazz) const {
