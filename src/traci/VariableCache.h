@@ -89,6 +89,9 @@ std::vector<std::string> VariableCache::retrieve<std::vector<std::string>>(int v
 template<>
 SUMOTime VariableCache::retrieve<SUMOTime>(int var);
 
+template<>
+int VariableCache::retrieve<int>(int var);
+
 } // namespace traci
 
 #endif /* VARIABLECACHE_H_GJG2APIF */

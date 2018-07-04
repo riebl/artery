@@ -59,4 +59,10 @@ SUMOTime VariableCache::retrieve<SUMOTime>(int var)
     return m_api.getSUMOTime(m_command, var, m_id);
 }
 
+template<>
+int VariableCache::retrieve<int>(int var)
+{
+    return m_api.getInt(m_command, var, m_id);
+}
+
 } // namespace traci

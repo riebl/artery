@@ -65,6 +65,13 @@ TraCIValue make_value(SUMOTime t)
     return v;
 }
 
+TraCIValue make_value(int i)
+{
+    TraCIValue v;
+    v.scalar = i;
+    return v;
+}
+
 template<>
 typename details::value_cast_trait<double>::return_type
 value_cast<double>(const TraCIValue& v)
@@ -103,6 +110,13 @@ value_cast<std::vector<std::string>>(const TraCIValue& v)
 template<>
 typename details::value_cast_trait<SUMOTime>::return_type
 value_cast<SUMOTime>(const TraCIValue& v)
+{
+    return v.scalar;
+}
+
+template<>
+typename details::value_cast_trait<int>::return_type
+value_cast<int>(const TraCIValue& v)
 {
     return v.scalar;
 }

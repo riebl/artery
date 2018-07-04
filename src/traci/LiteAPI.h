@@ -51,6 +51,7 @@ public:
     std::string getString(int cmd, int var, const std::string& id);
     std::vector<std::string> getStringVector(int cmd, int var, const std::string& id);
     libsumo::TraCIColor getColor(int cmd, int var, const std::string& id);
+    int getInt(int cmd, int var, const std::string& id);
 
 private:
     API& m_api;

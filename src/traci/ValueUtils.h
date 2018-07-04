@@ -20,6 +20,7 @@ TraCIValue make_value(const std::vector<std::string>& strList);
 TraCIValue make_value(std::string&& str);
 TraCIValue make_value(std::vector<std::string>&& strList);
 TraCIValue make_value(SUMOTime);
+TraCIValue make_value(int);
 
 namespace details
 {
@@ -34,6 +35,12 @@ template<>
 struct value_cast_trait<SUMOTime>
 {
     using return_type = const SUMOTime;
+};
+
+template<>
+struct value_cast_trait<int>
+{
+    using return_type = int;
 };
 
 } // namespace details
@@ -64,6 +71,10 @@ value_cast<std::vector<std::string>>(const TraCIValue& v);
 template<>
 typename details::value_cast_trait<SUMOTime>::return_type
 value_cast<SUMOTime>(const TraCIValue& v);
+
+template<>
+typename details::value_cast_trait<int>::return_type
+value_cast<int>(const TraCIValue& v);
 
 } // namespace libsumo
 

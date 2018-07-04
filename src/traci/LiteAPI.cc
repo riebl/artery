@@ -48,4 +48,10 @@ libsumo::TraCIColor LiteAPI::getColor(int cmd, int var, const std::string& id)
     return m_api.getColor(cmd, var, id);
 }
 
+int LiteAPI::getInt(int cmd, int var, const std::string& id)
+{
+    return m_api.getInt(cmd, var, id);
+}
+
+
 } // namespace traci
