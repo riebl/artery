@@ -177,6 +177,7 @@ void Middleware::initializeManagementInformationBase(vanetza::geonet::MIB& mib)
 {
 	mib.itsGnDefaultTrafficClass.tc_id(3); // send BEACONs with DP3
 	mib.itsGnSecurity = par("vanetzaEnableSecurity").boolValue();
+	mib.vanetzaDeferInitialBeacon = par("vanetzaDeferInitialBeacon").boolValue();
 }
 
 void Middleware::initializeSecurity()

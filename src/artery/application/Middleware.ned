@@ -23,6 +23,7 @@ simple Middleware like IMiddleware
 		string datetime;
 		xml services;
 
+		bool vanetzaDeferInitialBeacon = default(true);
 		bool vanetzaEnableSecurity = default(true);
 		string vanetzaCryptoBackend = default("Null");
 		string vanetzaCertificateProvider = default("Null");
