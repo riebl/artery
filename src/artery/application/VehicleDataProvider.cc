@@ -82,7 +82,7 @@ void VehicleDataProvider::calculateCurvature()
 {
 	using namespace vanetza::units::si;
 	static const vanetza::units::Frequency f_cut = 0.33 * hertz;
-	static const vanetza::units::Duration t_sample = 100.0 * seconds;
+	static const vanetza::units::Duration t_sample = 0.1 * seconds;
 	static const vanetza::units::Curvature lower_threshold = 1.0 / 2500.0 * vanetza::units::reciprocal_metre;
 	static const vanetza::units::Curvature upper_threshold = 1.0 * vanetza::units::reciprocal_metre;
 	static const double damping = 1.0;
