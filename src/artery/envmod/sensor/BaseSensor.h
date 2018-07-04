@@ -30,7 +30,7 @@ protected:
     Facilities& getFacilities();
     Middleware& getMiddleware();
     std::string getEgoId();
-    cModule* findHost();
+    omnetpp::cModule* findHost();
 
     LocalEnvironmentModel* mLocalEnvironmentModel;
     GlobalEnvironmentModel* mGlobalEnvironmentModel;

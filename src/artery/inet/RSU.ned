@@ -4,7 +4,7 @@ import artery.application.StationaryMiddleware;
 import artery.networking.Vanetza;
 import artery.nic.IRadioDriver;
 import inet.node.inet.INetworkNode;
-import inet.linklayer.contract.IWirelessNic;
+import inet.linklayer.contract.IWirelessInterface;
 import inet.mobility.contract.IMobility;
 import inet.networklayer.common.InterfaceTable;
 
@@ -29,9 +29,10 @@ module RSU like INetworkNode
                 @display("p=53,300;is=s");
         }
 
-        wlan[numRadios]: <default("VanetNic")> like IWirelessNic {
+        wlan[numRadios]: <default("VanetNic")> like IWirelessInterface {
             parameters:
                 @display("p=216,406,row,60;q=queue");
+                radio.antenna.mobilityModule = absPath("^.mobility");
         }
 
         mobility: <default("inet.mobility.static.StationaryMobility")> like IMobility {

@@ -1,28 +1,25 @@
 package artery.inet;
 
-import inet.linklayer.ieee80211.Ieee80211Nic;
+import inet.linklayer.ieee80211.Ieee80211Interface;
 
-module VanetNic extends Ieee80211Nic
+module VanetNic extends Ieee80211Interface
 {
     parameters:
-        macType = "Ieee80211Mac";
-        mgmtType = "Ieee80211MgmtAdhoc";
+        mgmt.typename = "Ieee80211MgmtAdhoc";
+        agent.typename = "";
         opMode = "p";
-        bitrate = default(6 Mbps);
 
-        mac.modeSet = opMode;
         mac.qosStation = true;
         mac.rx.typename = "VanetRx";
 
-        radio.bandName = "5 GHz";
+        radio.bandName = "5.9 GHz";
         radio.bandwidth = 10 MHz;
-        radio.channelNumber = default(180);
-        // carrierFrequency is automatically set by the radio
+        radio.channelNumber = default(4);
         radio.carrierFrequency = default(5.9 GHz);
 
-        mac.hcf.rateSelection.dataFrameBitrate = bitrate;
-        mac.hcf.rateSelection.mgmtFrameBitrate = bitrate;
-        mac.hcf.rateSelection.multicastFrameBitrate = bitrate;
+        mac.hcf.rateSelection.dataFrameBitrate = default(6 Mbps);
+        mac.hcf.rateSelection.mgmtFrameBitrate = default(6 Mbps);
+        mac.hcf.rateSelection.multicastFrameBitrate = default(6 Mbps);
 
         // EDCA settings for activated OCB mode (see table 8-106 in IEEE 802.11-2012)
         mac.hcf.edcaTxopProcedures[*].txopLimit = 0;

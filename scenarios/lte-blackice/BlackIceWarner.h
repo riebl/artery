@@ -1,17 +1,21 @@
 #ifndef BLACKICEWARNER_H_IONPZSRI
 #define BLACKICEWARNER_H_IONPZSRI
 
-#include <inet/transportlayer/contract/udp/UDPSocket.h>
+#include <inet/transportlayer/contract/udp/UdpSocket.h>
 #include <omnetpp/csimplemodule.h>
 
 // forward declaration
 class BlackIceResponse;
 namespace traci { class VehicleController; }
 
-class BlackIceWarner : public omnetpp::cSimpleModule
+class BlackIceWarner : public omnetpp::cSimpleModule, public inet::UdpSocket::ICallback
 {
 public:
     ~BlackIceWarner();
+
+    // inet::UdpSocket::ICallback interface
+    void socketDataArrived(inet::UdpSocket*, inet::Packet*) override;
+    void socketErrorArrived(inet::UdpSocket*, inet::Indication*) override;
 
 protected:
     int numInitStages() const override;
@@ -23,7 +27,7 @@ private:
     void pollCentral();
     void processResponse(BlackIceResponse&);
 
-    inet::UDPSocket socket;
+    inet::UdpSocket socket;
     double pollingRadius;
     omnetpp::simtime_t pollingInterval;
     omnetpp::cMessage* pollingTrigger = nullptr;

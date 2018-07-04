@@ -6,6 +6,7 @@
 #include "artery/utility/InitStages.h"
 #include "artery/utility/PointerCheck.h"
 #include <inet/common/ModuleAccess.h>
+#include <inet/common/packet/chunk/cPacketChunk.h>
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <omnetpp/checkandcast.h>
 
@@ -63,5 +64,7 @@ void BlackIceReporter::sendReport()
     report->setPositionY(vehicleController->getPosition().y / meter);
     report->setSpeed(vehicleController->getSpeed() / meter_per_second);
     report->setTime(simTime());
-    socket.send(report);
+    auto packet = new inet::Packet(report->getName());
+    packet->insertAtFront(inet::makeShared<inet::cPacketChunk>(report));
+    socket.send(packet);
 }

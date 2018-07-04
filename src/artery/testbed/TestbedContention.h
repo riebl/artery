@@ -20,7 +20,7 @@ public:
     /**
      * Tries to minimize the contention delay as much as possible
      */
-    void startContention(int cw, simtime_t ifs, simtime_t eifs, simtime_t slotTime, inet::ieee80211::Contention::ICallback* callback) override;
+    void startContention(int cw, omnetpp::simtime_t ifs, omnetpp::simtime_t eifs, omnetpp::simtime_t slotTime, inet::ieee80211::Contention::ICallback* callback) override;
 
 private:
     omnetpp::simtime_t mIfs;

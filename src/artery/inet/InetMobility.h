@@ -16,9 +16,11 @@ public:
     // inet::IMobility interface
     double getMaxSpeed() const override;
     inet::Coord getCurrentPosition() override;
-    inet::Coord getCurrentSpeed() override;
+    inet::Coord getCurrentVelocity() override;
+    inet::Coord getCurrentAcceleration() override;
     inet::EulerAngles getCurrentAngularPosition() override;
-    inet::EulerAngles getCurrentAngularSpeed() override;
+    inet::EulerAngles getCurrentAngularVelocity() override;
+    inet::EulerAngles getCurrentAngularAcceleration() override;
     inet::Coord getConstraintAreaMax() const override;
     inet::Coord getConstraintAreaMin() const override;
 
@@ -27,7 +29,7 @@ public:
     int numInitStages() const override;
 
 protected:
-    virtual void updateVisualRepresentation();
+    void refreshDisplay() const override;
 
 private:
     void initialize(const Position& pos, Angle heading, double speed) override;

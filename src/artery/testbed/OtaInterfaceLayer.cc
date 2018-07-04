@@ -10,6 +10,8 @@
 #include <vanetza/net/packet_variant.hpp>
 #include <inet/physicallayer/contract/packetlevel/IRadio.h>
 
+using namespace omnetpp;
+
 namespace artery
 {
 

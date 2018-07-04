@@ -9,14 +9,14 @@ Define_Module(AntennaMobility)
 void AntennaMobility::initialize(int stage)
 {
     omnetpp::cModule* module = getModuleByPath(par("mobilityModule"));
-    mParentMobility = check_and_cast<inet::IMobility*>(module);
+    mParentMobility = omnetpp::check_and_cast<inet::IMobility*>(module);
 
     mOffsetCoord.x = par("offsetX");
     mOffsetCoord.y = par("offsetY");
     mOffsetCoord.z = par("offsetZ");
-    mOffsetAngles.alpha = par("offsetAlpha");
-    mOffsetAngles.beta = par("offsetBeta");
-    mOffsetAngles.gamma = par("offsetGamma");
+    mOffsetAngles.alpha = inet::rad(par("offsetAlpha"));
+    mOffsetAngles.beta = inet::rad(par("offsetBeta"));
+    mOffsetAngles.gamma = inet::rad(par("offsetGamma"));
     mOffsetRotation = inet::Rotation(mOffsetAngles);
 }
 
@@ -35,13 +35,18 @@ inet::Coord AntennaMobility::getCurrentPosition()
     inet::EulerAngles angular_pos = mParentMobility->getCurrentAngularPosition();
     std::swap(angular_pos.alpha, angular_pos.gamma);
     inet::Rotation rot(angular_pos);
-    inet::Coord rotated_offset = rot.rotateVectorClockwise(mOffsetCoord);
+    inet::Coord rotated_offset = rot.rotateVector(mOffsetCoord);
     return mParentMobility->getCurrentPosition() + rotated_offset;
 }
 
-inet::Coord AntennaMobility::getCurrentSpeed()
+inet::Coord AntennaMobility::getCurrentVelocity()
 {
-    return mOffsetRotation.rotateVectorClockwise(mParentMobility->getCurrentSpeed());
+    return mOffsetRotation.rotateVector(mParentMobility->getCurrentVelocity());
+}
+
+inet::Coord AntennaMobility::getCurrentAcceleration()
+{
+    return mOffsetRotation.rotateVector(mParentMobility->getCurrentAcceleration());
 }
 
 inet::EulerAngles AntennaMobility::getCurrentAngularPosition()
@@ -49,11 +54,21 @@ inet::EulerAngles AntennaMobility::getCurrentAngularPosition()
     return mParentMobility->getCurrentAngularPosition() + mOffsetAngles;
 }
 
-inet::EulerAngles AntennaMobility::getCurrentAngularSpeed()
+inet::EulerAngles AntennaMobility::getCurrentAngularVelocity()
 {
-    inet::EulerAngles speed = mParentMobility->getCurrentAngularSpeed();
-    if (speed.alpha != 0.0 || speed.beta != 0.0 || speed.gamma != 0.0) {
-        throw omnetpp::cRuntimeError("non-zero angular speed is not supported");
+    inet::EulerAngles speed = mParentMobility->getCurrentAngularVelocity();
+    if (speed.alpha != inet::rad(0.0) || speed.beta != inet::rad(0.0) || speed.gamma != inet::rad(0.0)) {
+        throw omnetpp::cRuntimeError("non-zero angular velocity is not supported");
+    }
+
+    return inet::EulerAngles::ZERO;
+}
+
+inet::EulerAngles AntennaMobility::getCurrentAngularAcceleration()
+{
+    inet::EulerAngles speed = mParentMobility->getCurrentAngularAcceleration();
+    if (speed.alpha != inet::rad(0.0) || speed.beta != inet::rad(0.0) || speed.gamma != inet::rad(0.0)) {
+        throw omnetpp::cRuntimeError("non-zero angular acceleration is not supported");
     }
 
     return inet::EulerAngles::ZERO;

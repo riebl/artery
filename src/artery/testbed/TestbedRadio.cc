@@ -3,6 +3,8 @@
 #include <inet/physicallayer/common/packetlevel/RadioMedium.h>
 #include <inet/physicallayer/common/packetlevel/Radio.h>
 
+using namespace omnetpp;
+
 namespace artery
 {
 
@@ -14,17 +16,12 @@ void TestbedRadio::initialize(int stage)
     mReachableTime = par("reachableTime");
 }
 
-void TestbedRadio::endReception(omnetpp::cMessage *timer)
+void TestbedRadio::sendUp(inet::Packet* packet)
 {
-    auto radioFrame = static_cast<inet::physicallayer::RadioFrame*>(timer->getControlInfo());
-    auto transmission = radioFrame->getTransmission();
-    auto macFrame = dynamic_cast<const inet::ieee80211::Ieee80211DataOrMgmtFrame*>(transmission->getMacFrame());
-    auto part = static_cast<inet::physicallayer::IRadioSignal::SignalPart>(timer->getKind());
-    auto receptionDecision = getMedium()->getReceptionDecision(this, radioFrame->getListening(), transmission, part);
-    if (receptionDecision->isReceptionSuccessful() && macFrame) {
-        mReachableNodes[macFrame->getTransmitterAddress()] = simTime();
-    }
-    Radio::endReception(timer);
+    const auto& header = packet->peekAtFront<inet::ieee80211::Ieee80211DataHeader>(inet::b(-1), inet::Chunk::PF_ALLOW_NULLPTR);
+    if (header)
+        mReachableNodes[header->getTransmitterAddress()] = simTime();
+    Radio::sendUp(packet);
 }
 
 void TestbedRadio::updateReachableNodes()
@@ -38,7 +35,7 @@ void TestbedRadio::updateReachableNodes()
     }
 }
 
-const std::map<inet::MACAddress, omnetpp::simtime_t>& TestbedRadio::getReachableNodes()
+const std::map<inet::MacAddress, omnetpp::simtime_t>& TestbedRadio::getReachableNodes()
 {
     updateReachableNodes();
     return mReachableNodes;

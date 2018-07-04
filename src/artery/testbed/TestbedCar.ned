@@ -3,7 +3,7 @@ package artery.testbed;
 import artery.nic.IRadioDriver;
 import artery.inet.RadioDriver;
 import inet.node.inet.INetworkNode;
-import inet.linklayer.contract.IWirelessNic;
+import inet.linklayer.contract.IWirelessInterface;
 import inet.mobility.contract.IMobility;
 import inet.networklayer.common.InterfaceTable;
 
@@ -17,6 +17,7 @@ module TestbedCar like INetworkNode
         @statistic[posY](source="yCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
         int numRadios = default(1);
         *.interfaceTableModule = default(absPath(".interfaceTable"));
+        **.mobilityModule = default(absPath(".mobility"));
         mobility.visualRepresentation = "^";
 
     gates:
@@ -30,7 +31,7 @@ module TestbedCar like INetworkNode
                 @display("p=50,300");
         }
 
-        wlan[numRadios]: <default("VanetNic")> like IWirelessNic {
+        wlan[numRadios]: <default("VanetNic")> like IWirelessInterface {
             parameters:
                 @display("p=250,400,row,100;q=queue");
         }

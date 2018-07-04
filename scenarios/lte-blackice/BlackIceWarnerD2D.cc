@@ -5,6 +5,7 @@
 #include "artery/traci/VehicleController.h"
 #include "artery/utility/PointerCheck.h"
 #include <inet/common/ModuleAccess.h>
+#include <inet/common/packet/chunk/cPacketChunk.h>
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <omnetpp/checkandcast.h>
 
@@ -35,6 +36,7 @@ void BlackIceWarnerD2D::initialize(int stage)
     mcastPort = par("mcastPort");
     socket.setOutputGate(gate("udpOut"));
     socket.bind(mcastPort);
+    socket.setCallback(this);
 
     // LTE multicast support
     inet::IInterfaceTable *ift = inet::getModuleFromPar<inet::IInterfaceTable>(par("interfaceTableModule"), this);
@@ -81,12 +83,24 @@ void BlackIceWarnerD2D::handleMessage(cMessage* msg)
 {
     if (msg->isSelfMessage()) {
         vehicleController->setSpeedFactor(1.0);
-    } else if (msg->getKind() == inet::UDP_I_DATA) {
-        processReport(*check_and_cast<BlackIceReport*>(msg));
-        delete msg;
+    } else if (socket.belongsToSocket(msg)) {
+        socket.processMessage(msg);
     } else {
         throw cRuntimeError("Unrecognized message (%s)%s", msg->getClassName(), msg->getName());
     }
+}
+
+void BlackIceWarnerD2D::socketDataArrived(inet::UdpSocket*, inet::Packet* packet)
+{
+    auto chunk = packet->popAtFront<inet::cPacketChunk>();
+    processReport(*check_and_cast<BlackIceReport*>(chunk->getPacket()));
+    delete packet;
+}
+
+void BlackIceWarnerD2D::socketErrorArrived(inet::UdpSocket*, inet::Indication* indication)
+{
+    EV_ERROR << "socket error occurred: " << indication;
+    delete indication;
 }
 
 void BlackIceWarnerD2D::sendReport()
@@ -99,7 +113,10 @@ void BlackIceWarnerD2D::sendReport()
     report->setPositionY(vehicleController->getPosition().y / meter);
     report->setSpeed(vehicleController->getSpeed() / meter_per_second);
     report->setTime(simTime());
-    socket.sendTo(report, mcastAddress, par("mcastPort"));
+
+    auto packet = new inet::Packet(report->getName());
+    packet->insertAtFront(inet::makeShared<inet::cPacketChunk>(report));
+    socket.sendTo(packet, mcastAddress, par("mcastPort"));
 }
 
 void BlackIceWarnerD2D::processReport(BlackIceReport& report)

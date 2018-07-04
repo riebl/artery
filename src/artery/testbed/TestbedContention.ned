@@ -7,5 +7,5 @@ simple TestbedContention extends Contention
 	parameters:
 		@class(TestbedContention);
 		// IFS defaults to AC_VO AIFS (highest priority)
-		double interFrameSpacing = default(0.000058) @unit(s);
+		double interFrameSpacing @unit(s) = default(58 us);
 }

@@ -1,5 +1,7 @@
 #include "artery/testbed/TestbedContention.h"
 
+using namespace omnetpp;
+
 namespace artery
 {
 
@@ -9,7 +11,7 @@ void TestbedContention::initialize(int stage)
 {
     inet::ieee80211::Contention::initialize(stage);
     if (stage == 0) {
-        mIfs = par("interframeSpacing");
+        mIfs = par("interFrameSpacing");
     }
 }
 

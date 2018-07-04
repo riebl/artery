@@ -37,7 +37,6 @@ void InetMobility::initialize(int stage)
             mCanvasProjection = inet::CanvasProjection::getCanvasProjection(visualizationTarget->getCanvas());
         }
         emit(MobilityBase::stateChangedSignal, this);
-        updateVisualRepresentation();
     }
 }
 
@@ -51,9 +50,14 @@ inet::Coord InetMobility::getCurrentPosition()
     return mPosition;
 }
 
-inet::Coord InetMobility::getCurrentSpeed()
+inet::Coord InetMobility::getCurrentVelocity()
 {
     return mSpeed;
+}
+
+inet::Coord InetMobility::getCurrentAcceleration()
+{
+    return inet::Coord::NIL;
 }
 
 inet::EulerAngles InetMobility::getCurrentAngularPosition()
@@ -61,9 +65,14 @@ inet::EulerAngles InetMobility::getCurrentAngularPosition()
     return mOrientation;
 }
 
-inet::EulerAngles InetMobility::getCurrentAngularSpeed()
+inet::EulerAngles InetMobility::getCurrentAngularVelocity()
 {
-    return inet::EulerAngles::ZERO;
+    return inet::EulerAngles::NIL;
+}
+
+inet::EulerAngles InetMobility::getCurrentAngularAcceleration()
+{
+    return inet::EulerAngles::NIL;
 }
 
 inet::Coord InetMobility::getConstraintAreaMax() const
@@ -81,11 +90,11 @@ inet::Coord InetMobility::getConstraintAreaMin() const
 void InetMobility::initialize(const Position& pos, Angle heading, double speed)
 {
     using boost::units::si::meter;
-    const double rad = heading.radian();
-    const inet::Coord direction { cos(rad), -sin(rad) };
+    const double heading_rad = heading.radian();
+    const inet::Coord direction { cos(heading_rad), -sin(heading_rad) };
     mPosition = inet::Coord { pos.x / meter, pos.y / meter, mAntennaHeight };
     mSpeed = direction * speed;
-    mOrientation.alpha = -rad;
+    mOrientation.alpha = inet::units::values::rad(-heading_rad);
 }
 
 void InetMobility::update(const Position& pos, Angle heading, double speed)
@@ -93,18 +102,13 @@ void InetMobility::update(const Position& pos, Angle heading, double speed)
     initialize(pos, heading, speed);
     ASSERT(inet::IMobility::mobilityStateChangedSignal == MobilityBase::stateChangedSignal);
     emit(MobilityBase::stateChangedSignal, this);
-    updateVisualRepresentation();
 }
 
-void InetMobility::updateVisualRepresentation()
+void InetMobility::refreshDisplay() const
 {
-    // following code is taken from INET's MobilityBase::updateVisualRepresentation
-    if (hasGUI() && mVisualRepresentation) {
-#ifdef WITH_VISUALIZERS
-        using inet::visualizer::MobilityCanvasVisualizer;
-        MobilityCanvasVisualizer::setPosition(mVisualRepresentation, mCanvasProjection->computeCanvasPoint(getCurrentPosition()));
-#else
-        auto position = mCanvasProjection->computeCanvasPoint(getCurrentPosition());
+    // following code is taken from INET's MobilityBase::refreshDisplay
+    if (mVisualRepresentation) {
+        auto position = mCanvasProjection->computeCanvasPoint(mPosition);
         char buf[32];
         snprintf(buf, sizeof(buf), "%lf", position.x);
         buf[sizeof(buf) - 1] = 0;
@@ -112,7 +116,6 @@ void InetMobility::updateVisualRepresentation()
         snprintf(buf, sizeof(buf), "%lf", position.y);
         buf[sizeof(buf) - 1] = 0;
         mVisualRepresentation->getDisplayString().setTagArg("p", 1, buf);
-#endif
     }
 }
 

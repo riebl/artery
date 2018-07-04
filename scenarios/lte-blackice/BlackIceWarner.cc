@@ -5,6 +5,7 @@
 #include "artery/utility/InitStages.h"
 #include "artery/utility/PointerCheck.h"
 #include <inet/common/ModuleAccess.h>
+#include <inet/common/packet/chunk/cPacketChunk.h>
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <omnetpp/checkandcast.h>
 
@@ -30,6 +31,7 @@ void BlackIceWarner::initialize(int stage)
         socket.setOutputGate(gate("udpOut"));
         auto centralAddress = inet::L3AddressResolver().resolve(par("centralAddress"));
         socket.connect(centralAddress, par("centralPort"));
+        socket.setCallback(this);
 
         auto mw = inet::getModuleFromPar<artery::Middleware>(par("middlewareModule"), this);
         vehicleController = artery::notNullPtr(mw->getFacilities().get_mutable_ptr<traci::VehicleController>());
@@ -53,12 +55,24 @@ void BlackIceWarner::handleMessage(cMessage* msg)
 {
     if (msg->isSelfMessage()) {
         pollCentral();
-    } else if (msg->getKind() == inet::UDP_I_DATA) {
-        processResponse(*check_and_cast<BlackIceResponse*>(msg));
-        delete msg;
+    } else if (socket.belongsToSocket(msg)) {
+        socket.processMessage(msg);
     } else {
         throw cRuntimeError("Unrecognized message (%s)%s", msg->getClassName(), msg->getName());
     }
+}
+
+void BlackIceWarner::socketDataArrived(inet::UdpSocket*, inet::Packet* packet)
+{
+    auto chunk = packet->popAtFront<inet::cPacketChunk>();
+    processResponse(*check_and_cast<BlackIceResponse*>(chunk->getPacket()));
+    delete packet;
+}
+
+void BlackIceWarner::socketErrorArrived(inet::UdpSocket*, inet::Indication* indication)
+{
+    EV_ERROR << "socket error occurred: " << indication;
+    delete indication;
 }
 
 void BlackIceWarner::pollCentral()
@@ -67,7 +81,9 @@ void BlackIceWarner::pollCentral()
     query->setPositionX(vehicleController->getPosition().x / boost::units::si::meter);
     query->setPositionY(vehicleController->getPosition().y / boost::units::si::meter);
     query->setRadius(pollingRadius);
-    socket.send(query);
+    auto packet = new inet::Packet(query->getName());
+    packet->insertAtFront(inet::makeShared<inet::cPacketChunk>(query));
+    socket.send(packet);
     scheduleAt(simTime() + pollingInterval, pollingTrigger);
 }
 

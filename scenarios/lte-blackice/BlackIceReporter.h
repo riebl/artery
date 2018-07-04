@@ -1,7 +1,7 @@
 #ifndef BLACKICEREPORTER_H_COLABPR9
 #define BLACKICEREPORTER_H_COLABPR9
 
-#include <inet/transportlayer/contract/udp/UDPSocket.h>
+#include <inet/transportlayer/contract/udp/UdpSocket.h>
 #include <omnetpp/clistener.h>
 #include <omnetpp/csimplemodule.h>
 
@@ -19,7 +19,7 @@ protected:
 private:
     void sendReport();
 
-    inet::UDPSocket socket;
+    inet::UdpSocket socket;
     const traci::VehicleController* vehicleController = nullptr;
     unsigned tractionLosses;
 };
