@@ -24,6 +24,7 @@
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
+#include <omnetpp/cexception.h>
 
 // forward declarations (for deprecated getters)
 class VehicleDataProvider;
@@ -58,7 +59,7 @@ class Facilities
 		typename std::decay<T>::type& get_mutable() const
 		{
 			auto obj = get_mutable_ptr<T>();
-			if (!obj) throw std::out_of_range("no valid object registered");
+			if (!obj) throw omnetpp::cRuntimeError("no valid object of type '%s' registered", typeid(T).name());
 			return *obj;
 		}
 
@@ -79,7 +80,7 @@ class Facilities
 		const typename std::decay<T>::type& get_const() const
 		{
 			auto obj = get_const_ptr<T>();
-			if (!obj) throw std::out_of_range("no valid object registered");
+			if (!obj) throw omnetpp::cRuntimeError("no valid object of type '%s' registered", typeid(T).name());
 			return *obj;
 		}
 
