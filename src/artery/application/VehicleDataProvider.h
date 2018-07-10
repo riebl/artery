@@ -48,6 +48,7 @@ class VehicleDataProvider
 		void update(const traci::VehicleController*);
 		omnetpp::SimTime updated() const { return mLastUpdate; }
 
+		void set_station_id(uint32_t id) { mStationId = id; }
 		uint32_t station_id() const { return mStationId; }
 		const Position& position() const { return mPosition; }
 		vanetza::units::GeoAngle longitude() const { return mGeoPosition.longitude; } // positive for east
