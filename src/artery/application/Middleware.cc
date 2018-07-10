@@ -171,6 +171,7 @@ void Middleware::initializeMiddleware()
 
 void Middleware::initializeIdentity(Identity& id)
 {
+	id.component = getParentModule()->getId();
 	id.geonet = mGeoRouter->get_local_position_vector().gn_addr;
 }
 
