@@ -39,7 +39,8 @@ void VehicleMiddleware::initializeIdentity(Identity& id)
 {
 	Middleware::initializeIdentity(id);
 	id.traci = mVehicleController->getVehicleId();
-	id.application = mVehicleDataProvider.station_id();
+	id.application = id.component;
+	mVehicleDataProvider.set_station_id(id.component);
 }
 
 void VehicleMiddleware::initializeManagementInformationBase(vanetza::geonet::MIB& mib)
