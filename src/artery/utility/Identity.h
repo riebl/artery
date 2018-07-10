@@ -19,6 +19,7 @@ namespace artery
 class Identity : public omnetpp::cObject
 {
 public:
+    int component; /*< OMNet++ component id */
     std::string traci; /*< Vehicle ID used by TraCI protocol */
     uint32_t application; /*< ETSI station ID */
     vanetza::geonet::Address geonet; /*< GeoNetworking layer */
