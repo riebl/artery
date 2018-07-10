@@ -16,7 +16,7 @@ void CarIdentityRegistrant::initialize()
 
 void CarIdentityRegistrant::initializeIdentity()
 {
-	auto parent = this->getParentModule();
+	auto parent = getParentModule();
 	auto mobility = dynamic_cast<MobilityBase*>(parent->getSubmodule("mobility", -1));
 	if (!mobility) {
 		throw omnetpp::cRuntimeError("no suitable mobility module found");
@@ -24,9 +24,10 @@ void CarIdentityRegistrant::initializeIdentity()
 	auto controller = mobility->getVehicleController();
 
 	auto traciId = controller->getVehicleId();
-	auto stationId = omnetpp::intuniform(getRNG(0), 0, 4294967295);
+	auto componentId = getParentModule()->getId();
 
-	mIdentity.application = stationId;
+	mIdentity.component = componentId;
+	mIdentity.application = componentId;
 	mIdentity.traci = traciId;
 	mIdentity.geonet = vanetza::geonet::Address();
 }
