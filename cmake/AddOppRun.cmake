@@ -92,12 +92,14 @@ macro(add_opp_run _name)
     endif()
 
     find_program(VALGRIND_COMMAND valgrind DOC "Valgrind executable")
-    set(VALGRIND_FLAGS "--track-origins=yes" CACHE STRING "Flags passed to Valgrind for memcheck targets")
-    set(VALGRIND_EXEC_FLAGS "-u Cmdenv" CACHE STRING "Flags passed to executable run by Valgrind")
-    string(REPLACE " " ";" _valgrind_flags "${VALGRIND_FLAGS}")
-    string(REPLACE " " ";" _valgrind_exec_flags "${VALGRIND_EXEC_FLAGS}")
-    add_custom_target(memcheck_${_name}
-        COMMAND ${VALGRIND_COMMAND} ${_valgrind_flags} ${_exec} ${_valgrind_exec_flags} ${_config}
-        WORKING_DIRECTORY ${_working_directory}
-        VERBATIM)
+    if(VALGRIND_COMMAND)
+        set(VALGRIND_FLAGS "--track-origins=yes" CACHE STRING "Flags passed to Valgrind for memcheck targets")
+        set(VALGRIND_EXEC_FLAGS "-u Cmdenv" CACHE STRING "Flags passed to executable run by Valgrind")
+        string(REPLACE " " ";" _valgrind_flags "${VALGRIND_FLAGS}")
+        string(REPLACE " " ";" _valgrind_exec_flags "${VALGRIND_EXEC_FLAGS}")
+        add_custom_target(memcheck_${_name}
+            COMMAND ${VALGRIND_COMMAND} ${_valgrind_flags} ${_exec} ${_valgrind_exec_flags} ${_config}
+            WORKING_DIRECTORY ${_working_directory}
+            VERBATIM)
+    endif()
 endmacro()
