@@ -128,8 +128,9 @@ void BasicNodeManager::updateVehicle(const std::string& id, VehicleSink* sink)
 
 cModule* BasicNodeManager::createModule(const std::string&, cModuleType* type)
 {
+    cModule* module = type->create("node", getSystemModule(), m_nodeIndex, m_nodeIndex);
     ++m_nodeIndex;
-    return type->create("node", getSystemModule(), m_nodeIndex, m_nodeIndex);
+    return module;
 }
 
 cModule* BasicNodeManager::addNodeModule(const std::string& id, cModuleType* type, NodeInitializer& init)
