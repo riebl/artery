@@ -34,7 +34,7 @@ private:
     inet::Coord mPosition;
     inet::Coord mSpeed;
     inet::EulerAngles mOrientation;
-    double mAntennaHeight;
+    double mAntennaHeight = 0.0;
     omnetpp::cModule* mVisualRepresentation = nullptr;
     const inet::CanvasProjection* mCanvasProjection = nullptr;
 };
