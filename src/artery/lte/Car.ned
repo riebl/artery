@@ -7,21 +7,16 @@ import inet.networklayer.contract.IRoutingTable;
 import inet.networklayer.contract.INetworkLayer;
 import inet.transportlayer.tcp.TCP;
 import inet.transportlayer.udp.UDP;
-import lte.stack.phy.ILteNic;
-import lte.stack.phy.LteNicUe;
-import lte.stack.phy.LteNicUeD2D;
+import lte.stack.ILteNic;
 
 module Car extends artery.inet.Car
 {
     parameters:
         // INET network layer
-        string networkLayerType = default("IPv4NetworkLayer");
-        string routingTableType = default("IPv4RoutingTable");
         *.routingTableModule = default(absPath(".routingTable"));
 
         // LTE NIC
-        bool d2dCapable = default(false);
-        string nicType = default(d2dCapable ? "LteNicUeD2D" : "LteNicUe");
+        string nicType = default("LteNicUe");
         int macNodeId = default(0);
         int masterId;
 
@@ -37,18 +32,17 @@ module Car extends artery.inet.Car
             @display("p=50,25");
         }
 
-        routingTable: <routingTableType> like IRoutingTable {
+        routingTable: <default("IPv4RoutingTable")> like IRoutingTable {
             @display("p=50,125");
         }
 
-        networkLayer: <networkLayerType> like INetworkLayer {
+        networkLayer: <default("IPv4NetworkLayer")> like INetworkLayer {
             @display("p=150,125");
         }
 
         lteNic: <nicType> like ILteNic {
             @display("p=150,400");
             nodeType = "UE";
-            d2dCapable = d2dCapable;
         }
 
         udpApp[numUdpApps]: <> like IUDPApp {
