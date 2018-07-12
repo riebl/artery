@@ -1,1 +1,5 @@
 add_opp_run(testbed CONFIG omnetpp.ini)
+add_opp_test(testbed SUFFIX no-api CONFIG noSeaApi SIMTIME_LIMIT 5s)
+if(SEA_V2X_FOUND)
+    add_opp_test(testbed SUFFIX no-usrp CONFIG noUsrp SIMTIME_LIMIT 5s)
+endif()
