@@ -1,3 +1,4 @@
+scenarios/**/*.pyc
 scenarios/*/results/*
 scenarios/*/.tkenvrc
 src/artery/messages/*_m.cc
