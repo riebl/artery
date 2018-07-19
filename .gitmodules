@@ -5,9 +5,6 @@
 	path = extern/inet
 	url = https://github.com/riebl/inet.git
 	branch = artery-v3.6.3
-[submodule "extern/vanetza"]
-	path = extern/vanetza
-	url = https://github.com/riebl/vanetza.git
 [submodule "extern/pybind11"]
 	path = extern/pybind11
 	url = https://github.com/pybind/pybind11.git
