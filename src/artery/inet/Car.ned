@@ -8,16 +8,24 @@ import inet.linklayer.contract.IWirelessNic;
 import inet.mobility.contract.IMobility;
 import inet.networklayer.common.InterfaceTable;
 
-module Car extends PlainVehicle like INetworkNode
+// NOTE:
+// Car does not inherit from PlainVehicle on purpose to avoid a "use-after-free" bug.
+// See https://github.com/riebl/artery/pull/27 for details.
+
+module Car like INetworkNode
 {
     parameters:
         @display("i=block/wrxtx;is=vs");
         @networkNode;
         @labels(node,ethernet-node,wireless-node);
 
+        @statistic[posX](source="xCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
+        @statistic[posY](source="yCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
+
         int numRadios = default(1);
         bool withAntennaMobility = default(false);
         *.interfaceTableModule = default(absPath(".interfaceTable"));
+        mobility.visualRepresentation = "^";
 
     gates:
         input radioIn[numRadios] @directIn;
@@ -55,6 +63,11 @@ module Car extends PlainVehicle like INetworkNode
                 *.mobilityModule = absPath("^.mobility");
                 *.radioDriverModule = absPath("^.radioDriver[0]");
                 runtime.datetime = middleware.datetime;
+        }
+
+        mobility: <default("artery.inet.Mobility")> like IMobility {
+            parameters:
+                @display("p=50,200");
         }
 
         middleware: VehicleMiddleware {
