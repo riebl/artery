@@ -249,9 +249,6 @@ void Middleware::initializeServices()
 	cXMLElement* config = par("services").xmlValue();
 	for (cXMLElement* service_cfg : config->getChildrenByTagName("service")) {
 		cModuleType* module_type = cModuleType::get(service_cfg->getAttribute("type"));
-		const char* service_name = service_cfg->getAttribute("name") ?
-				service_cfg->getAttribute("name") :
-				service_cfg->getAttribute("type");
 
 		cXMLElement* service_filters = service_cfg->getFirstChildWithTag("filters");
 		bool service_applicable = true;
@@ -261,6 +258,8 @@ void Middleware::initializeServices()
 		}
 
 		if (service_applicable) {
+			const char* service_name = service_cfg->getAttribute("name") ?
+				service_cfg->getAttribute("name") : module_type->getName();
 			cModule* module = module_type->createScheduleInit(service_name, this);
 			ItsG5BaseService* service = dynamic_cast<ItsG5BaseService*>(module);
 
