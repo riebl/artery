@@ -31,6 +31,11 @@ ExampleService::ExampleService()
 {
 }
 
+ExampleService::~ExampleService()
+{
+	cancelAndDelete(m_self_msg);
+}
+
 void ExampleService::indicate(const btp::DataIndication& ind, cPacket* packet)
 {
 	if (packet->getByteLength() == 42) {
@@ -51,7 +56,7 @@ void ExampleService::initialize()
 
 void ExampleService::finish()
 {
-	cancelAndDelete(m_self_msg);
+	// you could record some scalars at this point
 	ItsG5Service::finish();
 }
 

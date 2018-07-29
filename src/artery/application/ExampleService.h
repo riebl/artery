@@ -22,6 +22,7 @@ class ExampleService : public ItsG5Service
 {
     public:
         ExampleService();
+        ~ExampleService();
 
         void indicate(const vanetza::btp::DataIndication&, omnetpp::cPacket*) override;
         void trigger() override;
