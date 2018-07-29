@@ -47,7 +47,7 @@ private:
     void traciClose() override;
 
     void subscribeVehicle(const std::string& id);
-    void unsubscribeVehicle(const std::string& id);
+    void unsubscribeVehicle(const std::string& id, bool vehicle_exists);
     void updateVehicleSubscription(const std::string& id, const std::vector<int>& vars);
 
     LiteAPI* m_api;

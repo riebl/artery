@@ -67,10 +67,12 @@ void BasicSubscriptionManager::subscribeVehicle(const std::string& id)
     m_subscribed_vehicles.insert(id);
 }
 
-void BasicSubscriptionManager::unsubscribeVehicle(const std::string& id)
+void BasicSubscriptionManager::unsubscribeVehicle(const std::string& id, bool vehicle_exists)
 {
-    static const std::vector<int> empty;
-    updateVehicleSubscription(id, empty);
+    if (vehicle_exists) {
+        static const std::vector<int> empty;
+        updateVehicleSubscription(id, empty);
+    }
     m_subscribed_vehicles.erase(id);
 }
 
@@ -115,7 +117,7 @@ void BasicSubscriptionManager::step()
 
     const auto& arrivedVehicles = m_sim_cache->get<VAR_ARRIVED_VEHICLES_IDS>();
     for (const auto& id : arrivedVehicles) {
-        unsubscribeVehicle(id);
+        unsubscribeVehicle(id, false);
     }
 
     const auto& departedVehicles = m_sim_cache->get<VAR_DEPARTED_VEHICLES_IDS>();
