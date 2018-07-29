@@ -1,6 +1,10 @@
 package artery.application.den;
 
-simple UseCase
+moduleinterface UseCase
 {
-    double detectionBlockingTime @unit(s) = default(0s);
+}
+
+moduleinterface SuspendableUseCase extends UseCase
+{
+    double detectionBlockingInterval @unit(s);
 }

@@ -8,7 +8,7 @@
 #define ARTERY_TRAFFICJAMUSECASE_H_TN78N6QA
 
 #include "artery/application/den/Memory.h"
-#include "artery/application/den/UseCase.h"
+#include "artery/application/den/SuspendableUseCase.h"
 #include "artery/application/Sampling.h"
 #include "artery/application/VehicleDataProvider.h"
 #include <vanetza/units/velocity.hpp>
@@ -26,7 +26,7 @@ namespace den
  * Check triggering conditions for "Dangerous End Of Queue" use case.
  * See release 1.1.0 of C2C-CC Triggering Conditions "Traffic Jam" (Version 3.3.0)
  */
-class TrafficJamEndOfQueue : public UseCase
+class TrafficJamEndOfQueue : public SuspendableUseCase
 {
 public:
     /**
@@ -58,7 +58,7 @@ private:
     SkipEarlySampler<vanetza::units::Velocity> mVelocitySampler;
 };
 
-class TrafficJamAhead : public UseCase
+class TrafficJamAhead : public SuspendableUseCase
 {
 public:
     /**

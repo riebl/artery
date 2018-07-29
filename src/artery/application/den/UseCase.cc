@@ -65,31 +65,5 @@ vanetza::asn1::Denm UseCase::createMessageSkeleton()
     return message;
 }
 
-void UseCase::setDetectionBlockingTime(omnetpp::SimTime block)
-{
-    mDetectionBlockingTime = std::max(omnetpp::SimTime::ZERO, block);
-}
-
-bool UseCase::isDetectionBlocked()
-{
-    const auto now = omnetpp::simTime();
-    bool blocked = false;
-
-    if (mDetectionBlockingSince) {
-        if (*mDetectionBlockingSince + mDetectionBlockingTime < now) {
-            mDetectionBlockingSince.reset();
-        } else {
-            blocked = true;
-        }
-    }
-
-    return blocked;
-}
-
-void UseCase::setDetectionBlockingSince(omnetpp::SimTime since)
-{
-    mDetectionBlockingSince = since;
-}
-
 } // namespace den
 } // namespace artery

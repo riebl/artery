@@ -1,6 +1,6 @@
 package artery.application.den;
 
-simple ImpactReductionContainerExchange extends UseCase
+simple ImpactReductionContainerExchange like UseCase
 {
     @class(artery::den::ImpactReductionContainerExchange);
 }

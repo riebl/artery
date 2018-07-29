@@ -4,12 +4,10 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
-#ifndef DEN_USE_CASE_H_
-#define DEN_USE_CASE_H_
+#ifndef ARTERY_DEN_USECASE_H_
+#define ARTERY_DEN_USECASE_H_
 
-#include <boost/optional.hpp>
 #include <omnetpp/csimplemodule.h>
-#include <omnetpp/simtime.h>
 #include <vanetza/asn1/denm.hpp>
 #include <functional>
 
@@ -48,27 +46,19 @@ public:
      */
     virtual void handleStoryboardTrigger(const StoryboardSignal&) = 0;
 
-protected:
-    using TriggeringCondition = std::function<bool(void)>;
-
     void initialize(int) override;
     int numInitStages () const override { return 1; }
 
-    virtual vanetza::asn1::Denm createMessageSkeleton();
+protected:
+    using TriggeringCondition = std::function<bool(void)>;
 
-    void setDetectionBlockingTime(omnetpp::SimTime);
-    void setDetectionBlockingSince(omnetpp::SimTime);
-    bool isDetectionBlocked();
+    virtual vanetza::asn1::Denm createMessageSkeleton();
 
     DenService* mService = nullptr;
     const VehicleDataProvider* mVdp = nullptr;
-
-private:
-    omnetpp::SimTime mDetectionBlockingTime;
-    boost::optional<omnetpp::SimTime> mDetectionBlockingSince;
 };
 
 } // namespace den
 } // namespace artery
 
-#endif /* DEN_USE_CASE_H_ */
+#endif /* ARTERY_DEN_USECASE_H_ */

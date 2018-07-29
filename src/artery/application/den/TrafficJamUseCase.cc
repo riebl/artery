@@ -44,7 +44,6 @@ void TrafficJamEndOfQueue::initialize(int stage)
         mDenmMemory = mService->getMemory();
         mVelocitySampler.setDuration(par("sampleDuration"));
         mVelocitySampler.setInterval(par("sampleInterval"));
-        setDetectionBlockingTime(par("detectionBlockingTime"));
     }
 }
 
@@ -53,7 +52,7 @@ void TrafficJamEndOfQueue::check()
     mVelocitySampler.feed(mVdp->speed(), mVdp->updated());
     if (!isDetectionBlocked() && checkPreconditions() && checkConditions())
     {
-        setDetectionBlockingSince(omnetpp::simTime());
+        blockDetection();
         auto message = createMessage();
         auto request = createRequest();
         mService->sendDenm(message, request);
@@ -177,7 +176,6 @@ void TrafficJamAhead::initialize(int stage)
         mDenmMemory = mService->getMemory();
         mVelocitySampler.setDuration(par("sampleDuration"));
         mVelocitySampler.setInterval(par("sampleInterval"));
-        setDetectionBlockingTime(par("detectionBlockingTime"));
         mUpdateCounter = 0;
         mLocalDynamicMap = &mService->getFacilities().get_const<LocalDynamicMap>();
     }
@@ -188,7 +186,7 @@ void TrafficJamAhead::check()
     mVelocitySampler.feed(mVdp->speed(), mVdp->updated());
     if (!isDetectionBlocked() && checkPreconditions() && checkConditions())
     {
-        setDetectionBlockingSince(omnetpp::simTime());
+        blockDetection();
         auto message = createMessage();
         auto request = createRequest();
         mService->sendDenm(message, request);

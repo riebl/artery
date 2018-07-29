@@ -20,6 +20,7 @@ add_library(core SHARED
     application/VehicleMiddleware.cc
     application/den/ImpactReductionUseCase.cc
     application/den/Memory.cc
+    application/den/SuspendableUseCase.cc
     application/den/TrafficJamUseCase.cc
     application/den/UseCase.cc
     netw/GeoNetPacketWrapper.cc
