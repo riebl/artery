@@ -36,7 +36,10 @@ vanetza::asn1::Denm UseCase::createMessageSkeleton()
     message->header.messageID = ItsPduHeader__messageID_denm;
     message->header.stationID = mVdp->station_id();
 
-    message->denm.management.actionID = mService->requestActionID();
+    // Do not copy ActionID itself (it also contains a context object)
+    auto action_id = mService->requestActionID();
+    message->denm.management.actionID.originatingStationID = action_id.originatingStationID;
+    message->denm.management.actionID.sequenceNumber = action_id.sequenceNumber;
     int ret = 0;
     const auto taiTime = countTaiMilliseconds(mService->getTimer()->getTimeFor(mVdp->updated()));
     ret += asn_long2INTEGER(&message->denm.management.detectionTime, taiTime);
