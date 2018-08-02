@@ -123,7 +123,7 @@ std::shared_ptr<const den::Memory> DenService::getMemory() const
     return mMemory;
 }
 
-void DenService::sendDenm(vanetza::asn1::Denm& message, vanetza::btp::DataRequestB& request)
+void DenService::sendDenm(vanetza::asn1::Denm&& message, vanetza::btp::DataRequestB& request)
 {
     fillRequest(request);
 

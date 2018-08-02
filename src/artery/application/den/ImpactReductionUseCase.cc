@@ -43,7 +43,7 @@ void ImpactReductionContainerExchange::transmitMessage(RequestResponseIndication
 {
     auto denm = createMessage(ind);
     auto request = createRequest();
-    mService->sendDenm(denm, request);
+    mService->sendDenm(std::move(denm), request);
 }
 
 void ImpactReductionContainerExchange::handleStoryboardTrigger(const StoryboardSignal& signal)

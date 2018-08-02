@@ -37,7 +37,7 @@ class DenService : public ItsG5BaseService
         std::shared_ptr<const artery::den::Memory> getMemory() const;
 
         ActionID_t requestActionID();
-        void sendDenm(vanetza::asn1::Denm&, vanetza::btp::DataRequestB&);
+        void sendDenm(vanetza::asn1::Denm&&, vanetza::btp::DataRequestB&);
 
     private:
         void fillRequest(vanetza::btp::DataRequestB&);

@@ -55,7 +55,7 @@ void TrafficJamEndOfQueue::check()
         blockDetection();
         auto message = createMessage();
         auto request = createRequest();
-        mService->sendDenm(message, request);
+        mService->sendDenm(std::move(message), request);
     }
 }
 
@@ -189,7 +189,7 @@ void TrafficJamAhead::check()
         blockDetection();
         auto message = createMessage();
         auto request = createRequest();
-        mService->sendDenm(message, request);
+        mService->sendDenm(std::move(message), request);
     }
 }
 
