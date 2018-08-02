@@ -20,6 +20,7 @@ public:
     using Version = std::pair<int, std::string>;
     Version getVersion() const;
     TraCIGeoPosition convertGeo(const TraCIPosition&) const;
+    TraCIPosition convert2D( TraCIGeoPosition const &pos ) const;
 
     void connect(const ServerEndpoint&);
 };

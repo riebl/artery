@@ -49,6 +49,27 @@ TraCIGeoPosition API::convertGeo(const TraCIPosition& pos) const
     return geo;
 }
 
+TraCIPosition API::convert2D( TraCIGeoPosition const &pos ) const {
+    using namespace constants;
+
+    tcpip::Storage addParams;
+    addParams.writeUnsignedByte(TYPE_COMPOUND);
+    addParams.writeInt(2);
+    addParams.writeUnsignedByte(POSITION_LON_LAT);
+    addParams.writeDouble(pos.longitude);
+    addParams.writeDouble(pos.latitude);
+    addParams.writeUnsignedByte(TYPE_UBYTE);
+    addParams.writeUnsignedByte(POSITION_2D);
+    send_commandGetVariable(CMD_GET_SIM_VARIABLE, POSITION_CONVERSION, "", &addParams);
+
+    tcpip::Storage inMsg;
+    processGET(inMsg, CMD_GET_SIM_VARIABLE, POSITION_2D);
+    TraCIPosition xyPos;
+    xyPos.x = inMsg.readDouble();
+    xyPos.y = inMsg.readDouble();
+    return xyPos;
+}
+
 void API::connect(const ServerEndpoint& endpoint)
 {
     const unsigned max_tries = endpoint.retry ? 10 : 0;
