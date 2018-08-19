@@ -7,7 +7,7 @@ import inet.linklayer.contract.IWirelessNic;
 import inet.mobility.contract.IMobility;
 import inet.networklayer.common.InterfaceTable;
 
-module Car extends PlainVehicle like INetworkNode
+module Car like INetworkNode
 {
     parameters:
         @display("i=block/wrxtx;is=vs");
@@ -17,6 +17,7 @@ module Car extends PlainVehicle like INetworkNode
         @statistic[posY](source="yCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
         int numRadios = default(1);
         *.interfaceTableModule = default(absPath(".interfaceTable"));
+        mobility.visualRepresentation = "^";
 
     gates:
         input radioIn[numRadios] @directIn;
@@ -45,6 +46,11 @@ module Car extends PlainVehicle like INetworkNode
                 @display("p=250,200");
                 radioDriverModule = ".radioDriver[0]";
                 mobilityModule = ".mobility";
+        }
+
+        mobility: <default("artery.inet.Mobility")> like IMobility {
+            parameters:
+                @display("p=50,200");
         }
 
     connections:
