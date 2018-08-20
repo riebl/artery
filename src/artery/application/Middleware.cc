@@ -261,9 +261,14 @@ void Middleware::initializeServices()
 		if (service_applicable) {
 			const char* service_name = service_cfg->getAttribute("name") ?
 				service_cfg->getAttribute("name") : module_type->getName();
-			cModule* module = module_type->createScheduleInit(service_name, this);
-			ItsG5BaseService* service = dynamic_cast<ItsG5BaseService*>(module);
+			cModule* module = module_type->create(service_name, this);
+			module->finalizeParameters();
+			module->buildInside();
+			module->scheduleStart(simTime());
+			module->callInitialize(0); // stages >= 1 are invoked by OMNeT++
+			// RATIONALE: initializeServices() is called during initialize(1)
 
+			ItsG5BaseService* service = dynamic_cast<ItsG5BaseService*>(module);
 			if (service) {
 				cXMLElement* listener = service_cfg->getFirstChildWithTag("listener");
 				if (listener && listener->getAttribute("port")) {
