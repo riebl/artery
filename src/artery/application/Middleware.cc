@@ -261,7 +261,11 @@ void Middleware::initializeServices()
 		if (service_applicable) {
 			const char* service_name = service_cfg->getAttribute("name") ?
 				service_cfg->getAttribute("name") : module_type->getName();
-			cModule* module = module_type->createScheduleInit(service_name, this);
+			cModule *module = module_type->create(service_name, this);
+			module->finalizeParameters();
+			module->buildInside();
+			module->scheduleStart(getSimulation()->getSimTime());
+			module->callInitialize(0);
 			ItsG5BaseService* service = dynamic_cast<ItsG5BaseService*>(module);
 
 			if (service) {
