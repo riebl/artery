@@ -144,8 +144,7 @@ namespace tcpip
 	// ----------------------------------------------------------------------
 	void 
 		Socket::
-		BailOnSocketError( std::string context) 
-		const
+		BailOnSocketError( std::string context) const
 	{
 #ifdef WIN32
 		int e = WSAGetLastError();

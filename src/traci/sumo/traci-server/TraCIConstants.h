@@ -16,7 +16,7 @@ namespace constants {
 // VERSION
 // ****************************************
 
-constexpr integer TRACI_VERSION = 17;
+constexpr integer TRACI_VERSION = 18;
 
 // ****************************************
 // COMMANDS
@@ -37,6 +37,9 @@ constexpr ubyte CMD_SETORDER = 0x03;
 // command: stop node
 constexpr ubyte CMD_STOP = 0x12;
 
+// command: reroute to parking area
+constexpr ubyte CMD_REROUTE_TO_PARKING = 0xc2;
+
 // command: Resume from parking
 constexpr ubyte CMD_RESUME = 0x19;
 
@@ -54,6 +57,9 @@ constexpr ubyte CMD_CHANGETARGET = 0x31;
 
 // command: close sumo
 constexpr ubyte CMD_CLOSE = 0x7F;
+
+// command: add subscription filter
+constexpr ubyte CMD_ADD_SUBSCRIPTION_FILTER = 0x7e;
 
 // command: subscribe induction loop (e1) context
 constexpr ubyte CMD_SUBSCRIBE_INDUCTIONLOOP_CONTEXT = 0x80;
@@ -384,9 +390,6 @@ constexpr ubyte POSITION_ROADMAP = 0x04;
 // DATA TYPES
 // ****************************************
 
-// Boundary Box (4 doubles)
-constexpr ubyte TYPE_BOUNDINGBOX = 0x05;
-
 // Polygon (2*n doubles)
 constexpr ubyte TYPE_POLYGON = 0x06;
 
@@ -398,9 +401,6 @@ constexpr ubyte TYPE_BYTE = 0x08;
 
 // 32 bit signed integer
 constexpr ubyte TYPE_INTEGER = 0x09;
-
-// float
-constexpr ubyte TYPE_FLOAT = 0x0A;
 
 // double
 constexpr ubyte TYPE_DOUBLE = 0x0B;
@@ -433,11 +433,11 @@ constexpr ubyte RTYPE_NOTIMPLEMENTED = 0x01;
 // result type: error
 constexpr ubyte RTYPE_ERR = 0xFF;
 
-// return value for invalid queries (especially vehicle is not on the road)
-constexpr integer INVALID_INT_VALUE = -1;
+// return value for invalid queries (especially vehicle is not on the road), see Position::INVALID
+constexpr integer INVALID_INT_VALUE = -1073741824;
 
-// maximum value for client ordering (2 ^ 30 - 1)
-constexpr integer MAX_ORDER = 1073741823;
+// maximum value for client ordering (2 ^ 30)
+constexpr integer MAX_ORDER = 1073741824;
 
 // ****************************************
 // TRAFFIC LIGHT PHASES
@@ -575,6 +575,46 @@ constexpr ubyte ROUTING_MODE_DEFAULT = 0x00;
 // use aggregated travel times from device.rerouting
 constexpr ubyte ROUTING_MODE_AGGREGATED = 0x01;
 
+// use loaded efforts
+constexpr ubyte ROUTING_MODE_EFFORT = 0x02;
+
+// use combined costs
+constexpr ubyte ROUTING_MODE_COMBINED = 0x03;
+
+// ****************************************
+// FILTER TYPES (for context subscription filters)
+// ****************************************
+
+// Reset all filters
+constexpr ubyte FILTER_TYPE_NONE = 0x00;
+
+// Filter by list of lanes relative to ego vehicle
+constexpr ubyte FILTER_TYPE_LANES = 0x01;
+
+// Exclude vehicles on opposite (and other) lanes from context subscription result
+constexpr ubyte FILTER_TYPE_NOOPPOSITE = 0x02;
+
+// Specify maximal downstream distance for vehicles in context subscription result
+constexpr ubyte FILTER_TYPE_DOWNSTREAM_DIST = 0x03;
+
+// Specify maximal upstream distance for vehicles in context subscription result
+constexpr ubyte FILTER_TYPE_UPSTREAM_DIST = 0x04;
+
+// Only return leader and follower in context subscription result
+constexpr ubyte FILTER_TYPE_CF_MANEUVER = 0x05;
+
+// Only return leader and follower on ego and neighboring lane in context subscription result
+constexpr ubyte FILTER_TYPE_LC_MANEUVER = 0x06;
+
+// Only return foes on upcoming junction in context subscription result
+constexpr ubyte FILTER_TYPE_TURN_MANEUVER = 0x07;
+
+// Only return vehicles of the given vClass in context subscription result
+constexpr ubyte FILTER_TYPE_VCLASS = 0x08;
+
+// Only return vehicles of the given vType in context subscription result
+constexpr ubyte FILTER_TYPE_VTYPE = 0x09;
+
 // ****************************************
 // VARIABLE TYPES (for CMD_GET_*_VARIABLE)
 // ****************************************
@@ -624,7 +664,7 @@ constexpr ubyte JAM_LENGTH_VEHICLE = 0x18;
 // last step jam length in meters
 constexpr ubyte JAM_LENGTH_METERS = 0x19;
 
-// last step person list (get: edges)
+// last step person list (get: edges, vehicles)
 constexpr ubyte LAST_STEP_PERSON_ID_LIST = 0x1a;
 
 // traffic light states, encoded as rRgGyYoO tuple (get: traffic lights)
@@ -756,7 +796,7 @@ constexpr ubyte VAR_ROAD_ID = 0x50;
 // lane id (get: vehicles, inductionloop, arealdetector)
 constexpr ubyte VAR_LANE_ID = 0x51;
 
-// lane index (get: vehicles)
+// lane index (get: vehicle, edge)
 constexpr ubyte VAR_LANE_INDEX = 0x52;
 
 // route id (get & set: vehicles)
@@ -764,6 +804,9 @@ constexpr ubyte VAR_ROUTE_ID = 0x53;
 
 // edges (get: routes, vehicles)
 constexpr ubyte VAR_EDGES = 0x54;
+
+// update bestLanes (set: vehicle)
+constexpr ubyte VAR_UPDATE_BESTLANES = 0x6a;
 
 // filled? (get: polygons)
 constexpr ubyte VAR_FILL = 0x55;
@@ -885,6 +928,15 @@ constexpr ubyte VAR_ACCUMULATED_WAITING_TIME = 0x87;
 // upcoming traffic lights (get: vehicle)
 constexpr ubyte VAR_NEXT_TLS = 0x70;
 
+// upcoming stops (get: vehicle)
+constexpr ubyte VAR_NEXT_STOPS = 0x73;
+
+// current acceleration (get: vehicle)
+constexpr ubyte VAR_ACCELERATION = 0x72;
+
+// current time in seconds (get: simulation)
+constexpr ubyte VAR_TIME = 0x66;
+
 // current time step (get: simulation)
 constexpr ubyte VAR_TIME_STEP = 0x70;
 
@@ -953,6 +1005,18 @@ constexpr ubyte VAR_PARKING_ENDING_VEHICLES_NUMBER = 0x6e;
 
 // ids of vehicles ending to park (get: simulation)
 constexpr ubyte VAR_PARKING_ENDING_VEHICLES_IDS = 0x6f;
+
+// number of vehicles involved in a collision (get: simulation)
+constexpr ubyte VAR_COLLIDING_VEHICLES_NUMBER = 0x80;
+
+// ids of vehicles involved in a collision (get: simulation)
+constexpr ubyte VAR_COLLIDING_VEHICLES_IDS = 0x81;
+
+// number of vehicles involved in a collision (get: simulation)
+constexpr ubyte VAR_EMERGENCYSTOPPING_VEHICLES_NUMBER = 0x89;
+
+// ids of vehicles involved in a collision (get: simulation)
+constexpr ubyte VAR_EMERGENCYSTOPPING_VEHICLES_IDS = 0x8a;
 
 // clears the simulation of all not inserted vehicles (set: simulation)
 constexpr ubyte CMD_CLEAR_PENDING_VEHICLES = 0x94;
@@ -1034,6 +1098,9 @@ constexpr ubyte VAR_SCREENSHOT = 0xa5;
 
 // track vehicle
 constexpr ubyte VAR_TRACK_VEHICLE = 0xa6;
+
+// presence of view
+constexpr ubyte VAR_HAS_VIEW = 0xa7;
 
 
 } // namespace constants

@@ -23,7 +23,7 @@
 #define HAVE_DLFCN_H 1
 
 /* Reporting string for enabled options */
-#define HAVE_ENABLED "x86_64-pc-linux-gnu TRACI PROJ GDAL GUI"
+#define HAVE_ENABLED "x86_64-pc-linux-gnu PROJ GDAL GUI"
 
 /* defined if ffmpeg is available */
 /* #undef HAVE_FFMPEG */
@@ -126,7 +126,7 @@
 #define HAVE_UNISTD_H 1
 
 /* Define if auto-generated version.h should be used. */
-#define HAVE_VERSION_H 1
+/* #undef HAVE_VERSION_H */
 
 /* Define to 1 if you have the <wchar.h> header file. */
 #define HAVE_WCHAR_H 1
@@ -144,9 +144,6 @@
 /* Including windows.h gives errors otherwise (cygwin) */
 /* #undef NOMINMAX */
 
-/* Define to 1 in order to disable TraCI Server. */
-/* #undef NO_TRACI */
-
 /* defines the epsilon to use on general floating point comparison */
 #define NUMERICAL_EPS 0.001
 
@@ -160,7 +157,7 @@
 #define PACKAGE_NAME "sumo"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "sumo 0.32.0"
+#define PACKAGE_STRING "sumo 1.0.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "sumo"
@@ -169,7 +166,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.32.0"
+#define PACKAGE_VERSION "1.0.0"
 
 /* defines the epsilon to use on position comparison */
 #define POSITION_EPS 0.1
@@ -204,10 +201,10 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "0.32.0"
+#define VERSION "1.0.0"
 
 /* Defined if auto-generated version.h is unavailable. */
-/* #undef VERSION_STRING */
+#define VERSION_STRING "1.0.0"
 
 /* Xerces and Fox expect this to be defined (cygwin) */
 /* #undef WIN32 */

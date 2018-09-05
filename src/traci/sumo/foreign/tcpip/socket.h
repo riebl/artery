@@ -37,11 +37,6 @@
      extern "C" void init_tcpip( shawn::SimulationController& );
 #endif
 
-// Disable exception handling warnings
-#ifdef _MSC_VER
-	#pragma warning( disable : 4290 )
-#endif
-
 #include <string>
 #include <map>
 #include <vector>
@@ -56,23 +51,10 @@ struct sockaddr_in;
 namespace tcpip
 {
 
-	class SocketException: public std::exception
+	class SocketException: public std::runtime_error
 	{
-	private:
-		std::string what_;
 	public:
-		SocketException( std::string what )
-		{
-			what_ = what;
-			//std::cerr << "tcpip::SocketException: " << what << std::endl << std::flush;
-		}
-
-		virtual const char* what() const noexcept
-		{
-			return what_.c_str();
-		}
-
-		~SocketException() {}
+        SocketException(std::string what) : std::runtime_error(what.c_str()) {}
 	};
 
 	class Socket
@@ -123,7 +105,7 @@ namespace tcpip
 
 	private:
 		void init();
-		void BailOnSocketError( std::string ) const;
+		void BailOnSocketError(std::string context) const;
 #ifdef WIN32
 		std::string GetWinsockErrorString(int err) const;
 #endif
