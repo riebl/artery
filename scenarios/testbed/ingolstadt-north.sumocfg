@@ -4,7 +4,7 @@
     <input>
         <net-file value="ingolstadt-north-netedit.net.xml" />
         <route-files value="ingolstadt-north.rou-self.xml" />
-        <additional-files value="ingolstadt-north.poly.xml vtype.add.xml"/>
+        <additional-files value="ingolstadt-north.poly.xml, vtype.add.xml"/>
     </input>
     <processing>
         <lateral-resolution value="0.5" />
