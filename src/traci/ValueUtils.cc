@@ -6,119 +6,61 @@
 
 #include "traci/ValueUtils.h"
 
-namespace libsumo
+namespace traci
 {
 
-TraCIValue make_value(double scalar)
+using namespace libsumo;
+
+TraCIInt make_value(int i)
 {
-    TraCIValue v;
-    v.scalar = scalar;
+    TraCIInt v;
+    v.value = i;
     return v;
 }
 
-TraCIValue make_value(const TraCIPosition& pos)
+TraCIDouble make_value(double scalar)
 {
-    TraCIValue v;
-    v.position = pos;
-    return v;
+    TraCIDouble d;
+    d.value = scalar;
+    return d;
 }
 
-TraCIValue make_value(const TraCIColor& color)
+const TraCIPosition& make_value(const TraCIPosition& pos)
 {
-    TraCIValue v;
-    v.color = color;
-    return v;
+    return pos;
 }
 
-TraCIValue make_value(const std::string& str)
+const TraCIColor& make_value(const TraCIColor& color)
 {
-    TraCIValue v;
-    v.string = str;
-    return v;
+    return color;
 }
 
-TraCIValue make_value(const std::vector<std::string>& strList)
+TraCIString make_value(const std::string& str)
 {
-    TraCIValue v;
-    v.stringList = strList;
-    return v;
+    TraCIString s;
+    s.value = str;
+    return s;
 }
 
-TraCIValue make_value(std::string&& str)
+TraCIStringList make_value(const std::vector<std::string>& strList)
 {
-    TraCIValue v;
-    v.string = std::move(str);
-    return v;
+    TraCIStringList sl;
+    sl.value = strList;
+    return sl;
 }
 
-TraCIValue make_value(std::vector<std::string>&& strList)
+TraCIString make_value(std::string&& str)
 {
-    TraCIValue v;
-    v.stringList = std::move(strList);
-    return v;
+    TraCIString s;
+    s.value = std::move(str);
+    return s;
 }
 
-TraCIValue make_value(SUMOTime t)
+TraCIStringList make_value(std::vector<std::string>&& strList)
 {
-    TraCIValue v;
-    v.scalar = t;
-    return v;
-}
-
-TraCIValue make_value(int i)
-{
-    TraCIValue v;
-    v.scalar = i;
-    return v;
-}
-
-template<>
-typename details::value_cast_trait<double>::return_type
-value_cast<double>(const TraCIValue& v)
-{
-    return v.scalar;
-}
-
-template<>
-typename details::value_cast_trait<TraCIColor>::return_type
-value_cast<TraCIColor>(const TraCIValue& v)
-{
-    return v.color;
-}
-
-template<>
-typename details::value_cast_trait<TraCIPosition>::return_type
-value_cast<TraCIPosition>(const TraCIValue& v)
-{
-    return v.position;
-}
-
-template<>
-typename details::value_cast_trait<std::string>::return_type
-value_cast<std::string>(const TraCIValue& v)
-{
-    return v.string;
-}
-
-template<>
-typename details::value_cast_trait<std::vector<std::string>>::return_type
-value_cast<std::vector<std::string>>(const TraCIValue& v)
-{
-    return v.stringList;
-}
-
-template<>
-typename details::value_cast_trait<SUMOTime>::return_type
-value_cast<SUMOTime>(const TraCIValue& v)
-{
-    return v.scalar;
-}
-
-template<>
-typename details::value_cast_trait<int>::return_type
-value_cast<int>(const TraCIValue& v)
-{
-    return v.scalar;
+    TraCIStringList sl;
+    sl.value = std::move(strList);
+    return sl;
 }
 
 } // namespace libsumo

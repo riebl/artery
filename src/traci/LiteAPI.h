@@ -43,9 +43,7 @@ public:
     API::PersonScope& person() { return m_api.person; }
     const API::PersonScope& person() const { return m_api.person; }
 
-    SUMOTime getSUMOTime(int cmd, int var, const std::string& id);
     double getDouble(int cmd, int var, const std::string& id);
-    libsumo::TraCIBoundary getBoundingBox(int cmd, int var, const std::string& id);
     libsumo::TraCIPositionVector getPolygon(int cmd, int var, const std::string& id);
     libsumo::TraCIPosition getPosition(int cmd, int var, const std::string& id);
     libsumo::TraCIPosition getPosition3D(int cmd, int var, const std::string& id);

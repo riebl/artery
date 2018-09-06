@@ -30,7 +30,7 @@ void VeinsObstacleControl::traciInit()
 void VeinsObstacleControl::fetchObstacles(traci::LiteAPI& traci)
 {
     auto& polygons = traci.polygon();
-    auto boundary = traci.simulation().getNetBoundary();
+    const traci::Boundary boundary { traci.simulation().getNetBoundary() };
     unsigned fetched = 0;
     for (const std::string& id : polygons.getIDList()) {
         std::string type = polygons.getType(id);

@@ -280,7 +280,7 @@ void GlobalEnvironmentModel::receiveSignal(cComponent*, simsignal_t signal, unsi
 void GlobalEnvironmentModel::fetchObstacles(traci::LiteAPI& traci)
 {
     auto& polygons = traci.polygon();
-    auto boundary = traci.simulation().getNetBoundary();
+    const traci::Boundary boundary { traci.simulation().getNetBoundary() };
     for (const std::string& id : polygons.getIDList()) {
         std::vector<Position> shape;
         for (const traci::TraCIPosition& traci_point : polygons.getShape(id)) {

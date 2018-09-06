@@ -53,7 +53,7 @@ private:
 
     std::string m_id;
     traci::LiteAPI& m_api;
-    traci::TraCIBoundary m_boundary;
+    traci::Boundary m_boundary;
     VehicleType m_type;
     std::shared_ptr<VehicleCache> m_cache;
 };

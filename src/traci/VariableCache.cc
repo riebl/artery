@@ -14,7 +14,7 @@ VariableCache::VariableCache(LiteAPI& api, int command, const std::string& id) :
 {
 }
 
-void VariableCache::reset(const TraCIAPI::TraCIValues& values)
+void VariableCache::reset(const libsumo::TraCIResults& values)
 {
     m_values = values;
 }
@@ -51,12 +51,6 @@ template<>
 std::vector<std::string> VariableCache::retrieve<std::vector<std::string>>(int var)
 {
     return m_api.getStringVector(m_command, var, m_id);
-}
-
-template<>
-SUMOTime VariableCache::retrieve<SUMOTime>(int var)
-{
-    return m_api.getSUMOTime(m_command, var, m_id);
 }
 
 template<>

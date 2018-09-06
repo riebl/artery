@@ -8,7 +8,7 @@ namespace artery
 
 omnetpp::simsignal_t MobilityBase::stateChangedSignal = omnetpp::cComponent::registerSignal("mobilityStateChanged");
 
-void MobilityBase::initializeSink(LiteAPI* api, const std::string& id, const TraCIBoundary& boundary, std::shared_ptr<VehicleCache> cache)
+void MobilityBase::initializeSink(LiteAPI* api, const std::string& id, const Boundary& boundary, std::shared_ptr<VehicleCache> cache)
 {
     ASSERT(api);
     ASSERT(cache);

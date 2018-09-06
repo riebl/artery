@@ -8,75 +8,55 @@
 #define VALUEUTILS_H_UXDE2KJB
 
 #include "traci/sumo/libsumo/TraCIDefs.h"
+#include "traci/VariableTraits.h"
+#include <cassert>
+#include <utility>
 
-namespace libsumo
+namespace traci
 {
 
-TraCIValue make_value(double scalar);
-TraCIValue make_value(const TraCIPosition& pos);
-TraCIValue make_value(const TraCIColor& color);
-TraCIValue make_value(const std::string& str);
-TraCIValue make_value(const std::vector<std::string>& strList);
-TraCIValue make_value(std::string&& str);
-TraCIValue make_value(std::vector<std::string>&& strList);
-TraCIValue make_value(SUMOTime);
-TraCIValue make_value(int);
+libsumo::TraCIInt make_value(int);
+libsumo::TraCIDouble make_value(double scalar);
+const libsumo::TraCIColor& make_value(const libsumo::TraCIColor& color);
+const libsumo::TraCIPosition& make_value(const libsumo::TraCIPosition& pos);
+libsumo::TraCIString make_value(const std::string& str);
+libsumo::TraCIString make_value(std::string&& str);
+libsumo::TraCIStringList make_value(const std::vector<std::string>& strList);
+libsumo::TraCIStringList make_value(std::vector<std::string>&& strList);
 
-namespace details
-{
+inline int get_value(const libsumo::TraCIInt& i) { return i.value; }
+inline double get_value(const libsumo::TraCIDouble& d) { return d.value; }
+inline const libsumo::TraCIColor& get_value(const libsumo::TraCIColor& c) { return c; }
+inline const libsumo::TraCIPosition& get_value(const libsumo::TraCIPosition& p) { return p; }
+inline const std::string& get_value(const libsumo::TraCIString& s) { return s.value; }
+inline const std::vector<std::string>& get_value(const libsumo::TraCIStringList& sl) { return sl.value; }
 
 template<typename T>
-struct value_cast_trait
+struct get_value_trait
 {
-    using return_type = const T&;
+    using result_type = typename TraCIResultTrait<T>::result_type;
+    using return_type = decltype(get_value(std::declval<const result_type&>()));
 };
-
-template<>
-struct value_cast_trait<SUMOTime>
-{
-    using return_type = const SUMOTime;
-};
-
-template<>
-struct value_cast_trait<int>
-{
-    using return_type = int;
-};
-
-} // namespace details
 
 template<typename T>
-typename details::value_cast_trait<T>::return_type value_cast(const TraCIValue&);
+typename get_value_trait<T>::return_type
+get_value(const libsumo::TraCIResult& tr)
+{
+    using result_type = typename get_value_trait<T>::result_type;
+    auto ptr = dynamic_cast<const result_type*>(&tr);
+    assert(ptr != nullptr);
+    return get_value(*ptr);
+}
 
-template<>
-typename details::value_cast_trait<double>::return_type
-value_cast<double>(const TraCIValue& v);
+template<typename T>
+typename get_value_trait<T>::return_type
+get_value(const std::shared_ptr<const libsumo::TraCIResult>& ptr)
+{
+    assert(ptr);
+    return get_value<T>(*ptr);
+}
 
-template<>
-typename details::value_cast_trait<TraCIColor>::return_type
-value_cast<TraCIColor>(const TraCIValue& v);
-
-template<>
-typename details::value_cast_trait<TraCIPosition>::return_type
-value_cast<TraCIPosition>(const TraCIValue& v);
-
-template<>
-typename details::value_cast_trait<std::string>::return_type
-value_cast<std::string>(const TraCIValue& v);
-
-template<>
-typename details::value_cast_trait<std::vector<std::string>>::return_type
-value_cast<std::vector<std::string>>(const TraCIValue& v);
-
-template<>
-typename details::value_cast_trait<SUMOTime>::return_type
-value_cast<SUMOTime>(const TraCIValue& v);
-
-template<>
-typename details::value_cast_trait<int>::return_type
-value_cast<int>(const TraCIValue& v);
-
-} // namespace libsumo
+} // namespace traci
 
 #endif /* VALUEUTILS_H_UXDE2KJB */
 

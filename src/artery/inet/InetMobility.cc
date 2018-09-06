@@ -68,12 +68,14 @@ inet::EulerAngles InetMobility::getCurrentAngularSpeed()
 
 inet::Coord InetMobility::getConstraintAreaMax() const
 {
-    return inet::Coord { mNetBoundary.xMax, mNetBoundary.yMax, mNetBoundary.zMax };
+    const auto& max = mNetBoundary.upperRightPosition();
+    return inet::Coord { max.x, max.y, max.z };
 }
 
 inet::Coord InetMobility::getConstraintAreaMin() const
 {
-    return inet::Coord { mNetBoundary.xMin, mNetBoundary.yMin, mNetBoundary.zMin };
+    const auto& min = mNetBoundary.lowerLeftPosition();
+    return inet::Coord { min.x, min.y, min.z };
 }
 
 void InetMobility::initialize(const Position& pos, Angle heading, double speed)

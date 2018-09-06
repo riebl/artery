@@ -7,18 +7,18 @@
 namespace traci
 {
 
-struct TraCITime
+struct Time
 {
-    constexpr static SUMOTime min() { return 0; }
-    constexpr static SUMOTime max() { return 0x7fffffff; }
+    // SUMO 1.0 still uses integer for internal time representation
+    // Hence, DBL_MAX is not an appropriate upper bound
+    constexpr static int min() { return 0; }
+    constexpr static int max() { return 0x7fffffff; }
 
-    SUMOTime milliseconds;
+    explicit Time(double s) : seconds(s) {}
+    operator omnetpp::SimTime() { return omnetpp::SimTime(seconds); }
+
+    double seconds;
 };
-
-inline omnetpp::SimTime time_cast(SUMOTime sumo)
-{
-    return omnetpp::SimTime { sumo, omnetpp::SIMTIME_MS };
-}
 
 } // namespace traci
 

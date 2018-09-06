@@ -3,19 +3,9 @@
 namespace traci
 {
 
-SUMOTime LiteAPI::getSUMOTime(int cmd, int var, const std::string& id)
-{
-    return m_api.getSUMOTime(cmd, var, id);
-}
-
 double LiteAPI::getDouble(int cmd, int var, const std::string& id)
 {
     return m_api.getDouble(cmd, var, id);
-}
-
-libsumo::TraCIBoundary LiteAPI::getBoundingBox(int cmd, int var, const std::string& id)
-{
-    return m_api.getBoundingBox(cmd, var, id);
 }
 
 libsumo::TraCIPositionVector LiteAPI::getPolygon(int cmd, int var, const std::string& id)

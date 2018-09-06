@@ -72,7 +72,7 @@ private:
 
     LiteAPI* m_api;
     ModuleMapper* m_mapper;
-    TraCIBoundary m_boundary;
+    Boundary m_boundary;
     SubscriptionManager* m_subscriptions;
     unsigned m_nodeIndex;
     std::map<std::string, omnetpp::cModule*> m_nodes;

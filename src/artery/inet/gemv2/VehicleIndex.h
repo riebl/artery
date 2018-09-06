@@ -45,7 +45,7 @@ public:
         void createLocalOutline(double width, double length);
         void calculateWorldOutline();
 
-        traci::TraCIBoundary mBoundary;
+        traci::Boundary mBoundary;
         double mHeight;
         Angle mHeading;
         Position mPosition;

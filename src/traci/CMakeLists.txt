@@ -4,6 +4,7 @@ set(SOURCES
     BasicModuleMapper.cc
     BasicNodeManager.cc
     BasicSubscriptionManager.cc
+    CheckTimeSync.cc
     Core.cc
     ConnectLauncher.cc
     InsertionDelayNodeManager.cc

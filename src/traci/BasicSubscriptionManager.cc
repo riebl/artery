@@ -5,6 +5,7 @@
  */
 
 #include "traci/BasicSubscriptionManager.h"
+#include "traci/CheckTimeSync.h"
 #include "traci/LiteAPI.h"
 #include "traci/Core.h"
 #include "traci/VariableCache.h"
@@ -43,13 +44,16 @@ void BasicSubscriptionManager::traciInit()
     static const std::set<int> vars {
         VAR_DEPARTED_VEHICLES_IDS,
         VAR_ARRIVED_VEHICLES_IDS,
-        VAR_TIME_STEP
+        VAR_DELTA_T,
+        VAR_TIME
     };
     subscribeSimulationVariables(vars);
 
     // subscribe already running vehicles
-    for (const std::string& id : m_api->vehicle().getIDList()) {
-        subscribeVehicle(id);
+    if (!m_vehicle_vars.empty()) {
+        for (const std::string& id : m_api->vehicle().getIDList()) {
+            subscribeVehicle(id);
+        }
     }
 }
 
@@ -78,7 +82,7 @@ void BasicSubscriptionManager::unsubscribeVehicle(const std::string& id, bool ve
 
 void BasicSubscriptionManager::updateVehicleSubscription(const std::string& id, const std::vector<int>& vars)
 {
-    m_api->simulation().subscribe(CMD_SUBSCRIBE_VEHICLE_VARIABLE, id, TraCITime::min(), TraCITime::max(), vars);
+    m_api->vehicle().subscribe(id, vars, Time::min(), Time::max());
 }
 
 void BasicSubscriptionManager::subscribeVehicleVariables(const std::set<int>& add_vars)
@@ -103,17 +107,15 @@ void BasicSubscriptionManager::subscribeSimulationVariables(const std::set<int>&
     ASSERT(m_sim_vars.size() >= tmp_vars.size());
 
     if (m_sim_vars.size() != tmp_vars.size()) {
-        m_api->simulation().subscribe(CMD_SUBSCRIBE_SIM_VARIABLE, "", TraCITime::min(), TraCITime::max(), m_sim_vars);
+        m_api->simulation().subscribe("", m_sim_vars, Time::min(), Time::max());
     }
 }
 
 void BasicSubscriptionManager::step()
 {
-    auto& sim = m_api->simulation();
-
-    const auto& simvars = sim.getSubscriptionResults("");
+    const auto& simvars = m_api->simulation().getSubscriptionResults("");
     m_sim_cache->reset(simvars);
-    ASSERT(time_cast(m_sim_cache->get<VAR_TIME_STEP>()) == simTime());
+    ASSERT(checkTimeSync(*m_sim_cache, omnetpp::simTime()));
 
     const auto& arrivedVehicles = m_sim_cache->get<VAR_ARRIVED_VEHICLES_IDS>();
     for (const auto& id : arrivedVehicles) {
@@ -125,8 +127,9 @@ void BasicSubscriptionManager::step()
         subscribeVehicle(id);
     }
 
+    const auto& vehicles = m_api->vehicle();
     for (const std::string& vehicle : m_subscribed_vehicles) {
-        const auto& vars = sim.getSubscriptionResults(vehicle);
+        const auto& vars = vehicles.getSubscriptionResults(vehicle);
         getVehicleCache(vehicle)->reset(vars);
     }
 }

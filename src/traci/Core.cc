@@ -66,7 +66,7 @@ void Core::handleMessage(cMessage* msg)
         checkVersion();
         syncTime();
         emit(initSignal, simTime());
-        m_updateInterval = time_cast(m_traci->simulation.getDeltaT());
+        m_updateInterval = Time { m_traci->simulation.getDeltaT() };
         scheduleAt(simTime() + m_updateInterval, m_updateEvent);
     }
 }
@@ -96,9 +96,8 @@ void Core::checkVersion()
 void Core::syncTime()
 {
     const SimTime now = simTime();
-    ASSERT(now.remainderForUnit(SIMTIME_MS).isZero());
     if (!now.isZero()) {
-        m_traci->simulationStep(now.inUnit(SIMTIME_MS));
+        m_traci->simulationStep(now.dbl());
     }
 }
 

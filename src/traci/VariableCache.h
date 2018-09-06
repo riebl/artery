@@ -22,32 +22,49 @@ public:
     const std::string& getId() const { return m_id; }
 
     /**
-     * Get value from cache.
+     * Get value from cache as shared pointer.
      * If variable is not present yet, it is automatically retrieved.
      *
      * \param VAR variable identifier
+     * \return read-only shared pointer to TraCI result type
      */
     template<int VAR>
-    auto get() ->
-    decltype(libsumo::value_cast<typename VariableTrait<VAR>::value_type>(std::declval<const libsumo::TraCIValue&>()))
+    std::shared_ptr<const typename VariableTrait<VAR>::result_type> getPtr()
     {
         using value_type = typename VariableTrait<VAR>::value_type;
+        using result_type = typename VariableTrait<VAR>::result_type;
 
         auto found = m_values.find(VAR);
         if (found == m_values.end()) {
-            value_type tmp = retrieve<value_type>(VAR);
-            std::tie(found, std::ignore) =
-                m_values.emplace(VAR, libsumo::make_value(std::move(tmp)));
+            value_type value = retrieve<value_type>(VAR);
+            auto result = std::make_shared<result_type>(make_value(std::move(value)));
+            std::tie(found, std::ignore) = m_values.emplace(VAR, std::move(result));
         }
 
-        return libsumo::value_cast<value_type>(found->second);
+        return std::dynamic_pointer_cast<result_type>(found->second);
+    }
+
+    /**
+     * Get value from cache.
+     * If variable is not present yet, it is automatically retrieved.
+     * Result type is unwrapped as far as possible, e.g. TraCIInt -> int
+     *
+     * \param VAR variable identifier
+     * \return cached value (cache cannot be modified through returned type)
+     */
+    template<int VAR>
+    auto get() ->
+    typename get_value_trait<typename VariableTrait<VAR>::value_type>::return_type
+    {
+        using value_type = typename VariableTrait<VAR>::value_type;
+        return get_value<value_type>(this->getPtr<VAR>());
     }
 
     /**
      * Reset cache, i.e all previously stored values are dropped
      * \param values new values to be stored
      */
-    void reset(const TraCIAPI::TraCIValues& values);
+    void reset(const libsumo::TraCIResults& values);
 
 protected:
     VariableCache(LiteAPI& api, int command, const std::string& id);
@@ -59,7 +76,7 @@ private:
     LiteAPI& m_api;
     const std::string m_id;
     const int m_command;
-    TraCIAPI::TraCIValues m_values;
+    libsumo::TraCIResults m_values;
 };
 
 class VehicleCache : public VariableCache
@@ -86,9 +103,6 @@ std::string VariableCache::retrieve<std::string>(int var);
 
 template<>
 std::vector<std::string> VariableCache::retrieve<std::vector<std::string>>(int var);
-
-template<>
-SUMOTime VariableCache::retrieve<SUMOTime>(int var);
 
 template<>
 int VariableCache::retrieve<int>(int var);

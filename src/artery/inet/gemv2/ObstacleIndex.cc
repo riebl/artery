@@ -71,7 +71,7 @@ void ObstacleIndex::receiveSignal(cComponent* source, simsignal_t signal, const 
 void ObstacleIndex::fetchObstacles(traci::LiteAPI& traci)
 {
     const auto& polygons = traci.polygon();
-    const auto boundary = traci.simulation().getNetBoundary();
+    const traci::Boundary boundary { traci.simulation().getNetBoundary() };
     unsigned ignored = 0;
     std::string shape_msg;
     for (const std::string& id : polygons.getIDList()) {

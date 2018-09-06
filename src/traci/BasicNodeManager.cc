@@ -1,4 +1,5 @@
 #include "traci/BasicNodeManager.h"
+#include "traci/CheckTimeSync.h"
 #include "traci/Core.h"
 #include "traci/LiteAPI.h"
 #include "traci/ModuleMapper.h"
@@ -16,7 +17,7 @@ static const std::set<int> sVehicleVariables {
     VAR_POSITION, VAR_SPEED, VAR_ANGLE
 };
 static const std::set<int> sSimulationVariables {
-    VAR_DEPARTED_VEHICLES_IDS, VAR_ARRIVED_VEHICLES_IDS, VAR_TIME_STEP
+    VAR_DEPARTED_VEHICLES_IDS, VAR_ARRIVED_VEHICLES_IDS, VAR_TIME
 };
 
 class VehicleObjectImpl : public BasicNodeManager::VehicleObject
@@ -66,7 +67,7 @@ void BasicNodeManager::finish()
 void BasicNodeManager::traciInit()
 {
     using namespace traci::constants;
-    m_boundary = m_api->simulation().getNetBoundary();
+    m_boundary = Boundary { m_api->simulation().getNetBoundary() };
     m_subscriptions->subscribeSimulationVariables(sSimulationVariables);
     m_subscriptions->subscribeVehicleVariables(sVehicleVariables);
 
@@ -79,7 +80,7 @@ void BasicNodeManager::traciInit()
 void BasicNodeManager::traciStep()
 {
     auto sim_cache = m_subscriptions->getSimulationCache();
-    ASSERT(time_cast(sim_cache->get<VAR_TIME_STEP>()) == simTime());
+    ASSERT(checkTimeSync(*sim_cache, omnetpp::simTime()));
 
     const auto& departed = sim_cache->get<VAR_DEPARTED_VEHICLES_IDS>();
     EV_DETAIL << "TraCI: " << departed.size() << " vehicles departed" << endl;
