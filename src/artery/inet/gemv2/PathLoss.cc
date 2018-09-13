@@ -69,6 +69,11 @@ double PathLoss::computePathLoss(const phy::ITransmission* transmission, const p
             throw cRuntimeError("invalid link classification");
     };
 
+    // compare model's maximum range with actual distance
+    if (tx.distance(rx) > range.get()) {
+        return 0.0; // all signal power is lost
+    }
+
     double loss = model->computePathLoss(transmission, arrival);
     if (m_small_scale) {
         loss *= m_small_scale->computeVariation(Position { tx.x, tx.y }, Position { rx.x, rx.y }, range, link);
