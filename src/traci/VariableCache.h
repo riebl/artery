@@ -28,7 +28,8 @@ public:
      * \param VAR variable identifier
      */
     template<int VAR>
-    typename VariableTrait<VAR>::value_type get()
+    auto get() ->
+    decltype(libsumo::value_cast<typename VariableTrait<VAR>::value_type>(std::declval<const libsumo::TraCIValue&>()))
     {
         using value_type = typename VariableTrait<VAR>::value_type;
 
