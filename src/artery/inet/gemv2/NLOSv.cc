@@ -76,16 +76,19 @@ double NLOSv::computePathLoss(const phy::ITransmission* transmission, const phy:
 
 double NLOSv::computeVehiclePathLoss(const Coord& pos_tx, const Coord& pos_rx, m lambda) const
 {
-    // TODO original GEMV² code uses same Tx and Rx heights for all three paths: does this make sense?
     const meter distTxRx { sqrt(squared(pos_rx.x - pos_tx.x) + squared(pos_rx.y - pos_tx.y)) }; /*< ground distance! */
-    const DiffractionObstacle Tx { meter(0.0), meter(pos_tx.z) };
-    const DiffractionObstacle Rx { distTxRx, meter(pos_rx.z) };
+    DiffractionObstacle Tx { meter(0.0), meter(pos_tx.z) };
+    DiffractionObstacle Rx { distTxRx, meter(pos_rx.z) };
 
     auto vehicles = mVehicleIndex->getObstructingVehicles(Position { pos_tx.x, pos_tx.y }, Position { pos_rx.x, pos_rx.y });
     auto obsTop = buildTopObstacles(vehicles, pos_tx, pos_rx);
     obsTop.push_front(Tx);
     obsTop.push_back(Rx);
+
+    // original GEMV² code uses same Tx and Rx heights for all three paths: we assume zero "height" on side paths
     auto obsSides = buildSideObstacles(vehicles, pos_tx, pos_rx);
+    Tx.h = meter(0.0);
+    Rx.h = meter(0.0);
     obsSides.left.push_front(Tx);
     obsSides.right.push_front(Tx);
     obsSides.left.push_back(Rx);
