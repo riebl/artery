@@ -12,27 +12,28 @@ module Gemv2 like IPathLoss
         double rangeNLOSv @unit(m) = default(400 m);
         double rangeNLOSb @unit(m) = default(300 m);
 
+        LOS.epsilon_r = default(1.003); // relative permittivity
+        NLOSb.alpha = default(2.9); // path loss exponent
+        NLOSb.sigma = default(0.0); // no flat fading
+
+        *.vehicleIndexModule = "^.vehicles";
+        *.obstacleIndexModule = "^.obstacles";
+
     submodules:
         LOS: <default("TwoRayInterference")> like IPathLoss {
             @display("p=20,20");
-            epsilon_r = default(1.003);
         }
 
         NLOSb: <default("LogNormalShadowing")> like IPathLoss {
             @display("p=20,40");
-            alpha = default(2.9); // path loss exponent
-            sigma = default(0.0); // no flat fading
         }
 
         NLOSv: <default("NLOSv")> like IPathLoss {
             @display("p=20,60");
-            vehicleIndexModule = "^.vehicles";
         }
 
         smallScaleVariations: SmallScaleVariation if withSmallScaleVariations {
             @display("p=20,80");
-            obstacleIndexModule = "^.obstacles";
-            vehicleIndexModule = "^.vehicles";
         }
 
         obstacles: ObstacleIndex {
@@ -45,7 +46,5 @@ module Gemv2 like IPathLoss
 
         classifier: LinkClassifier {
             @display("p=50,60");
-            obstacleIndexModule = "^.obstacles";
-            vehicleIndexModule = "^.vehicles";
         }
 }
