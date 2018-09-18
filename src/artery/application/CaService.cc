@@ -47,6 +47,7 @@ CaService::CaService() :
 
 void CaService::initialize()
 {
+	 
 	ItsG5BaseService::initialize();
 	mVehicleDataProvider = &getFacilities().get_const<VehicleDataProvider>();
 	mTimer = &getFacilities().get_const<Timer>();
@@ -67,6 +68,7 @@ void CaService::initialize()
 
 	mDccRestriction = par("withDccRestriction");
 	mFixedRate = par("fixedRate");
+	
 }
 
 void CaService::trigger()

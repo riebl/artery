@@ -46,8 +46,11 @@ void ExampleService::indicate(const btp::DataIndication& ind, cPacket* packet)
 }
 
 void ExampleService::initialize()
-{
-	ItsG5Service::initialize();
+{	
+    static int num = 0 ; 
+	printf("INITIALIZE OWN Service %d \n", num++);
+    
+    ItsG5Service::initialize();
 	m_self_msg = new cMessage("Example Service");
 	subscribe(scSignalCamReceived);
 
@@ -58,7 +61,7 @@ void ExampleService::finish()
 {
 	// you could record some scalars at this point
 	ItsG5Service::finish();
-}
+}       
 
 void ExampleService::handleMessage(cMessage* msg)
 {
@@ -82,10 +85,32 @@ void ExampleService::trigger()
 	request(req, packet);
 }
 
-void ExampleService::receiveSignal(cComponent* source, simsignal_t signal, cObject*, cObject*)
+void ExampleService::receiveSignal(cComponent* source, simsignal_t signal, cObject* obj, cObject* details)
 {
 	if (signal == scSignalCamReceived) {
 		auto& vehicle = getFacilities().get_const<traci::VehicleController>();
-		EV_INFO << "Vehicle " << vehicle.getVehicleId() << " received a CAM in sibling serivce\n";
-	}
+        EV_INFO << "Vehicle " << vehicle.getVehicleId() << " received a CAM in sibling serivce\n";
+        
+        // dynamic_cast <new_type> (expression)
+        const vanetza::asn1::Cam& msg =  dynamic_cast <CaObject*>(obj)->asn1();
+        std::cout << "Vehicle " << vehicle.getVehicleId() << " "
+//         << source->getNumParams()  // 7
+//         << obj->getClassName()<< " " // CaObject  
+//         << obj->getName()<< " " // NONE
+//         << obj->info()<< " " // NONE
+//         << obj->str()<< " " // NONE  
+        << msg->cam.camParameters.basicContainer.stationType<< " " // 5  
+        << msg->cam.camParameters.basicContainer.referencePosition.longitude<< " " // 5  
+        << msg->cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency.longitudinalAcceleration.longitudinalAccelerationValue<< " " // 5  
+        << " received a CAM in sibling serivce\n";
+        
+        
+        
+        
+    }
 }
+
+
+
+
+
