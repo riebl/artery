@@ -14,10 +14,12 @@ void Visualizer::initialize(int stage)
     if (stage == 0) {
         mObstacleGroup = new omnetpp::cGroupFigure("obstacles");
         mVehicleGroup = new omnetpp::cGroupFigure("vehicles");
+        mRaysGroup = new omnetpp::cGroupFigure("rays");
 
         auto canvas = this->getCanvas();
         canvas->addFigure(mObstacleGroup);
         canvas->addFigure(mVehicleGroup);
+        canvas->addFigure(mRaysGroup);
         canvas->setBackgroundColor(omnetpp::cFigure::GREY);
     }
 }
@@ -79,6 +81,42 @@ void Visualizer::drawVehicles(const VehicleIndex* index)
                 polygon->setPoint(i, omnetpp::cFigure::Point { outline[i].x.value(), outline[i].y.value() });
             }
         }
+    }
+
+    // remove all previous rays
+    for (int i = mRaysGroup->getNumFigures() - 1; i >= 0; --i)
+    {
+        delete mRaysGroup->removeFigure(i);
+    }
+}
+
+void Visualizer::drawReflectionRays(const Position& tx, const Position& rx,
+        const std::vector<Position>& obstacles, const std::vector<Position>& vehicles)
+{
+    drawRays(tx, rx, obstacles, omnetpp::cFigure::RED);
+    drawRays(tx, rx, vehicles, omnetpp::cFigure::MAGENTA);
+}
+
+void Visualizer::drawDiffractionRays(const Position& tx, const Position& rx, const std::vector<Position>& corners)
+{
+    static const omnetpp::cFigure::Color color("darkgreen");
+    drawRays(tx, rx, corners, color);
+}
+
+void Visualizer::drawRays(const Position& tx, const Position& rx,
+        const std::vector<Position>& points, omnetpp::cFigure::Color c) const
+{
+    const omnetpp::cFigure::Point begin { tx.x.value(), tx.y.value() };
+    const omnetpp::cFigure::Point end { rx.x.value(), rx.y.value() };
+
+    for (auto& point : points)
+    {
+        auto figure = new omnetpp::cPolylineFigure();
+        mRaysGroup->addFigure(figure);
+        figure->setLineColor(c);
+        figure->addPoint(begin);
+        figure->addPoint(omnetpp::cFigure::Point { point.x.value(), point.y.value() });
+        figure->addPoint(end);
     }
 }
 

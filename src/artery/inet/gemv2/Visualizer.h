@@ -1,6 +1,7 @@
 #ifndef ARTERY_GEMV2_VISUALIZER_H_U4LMLGVJ
 #define ARTERY_GEMV2_VISUALIZER_H_U4LMLGVJ
 
+#include "artery/utility/Geometry.h"
 #include <omnetpp/ccanvas.h>
 #include <omnetpp/csimplemodule.h>
 #include <string>
@@ -11,6 +12,7 @@ namespace artery
 namespace gemv2
 {
 
+// forward declarations
 class ObstacleIndex;
 class VehicleIndex;
 
@@ -21,10 +23,17 @@ public:
 
     void drawObstacles(const ObstacleIndex*);
     void drawVehicles(const VehicleIndex*);
+    void drawReflectionRays(const Position&, const Position&,
+            const std::vector<Position>&, const std::vector<Position>&);
+    void drawDiffractionRays(const Position&, const Position&, const std::vector<Position>&);
+
+protected:
+    void drawRays(const Position&, const Position&, const std::vector<Position>&, omnetpp::cFigure::Color) const;
 
 private:
     omnetpp::cGroupFigure* mObstacleGroup;
     omnetpp::cGroupFigure* mVehicleGroup;
+    omnetpp::cGroupFigure* mRaysGroup;
     std::unordered_map<std::string, omnetpp::cPolygonFigure*> mVehiclePolygons;
 };
 
