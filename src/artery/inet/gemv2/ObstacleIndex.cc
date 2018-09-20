@@ -125,7 +125,7 @@ bool ObstacleIndex::anyBlockage(const Position& a, const Position& b) const
     auto rtree_intersect = bg::index::intersects(los);
     return std::any_of(mObstacleRtree.qbegin(rtree_intersect), mObstacleRtree.qend(),
             [&](const RtreeValue& candidate) {
-                return bg::intersects(los, mObstacles[candidate.second].getOutline());
+                return bg::crosses(los, mObstacles[candidate.second].getOutline());
             });
 }
 
