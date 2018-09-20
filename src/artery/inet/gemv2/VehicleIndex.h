@@ -27,6 +27,8 @@ namespace artery
 namespace gemv2
 {
 
+class Visualizer;
+
 class VehicleIndex : public omnetpp::cSimpleModule, public omnetpp::cListener
 {
 public:
@@ -80,6 +82,12 @@ public:
      */
     std::vector<const Vehicle*> vehiclesEllipse(const Position& a, const Position& b, double range) const;
 
+    /**
+     * Get all indexed vehicles
+     * \return map of vehicles
+     */
+    const std::map<std::string, Vehicle>& getVehicles() const { return mVehicles; }
+
 private:
     using VehicleMap = std::map<std::string, Vehicle>;
     using RtreeValue = std::pair<geometry::Box, VehicleMap::const_iterator>;
@@ -88,6 +96,7 @@ private:
     VehicleMap mVehicles;
     Rtree mVehicleRtree;
     bool mRtreeTainted = false;
+    Visualizer* mVisualizer = nullptr;
 };
 
 } // namespace gemv2

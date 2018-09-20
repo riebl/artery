@@ -5,6 +5,7 @@
  */
 
 #include "artery/inet/gemv2/ObstacleIndex.h"
+#include "artery/inet/gemv2/Visualizer.h"
 #include "traci/Core.h"
 #include "traci/LiteAPI.h"
 #include <boost/algorithm/string.hpp>
@@ -13,6 +14,7 @@
 #include <boost/range/adaptor/indexed.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/units/cmath.hpp>
+#include <inet/common/ModuleAccess.h>
 #include <omnetpp/checkandcast.h>
 #include <algorithm>
 #include <array>
@@ -53,6 +55,8 @@ void ObstacleIndex::initialize()
     mFilterTypes.clear();
     const std::string filterTypes = par("filterTypes");
     boost::split(mFilterTypes, filterTypes, boost::is_any_of(" "));
+
+    mVisualizer = inet::findModuleFromPar<Visualizer>(par("visualizerModule"), this, false);
 }
 
 void ObstacleIndex::receiveSignal(cComponent* source, simsignal_t signal, const SimTime&, cObject*)
@@ -61,6 +65,9 @@ void ObstacleIndex::receiveSignal(cComponent* source, simsignal_t signal, const 
     if (signal == traciInitSignal) {
         auto core = check_and_cast<traci::Core*>(source);
         fetchObstacles(core->getLiteAPI());
+        if (mVisualizer) {
+            mVisualizer->drawObstacles(this);
+        }
     }
 }
 

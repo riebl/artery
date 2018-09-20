@@ -5,5 +5,6 @@ simple ObstacleIndex
     parameters:
         @class(artery::gemv2::ObstacleIndex);
         string traciModule;
-        string filterTypes = default("building shop amenity landuse forest natural wood tree tree_row");
+        string visualizerModule;
+        string filterTypes = default("building shop");
 }

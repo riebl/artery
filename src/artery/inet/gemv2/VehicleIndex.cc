@@ -5,6 +5,7 @@
  */
 
 #include "artery/inet/gemv2/VehicleIndex.h"
+#include "artery/inet/gemv2/Visualizer.h"
 #include "traci/Core.h"
 #include "traci/BasicNodeManager.h"
 #include "traci/LiteAPI.h"
@@ -14,6 +15,7 @@
 #include <boost/range/adaptor/indexed.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/units/cmath.hpp>
+#include <inet/common/ModuleAccess.h>
 #include <omnetpp/checkandcast.h>
 #include <algorithm>
 #include <array>
@@ -48,6 +50,8 @@ void VehicleIndex::initialize()
     } else {
         throw cRuntimeError("No TraCI module found for signal subscription");
     }
+
+    mVisualizer = inet::findModuleFromPar<Visualizer>(par("visualizerModule"), this, false);
 }
 
 void VehicleIndex::receiveSignal(cComponent* source, simsignal_t signal, unsigned long, cObject* obj)
@@ -62,6 +66,9 @@ void VehicleIndex::receiveSignal(cComponent* source, simsignal_t signal, unsigne
             mVehicleRtree.insert(RtreeValue { bg::return_envelope<Indexable>(vehicle.getOutline()), it });
         }
         mRtreeTainted = false;
+        if (mVisualizer) {
+            mVisualizer->drawVehicles(this);
+        }
     }
 }
 

@@ -23,6 +23,8 @@ namespace artery
 namespace gemv2
 {
 
+class Visualizer;
+
 class ObstacleIndex : public omnetpp::cSimpleModule, public omnetpp::cListener
 {
 public:
@@ -66,6 +68,12 @@ public:
      */
     std::vector<const Obstacle*> getObstructingObstacles(const Position& a, const Position& b) const;
 
+    /**
+     * Get all currently indexed obstacles
+     * \return obstacles
+     */
+    const std::vector<Obstacle>& getObstacles() const { return mObstacles; }
+
 private:
     void fetchObstacles(traci::LiteAPI&);
 
@@ -75,6 +83,7 @@ private:
     std::set<std::string> mFilterTypes;
     std::vector<Obstacle> mObstacles;
     Rtree mObstacleRtree;
+    Visualizer* mVisualizer = nullptr;
 };
 
 } // namespace gemv2

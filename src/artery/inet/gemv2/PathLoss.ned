@@ -18,6 +18,7 @@ module Gemv2 like IPathLoss
 
         *.vehicleIndexModule = "^.vehicles";
         *.obstacleIndexModule = "^.obstacles";
+        *.visualizerModule = "^.visualizer";
 
     submodules:
         LOS: <default("TwoRayInterference")> like IPathLoss {
@@ -46,5 +47,9 @@ module Gemv2 like IPathLoss
 
         classifier: LinkClassifier {
             @display("p=50,60");
+        }
+
+        visualizer: Visualizer {
+            @display("p=50,80");
         }
 }
