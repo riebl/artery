@@ -20,6 +20,17 @@ void LinkClassifier::initialize()
 {
     mObstacleIndex = inet::findModuleFromPar<ObstacleIndex>(par("obstacleIndexModule"), this);
     mVehicleIndex = inet::findModuleFromPar<VehicleIndex>(par("vehicleIndexModule"), this);
+
+    WATCH(mCountLOS);
+    WATCH(mCountNLOSb);
+    WATCH(mCountNLOSv);
+}
+
+void LinkClassifier::finish()
+{
+    recordScalar("countLOS", mCountLOS);
+    recordScalar("countNLOSb", mCountNLOSb);
+    recordScalar("countNLOSv", mCountNLOSv);
 }
 
 LinkClass LinkClassifier::classifyLink(const Position& tx, const Position& rx) const
@@ -27,8 +38,12 @@ LinkClass LinkClassifier::classifyLink(const Position& tx, const Position& rx) c
     LinkClass link = LinkClass::LOS;
     if (mObstacleIndex->anyBlockage(tx, rx)) {
         link = LinkClass::NLOSb;
+        ++mCountNLOSb;
     } else if (mVehicleIndex->anyBlockage(tx, rx)) {
         link = LinkClass::NLOSv;
+        ++mCountNLOSv;
+    } else {
+        ++mCountLOS;
     }
     return link;
 }

@@ -26,11 +26,16 @@ class LinkClassifier : public omnetpp::cSimpleModule
 {
 public:
     void initialize() override;
+    void finish() override;
     LinkClass classifyLink(const Position& tx, const Position& rx) const;
 
 private:
     const ObstacleIndex* mObstacleIndex;
     const VehicleIndex* mVehicleIndex;
+
+    mutable unsigned mCountLOS = 0;
+    mutable unsigned mCountNLOSb = 0;
+    mutable unsigned mCountNLOSv = 0;
 };
 
 } // namespace gemv2
