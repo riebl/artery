@@ -63,6 +63,7 @@ public:
     void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, const char*, omnetpp::cObject*) override;
 
     bool anyBlockage(const Position& a, const Position& b) const;
+    bool anyBlockage(const Position& a, const Position& b, double height) const;
 
     /**
      * Get all vehicles obstructing the line of sight between given points

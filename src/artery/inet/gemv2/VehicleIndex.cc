@@ -105,6 +105,19 @@ bool VehicleIndex::anyBlockage(const Position& a, const Position& b) const
             });
 }
 
+bool VehicleIndex::anyBlockage(const Position& a, const Position& b, double height) const
+{
+    ASSERT(!mRtreeTainted);
+    const LineOfSight los { a, b };
+    auto rtree_intersect = bg::index::intersects(los);
+    return std::any_of(mVehicleRtree.qbegin(rtree_intersect), mVehicleRtree.qend(),
+            [&](const RtreeValue& candidate) {
+                const Vehicle& vehicle = candidate.second->second;
+                const std::vector<Position>& outline = vehicle.getOutline();
+                return vehicle.getHeight() > height && bg::relate(los, outline, cutting);
+            });
+}
+
 std::vector<const VehicleIndex::Vehicle*>
 VehicleIndex::getObstructingVehicles(const Position& a, const Position& b) const
 {
