@@ -8,6 +8,8 @@
 #define ARTERY_GEMV2_MATH_H_RMEYTQN7
 
 #include <inet/common/Units.h>
+#include <boost/units/pow.hpp>
+#include <boost/units/quantity.hpp>
 
 namespace artery
 {
@@ -19,6 +21,15 @@ constexpr double squared(double x) { return x * x; }
 
 template<typename U, typename V = double>
 inet::units::value<V, inet::units::pow<U, 2>> squared(inet::units::value<V, U> x)
+{
+    return x * x;
+}
+
+template<typename U, typename V = double>
+typename boost::units::power_typeof_helper<
+    boost::units::quantity<V, U>,
+    boost::units::static_rational<2>
+>::type squared(boost::units::quantity<V, U> x)
 {
     return x * x;
 }
