@@ -15,6 +15,7 @@ module Gemv2 like IPathLoss
         LOS.epsilon_r = default(1.003); // relative permittivity
         NLOSb.alpha = default(2.9); // path loss exponent
         NLOSb.sigma = default(0.0); // no flat fading
+        NLOSb.maxRange = rangeNLOSb;
         *.polarization = default("vertical");
 
         *.vehicleIndexModule = "^.vehicles";

@@ -5,11 +5,15 @@ import inet.physicallayer.contract.packetlevel.IPathLoss;
 simple NLOSb like IPathLoss
 {
     parameters:
+        @display("i=block/control");
         @class(artery::gemv2::NLOSb);
         string vehicleIndexModule;
         string obstacleIndexModule;
-        
-        double maxRange @unit(m) = default(500 m);
-        double veh = default(0.3);
-        double build = default(0.3);
+        string visualizerModule;
+
+        double maxRange @unit(m);
+        double pathLossExponent = default(2.9);
+        double vehicleRelativePermittivity = default(6);
+        double buildingRelativePermittivity = default(4.5);
+        string polarization = default("vertical");
 }
