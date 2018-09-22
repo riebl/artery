@@ -27,7 +27,7 @@ module Gemv2 like IPathLoss
             @display("p=20,20");
         }
 
-        NLOSb: <default("LogNormalShadowing")> like IPathLoss {
+        NLOSb: <default("FreeSpacePathLoss")> like IPathLoss {
             @display("p=20,40");
         }
 
