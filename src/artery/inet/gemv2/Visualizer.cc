@@ -12,34 +12,49 @@ Define_Module(Visualizer)
 void Visualizer::initialize(int stage)
 {
     if (stage == 0) {
-        mObstacleGroup = new omnetpp::cGroupFigure("obstacles");
         mVehicleGroup = new omnetpp::cGroupFigure("vehicles");
         mRaysGroup = new omnetpp::cGroupFigure("rays");
 
         auto canvas = this->getCanvas();
-        canvas->addFigure(mObstacleGroup);
         canvas->addFigure(mVehicleGroup);
         canvas->addFigure(mRaysGroup);
         canvas->setBackgroundColor(omnetpp::cFigure::GREY);
     }
 }
 
+omnetpp::cGroupFigure* Visualizer::getObstacleGroup(const omnetpp::cModule* module)
+{
+    omnetpp::cGroupFigure* figure = nullptr;
+    auto found = mObstacleGroups.find(module->getId());
+    if (found != mObstacleGroups.end()) {
+        figure = found->second;
+    } else {
+        figure = new omnetpp::cGroupFigure(module->getName());
+        this->getCanvas()->addFigure(figure);
+        mObstacleGroups.emplace(module->getId(), figure);
+    }
+
+    return figure;
+}
+
 void Visualizer::drawObstacles(const ObstacleIndex* index)
 {
-    for (int i = mObstacleGroup->getNumFigures() - 1; i >= 0; --i)
+    omnetpp::cGroupFigure* group = getObstacleGroup(index);
+    for (int i = group->getNumFigures() - 1; i >= 0; --i)
     {
-        delete mObstacleGroup->removeFigure(i);
+        delete group->removeFigure(i);
     }
 
     auto obstacles = index->getObstacles();
     for (auto& obstacle : obstacles)
     {
         auto polygon = new omnetpp::cPolygonFigure();
+        polygon->setLineColor(index->getColor());
         for (const Position& pos : obstacle.getOutline())
         {
             polygon->addPoint(omnetpp::cFigure::Point { pos.x.value(), pos.y.value() });
         }
-        mObstacleGroup->addFigure(polygon);
+        group->addFigure(polygon);
     }
 }
 

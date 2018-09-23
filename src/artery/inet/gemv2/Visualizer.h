@@ -28,13 +28,14 @@ public:
     void drawDiffractionRays(const Position&, const Position&, const std::vector<Position>&);
 
 protected:
+    omnetpp::cGroupFigure* getObstacleGroup(const omnetpp::cModule*);
     void drawRays(const Position&, const Position&, const std::vector<Position>&, omnetpp::cFigure::Color) const;
 
 private:
-    omnetpp::cGroupFigure* mObstacleGroup;
     omnetpp::cGroupFigure* mVehicleGroup;
     omnetpp::cGroupFigure* mRaysGroup;
     std::unordered_map<std::string, omnetpp::cPolygonFigure*> mVehiclePolygons;
+    std::unordered_map<int, omnetpp::cGroupFigure*> mObstacleGroups;
 };
 
 } // namespace gemv2

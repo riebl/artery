@@ -7,4 +7,5 @@ simple ObstacleIndex
         string traciModule;
         string visualizerModule;
         string filterTypes = default("building shop");
+        string obstacleColor = default("Black");
 }

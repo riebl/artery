@@ -57,6 +57,7 @@ void ObstacleIndex::initialize()
     boost::split(mFilterTypes, filterTypes, boost::is_any_of(" "));
 
     mVisualizer = inet::findModuleFromPar<Visualizer>(par("visualizerModule"), this, false);
+    mColor = omnetpp::cFigure::Color(par("obstacleColor"));
 }
 
 void ObstacleIndex::receiveSignal(cComponent* source, simsignal_t signal, const SimTime&, cObject*)

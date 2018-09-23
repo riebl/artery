@@ -9,6 +9,7 @@
 
 #include "artery/utility/Geometry.h"
 #include <boost/geometry/index/rtree.hpp>
+#include <omnetpp/ccanvas.h>
 #include <omnetpp/clistener.h>
 #include <omnetpp/csimplemodule.h>
 #include <set>
@@ -74,6 +75,12 @@ public:
      */
     const std::vector<Obstacle>& getObstacles() const { return mObstacles; }
 
+    /**
+     * Get default color for drawing obstacles
+     * \return color
+     */
+    omnetpp::cFigure::Color getColor() const { return mColor; }
+
 private:
     void fetchObstacles(traci::LiteAPI&);
 
@@ -84,6 +91,7 @@ private:
     std::vector<Obstacle> mObstacles;
     Rtree mObstacleRtree;
     Visualizer* mVisualizer = nullptr;
+    omnetpp::cFigure::Color mColor;
 };
 
 } // namespace gemv2
