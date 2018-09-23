@@ -26,6 +26,7 @@ public:
     void drawReflectionRays(const Position&, const Position&,
             const std::vector<Position>&, const std::vector<Position>&);
     void drawDiffractionRays(const Position&, const Position&, const std::vector<Position>&);
+    void drawFoliageRay(const Position&, const Position&, const std::vector<Position>&);
 
 protected:
     omnetpp::cGroupFigure* getObstacleGroup(const omnetpp::cModule*);
