@@ -8,6 +8,7 @@ module Gemv2 like IPathLoss
         @class(artery::gemv2::PathLoss);
         *.traciModule = default("traci");
         bool withSmallScaleVariations = default(true);
+        bool withVisualization = default(false);
         double rangeLOS @unit(m) = default(500 m);
         double rangeNLOSv @unit(m) = default(400 m);
         double rangeNLOSb @unit(m) = default(300 m);
@@ -61,7 +62,7 @@ module Gemv2 like IPathLoss
             @display("p=50,80");
         }
 
-        visualizer: Visualizer {
+        visualizer: Visualizer if withVisualization {
             @display("p=50,100");
         }
 }
