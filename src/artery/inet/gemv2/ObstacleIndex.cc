@@ -21,11 +21,7 @@
 
 namespace bg = boost::geometry;
 
-namespace {
-    using LineOfSight = std::array<Position, 2>;
-    const bg::de9im::mask cutting("T**FF****");
-}
-
+namespace { using LineOfSight = std::array<Position, 2>;}
 BOOST_GEOMETRY_REGISTER_LINESTRING(LineOfSight)
 
 namespace artery
@@ -171,7 +167,7 @@ ObstacleIndex::getObstructingObstacles(const Position& a, const Position& b) con
     auto rtree_intersect = bg::index::intersects(los);
     for (auto it = mObstacleRtree.qbegin(rtree_intersect); it != mObstacleRtree.qend(); ++it) {
         const Obstacle& obstacle = mObstacles[it->second];
-        if (bg::relate(los, obstacle.getOutline(), cutting)) {
+        if (bg::crosses(los, obstacle.getOutline())) {
             result.push_back(&obstacle);
         }
     }
