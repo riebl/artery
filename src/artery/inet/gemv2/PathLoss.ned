@@ -11,6 +11,7 @@ module Gemv2 like IPathLoss
         double rangeLOS @unit(m) = default(500 m);
         double rangeNLOSv @unit(m) = default(400 m);
         double rangeNLOSb @unit(m) = default(300 m);
+        double rangeNLOSf @unit(m) = default(500 m);
 
         LOS.epsilon_r = default(1.003); // relative permittivity
         NLOSb.alpha = default(2.9); // path loss exponent
@@ -20,6 +21,7 @@ module Gemv2 like IPathLoss
 
         *.vehicleIndexModule = "^.vehicles";
         *.obstacleIndexModule = "^.obstacles";
+        *.foliageIndexModule = "^.foliage";
         *.visualizerModule = "^.visualizer";
 
     submodules:
@@ -31,27 +33,35 @@ module Gemv2 like IPathLoss
             @display("p=20,40");
         }
 
-        NLOSv: <default("NLOSv")> like IPathLoss {
+        NLOSf: <default("NLOSf")> like IPathLoss {
             @display("p=20,60");
         }
 
-        smallScaleVariations: SmallScaleVariation if withSmallScaleVariations {
+        NLOSv: <default("NLOSv")> like IPathLoss {
             @display("p=20,80");
+        }
+
+        smallScaleVariations: SmallScaleVariation if withSmallScaleVariations {
+            @display("p=20,100");
         }
 
         obstacles: ObstacleIndex {
             @display("p=50,20");
         }
 
-        vehicles: VehicleIndex {
+        foliage: FoliageIndex {
             @display("p=50,40");
         }
 
-        classifier: LinkClassifier {
+        vehicles: VehicleIndex {
             @display("p=50,60");
         }
 
-        visualizer: Visualizer {
+        classifier: LinkClassifier {
             @display("p=50,80");
+        }
+
+        visualizer: Visualizer {
+            @display("p=50,100");
         }
 }

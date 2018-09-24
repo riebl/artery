@@ -31,10 +31,12 @@ public:
 
 private:
     const ObstacleIndex* mObstacleIndex;
+    const ObstacleIndex* mFoliageIndex;
     const VehicleIndex* mVehicleIndex;
 
     mutable unsigned mCountLOS = 0;
     mutable unsigned mCountNLOSb = 0;
+    mutable unsigned mCountNLOSf = 0;
     mutable unsigned mCountNLOSv = 0;
 };
 

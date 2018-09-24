@@ -1,6 +1,6 @@
 /*
  * Artery V2X Simulation Framework
- * Copyright 2017 Thiago Vieira, Raphael Riebl
+ * Copyright 2017, 2018 Thiago Vieira, Raphael Riebl
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
@@ -12,7 +12,7 @@ namespace artery
 namespace gemv2
 {
 
-enum class LinkClass { LOS, NLOSb, NLOSv };
+enum class LinkClass { LOS, NLOSb, NLOSf, NLOSv };
 
 } // namespace gemv2
 } // namespace artery

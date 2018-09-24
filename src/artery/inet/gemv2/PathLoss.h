@@ -38,11 +38,13 @@ private:
 
     inet::physicallayer::IPathLoss* m_los;
     inet::physicallayer::IPathLoss* m_nlos_b;
+    inet::physicallayer::IPathLoss* m_nlos_f;
     inet::physicallayer::IPathLoss* m_nlos_v;
     LinkClassifier* m_classifier;
     SmallScaleVariation* m_small_scale;
     meter m_range_los;
     meter m_range_nlos_b;
+    meter m_range_nlos_f;
     meter m_range_nlos_v;
 };
 
