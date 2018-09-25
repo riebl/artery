@@ -67,6 +67,7 @@ if(TARGET INET)
     message(STATUS "Enable INET integration")
     set_property(TARGET core APPEND PROPERTY SOURCES
         inet/AntennaMobility.cc
+        inet/DistanceSwitchPathLoss.cc
         inet/InetRadioDriver.cc
         inet/InetMobility.cc
         inet/gemv2/LinkClassifier.cc
