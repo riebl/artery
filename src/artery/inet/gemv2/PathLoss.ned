@@ -18,12 +18,12 @@ module Gemv2 like IPathLoss
         NLOSb.alpha = default(2.9); // path loss exponent
         NLOSb.sigma = default(0.0); // no flat fading
         NLOSb.maxRange = rangeNLOSb;
-        *.polarization = default("vertical");
+        **.polarization = default("vertical");
 
-        *.vehicleIndexModule = "^.vehicles";
-        *.obstacleIndexModule = "^.obstacles";
-        *.foliageIndexModule = "^.foliage";
-        *.visualizerModule = "^.visualizer";
+        **.vehicleIndexModule = absPath(".vehicles");
+        **.obstacleIndexModule = absPath(".obstacles");
+        **.foliageIndexModule = absPath(".foliage");
+        **.visualizerModule = absPath(".visualizer");
 
     submodules:
         LOS: <default("TwoRayInterference")> like IPathLoss {
