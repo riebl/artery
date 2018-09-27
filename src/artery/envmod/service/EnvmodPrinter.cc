@@ -51,6 +51,7 @@ void EnvmodPrinter::printSensorObjectList(const std::string& title, const Tracke
         const auto& vd = obj_ptr.lock()->getVehicleData();
         EV_DETAIL
             << "station ID: " << vd.station_id()
+            << " TraCI ID: " << obj_ptr.lock()->getExternalId()
             << " lon: " << vd.longitude()
             << " lat: " << vd.latitude()
             << " speed: " << vd.speed()
