@@ -36,8 +36,6 @@ using PositionView = bg::closeable_view<const PositionRange, bg::closure<Positio
 namespace
 {
 
-const bg::de9im::mask cutting("T**FF****");
-
 double squaredLength(const Position& a, const Position& b)
 {
     return squared(a.x.value() - b.x.value()) + squared(a.y.value() - b.y.value());
@@ -242,6 +240,7 @@ bool NLOSb::isRayObstructed(const Position& point, const Environment& env) const
 
     for (const VehicleIndex::Vehicle* vehicle : env.vehicles)
     {
+        static const bg::de9im::mask cutting("T**FF****");
         if (bg::relate(ls, vehicle->getOutline(), cutting)) {
             return true;
         }

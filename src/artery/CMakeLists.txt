@@ -1,4 +1,4 @@
-find_package(Boost COMPONENTS date_time system REQUIRED)
+find_package(Boost 1.59 COMPONENTS date_time system REQUIRED)
 
 add_library(artery INTERFACE)
 add_library(core SHARED
