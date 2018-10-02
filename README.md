@@ -54,12 +54,26 @@ See the Vanetza [Readme](extern/vanetza/README.md) for details.
 As the next step, you need to build INET. Make sure you are in the root directory of Artery and simply call `make inet` there.
 INET's build dependencies are listed in [its install manual](extern/inet/INSTALL).
 
+### LTE 
+// Vadym add.. 
+Need to build LTE to use LTE capability on simulations 
+`make simulte`
+
+
 ### Artery
 Are you still with us? Congratulations, you are almost done!
 
     mkdir build
     cd build
     cmake ..
+    cmake --build .
+    
+// Vadym add..
+instead of this you must call commands below to make integration with simulte 
+	
+	mkdir build
+    cd build
+    cmake -DWITH_SIMULTE=ON ..
     cmake --build .
 
 These steps create a *build* directory for Artery, configure the build directory and finally build Artery there.
