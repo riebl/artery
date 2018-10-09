@@ -208,4 +208,10 @@ VehicleSink* BasicNodeManager::getVehicleSink(cModule* node)
     return mobility;
 }
 
+VehicleSink* BasicNodeManager::getVehicleSink(const std::string& id)
+{
+    auto found = m_vehicles.find(id);
+    return found != m_vehicles.end() ? found->second : nullptr;
+}
+
 } // namespace traci

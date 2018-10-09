@@ -63,6 +63,7 @@ protected:
     virtual void removeNodeModule(const std::string&);
     virtual omnetpp::cModule* getNodeModule(const std::string&);
     virtual VehicleSink* getVehicleSink(omnetpp::cModule*);
+    virtual VehicleSink* getVehicleSink(const std::string&);
 
 private:
     void traciInit() override;

@@ -6,6 +6,7 @@ set(SOURCES
     BasicSubscriptionManager.cc
     Core.cc
     ConnectLauncher.cc
+    InsertionDelayNodeManager.cc
     Listener.cc
     LiteAPI.cc
     MultiTypeModuleMapper.cc
