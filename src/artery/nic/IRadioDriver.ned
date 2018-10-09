@@ -6,5 +6,5 @@ moduleinterface IRadioDriver
 		@signal[ChannelLoad](type=double);
 
 	gates:
-		inout middleware;
+		inout upperLayer;
 }

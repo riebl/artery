@@ -3,6 +3,9 @@
 
 #include "artery/application/ItsG5Service.h"
 
+// forward declaration
+namespace traci { class VehicleController; }
+
 class ClearLaneService : public ItsG5Service
 {
     protected:

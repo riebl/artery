@@ -3,6 +3,7 @@
 #include "artery/application/Middleware.h"
 #include "artery/application/StoryboardSignal.h"
 #include "artery/traci/VehicleController.h"
+#include "artery/utility/InitStages.h"
 #include <inet/common/ModuleAccess.h>
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <omnetpp/checkandcast.h>
@@ -13,18 +14,25 @@ Define_Module(BlackIceReporter)
 
 static const simsignal_t storyboardSignal = cComponent::registerSignal("StoryboardSignal");
 
-void BlackIceReporter::initialize()
+void BlackIceReporter::initialize(int stage)
 {
-    socket.setOutputGate(gate("udpOut"));
-    auto centralAddress = inet::L3AddressResolver().resolve(par("centralAddress"));
-    socket.connect(centralAddress, par("centralPort"));
+    if (stage == artery::InitStages::Prepare) {
+        tractionLosses = 0;
+        WATCH(tractionLosses);
+    } else if (stage == artery::InitStages::Self) {
+        socket.setOutputGate(gate("udpOut"));
+        auto centralAddress = inet::L3AddressResolver().resolve(par("centralAddress"));
+        socket.connect(centralAddress, par("centralPort"));
 
-    auto mw = inet::getModuleFromPar<artery::Middleware>(par("middlewareModule"), this);
-    mw->subscribe(storyboardSignal, this);
-    vehicleController = mw->getFacilities().get_const_ptr<traci::VehicleController>();
+        auto mw = inet::getModuleFromPar<artery::Middleware>(par("middlewareModule"), this);
+        mw->subscribe(storyboardSignal, this);
+        vehicleController = mw->getFacilities().get_const_ptr<traci::VehicleController>();
+    }
+}
 
-    tractionLosses = 0;
-    WATCH(tractionLosses);
+int BlackIceReporter::numInitStages() const
+{
+    return artery::InitStages::Total;
 }
 
 void BlackIceReporter::finish()

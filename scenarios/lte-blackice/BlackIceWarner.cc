@@ -2,6 +2,7 @@
 #include "lte_msgs/BlackIceWarning_m.h"
 #include "artery/application/Middleware.h"
 #include "artery/traci/VehicleController.h"
+#include "artery/utility/InitStages.h"
 #include <inet/common/ModuleAccess.h>
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <omnetpp/checkandcast.h>
@@ -15,22 +16,30 @@ BlackIceWarner::~BlackIceWarner()
     cancelAndDelete(pollingTrigger);
 }
 
-void BlackIceWarner::initialize()
+void BlackIceWarner::initialize(int stage)
 {
-    socket.setOutputGate(gate("udpOut"));
-    auto centralAddress = inet::L3AddressResolver().resolve(par("centralAddress"));
-    socket.connect(centralAddress, par("centralPort"));
+    if (stage == artery::InitStages::Prepare) {
+        pollingRadius = par("pollingRadius");
+        pollingInterval = par("pollingInterval");
+        pollingTrigger = new cMessage("poll black ice central");
 
-    auto mw = inet::getModuleFromPar<artery::Middleware>(par("middlewareModule"), this);
-    vehicleController = mw->getFacilities().get_mutable_ptr<traci::VehicleController>();
+        numWarningsCentral = 0;
+        WATCH(numWarningsCentral);
+    } else if (stage == artery::InitStages::Self) {
+        socket.setOutputGate(gate("udpOut"));
+        auto centralAddress = inet::L3AddressResolver().resolve(par("centralAddress"));
+        socket.connect(centralAddress, par("centralPort"));
 
-    pollingRadius = par("pollingRadius");
-    pollingInterval = par("pollingInterval");
-    pollingTrigger = new cMessage("poll black ice central");
-    scheduleAt(simTime() + uniform(0.0, pollingInterval), pollingTrigger);
+        auto mw = inet::getModuleFromPar<artery::Middleware>(par("middlewareModule"), this);
+        vehicleController = mw->getFacilities().get_mutable_ptr<traci::VehicleController>();
 
-    numWarningsCentral = 0;
-    WATCH(numWarningsCentral);
+        scheduleAt(simTime() + uniform(0.0, pollingInterval), pollingTrigger);
+    }
+}
+
+int BlackIceWarner::numInitStages() const
+{
+    return artery::InitStages::Total;
 }
 
 void BlackIceWarner::finish()

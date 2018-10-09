@@ -2,12 +2,15 @@
 
 using namespace omnetpp;
 
+namespace artery
+{
+
 const simsignal_t RadioDriverBase::ChannelLoadSignal = cComponent::registerSignal("ChannelLoad");
 
 void RadioDriverBase::initialize()
 {
-    m_middlewareInGate = gate("middleware$i");
-    m_middlewareOutGate = gate("middleware$o");
+    mUpperLayerIn = gate("upperLayer$i");
+    mUpperLayerOut = gate("upperLayer$o");
 }
 
 void RadioDriverBase::handleMessage(cMessage* msg)
@@ -21,10 +24,12 @@ void RadioDriverBase::handleMessage(cMessage* msg)
 
 bool RadioDriverBase::isMiddlewareRequest(cMessage* msg)
 {
-    return (msg->getArrivalGate() == m_middlewareInGate);
+    return (msg->getArrivalGate() == mUpperLayerIn);
 }
 
 void RadioDriverBase::indicatePacket(cMessage* msg)
 {
-    send(msg, m_middlewareOutGate);
+    send(msg, mUpperLayerOut);
 }
+
+} // namespace artery

@@ -21,9 +21,10 @@ module RSU
             parameters:
                 @display("p=60,50");
                 middleware.typename = "StationaryMiddleware";
-                middleware.mobilityModule = ".mobility";
-                middleware.radioDriverModule = ".appl.radioDriver";
-                middleware.traciCoreModule = "traci.core";
+                vanetza.position.typename = "StationaryPositionProvider";
+                vanetza.router.isMobile = false;
+                **.mobilityModule = absPath("^.mobility");
+                **.traciCoreModule = "traci.core";
         }
 
         nic: <nicType> like INic80211p {

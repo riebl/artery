@@ -11,6 +11,9 @@ class Ieee80211Mac;
 } // namespace ieee80211
 } // namespace inet
 
+namespace artery
+{
+
 class InetRadioDriver : public RadioDriverBase, public omnetpp::cListener
 {
 	public:
@@ -26,6 +29,8 @@ class InetRadioDriver : public RadioDriverBase, public omnetpp::cListener
 	private:
 		inet::ieee80211::Ieee80211Mac* mLinkLayer;
 };
+
+} // namespace artery
 
 #endif /* INETRADIODRIVER_H_PJFDM4JW */
 

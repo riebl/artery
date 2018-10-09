@@ -41,7 +41,7 @@ void ChannelLoadMeasurements::fill(bool busy)
 vanetza::dcc::ChannelLoad ChannelLoadMeasurements::channel_load()
 {
     fill(m_busy);
-    const unsigned busy = std::count(m_samples.begin(), m_samples.end(), true);
-    const unsigned total = m_samples.capacity();
-    return { busy, total };
+    const double busy = std::count(m_samples.begin(), m_samples.end(), true);
+    const double total = m_samples.capacity();
+    return vanetza::dcc::ChannelLoad { busy / total };
 }

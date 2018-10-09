@@ -1,6 +1,7 @@
 package artery.inet;
 
 import artery.application.StationaryMiddleware;
+import artery.networking.Vanetza;
 import artery.nic.IRadioDriver;
 import inet.node.inet.INetworkNode;
 import inet.linklayer.contract.IWirelessNic;
@@ -43,11 +44,20 @@ module RSU like INetworkNode
                 macModule = ".wlan[" + string(index) + "].mac";
         }
 
+        vanetza: Vanetza {
+            parameters:
+                *.middlewareModule = absPath("^.middleware");
+                *.mobilityModule = absPath("^.mobility");
+                *.radioDriverModule = absPath("^.radioDriver[0]");
+                *.traciCoreModule = "traci.core";
+                position.typename = default("StationaryPositionProvider");
+                runtime.datetime = middleware.datetime;
+                router.isMobile = false;
+        }
+
         middleware: StationaryMiddleware {
             parameters:
-                radioDriverModule = ".radioDriver[0]";
-                mobilityModule = ".mobility";
-                traciCoreModule = "traci.core";
+                routerModule = ".vanetza.router";
         }
 
     connections:
@@ -58,6 +68,5 @@ module RSU like INetworkNode
             wlan[i].upperLayerIn <-- radioDriver[i].lowerLayerOut;
         }
 
-        middleware.radioDriverOut --> radioDriver[0].middleware$i;
-        middleware.radioDriverIn <-- radioDriver[0].middleware$o;
+        radioDriver[0].upperLayer <--> vanetza.radioDriver;
 }

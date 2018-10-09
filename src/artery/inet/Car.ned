@@ -2,6 +2,7 @@ package artery.inet;
 
 import artery.application.VehicleMiddleware;
 import artery.inet.AntennaMobility;
+import artery.networking.Vanetza;
 import artery.nic.IRadioDriver;
 import inet.node.inet.INetworkNode;
 import inet.linklayer.contract.IWirelessNic;
@@ -49,10 +50,19 @@ module Car extends PlainVehicle like INetworkNode
                 macModule = ".wlan[" + string(index) + "].mac";
         }
 
-        middleware: VehicleMiddleware {
+        vanetza: Vanetza {
             parameters:
                 @display("p=250,200");
-                radioDriverModule = ".radioDriver[0]";
+                *.middlewareModule = absPath("^.middleware");
+                *.mobilityModule = absPath("^.mobility");
+                *.radioDriverModule = absPath("^.radioDriver[0]");
+                runtime.datetime = middleware.datetime;
+        }
+
+        middleware: VehicleMiddleware {
+            parameters:
+                @display("p=250,100");
+                routerModule = ".vanetza.router";
                 mobilityModule = ".mobility";
         }
 
@@ -64,6 +74,5 @@ module Car extends PlainVehicle like INetworkNode
             wlan[i].upperLayerIn <-- radioDriver[i].lowerLayerOut;
         }
 
-        middleware.radioDriverOut --> radioDriver[0].middleware$i;
-        middleware.radioDriverIn <-- radioDriver[0].middleware$o;
+        radioDriver[0].upperLayer <--> vanetza.radioDriver;
 }

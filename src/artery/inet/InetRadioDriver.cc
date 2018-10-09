@@ -6,6 +6,9 @@
 #include <inet/linklayer/common/Ieee802Ctrl.h>
 #include <inet/linklayer/ieee80211/mac/Ieee80211Mac.h>
 
+namespace artery
+{
+
 Register_Class(InetRadioDriver)
 
 namespace {
@@ -95,3 +98,5 @@ void InetRadioDriver::handleLowerMessage(cMessage* packet)
 
 	indicatePacket(packet);
 }
+
+} // namespace artery

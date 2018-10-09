@@ -11,7 +11,8 @@ namespace traci { class VehicleController; }
 class BlackIceReporter : public omnetpp::cSimpleModule, public omnetpp::cListener
 {
 protected:
-    void initialize() override;
+    int numInitStages() const override;
+    void initialize(int stage) override;
     void finish() override;
     void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject*) override;
 

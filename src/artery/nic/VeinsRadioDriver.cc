@@ -6,6 +6,9 @@
 #include "veins/modules/messages/WaveShortMessage_m.h"
 #include "veins/modules/utility/Consts80211p.h"
 
+namespace artery
+{
+
 Register_Class(VeinsRadioDriver)
 
 namespace {
@@ -87,7 +90,7 @@ void VeinsRadioDriver::initialize()
 void VeinsRadioDriver::handleMessage(cMessage* msg)
 {
     if (msg == mChannelLoadReport) {
-        double channel_load = mChannelLoadMeasurements.channel_load().fraction();
+        double channel_load = mChannelLoadMeasurements.channel_load().value();
         emit(RadioDriverBase::ChannelLoadSignal, channel_load);
         scheduleAt(simTime() + mChannelLoadReportInterval, mChannelLoadReport);
     } else if (RadioDriverBase::isMiddlewareRequest(msg)) {
@@ -135,3 +138,5 @@ void VeinsRadioDriver::receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t 
         mChannelLoadMeasurements.idle();
     }
 }
+
+} // namespace artery

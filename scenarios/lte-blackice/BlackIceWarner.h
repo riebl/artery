@@ -14,7 +14,8 @@ public:
     ~BlackIceWarner();
 
 protected:
-    void initialize() override;
+    int numInitStages() const override;
+    void initialize(int stage) override;
     void finish() override;
     void handleMessage(omnetpp::cMessage*) override;
 

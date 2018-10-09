@@ -105,8 +105,6 @@ class Facilities
 
 		// these (deprecated) getters are only provided for compatibility reasons
 		const VehicleDataProvider& getVehicleDataProvider() const;
-		vanetza::dcc::Scheduler& getDccScheduler();
-		const vanetza::dcc::StateMachine& getDccStateMachine() const;
 
 	private:
 		std::unordered_map<std::type_index, void*> m_mutable_objects;

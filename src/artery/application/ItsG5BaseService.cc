@@ -95,7 +95,7 @@ void ItsG5BaseService::trigger()
 void ItsG5BaseService::request(const vanetza::btp::DataRequestB& req, std::unique_ptr<vanetza::DownPacket> packet)
 {
 	assert(m_middleware);
-	m_middleware->request(req, std::move(packet));
+	m_middleware->requestTransmission(req, std::move(packet));
 }
 
 void ItsG5BaseService::indicate(const vanetza::btp::DataIndication& ind, std::unique_ptr<vanetza::UpPacket> packet)

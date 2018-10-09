@@ -1,6 +1,7 @@
 package artery.veins;
 
 import artery.application.IMiddleware;
+import artery.networking.Vanetza;
 import artery.nic.IRadioDriver;
 import artery.nic.VeinsRadioDriver;
 import org.car2x.veins.base.modules.IBaseApplLayer;
@@ -21,13 +22,19 @@ module ApplicationLayer like IBaseApplLayer
 		radioDriver : VeinsRadioDriver {
 		}
 
+		vanetza: Vanetza {
+			*.middlewareModule = absPath("^.middleware");
+			*.radioDriverModule = absPath("^.radioDriver");
+			runtime.datetime = middleware.datetime;
+		}
+
 		middleware : <default("VehicleMiddleware")> like IMiddleware {
+			routerModule = absPath("^.vanetza.router");
 		}
 
 	connections allowunconnected:
 		lowerLayerIn --> radioDriver.lowerLayerIn;
 		lowerLayerOut <-- radioDriver.lowerLayerOut;
 
-		middleware.radioDriverIn <-- radioDriver.middleware$o;
-		middleware.radioDriverOut --> radioDriver.middleware$i;
+		radioDriver.upperLayer <--> vanetza.radioDriver;
 }

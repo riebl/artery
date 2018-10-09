@@ -23,6 +23,14 @@ add_library(core SHARED
     application/den/SuspendableUseCase.cc
     application/den/TrafficJamUseCase.cc
     application/den/UseCase.cc
+    networking/AccessInterface.cc
+    networking/DccEntityBase.cc
+    networking/FsmDccEntity.cc
+    networking/Router.cc
+    networking/Runtime.cc
+    networking/SecurityEntity.cc
+    networking/StationaryPositionProvider.cc
+    networking/VehiclePositionProvider.cc
     netw/GeoNetPacketWrapper.cc
     nic/RadioDriverBase.cc
     traci/MobilityBase.cc

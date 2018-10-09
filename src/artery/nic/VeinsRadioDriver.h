@@ -6,6 +6,9 @@
 #include <omnetpp/clistener.h>
 #include <omnetpp/csimplemodule.h>
 
+namespace artery
+{
+
 class VeinsRadioDriver : public RadioDriverBase, public omnetpp::cListener
 {
 	public:
@@ -26,6 +29,8 @@ class VeinsRadioDriver : public RadioDriverBase, public omnetpp::cListener
 		omnetpp::simtime_t mChannelLoadReportInterval;
 		ChannelLoadMeasurements mChannelLoadMeasurements;
 };
+
+} // namespace artery
 
 #endif /* VEINSRADIODRIVER_H_ZJ0SI5XC */
 

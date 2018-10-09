@@ -8,6 +8,8 @@
 #include <boost/units/systems/si/prefixes.hpp>
 #include <omnetpp/cexception.h>
 #include <vanetza/btp/ports.hpp>
+#include <vanetza/dcc/transmission.hpp>
+#include <vanetza/dcc/transmit_rate_control.hpp>
 #include <chrono>
 
 using namespace omnetpp;
@@ -19,11 +21,6 @@ auto centimeter_per_second = vanetza::units::si::meter_per_second * boost::units
 
 static const simsignal_t scSignalCamReceived = cComponent::registerSignal("CamReceived");
 static const simsignal_t scSignalCamSent = cComponent::registerSignal("CamSent");
-
-Define_Module(CaService)
-
-
-
 static const auto scLowFrequencyContainerInterval = std::chrono::milliseconds(500);
 
 template<typename T, typename U>
@@ -33,6 +30,8 @@ long round(const boost::units::quantity<T>& q, const U& u)
 	return std::round(v.value());
 }
 
+
+Define_Module(CaService)
 
 CaService::CaService() :
 		mVehicleDataProvider(nullptr),
@@ -160,7 +159,9 @@ void CaService::sendCam(const SimTime& T_now)
 
 SimTime CaService::genCamDcc()
 {
-	vanetza::Clock::duration delay = getFacilities().getDccScheduler().delay(vanetza::dcc::Profile::DP2);
+	static const vanetza::dcc::TransmissionLite ca_tx(vanetza::dcc::Profile::DP2, 0);
+	auto& trc = getFacilities().get_mutable<vanetza::dcc::TransmitRateThrottle>();
+	vanetza::Clock::duration delay = trc.delay(ca_tx);
 	SimTime dcc { std::chrono::duration_cast<std::chrono::milliseconds>(delay).count(), SIMTIME_MS };
 	return std::min(mGenCamMax, std::max(mGenCamMin, dcc));
 }

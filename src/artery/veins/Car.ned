@@ -20,8 +20,7 @@ module Car
         appl: <applType> like IBaseApplLayer {
             parameters:
                 @display("p=60,50");
-                middleware.mobilityModule = ".mobility";
-                middleware.radioDriverModule = ".appl.radioDriver";
+                **.mobilityModule = absPath("^.mobility");
         }
 
         nic: <nicType> like INic80211p {

@@ -60,6 +60,6 @@ module TestbedCar like INetworkNode
             wlan[i].upperLayerIn <-- radioDriver[i].lowerLayerOut;
         }
 
-        otaInterfaceLayer.lowerLayerOut --> radioDriver[0].middleware$i;
-        otaInterfaceLayer.lowerLayerIn <-- radioDriver[0].middleware$o;
+        otaInterfaceLayer.lowerLayerOut --> radioDriver[0].upperLayer$i;
+        otaInterfaceLayer.lowerLayerIn <-- radioDriver[0].upperLayer$o;
 }
