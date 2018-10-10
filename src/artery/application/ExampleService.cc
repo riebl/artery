@@ -50,7 +50,7 @@ void ExampleService::indicate(const btp::DataIndication& ind, cPacket* packet)
 void ExampleService::initialize()
 {	
     static int num = 0 ; 
-	printf("INITIALIZE OWN Service %d \n", num++);
+	std::cout << "INITIALIZE OWN SERVICE" <<  num++ << std::endl;
     
     ItsG5Service::initialize();
 	m_self_msg = new cMessage("Example Service");
@@ -60,7 +60,7 @@ void ExampleService::initialize()
 
 	scheduleAt(simTime() + 3.0, m_self_msg);
 	
-	mLocalDynamicMap = &getFacilities().get_mutable<artery::LocalDynamicMap>();
+	mLocalDynamicMap = &getFacilities().get_mutable<artery::LocalDynamicMap>(); // local dynamic MAP 
 }
 
 void ExampleService::finish()
@@ -79,6 +79,10 @@ void ExampleService::handleMessage(cMessage* msg)
 	}
 }
 
+// method is called every simulation step. (0.01 s) 
+// heare you can check some parameters to send message or not using ITS_G5 protocol : 
+// BTP (transport) and GeoNet SINGLE HOP BROADCAST (network) 
+//  
 void ExampleService::trigger()
 {
 	Enter_Method("trigger");
