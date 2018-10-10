@@ -1,0 +1,10 @@
+# CMake generated Testfile for 
+# Source directory: /home/vadym/artery/scenarios/storyboard
+# Build directory: /home/vadym/artery/build/scenarios/storyboard
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+add_test(storyboard-inet "/home/vadym/omnetpp-5.4.1/bin/opp_run_release" "-n" "/home/vadym/artery/src/artery:/home/vadym/artery/src/traci:/home/vadym/artery/extern/veins/examples/veins:/home/vadym/artery/extern/veins/src/veins:/home/vadym/artery/extern/inet/src:/home/vadym/artery/extern/inet/examples:/home/vadym/artery/extern/inet/tutorials:/home/vadym/artery/extern/inet/showcases" "-l" "/home/vadym/artery/build/src/artery/envmod/libartery_envmod.so" "-l" "/home/vadym/artery/build/src/artery/storyboard/libartery_storyboard.so" "-l" "/home/vadym/artery/extern/inet/out/gcc-release/src/libINET.so" "-l" "/home/vadym/artery/extern/veins/out/gcc-release/src/libveins.so" "-l" "/home/vadym/artery/build/src/artery/libartery_core.so" "omnetpp.ini" "-uCmdenv" "--sim-time-limit=60s")
+set_tests_properties(storyboard-inet PROPERTIES  WORKING_DIRECTORY "/home/vadym/artery/scenarios/storyboard")
+add_test(storyboard-veins "/home/vadym/omnetpp-5.4.1/bin/opp_run_release" "-n" "/home/vadym/artery/src/artery:/home/vadym/artery/src/traci:/home/vadym/artery/extern/veins/examples/veins:/home/vadym/artery/extern/veins/src/veins:/home/vadym/artery/extern/inet/src:/home/vadym/artery/extern/inet/examples:/home/vadym/artery/extern/inet/tutorials:/home/vadym/artery/extern/inet/showcases" "-l" "/home/vadym/artery/build/src/artery/envmod/libartery_envmod.so" "-l" "/home/vadym/artery/build/src/artery/storyboard/libartery_storyboard.so" "-l" "/home/vadym/artery/extern/inet/out/gcc-release/src/libINET.so" "-l" "/home/vadym/artery/extern/veins/out/gcc-release/src/libveins.so" "-l" "/home/vadym/artery/build/src/artery/libartery_core.so" "omnetpp.ini" "-uCmdenv" "-cveins" "--sim-time-limit=60s")
+set_tests_properties(storyboard-veins PROPERTIES  WORKING_DIRECTORY "/home/vadym/artery/scenarios/storyboard")

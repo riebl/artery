@@ -15,7 +15,7 @@ Only [CMake](http://www.cmake.org) is the officially supported way for building 
 Compatible versions of INET, Veins, Vanetza, and other components are managed as [git submodules](https://git-scm.com/docs/git-submodule) in the *extern* subdirectory.
 Please make sure to fetch these submodules when cloning our repository!
 
-    git clone --recurse-submodule https://github.com/riebl/artery.git
+    git clone --recurse-submodule https://github.com/vandit86/artery.git
 
 Alternatively, you can also load these submodules after cloning:
 
@@ -54,14 +54,21 @@ See the Vanetza [Readme](extern/vanetza/README.md) for details.
 As the next step, you need to build INET. Make sure you are in the root directory of Artery and simply call `make inet` there.
 INET's build dependencies are listed in [its install manual](extern/inet/INSTALL).
 
+### LTE 
+// Vadym add.. 
+Need to build LTE to use LTE capability on simulations 
+`make simulte`
+
+
 ### Artery
 Are you still with us? Congratulations, you are almost done!
-
+instead of this you must call commands below to make integration with simulte
     mkdir build
     cd build
-    cmake ..
-    cmake --build .
-
+    cmake -DWITH_SIMULTE=ON ..
+    cmake --build . 
+ 
+	
 These steps create a *build* directory for Artery, configure the build directory and finally build Artery there.
 
 ## Running Artery
@@ -78,3 +85,57 @@ You can, however, specify which SUMO executable shall be used explicilty.
 If you want Artery to start SUMO with a graphical user interface, you can put the following line in your *omnetpp.ini*:
 
     *.traci.launcher.sumo = "sumo-gui"
+    
+### Running 802.11p and LTE together 
+
+SIMULTE scenario combines two interface card for heterogeneous communication 802.11p (V2V) and mobile LTE 
+run this command on root directory to see the example work
+
+cmake --build build/ --target run_simulte
+    
+    
+## Create own ITS-G5 service (application ?? )
+
+there was created an ExampleService located in src/artery/application that can be used as a reference one to create other services (applications ??). This service is running on the same level of the ITS-G5 stack : facilities.. on the same level CAN and DENM services are running. 
+The service must be inherit from ItsG5Service and re-write his virtual methods. 
+the trigger() method method is called every simulation step. (0.01 s). here you can check some parameters to send message (or not) using ITS_G5 protocol : BTP (transport) and GeoNet - SHB (SINGLE HOP BROADCAST) (network). this parameters can be configured accordingly 
+
+
+Your service can subscribe to receive data from other services like CAM or DENM and use this data on your own application.. also you can obtain information about your vehicle (position speed etc) using traci::VehicleController variable.. in Example scenario we subscribe to receive data from CAM service and extract information previously decoding : 
+        const vanetza::asn1::Cam& msg =  dynamic_cast <CaObject*>(obj)->asn1();
+
+The CAM service create and maintain LCM (Local Dynamic Map) that also can be used in your application
+check code example comments to understand better 
+
+to switch on your service on simulation you must include the service class name and service port on artrery/scenarios/YOUR_SCENARIO/services.xml file like this 
+
+	<service type="artery.application.ExampleService">
+		<listener port="3003" />
+	</service>
+
+### ASN.1 encoding 
+
+the BTP PDU and FSDU (facilities layer service data unit) description can be found on set of ETSI EN302... v1.3.2  documentations.. the standard regulates all aspects of using ITS-G5 protocol stack : for example [GeoNet](https://www.etsi.org/deliver/etsi_en/302600_302699/3026360401/01.03.01_60/en_3026360401v010301p.pdf)
+
+for example heare is the [CAM-PDU-Descriptions.CAM](https://github.com/bastibl/its-g5-cam/blob/master/ITS_CAM_v1.3.2.asn)
+
+for service you can create own asn.1 PDU description  than using 'asn1c' utility generate c++ classes and headers to include on your project.. can find some examples of how to use own encoding messages in vatenza framework folder (artery/extern/vanetza/vanetza/asn1/...)
+
+### ETSI ITS G5 GeoNetworking stack, in Java 
+
+the sollution for java developers can be found [here](https://github.com/alexvoronov/geonetworking) 
+
+also this model can be used like a Model of running IPv6 over 802.11p
+
+### Cohda MKx ETS-Shell application
+
+[Cohda MKx ETS-Shell application](http://doxygen.cohdawireless.com/ets-shell/html/a00416_source.html)
+
+
+
+
+
+
+
+
+

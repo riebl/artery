@@ -19,7 +19,7 @@ import_opp_target(veins ${Veins_DIR}/src/Makefile)
 find_path(INET_DIR NAMES src/inet/package.ned PATHS extern/inet DOC "INET root directory")
 import_opp_target(INET ${INET_DIR}/src/Makefile)
 
-option(WITH_SIMULTE "Build Artery with SimuLTE integration" OFF)
+option(WITH_SIMULTE "Build Artery with SimuLTE integration" ON)
 if(WITH_SIMULTE)
     find_path(SimuLTE_DIR NAMES src/package.ned PATHS extern/simulte DOC "SimuLTE root directory")
     import_opp_target(lte ${SimuLTE_DIR}/src/Makefile)

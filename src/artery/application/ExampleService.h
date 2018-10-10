@@ -35,6 +35,9 @@ class ExampleService : public ItsG5Service
 
     private:
         omnetpp::cMessage* m_self_msg;
+		artery::LocalDynamicMap* mLocalDynamicMap; // map of vehicles and avarness messages 
+		std::string myVehicleID; 
+		
 };
 
 #endif /* EXAMPLESERVICE_H_ */
