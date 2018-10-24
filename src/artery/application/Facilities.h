@@ -29,8 +29,6 @@
 namespace artery
 {
 
-class VehicleDataProvider;
-
 /**
  * Context class for each ITS-G5 service provided by middleware
  */
@@ -97,9 +95,6 @@ class Facilities
 			using DT = typename std::decay<T>::type;
 			m_const_objects[std::type_index(typeid(DT))] = object;
 		}
-
-		// these (deprecated) getters are only provided for compatibility reasons
-		const VehicleDataProvider& getVehicleDataProvider() const;
 
 	private:
 		std::unordered_map<std::type_index, void*> m_mutable_objects;

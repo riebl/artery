@@ -30,6 +30,9 @@
 namespace artery
 {
 
+class Timer;
+class VehicleDataProvider;
+
 class CaService : public ItsG5BaseService
 {
 	public:
