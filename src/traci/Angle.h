@@ -19,8 +19,8 @@ struct TraCIAngle
     double degree;
 };
 
-Angle angle_cast(TraCIAngle);
-TraCIAngle angle_cast(Angle);
+artery::Angle angle_cast(TraCIAngle);
+TraCIAngle angle_cast(artery::Angle);
 
 } // namespace traci
 

@@ -19,13 +19,11 @@
 #include <map>
 #include <memory>
 
-// TODO move ItsG5BaseService to artery namespace
-class ItsG5BaseService;
-
 namespace artery
 {
 
 // forward declarations
+class ItsG5BaseService;
 class Router;
 
 /**

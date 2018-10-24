@@ -1,9 +1,12 @@
-#ifndef EFFECTFACTORY_H_
-#define EFFECTFACTORY_H_
+#ifndef ARTERY_EFFECTFACTORY_H_
+#define ARTERY_EFFECTFACTORY_H_
 
 #include "artery/storyboard/Condition.h"
 #include "artery/storyboard/Effect.h"
 #include <memory>
+
+namespace artery
+{
 
 /**
  * EffectFactory Interface
@@ -16,4 +19,6 @@ public:
     virtual std::shared_ptr<Effect> create(Vehicle&, Story&, ConditionResult&) = 0;
 };
 
-#endif /* EFFECTFACTORY_H_ */
+} // namespace artery
+
+#endif /* ARTERY_EFFECTFACTORY_H_ */

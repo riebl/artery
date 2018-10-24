@@ -16,8 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef VEHICLEDATAPROVIDER_H_
-#define VEHICLEDATAPROVIDER_H_
+#ifndef ARTERY_VEHICLEDATAPROVIDER_H_
+#define ARTERY_VEHICLEDATAPROVIDER_H_
 
 #include "artery/traci/VehicleController.h"
 #include "artery/utility/Geometry.h"
@@ -32,6 +32,9 @@
 #include <vanetza/units/curvature.hpp>
 #include <cstdint>
 #include <map>
+
+namespace artery
+{
 
 class VehicleDataProvider
 {
@@ -85,4 +88,6 @@ class VehicleDataProvider
 		static const std::map<AngularAcceleration, double> mConfidenceTable;
 };
 
-#endif /* VEHICLEDATAPROVIDER_H_ */
+} // namespace artery
+
+#endif /* ARTERY_VEHICLEDATAPROVIDER_H_ */

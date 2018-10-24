@@ -9,5 +9,5 @@ package artery.application;
 simple StationaryMiddleware extends Middleware
 {
 	parameters:
-		@class(artery::StationaryMiddleware);
+		@class(StationaryMiddleware);
 }

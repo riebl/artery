@@ -6,6 +6,8 @@
 #include <boost/units/systems/si/length.hpp>
 #include <boost/units/systems/si/time.hpp>
 
+namespace artery
+{
 
 TtcCondition::TtcCondition(double ttc) :
     m_ttc(ttc), m_ttcDistanceThreshold(100)
@@ -175,3 +177,5 @@ void TtcCondition::drawPath(const Route& route, omnetpp::cCanvas* canvas)
         mFigures.push_back(fig);
     }
 }
+
+} // namespace artery

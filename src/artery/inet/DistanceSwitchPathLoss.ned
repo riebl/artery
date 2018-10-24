@@ -6,7 +6,7 @@ module DistanceSwitchPathLoss like IPathLoss
 {
     parameters:
         @display("i=block/control");
-        @class(artery::DistanceSwitchPathLoss);
+        @class(DistanceSwitchPathLoss);
         double thresholdDistance @unit(m);
 
     submodules:

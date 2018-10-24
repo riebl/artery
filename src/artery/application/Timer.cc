@@ -6,6 +6,9 @@
 
 using namespace omnetpp;
 
+namespace artery
+{
+
 void Timer::setTimebase(const std::string& datetime)
 {
         auto tb = boost::posix_time::time_from_string(datetime);
@@ -56,3 +59,5 @@ uint64_t countTaiMilliseconds(vanetza::Clock::time_point tp)
     const auto ms = duration_cast<milliseconds>(d);
     return ms.count();
 }
+
+} // namespace artery

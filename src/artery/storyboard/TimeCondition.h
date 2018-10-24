@@ -1,8 +1,11 @@
-#ifndef TIMECONDITION_H_
-#define TIMECONDITION_H_
+#ifndef ARTERY_TIMECONDITION_H_
+#define ARTERY_TIMECONDITION_H_
 
 #include "artery/storyboard/Condition.h"
 #include <omnetpp/simtime.h>
+
+namespace artery
+{
 
 /**
  * Condition: Time
@@ -40,5 +43,7 @@ private:
     omnetpp::SimTime m_begin;
     omnetpp::SimTime m_end;
 };
+
+} // namespace artery
 
 #endif

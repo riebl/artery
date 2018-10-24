@@ -1,7 +1,10 @@
-#ifndef SRC_ARTERY_STORYBOARD_NODES_STOPEFFECT_H_
-#define SRC_ARTERY_STORYBOARD_NODES_STOPEFFECT_H_
+#ifndef ARTERY_STOPEFFECT_H_
+#define ARTERY_STOPEFFECT_H_
 
 #include "artery/storyboard/Effect.h"
+
+namespace artery
+{
 
 /**
  * StopEffect
@@ -33,4 +36,6 @@ public:
     void removeEffect();
 };
 
-#endif /* SRC_ARTERY_STORYBOARD_NODES_STOPEFFECT_H_ */
+} // namespace artery
+
+#endif /* ARTERY_STOPEFFECT_H_ */

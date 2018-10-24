@@ -5,6 +5,9 @@
 #include <vanetza/asn1/cam.hpp>
 #include <memory>
 
+namespace artery
+{
+
 class CaObject : public omnetpp::cObject
 {
 public:
@@ -27,5 +30,7 @@ public:
 private:
     std::shared_ptr<const vanetza::asn1::Cam> m_cam_wrapper;
 };
+
+} // namespace artery
 
 #endif /* ARTERY_CAOBJECT_H_ */

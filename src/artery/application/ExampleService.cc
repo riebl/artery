@@ -23,6 +23,9 @@
 using namespace omnetpp;
 using namespace vanetza;
 
+namespace artery
+{
+
 static const simsignal_t scSignalCamReceived = cComponent::registerSignal("CamReceived");
 
 Define_Module(ExampleService)
@@ -89,3 +92,5 @@ void ExampleService::receiveSignal(cComponent* source, simsignal_t signal, cObje
 		EV_INFO << "Vehicle " << vehicle.getVehicleId() << " received a CAM in sibling serivce\n";
 	}
 }
+
+} // namespace artery

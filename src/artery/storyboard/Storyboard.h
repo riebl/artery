@@ -10,13 +10,14 @@
 #include "artery/storyboard/EffectStack.h"
 #include "artery/storyboard/Vehicle.h"
 
-class Effect;
-class Story;
-class Vehicle;
 namespace pybind11 { class module; }
 
 namespace artery
 {
+
+class Effect;
+class Story;
+class Vehicle;
 
 class Storyboard : public omnetpp::cSimpleModule, public omnetpp::cListener
 {

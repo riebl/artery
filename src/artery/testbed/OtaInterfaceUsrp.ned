@@ -5,7 +5,7 @@ import artery.testbed.OtaInterface;
 simple OtaInterfaceUsrp like OtaInterface
 {
     parameters:
-        @class(artery::OtaInterfaceUsrp);
+        @class(OtaInterfaceUsrp);
         string hcmIp;
         int hcmPort = default(12345);
         int listeningPort = default(12346);

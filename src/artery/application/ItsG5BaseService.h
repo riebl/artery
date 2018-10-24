@@ -16,8 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef ITSG5BASESERVICE_H_
-#define ITSG5BASESERVICE_H_
+#ifndef ARTERY_ITSG5BASESERVICE_H_
+#define ARTERY_ITSG5BASESERVICE_H_
 
 #include <omnetpp/clistener.h>
 #include <omnetpp/csimplemodule.h>
@@ -26,12 +26,15 @@
 #include "Facilities.h"
 #include "Middleware.h"
 
+namespace artery
+{
+
 class ItsG5BaseService :
 	public omnetpp::cSimpleModule, public omnetpp::cListener,
 	public vanetza::btp::IndicationInterface
 {
 	public:
-		typedef artery::Middleware::port_type port_type;
+		typedef Middleware::port_type port_type;
 
 		ItsG5BaseService();
 		virtual ~ItsG5BaseService();
@@ -51,7 +54,9 @@ class ItsG5BaseService :
 		void unsubscribe(const omnetpp::simsignal_t&);
 
 	private:
-		artery::Middleware* m_middleware;
+		Middleware* m_middleware;
 };
 
-#endif /* ITSG5BASESERVICE_H_ */
+} // namespace artery
+
+#endif /* ARTERY_ITSG5BASESERVICE_H_ */

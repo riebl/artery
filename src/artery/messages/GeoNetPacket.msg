@@ -20,6 +20,7 @@ cplusplus {{
 	#include "artery/netw/GeoNetPacketWrapper.h"
 }}
 
+namespace artery;
 class noncobject GeoNetPacketWrapper;
 
 packet GeoNetPacket {

@@ -1,11 +1,14 @@
-#ifndef TTCCONDITION_H_
-#define TTCCONDITION_H_
+#ifndef ARTERY_TTCCONDITION_H_
+#define ARTERY_TTCCONDITION_H_
 
 #include "artery/storyboard/CarSetCondition.h"
 #include "artery/storyboard/Condition.h"
 #include "artery/utility/Geometry.h"
 #include <omnetpp/ccanvas.h>
 #include <vector>
+
+namespace artery
+{
 
 class TtcCondition : public Condition {
 public:
@@ -108,4 +111,6 @@ private:
     void drawPath(const Route& route, omnetpp::cCanvas* canvas);
 };
 
-#endif /* TTCCONDITION_H_ */
+} // namespace artery
+
+#endif /* ARTERY_TTCCONDITION_H_ */

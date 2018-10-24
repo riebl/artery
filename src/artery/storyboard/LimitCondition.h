@@ -1,8 +1,11 @@
-#ifndef LIMITCONDITION_H_3PHIGCXK
-#define LIMITCONDITION_H_3PHIGCXK
+#ifndef ARTERY_LIMITCONDITION_H_3PHIGCXK
+#define ARTERY_LIMITCONDITION_H_3PHIGCXK
 
 #include "artery/storyboard/Condition.h"
 #include <set>
+
+namespace artery
+{
 
 /**
  * Condition holds only true for the first N vehicles
@@ -19,5 +22,7 @@ private:
     std::set<const Vehicle*> m_count;
 };
 
-#endif /* LIMITCONDITION_H_3PHIGCXK */
+} // namespace artery
+
+#endif /* ARTERY_LIMITCONDITION_H_3PHIGCXK */
 

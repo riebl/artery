@@ -20,7 +20,7 @@
 #include <algorithm>
 #include <array>
 
-namespace { using LineOfSight = std::array<Position, 2>; }
+namespace { using LineOfSight = std::array<artery::Position, 2>; }
 BOOST_GEOMETRY_REGISTER_LINESTRING(LineOfSight)
 
 namespace artery

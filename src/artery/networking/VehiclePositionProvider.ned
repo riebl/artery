@@ -3,7 +3,7 @@ package artery.networking;
 simple VehiclePositionProvider like IPositionProvider
 {
     parameters:
-        @class(artery::VehiclePositionProvider);
+        @class(VehiclePositionProvider);
         @signal[PositionFix](PositionFixObject);
         string mobilityModule;
         string runtimeModule;

@@ -13,7 +13,7 @@ moduleinterface IMiddleware
 simple Middleware like IMiddleware
 {
 	parameters:
-		@class(artery::Middleware);
+		@class(Middleware);
 		@signal[Identity.update](type=artery::Identity);
 		@signal[Identity.remove](type=artery::Identity);
 		@signal[StoryboardSignal](type=StoryboardSignal);

@@ -13,8 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef ASIOSCHEDULER_H_
-#define ASIOSCHEDULER_H_
+#ifndef ARTERY_ASIOSCHEDULER_H_
+#define ARTERY_ASIOSCHEDULER_H_
 
 #include <omnetpp/cmodule.h>
 #include <omnetpp/cscheduler.h>
@@ -22,6 +22,9 @@
 #include <boost/asio/steady_timer.hpp>
 #include <chrono>
 #include <memory>
+
+namespace artery
+{
 
 class AsioTask;
 
@@ -60,4 +63,6 @@ class AsioScheduler : public omnetpp::cScheduler
 		FluxState m_state;
 };
 
-#endif /* ASIOSCHEDULER_H_ */
+} // namespace artery
+
+#endif /* ARTERY_ASIOSCHEDULER_H_ */

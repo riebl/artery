@@ -1,8 +1,11 @@
-#ifndef ANTENNAMOBILITY_H_BMWHZWNJ
-#define ANTENNAMOBILITY_H_BMWHZWNJ
+#ifndef ARTERY_ANTENNAMOBILITY_H_BMWHZWNJ
+#define ARTERY_ANTENNAMOBILITY_H_BMWHZWNJ
 
 #include <inet/mobility/contract/IMobility.h>
 #include <inet/common/geometry/common/Rotation.h>
+
+namespace artery
+{
 
 class AntennaMobility : public inet::IMobility, public omnetpp::cSimpleModule
 {
@@ -27,4 +30,6 @@ private:
     inet::Rotation mOffsetRotation;
 };
 
-#endif /* ANTENNAMOBILITY_H_BMWHZWNJ */
+} // namespace artery
+
+#endif /* ARTERY_ANTENNAMOBILITY_H_BMWHZWNJ */

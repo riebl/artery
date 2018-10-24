@@ -3,5 +3,5 @@ package artery.inet.gemv2;
 simple Visualizer
 {
     parameters:
-        @class(artery::gemv2::Visualizer);
+        @class(gemv2::Visualizer);
 }

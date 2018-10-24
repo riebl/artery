@@ -2,6 +2,9 @@
 #include "artery/utility/Geometry.h"
 #include <omnetpp/cexception.h>
 
+namespace artery
+{
+
 PolygonCondition::PolygonCondition(const std::vector<Position>& vertices) :
     m_vertices(vertices)
 {
@@ -40,3 +43,5 @@ void PolygonCondition::drawCondition(omnetpp::cCanvas* canvas)
         mDraw = false;
     }
 }
+
+} // namespace artery

@@ -4,7 +4,7 @@ package artery.transfusion;
 simple TransfusionLoopback
 {
     parameters:
-        @class(artery::TransfusionLoopback);
+        @class(TransfusionLoopback);
         int port;
 }
 

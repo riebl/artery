@@ -44,7 +44,7 @@ void BlackIceReporter::finish()
 void BlackIceReporter::receiveSignal(cComponent*, simsignal_t sig, cObject* obj, cObject*)
 {
     if (sig == storyboardSignal) {
-        auto sigobj = check_and_cast<StoryboardSignal*>(obj);
+        auto sigobj = check_and_cast<artery::StoryboardSignal*>(obj);
         if (sigobj->getCause() == "traction loss") {
             ++tractionLosses;
             sendReport();

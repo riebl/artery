@@ -6,7 +6,7 @@ module NLOSf extends FreeSpacePathLoss
 {
     parameters:
         @display("i=block/control");
-        @class(artery::gemv2::NLOSf);
+        @class(gemv2::NLOSf);
         string foliageIndexModule;
         string visualizerModule;
 }

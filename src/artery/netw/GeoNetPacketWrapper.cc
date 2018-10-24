@@ -22,6 +22,9 @@
 using vanetza::geonet::DownPacket;
 using vanetza::geonet::UpPacket;
 
+namespace artery
+{
+
 GeoNetPacketWrapper::GeoNetPacketWrapper()
 {
 }
@@ -60,3 +63,5 @@ std::unique_ptr<vanetza::geonet::UpPacket> GeoNetPacketWrapper::extract_up_packe
 {
 	return std::move(mPacket);
 }
+
+} // namespace artery

@@ -1,8 +1,11 @@
-#ifndef VANETRX_H_KTVCYSUX
-#define VANETRX_H_KTVCYSUX
+#ifndef ARTERY_VANETRX_H_KTVCYSUX
+#define ARTERY_VANETRX_H_KTVCYSUX
 
 #include "inet/linklayer/ieee80211/mac/Rx.h"
 #include <boost/circular_buffer.hpp>
+
+namespace artery
+{
 
 class VanetRx : public inet::ieee80211::Rx
 {
@@ -26,5 +29,7 @@ private:
     double channelBusyRatio;
 };
 
-#endif /* VANETRX_H_KTVCYSUX */
+} // namespace artery
+
+#endif /* ARTERY_VANETRX_H_KTVCYSUX */
 

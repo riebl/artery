@@ -1,10 +1,13 @@
-#ifndef SPEEDEFFECTFACTORY_H_
-#define SPEEDEFFECTFACTORY_H_
+#ifndef ARTERY_SPEEDEFFECTFACTORY_H_
+#define ARTERY_SPEEDEFFECTFACTORY_H_
 
 #include "artery/storyboard/Effect.h"
 #include "artery/storyboard/EffectFactory.h"
 #include "artery/traci/VehicleController.h"
 #include <memory>
+
+namespace artery
+{
 
 /**
  * SpeedEffectFactory creates SpeedEffects
@@ -29,4 +32,6 @@ private:
     double m_speed;
 };
 
-#endif /* SPEEDEFECTFACTORY_H_ */
+} // namespace artery
+
+#endif /* ARTERY_SPEEDEFECTFACTORY_H_ */

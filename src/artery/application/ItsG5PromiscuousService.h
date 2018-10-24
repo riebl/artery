@@ -15,11 +15,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef ITSG5PROMISCUOUSSERVICE_H_
-#define ITSG5PROMISCUOUSSERVICE_H_
+#ifndef ARTERY_ITSG5PROMISCUOUSSERVICE_H_
+#define ARTERY_ITSG5PROMISCUOUSSERVICE_H_
 
 #include "artery/application/ItsG5BaseService.h"
 #include <vanetza/btp/port_dispatcher.hpp>
+
+namespace artery
+{
 
 class ItsG5PromiscuousService :
 	public ItsG5BaseService,
@@ -32,4 +35,6 @@ class ItsG5PromiscuousService :
 		virtual void tapPacket(const vanetza::btp::DataIndication&, const vanetza::UpPacket&) = 0;
 };
 
-#endif /* ITSG5PROMISCUOUSSERVICE_H_ */
+} // namespace artery
+
+#endif /* ARTERY_ITSG5PROMISCUOUSSERVICE_H_ */

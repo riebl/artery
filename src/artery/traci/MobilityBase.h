@@ -1,5 +1,5 @@
-#ifndef MOBILITYBASE_H_1SQMAVHF
-#define MOBILITYBASE_H_1SQMAVHF
+#ifndef ARTERY_MOBILITYBASE_H_1SQMAVHF
+#define ARTERY_MOBILITYBASE_H_1SQMAVHF
 
 #include "artery/traci/ControllableVehicle.h"
 #include "traci/LiteAPI.h"
@@ -9,6 +9,8 @@
 #include <memory>
 #include <string>
 
+namespace artery
+{
 
 class MobilityBase :
     public traci::VehicleSink, // for receiving updates from TraCI
@@ -38,4 +40,6 @@ private:
     std::unique_ptr<traci::VehicleController> mController;
 };
 
-#endif /* MOBILITYBASE_H_1SQMAVHF */
+} // namespace artery
+
+#endif /* ARTERY_MOBILITYBASE_H_1SQMAVHF */

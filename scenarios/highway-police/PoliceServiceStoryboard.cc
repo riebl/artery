@@ -28,7 +28,7 @@ void PoliceServiceStoryboard::receiveSignal(omnetpp::cComponent*, omnetpp::simsi
 {
     // start the PoliceService after receiving Storyboard Signal
     if (sig == storyboardSignal) {
-        auto storysig = dynamic_cast<StoryboardSignal*>(sigobj);
+        auto storysig = dynamic_cast<artery::StoryboardSignal*>(sigobj);
         if (storysig && storysig->getCause() == "siren on") {
             activatedSiren = true;
         }

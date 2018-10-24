@@ -30,6 +30,9 @@ class GeoBroadcast;
 class TransfusionMsg;
 } // namespace Transfusion
 
+namespace artery
+{
+
 class TransfusionService : public ItsG5PromiscuousService
 {
     public:
@@ -45,5 +48,7 @@ class TransfusionService : public ItsG5PromiscuousService
         std::unique_ptr<AsioTask> m_asio_task;
         vanetza::ByteBuffer m_buffer;
 };
+
+} // namespace artery
 
 #endif

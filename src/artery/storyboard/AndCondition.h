@@ -1,9 +1,12 @@
-#ifndef ANDCONDITION_H_
-#define ANDCONDITION_H_
+#ifndef ARTERY_ANDCONDITION_H_
+#define ARTERY_ANDCONDITION_H_
 
 #include "artery/storyboard/Condition.h"
 #include <algorithm>
 #include <memory>
+
+namespace artery
+{
 
 /**
  * Class to create a Tree of AndConditions
@@ -29,4 +32,6 @@ private:
     ConditionPtr m_right;
 };
 
-#endif /* ANDCONDITION_H_ */
+} // namespace artery
+
+#endif /* ARTERY_ANDCONDITION_H_ */

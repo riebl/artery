@@ -6,7 +6,7 @@ simple NLOSb like IPathLoss
 {
     parameters:
         @display("i=block/control");
-        @class(artery::gemv2::NLOSb);
+        @class(gemv2::NLOSb);
         string vehicleIndexModule;
         string obstacleIndexModule;
         string visualizerModule;

@@ -1,11 +1,13 @@
-#ifndef VEINSOBSTACLECONTROL_H_TFINXPHU
-#define VEINSOBSTACLECONTROL_H_TFINXPHU
+#ifndef ARTERY_VEINSOBSTACLECONTROL_H_TFINXPHU
+#define ARTERY_VEINSOBSTACLECONTROL_H_TFINXPHU
 
 #include "traci/Listener.h"
 #include <veins/modules/obstacle/ObstacleControl.h>
 
 namespace traci { class LiteAPI; }
 
+namespace artery
+{
 
 class VeinsObstacleControl : public Veins::ObstacleControl, public traci::Listener
 {
@@ -17,5 +19,7 @@ private:
     void fetchObstacles(traci::LiteAPI&);
 };
 
-#endif /* VEINSOBSTACLECONTROL_H_TFINXPHU */
+} // namespace artery
+
+#endif /* ARTERY_VEINSOBSTACLECONTROL_H_TFINXPHU */
 

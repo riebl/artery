@@ -1,5 +1,5 @@
-#ifndef LOCALDYNAMICMAP_H_AL7SS9KT
-#define LOCALDYNAMICMAP_H_AL7SS9KT
+#ifndef ARTERY_LOCALDYNAMICMAP_H_AL7SS9KT
+#define ARTERY_LOCALDYNAMICMAP_H_AL7SS9KT
 
 #include "artery/application/CaObject.h"
 #include <omnetpp/simtime.h>
@@ -8,10 +8,10 @@
 #include <functional>
 #include <map>
 
-class Timer;
-
 namespace artery
 {
+
+class Timer;
 
 class LocalDynamicMap
 {
@@ -42,5 +42,5 @@ private:
 
 } // namespace artery
 
-#endif /* LOCALDYNAMICMAP_H_AL7SS9KT */
+#endif /* ARTERY_LOCALDYNAMICMAP_H_AL7SS9KT */
 

@@ -10,11 +10,12 @@
 #include "LinkClass.h"
 #include <omnetpp/csimplemodule.h>
 
+namespace artery
+{
+
 // forward declaration
 class Position;
 
-namespace artery
-{
 namespace gemv2
 {
 

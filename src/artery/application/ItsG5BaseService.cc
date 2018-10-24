@@ -21,8 +21,10 @@
 #include "veins/base/utils/FindModule.h"
 #include <cassert>
 
-using namespace artery;
 using namespace omnetpp;
+
+namespace artery
+{
 
 ItsG5BaseService::ItsG5BaseService() :
 	m_middleware(nullptr)
@@ -101,3 +103,5 @@ void ItsG5BaseService::request(const vanetza::btp::DataRequestB& req, std::uniqu
 void ItsG5BaseService::indicate(const vanetza::btp::DataIndication& ind, std::unique_ptr<vanetza::UpPacket> packet)
 {
 }
+
+} // namespace artery

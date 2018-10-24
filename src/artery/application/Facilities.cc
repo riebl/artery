@@ -20,7 +20,12 @@
 #include "artery/application/VehicleDataProvider.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 
+namespace artery
+{
+
 const VehicleDataProvider& Facilities::getVehicleDataProvider() const
 {
 	return get_const<VehicleDataProvider>();
 }
+
+} // namespace artery

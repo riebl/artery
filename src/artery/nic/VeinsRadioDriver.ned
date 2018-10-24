@@ -3,7 +3,7 @@ package artery.nic;
 simple VeinsRadioDriver like IRadioDriver
 {
 	parameters:
-		@class(artery::VeinsRadioDriver);
+		@class(VeinsRadioDriver);
 		@signal[ChannelLoad](type=double);
 		double channelLoadReportInterval = default(0.1s) @unit(s);
 

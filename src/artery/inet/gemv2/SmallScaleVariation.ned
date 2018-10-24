@@ -3,7 +3,7 @@ package artery.inet.gemv2;
 simple SmallScaleVariation
 {
     parameters:
-        @class(artery::gemv2::SmallScaleVariation);
+        @class(gemv2::SmallScaleVariation);
         string obstacleIndexModule;
         string vehicleIndexModule;
 

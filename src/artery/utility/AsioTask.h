@@ -1,11 +1,14 @@
-#ifndef ASIOTASK_H_
-#define ASIOTASK_H_
+#ifndef ARTERY_ASIOTASK_H_
+#define ARTERY_ASIOTASK_H_
 
 #include "artery/messages/AsioData_m.h"
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <omnetpp/cmodule.h>
 #include <memory>
+
+namespace artery
+{
 
 class AsioScheduler;
 
@@ -29,4 +32,6 @@ class AsioTask
 		omnetpp::cModule& m_module;
 };
 
-#endif /* ASIOTASK_H_ */
+} // namespace artery
+
+#endif /* ARTERY_ASIOTASK_H_ */

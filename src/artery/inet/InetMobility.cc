@@ -11,6 +11,9 @@
 #   include <cstdio>
 #endif
 
+namespace artery
+{
+
 Define_Module(InetMobility)
 
 
@@ -110,3 +113,5 @@ void InetMobility::updateVisualRepresentation()
 #endif
     }
 }
+
+} // namespace artery

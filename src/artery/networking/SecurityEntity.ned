@@ -3,7 +3,7 @@ package artery.networking;
 simple SecurityEntity
 {
     parameters:
-        @class(artery::SecurityEntity);
+        @class(SecurityEntity);
         string runtimeModule;
         string positionModule;
 

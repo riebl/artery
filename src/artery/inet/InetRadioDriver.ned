@@ -5,7 +5,7 @@ import artery.nic.IRadioDriver;
 simple InetRadioDriver like IRadioDriver
 {
 	parameters:
-		@class(artery::InetRadioDriver);
+		@class(InetRadioDriver);
 		@signal[ChannelLoad](type=double);
 		string macModule;
 

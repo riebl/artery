@@ -1,6 +1,9 @@
 #include "artery/application/StoryboardSignal.h"
 #include <omnetpp.h>
 
+namespace artery
+{
+
 Register_Class(StoryboardSignal)
 
 StoryboardSignal::StoryboardSignal() :
@@ -47,3 +50,5 @@ const Story* StoryboardSignal::getStory() const
 {
     return mStory;
 }
+
+} // namespace artery

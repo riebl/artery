@@ -6,6 +6,9 @@
 #include <cstdint>
 #include <string>
 
+namespace artery
+{
+
 /**
  * Timer represents the timing entity of Facilities Position and Time Management (POTI).
  *
@@ -53,5 +56,7 @@ class Timer
 };
 
 uint64_t countTaiMilliseconds(vanetza::Clock::time_point);
+
+} // namespace artery
 
 #endif /* ARTERY_TIMER_H_EQBBXFD0 */

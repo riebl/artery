@@ -1,6 +1,9 @@
 #include "artery/storyboard/ConditionResult.h"
 #include <boost/variant/static_visitor.hpp>
 
+namespace artery
+{
+
 bool is_true(const ConditionResult& result)
 {
     struct visitor : boost::static_visitor<bool>
@@ -16,3 +19,5 @@ bool is_true(const ConditionResult& result)
 
     return boost::apply_visitor(visitor(), result);
 }
+
+} // namespace artery

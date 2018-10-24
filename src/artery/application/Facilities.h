@@ -16,8 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef FACILITIES_H_
-#define FACILITIES_H_
+#ifndef ARTERY_FACILITIES_H_
+#define ARTERY_FACILITIES_H_
 
 #include <cassert>
 #include <stdexcept>
@@ -26,15 +26,10 @@
 #include <unordered_map>
 #include <omnetpp/cexception.h>
 
-// forward declarations (for deprecated getters)
+namespace artery
+{
+
 class VehicleDataProvider;
-namespace Veins { class TraCIMobility; }
-namespace vanetza {
-namespace dcc {
-	class Scheduler;
-	class StateMachine;
-} // ns dcc
-} // ns vanetza
 
 /**
  * Context class for each ITS-G5 service provided by middleware
@@ -111,4 +106,6 @@ class Facilities
 		std::unordered_map<std::type_index, const void*> m_const_objects;
 };
 
-#endif /* FACILITIES_H_ */
+} // namespace artery
+
+#endif /* ARTERY_FACILITIES_H_ */

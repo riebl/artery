@@ -4,6 +4,9 @@
 
 using namespace omnetpp;
 
+namespace artery
+{
+
 static const simsignal_t signalStoryboard = cComponent::registerSignal("StoryboardSignal");
 
 Vehicle::Vehicle(artery::Middleware& mw, std::map<std::string, Vehicle>& vs) :
@@ -36,3 +39,5 @@ void Vehicle::emit(const StoryboardSignal& signal) const
     const omnetpp::cObject* obj = &signal;
     mMiddleware.emit(signalStoryboard, obj);
 }
+
+} // namespace artery

@@ -1,6 +1,9 @@
 #include <artery/inet/AntennaMobility.h>
 #include <omnetpp/cexception.h>
 
+namespace artery
+{
+
 Define_Module(AntennaMobility)
 
 void AntennaMobility::initialize(int stage)
@@ -67,3 +70,5 @@ inet::Coord AntennaMobility::getConstraintAreaMin() const
     inet::Coord offset = mParentMobility->getConstraintAreaMin() + mOffsetCoord;
     return offset.min(mParentMobility->getConstraintAreaMin());
 }
+
+} // namespace artery

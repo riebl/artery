@@ -16,7 +16,10 @@
 #ifndef EXAMPLESERVICE_H_
 #define EXAMPLESERVICE_H_
 
-#include "ItsG5Service.h"
+#include "artery/application/ItsG5Service.h"
+
+namespace artery
+{
 
 class ExampleService : public ItsG5Service
 {
@@ -36,5 +39,7 @@ class ExampleService : public ItsG5Service
     private:
         omnetpp::cMessage* m_self_msg;
 };
+
+} // namespace artery
 
 #endif /* EXAMPLESERVICE_H_ */

@@ -16,8 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef CASERVICE_H_
-#define CASERVICE_H_
+#ifndef ARTERY_CASERVICE_H_
+#define ARTERY_CASERVICE_H_
 
 #include "artery/application/ItsG5BaseService.h"
 #include "artery/utility/Geometry.h"
@@ -27,6 +27,8 @@
 #include <vanetza/units/velocity.hpp>
 #include <omnetpp/simtime.h>
 
+namespace artery
+{
 
 class CaService : public ItsG5BaseService
 {
@@ -67,4 +69,6 @@ class CaService : public ItsG5BaseService
 vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider&, uint16_t genDeltaTime);
 void addLowFrequencyContainer(vanetza::asn1::Cam&);
 
-#endif /*CASERVICE_H_ */
+} // namespace artery
+
+#endif /* ARTERY_CASERVICE_H_ */

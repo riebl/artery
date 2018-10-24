@@ -1,6 +1,9 @@
 #include "artery/veins/VeinsMobility.h"
 #include <cmath>
 
+namespace artery
+{
+
 Define_Module(VeinsMobility)
 
 void VeinsMobility::initialize(int stage)
@@ -42,3 +45,5 @@ void VeinsMobility::update(const Position& pos, Angle heading, double speed)
     ASSERT(BaseMobility::mobilityStateChangedSignal != MobilityBase::stateChangedSignal);
     emit(MobilityBase::stateChangedSignal, this);
 }
+
+} // namespace artery

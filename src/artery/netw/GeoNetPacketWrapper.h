@@ -16,11 +16,14 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef GEONETPACKETWRAPPER_H_
-#define GEONETPACKETWRAPPER_H_
+#ifndef ARTERY_GEONETPACKETWRAPPER_H_
+#define ARTERY_GEONETPACKETWRAPPER_H_
 
 #include <vanetza/geonet/packet.hpp>
 #include <memory>
+
+namespace artery
+{
 
 class GeoNetPacketWrapper
 {
@@ -37,4 +40,6 @@ class GeoNetPacketWrapper
 		std::unique_ptr<vanetza::geonet::UpPacket> mPacket;
 };
 
-#endif /* GEONETPACKETWRAPPER_H_ */
+} // namespace artery
+
+#endif /* ARTERY_GEONETPACKETWRAPPER_H_ */

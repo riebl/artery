@@ -1,6 +1,9 @@
 #include "artery/utility/Geometry.h"
 #include <boost/geometry/algorithms/distance.hpp>
 
+namespace artery
+{
+
 double Angle::radian() const
 {
     return value / boost::units::si::radian;
@@ -27,3 +30,5 @@ bool operator!=(const Position& a, const Position& b)
 {
     return a.x != b.x || a.y != b.y;
 }
+
+} // namespace artery

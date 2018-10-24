@@ -27,6 +27,9 @@
 
 using namespace omnetpp;
 
+namespace artery
+{
+
 Define_Module(TransfusionService)
 
 void TransfusionService::initialize()
@@ -182,3 +185,5 @@ vanetza::geonet::Area TransfusionService::buildDestinationArea(const Transfusion
 
     return area;
 }
+
+} // namespace artery

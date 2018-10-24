@@ -3,6 +3,6 @@ package artery.networking;
 simple Runtime
 {
     parameters:
-        @class(artery::Runtime);
+        @class(Runtime);
         string datetime;
 }

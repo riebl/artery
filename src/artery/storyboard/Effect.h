@@ -1,5 +1,8 @@
-#ifndef EFFECT_H_
-#define EFFECT_H_
+#ifndef ARTERY_EFFECT_H_
+#define ARTERY_EFFECT_H_
+
+namespace artery
+{
 
 class Story;
 class Vehicle;
@@ -23,4 +26,6 @@ private:
     Vehicle& m_car;
 };
 
-#endif /* EFFECT_H_ */
+} // namespace artery
+
+#endif /* ARTERY_EFFECT_H_ */

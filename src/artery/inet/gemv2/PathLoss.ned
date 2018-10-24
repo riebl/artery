@@ -5,7 +5,7 @@ import inet.physicallayer.contract.packetlevel.IPathLoss;
 module Gemv2 like IPathLoss
 {
     parameters:
-        @class(artery::gemv2::PathLoss);
+        @class(gemv2::PathLoss);
         *.traciModule = default("traci");
         bool withSmallScaleVariations = default(true);
         bool withVisualization = default(false);

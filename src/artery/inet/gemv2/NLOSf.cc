@@ -20,7 +20,7 @@
 
 using namespace inet;
 
-namespace { using PositionSegment = std::array<Position, 2>; }
+namespace { using PositionSegment = std::array<artery::Position, 2>; }
 BOOST_GEOMETRY_REGISTER_LINESTRING(PositionSegment)
 
 namespace artery

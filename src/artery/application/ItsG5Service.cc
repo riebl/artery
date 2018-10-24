@@ -22,6 +22,9 @@
 
 using namespace omnetpp;
 
+namespace artery
+{
+
 ItsG5Service::ItsG5Service()
 {
 }
@@ -78,3 +81,5 @@ void ItsG5Service::request(const vanetza::btp::DataRequestB& req, cPacket* packe
 	buffer->layer(vanetza::OsiLayer::Application) = std::move(packet);
 	ItsG5BaseService::request(req, std::move(buffer));
 }
+
+} // namespace artery

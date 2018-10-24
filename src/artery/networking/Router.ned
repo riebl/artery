@@ -3,7 +3,7 @@ package artery.networking;
 simple Router
 {
     parameters:
-        @class(artery::Router);
+        @class(Router);
         string dccModule;
         string middlewareModule;
         string radioDriverModule;

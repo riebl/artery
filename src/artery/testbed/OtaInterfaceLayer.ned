@@ -3,7 +3,7 @@ package artery.testbed;
 simple OtaInterfaceLayer
 {
 	parameters:
-		@class(artery::OtaInterfaceLayer);
+		@class(OtaInterfaceLayer);
 		string otaInterfaceModule = default("otaInterface");
 		string radioDriverModule;
 		string mobilityModule = default(".^.mobility");

@@ -19,6 +19,9 @@
 
 namespace py = pybind11;
 
+namespace artery
+{
+
 PYBIND11_EMBEDDED_MODULE(storyboard, m) {
 
     py::class_<Position>(m, "Coord")
@@ -111,4 +114,6 @@ PYBIND11_EMBEDDED_MODULE(timeline, m) {
     m.def("seconds", timelineSeconds);
     m.def("milliseconds", timelineMilliseconds);
 }
+
+} // namespace artery
 

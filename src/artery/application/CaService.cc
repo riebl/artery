@@ -12,6 +12,9 @@
 #include <vanetza/dcc/transmit_rate_control.hpp>
 #include <chrono>
 
+namespace artery
+{
+
 using namespace omnetpp;
 
 auto microdegree = vanetza::units::degree * boost::units::si::micro;
@@ -248,3 +251,5 @@ void addLowFrequencyContainer(vanetza::asn1::Cam& message)
 		throw cRuntimeError("Invalid Low Frequency CAM: %s", error.c_str());
 	}
 }
+
+} // namespace artery

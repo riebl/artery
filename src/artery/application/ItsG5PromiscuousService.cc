@@ -15,7 +15,12 @@
 
 #include "artery/application/ItsG5PromiscuousService.h"
 
+namespace artery
+{
+
 void ItsG5PromiscuousService::tap_packet(const vanetza::btp::DataIndication& indication, const vanetza::UpPacket& packet)
 {
 	this->tapPacket(indication, packet);
 }
+
+} // namespace artery

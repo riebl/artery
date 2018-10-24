@@ -26,6 +26,9 @@
 #include <memory>
 #include <typeinfo>
 
+namespace artery
+{
+
 template<class T>
 struct Asn1PacketVisitor : public boost::static_visitor<const T*>
 {
@@ -70,5 +73,7 @@ struct Asn1PacketVisitor : public boost::static_visitor<const T*>
 
     std::shared_ptr<const T> shared_wrapper;
 };
+
+} // namespace artery
 
 #endif /* __ARTERY_ASN1PACKETVISITOR_H_ */

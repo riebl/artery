@@ -31,6 +31,9 @@
 #include <random>
 #include <stdexcept>
 
+namespace artery
+{
+
 const double pi = boost::math::constants::pi<double>();
 const auto degree_per_second_squared = vanetza::units::degree / (vanetza::units::si::second * vanetza::units::si::second);
 const std::map<VehicleDataProvider::AngularAcceleration, double> VehicleDataProvider::mConfidenceTable {
@@ -196,3 +199,5 @@ auto VehicleDataProvider::getStationType() const -> StationType
 {
 	return mStationType;
 }
+
+} // namespace artery

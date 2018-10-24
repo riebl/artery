@@ -11,6 +11,9 @@
 #include <boost/units/systems/si/plane_angle.hpp>
 #include <vector>
 
+namespace artery
+{
+
 /**
  * Position represents a point in OMNeT++'s coordinate system
  *
@@ -86,33 +89,34 @@ struct Angle
     value_type value;
 };
 
+} // namespace artery
 
 // this register macro needs to be outside of any namespaces
-BOOST_GEOMETRY_REGISTER_RING(std::vector<Position>)
+BOOST_GEOMETRY_REGISTER_RING(std::vector<artery::Position>)
 
 namespace boost { namespace geometry { namespace traits
 {
 
-BOOST_GEOMETRY_DETAIL_SPECIALIZE_POINT_TRAITS(Position, 2, double, cs::cartesian)
+BOOST_GEOMETRY_DETAIL_SPECIALIZE_POINT_TRAITS(artery::Position, 2, double, cs::cartesian)
 
-template<> struct access<Position, 0>
+template<> struct access<artery::Position, 0>
 {
-    static inline double get(const Position& pos) { return pos.x.value(); }
-    static inline void set(Position& pos, double v) { pos.x = Position::value_type::from_value(v); }
+    static inline double get(const artery::Position& pos) { return pos.x.value(); }
+    static inline void set(artery::Position& pos, double v) { pos.x = artery::Position::value_type::from_value(v); }
 };
 
-template<> struct access<Position, 1>
+template<> struct access<artery::Position, 1>
 {
-    static inline double get(const Position& pos) { return pos.y.value(); }
-    static inline void set(Position& pos, double v) { pos.y = Position::value_type::from_value(v); }
+    static inline double get(const artery::Position& pos) { return pos.y.value(); }
+    static inline void set(artery::Position& pos, double v) { pos.y = artery::Position::value_type::from_value(v); }
 };
 
-template<> struct point_order<std::vector<Position>>
+template<> struct point_order<std::vector<artery::Position>>
 {
     static const order_selector value = clockwise;
 };
 
-template<> struct closure<std::vector<Position>>
+template<> struct closure<std::vector<artery::Position>>
 {
     static const closure_selector value = open;
 };

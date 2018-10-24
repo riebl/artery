@@ -6,7 +6,7 @@
 // forward declaration
 namespace traci { class VehicleController; }
 
-class PoliceService : public ItsG5Service
+class PoliceService : public artery::ItsG5Service
 {
     public:
         void trigger() override;

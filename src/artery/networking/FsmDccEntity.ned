@@ -3,7 +3,7 @@ package artery.networking;
 simple FsmDccEntity like IDccEntity
 {
     parameters:
-        @class(artery::FsmDccEntity);
+        @class(FsmDccEntity);
         string radioDriverModule;
         string routerModule;
         string runtimeModule;
