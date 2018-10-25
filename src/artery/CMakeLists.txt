@@ -46,7 +46,6 @@ target_link_libraries(artery INTERFACE core)
 add_library(Artery::Core ALIAS core)
 
 generate_opp_message(messages/AsioData.msg TARGET core)
-generate_opp_message(messages/ChannelLoadReport.msg TARGET core)
 
 set_target_properties(core PROPERTIES
     OUTPUT_NAME artery_core
