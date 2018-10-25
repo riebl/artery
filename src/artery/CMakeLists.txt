@@ -25,12 +25,12 @@ add_library(core SHARED
     networking/AccessInterface.cc
     networking/DccEntityBase.cc
     networking/FsmDccEntity.cc
+    networking/GeoNetPacket.cc
     networking/Router.cc
     networking/Runtime.cc
     networking/SecurityEntity.cc
     networking/StationaryPositionProvider.cc
     networking/VehiclePositionProvider.cc
-    netw/GeoNetPacketWrapper.cc
     nic/RadioDriverBase.cc
     traci/MobilityBase.cc
     traci/VehicleController.cc
@@ -46,7 +46,6 @@ add_library(Artery::Core ALIAS core)
 
 generate_opp_message(messages/AsioData.msg TARGET core)
 generate_opp_message(messages/ChannelLoadReport.msg TARGET core)
-generate_opp_message(messages/GeoNetPacket.msg TARGET core)
 
 set_target_properties(core PROPERTIES
     OUTPUT_NAME artery_core

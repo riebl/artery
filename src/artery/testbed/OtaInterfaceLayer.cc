@@ -1,4 +1,4 @@
-#include "artery/messages/GeoNetPacket_m.h"
+#include "artery/networking/GeoNetPacket.h"
 #include "artery/nic/RadioDriverBase.h"
 #include "artery/netw/GeoNetIndication.h"
 #include "artery/testbed/OtaInterfaceLayer.h"
@@ -46,13 +46,12 @@ void OtaInterfaceLayer::handleMessage(omnetpp::cMessage* message)
         auto info = check_and_cast<GeoNetIndication*>(message->removeControlInfo());
         if (info) {
             using namespace vanetza;
-            auto payload = packet->getPayload().extract_up_packet();
-            auto range = create_byte_view(*payload, OsiLayer::Network, OsiLayer::Application);
+            auto range = create_byte_view(packet->getPayload(), OsiLayer::Network, OsiLayer::Application);
             mOtaModule->sendMessage(info->source, info->destination, range);
         }
     }
 
-    cancelAndDelete(message);
+    delete message;
 }
 
 void OtaInterfaceLayer::request(std::unique_ptr<GeoNetPacket> packet)

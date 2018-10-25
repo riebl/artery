@@ -1,5 +1,9 @@
 #include "artery/testbed/OtaIndicationQueue.h"
 #include "artery/testbed/TestbedScheduler.h"
+#include <omnetpp/cconfigoption.h>
+#include <omnetpp/cconfiguration.h>
+#include <omnetpp/cfutureeventset.h>
+#include <omnetpp/regmacros.h>
 
 namespace artery
 {

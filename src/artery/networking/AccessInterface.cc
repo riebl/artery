@@ -1,5 +1,5 @@
-#include "artery/messages/GeoNetPacket_m.h"
 #include "artery/networking/AccessInterface.h"
+#include "artery/networking/GeoNetPacket.h"
 #include "artery/netw/GeoNetRequest.h"
 #include "artery/utility/PointerCheck.h"
 #include <omnetpp/checkandcast.h>
@@ -24,8 +24,7 @@ void AccessInterface::request(const DataRequest& request, std::unique_ptr<ChunkP
     omnetpp::cMethodCallContextSwitcher ctx(mModuleOut);
 
     GeoNetPacket* gn = new GeoNetPacket("GeoNet packet");
-    gn->setByteLength(payload->size());
-    gn->setPayload(GeoNetPacketWrapper(std::move(payload)));
+    gn->setPayload(std::move(payload));
     gn->setControlInfo(new GeoNetRequest(request));
 
     // gn has been created in the context of mModuleOut, thus ownership is fine

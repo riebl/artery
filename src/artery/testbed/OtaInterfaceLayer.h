@@ -7,7 +7,7 @@
 #ifndef ARTERY_OTAINTERFACELAYER_H
 #define ARTERY_OTAINTERFACELAYER_H
 
-#include "artery/messages/GeoNetPacket_m.h"
+#include "artery/networking/GeoNetPacket.h"
 #include "artery/utility/Geometry.h"
 #include <omnetpp/csimplemodule.h>
 #include <vanetza/units/velocity.hpp>

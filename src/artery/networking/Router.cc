@@ -1,10 +1,10 @@
 #include "artery/application/Middleware.h"
+#include "artery/networking/GeoNetPacket.h"
 #include "artery/networking/IDccEntity.h"
 #include "artery/networking/PositionFixObject.h"
 #include "artery/networking/Router.h"
 #include "artery/networking/Runtime.h"
 #include "artery/networking/SecurityEntity.h"
-#include "artery/messages/GeoNetPacket_m.h"
 #include "artery/netw/GeoNetIndication.h"
 #include "artery/nic/RadioDriverBase.h"
 #include "artery/utility/InitStages.h"
@@ -76,9 +76,8 @@ void Router::handleMessage(omnetpp::cMessage* msg)
 {
     if (msg->getArrivalGate() == mRadioDriverIn) {
         auto* packet = check_and_cast<GeoNetPacket*>(msg);
-        auto& wrapper = packet->getPayload();
         auto* indication = check_and_cast<GeoNetIndication*>(packet->getControlInfo());
-        mRouter->indicate(wrapper.extract_up_packet(), indication->source, indication->destination);
+        mRouter->indicate(std::move(*packet).extractPayload(), indication->source, indication->destination);
     } else {
         error("Do not know how to handle received message");
     }
