@@ -39,7 +39,7 @@ module RSU like INetworkNode
                 @display("p=53,200");
         }
 
-        radioDriver[numRadios]: InetRadioDriver {
+        radioDriver[numRadios]: RadioDriver {
             parameters:
                 macModule = ".wlan[" + string(index) + "].mac";
         }

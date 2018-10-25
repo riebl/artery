@@ -61,10 +61,10 @@ target_link_libraries(core PUBLIC Vanetza::vanetza)
 if(TARGET veins)
     message(STATUS "Enable Veins integration")
     set_property(TARGET core APPEND PROPERTY SOURCES
-        nic/VeinsRadioDriver.cc
         veins/VeinsConnectionManager.cc
         veins/VeinsMobility.cc
-        veins/VeinsObstacleControl.cc)
+        veins/VeinsObstacleControl.cc
+        veins/VeinsRadioDriver.cc)
     target_link_libraries(core PUBLIC veins)
 endif()
 

@@ -1,6 +1,8 @@
-package artery.nic;
+package artery.veins;
 
-simple VeinsRadioDriver like IRadioDriver
+import artery.nic.IRadioDriver;
+
+simple RadioDriver like IRadioDriver
 {
 	parameters:
 		@class(VeinsRadioDriver);

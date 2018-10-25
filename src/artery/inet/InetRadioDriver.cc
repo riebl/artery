@@ -1,7 +1,7 @@
-#include "artery/com/GeoNetIndication.h"
-#include "artery/com/GeoNetRequest.h"
 #include "artery/inet/InetRadioDriver.h"
 #include "artery/inet/VanetRx.h"
+#include "artery/networking/GeoNetIndication.h"
+#include "artery/networking/GeoNetRequest.h"
 #include <inet/common/ModuleAccess.h>
 #include <inet/linklayer/common/Ieee802Ctrl.h>
 #include <inet/linklayer/ieee80211/mac/Ieee80211Mac.h>

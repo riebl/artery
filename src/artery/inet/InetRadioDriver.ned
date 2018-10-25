@@ -2,7 +2,7 @@ package artery.inet;
 
 import artery.nic.IRadioDriver;
 
-simple InetRadioDriver like IRadioDriver
+simple RadioDriver like IRadioDriver
 {
 	parameters:
 		@class(InetRadioDriver);

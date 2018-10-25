@@ -3,7 +3,6 @@ package artery.veins;
 import artery.application.IMiddleware;
 import artery.networking.Vanetza;
 import artery.nic.IRadioDriver;
-import artery.nic.VeinsRadioDriver;
 import org.car2x.veins.base.modules.IBaseApplLayer;
 
 // Middleware as Veins compatiblity application layer
@@ -19,7 +18,7 @@ module ApplicationLayer like IBaseApplLayer
 		output lowerControlOut;
 
 	submodules:
-		radioDriver : VeinsRadioDriver {
+		radioDriver : RadioDriver {
 		}
 
 		vanetza: Vanetza {
