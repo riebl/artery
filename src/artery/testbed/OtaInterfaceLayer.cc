@@ -44,16 +44,10 @@ void OtaInterfaceLayer::handleMessage(omnetpp::cMessage* message)
     if (message->getArrivalGate() == mRadioDriverIn) {
         auto packet = check_and_cast<GeoNetPacket*>(message);
         auto info = check_and_cast<GeoNetIndication*>(message->removeControlInfo());
-
-        auto payload = packet->getPayload().extract_up_packet();
-        size_t length = boost::size(*payload, vanetza::OsiLayer::Physical, vanetza::OsiLayer::Application);
-        auto range = boost::create_byte_view(*payload, vanetza::OsiLayer::Network);
-
-        if (length != range.size()) {
-            throw omnetpp::cRuntimeError(this, "Whole packet must be sent to OTA Interface");
-        }
-
         if (info) {
+            using namespace vanetza;
+            auto payload = packet->getPayload().extract_up_packet();
+            auto range = create_byte_view(*payload, OsiLayer::Network, OsiLayer::Application);
             mOtaModule->sendMessage(info->source, info->destination, range);
         }
     }
