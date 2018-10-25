@@ -31,6 +31,7 @@ add_library(core SHARED
     networking/SecurityEntity.cc
     networking/StationaryPositionProvider.cc
     networking/VehiclePositionProvider.cc
+    nic/ChannelLoadMeasurements.cc
     nic/RadioDriverBase.cc
     traci/MobilityBase.cc
     traci/VehicleController.cc
@@ -61,7 +62,6 @@ target_link_libraries(core PUBLIC Vanetza::vanetza)
 if(TARGET veins)
     message(STATUS "Enable Veins integration")
     set_property(TARGET core APPEND PROPERTY SOURCES
-        mac/ChannelLoadMeasurements.cc
         nic/VeinsRadioDriver.cc
         veins/VeinsConnectionManager.cc
         veins/VeinsMobility.cc

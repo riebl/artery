@@ -1,8 +1,8 @@
 #ifndef VEINSRADIODRIVER_H_ZJ0SI5XC
 #define VEINSRADIODRIVER_H_ZJ0SI5XC
 
-#include <artery/mac/ChannelLoadMeasurements.h>
-#include <artery/nic/RadioDriverBase.h>
+#include "artery/nic/ChannelLoadMeasurements.h"
+#include "artery/nic/RadioDriverBase.h"
 #include <omnetpp/clistener.h>
 #include <omnetpp/csimplemodule.h>
 
