@@ -49,11 +49,23 @@ class Facilities
 		}
 
 		template<typename T>
+		typename std::decay<T>::type* getMutablePtr() const
+		{
+			return get_mutable_ptr<T>;
+		}
+
+		template<typename T>
 		typename std::decay<T>::type& get_mutable() const
 		{
 			auto obj = get_mutable_ptr<T>();
 			if (!obj) throw omnetpp::cRuntimeError("no valid object of type '%s' registered", typeid(T).name());
 			return *obj;
+		}
+
+		template<typename T>
+		typename std::decay<T>::type& getMutable() const
+		{
+			return get_mutable<T>();
 		}
 
 		template<typename T>
@@ -70,11 +82,23 @@ class Facilities
 		}
 
 		template<typename T>
+		const typename std::decay<T>::type* getConstPtr() const
+		{
+			return get_const_ptr<T>();
+		}
+
+		template<typename T>
 		const typename std::decay<T>::type& get_const() const
 		{
 			auto obj = get_const_ptr<T>();
 			if (!obj) throw omnetpp::cRuntimeError("no valid object of type '%s' registered", typeid(T).name());
 			return *obj;
+		}
+
+		template<typename T>
+		const typename std::decay<T>::type& getConst() const
+		{
+			return get_const<T>();
 		}
 
 		template<typename T>
@@ -88,12 +112,24 @@ class Facilities
 		}
 
 		template<typename T>
+		void registerMutable(T* object)
+		{
+			register_mutable(object);
+		}
+
+		template<typename T>
 		void register_const(const T* object)
 		{
 			assert(object);
 			static_assert(std::is_class<T>::value, "T has to be a class type");
 			using DT = typename std::decay<T>::type;
 			m_const_objects[std::type_index(typeid(DT))] = object;
+		}
+
+		template<typename T>
+		void registerConst(const T* object)
+		{
+			register_const(object);
 		}
 
 	private:
