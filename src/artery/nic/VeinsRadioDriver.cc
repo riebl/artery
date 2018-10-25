@@ -1,6 +1,6 @@
+#include "artery/com/GeoNetIndication.h"
+#include "artery/com/GeoNetRequest.h"
 #include "artery/nic/VeinsRadioDriver.h"
-#include "artery/netw/GeoNetIndication.h"
-#include "artery/netw/GeoNetRequest.h"
 #include "veins/base/utils/FindModule.h"
 #include "veins/base/utils/SimpleAddress.h"
 #include "veins/modules/messages/WaveShortMessage_m.h"

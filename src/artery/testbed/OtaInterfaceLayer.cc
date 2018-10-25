@@ -1,6 +1,6 @@
+#include "artery/networking/GeoNetIndication.h"
 #include "artery/networking/GeoNetPacket.h"
 #include "artery/nic/RadioDriverBase.h"
-#include "artery/netw/GeoNetIndication.h"
 #include "artery/testbed/OtaInterfaceLayer.h"
 #include "artery/testbed/OtaInterface.h"
 #include "artery/testbed/TestbedRadio.h"

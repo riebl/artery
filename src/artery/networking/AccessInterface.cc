@@ -1,6 +1,6 @@
 #include "artery/networking/AccessInterface.h"
 #include "artery/networking/GeoNetPacket.h"
-#include "artery/netw/GeoNetRequest.h"
+#include "artery/networking/GeoNetRequest.h"
 #include "artery/utility/PointerCheck.h"
 #include <omnetpp/checkandcast.h>
 #include <omnetpp/csimplemodule.h>
