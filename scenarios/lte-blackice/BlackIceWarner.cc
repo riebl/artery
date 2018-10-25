@@ -3,6 +3,7 @@
 #include "artery/application/Middleware.h"
 #include "artery/traci/VehicleController.h"
 #include "artery/utility/InitStages.h"
+#include "artery/utility/PointerCheck.h"
 #include <inet/common/ModuleAccess.h>
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <omnetpp/checkandcast.h>
@@ -31,7 +32,7 @@ void BlackIceWarner::initialize(int stage)
         socket.connect(centralAddress, par("centralPort"));
 
         auto mw = inet::getModuleFromPar<artery::Middleware>(par("middlewareModule"), this);
-        vehicleController = mw->getFacilities().get_mutable_ptr<traci::VehicleController>();
+        vehicleController = artery::notNullPtr(mw->getFacilities().get_mutable_ptr<traci::VehicleController>());
 
         scheduleAt(simTime() + uniform(0.0, pollingInterval), pollingTrigger);
     }

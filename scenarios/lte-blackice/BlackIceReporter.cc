@@ -4,6 +4,7 @@
 #include "artery/application/StoryboardSignal.h"
 #include "artery/traci/VehicleController.h"
 #include "artery/utility/InitStages.h"
+#include "artery/utility/PointerCheck.h"
 #include <inet/common/ModuleAccess.h>
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <omnetpp/checkandcast.h>
@@ -26,7 +27,7 @@ void BlackIceReporter::initialize(int stage)
 
         auto mw = inet::getModuleFromPar<artery::Middleware>(par("middlewareModule"), this);
         mw->subscribe(storyboardSignal, this);
-        vehicleController = mw->getFacilities().get_const_ptr<traci::VehicleController>();
+        vehicleController = artery::notNullPtr(mw->getFacilities().get_const_ptr<traci::VehicleController>());
     }
 }
 

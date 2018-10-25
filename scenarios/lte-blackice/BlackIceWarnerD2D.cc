@@ -3,6 +3,7 @@
 #include "artery/application/Middleware.h"
 #include "artery/application/StoryboardSignal.h"
 #include "artery/traci/VehicleController.h"
+#include "artery/utility/PointerCheck.h"
 #include <inet/common/ModuleAccess.h>
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <omnetpp/checkandcast.h>
@@ -46,7 +47,7 @@ void BlackIceWarnerD2D::initialize(int stage)
     // application's supporting code
     auto mw = inet::getModuleFromPar<artery::Middleware>(par("middlewareModule"), this);
     mw->subscribe(storyboardSignal, this);
-    vehicleController = mw->getFacilities().get_mutable_ptr<traci::VehicleController>();
+    vehicleController = artery::notNullPtr(mw->getFacilities().get_mutable_ptr<traci::VehicleController>());
 
     // application logic
     removeSpeedReduction = new omnetpp::cMessage("remove speed reduction");
