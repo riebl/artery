@@ -59,6 +59,7 @@ void Middleware::initialize(int stage)
 
 void Middleware::initializeIdentity(Identity& id)
 {
+    id.host = findHost();
     id.geonet = notNullPtr(mRouter)->getAddress();
 }
 
