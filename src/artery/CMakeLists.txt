@@ -26,6 +26,7 @@ add_library(core SHARED
     networking/DccEntityBase.cc
     networking/FsmDccEntity.cc
     networking/GeoNetPacket.cc
+    networking/LimericDccEntity.cc
     networking/Router.cc
     networking/Runtime.cc
     networking/SecurityEntity.cc
