@@ -5,9 +5,9 @@
 	</service>
 	<service type="artery.application.ExampleService">
 		<listener port="4711" channel="180" aid="16480" />
+		<listener port="4711" channel="176" aid="16480" />
 		<filters>
-			<name pattern="flow0\.1.*" />
-			<penetration rate="0.1" />
+			<penetration rate="0.5" />
 		</filters>
 	</service>
 </services>
