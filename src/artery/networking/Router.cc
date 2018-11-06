@@ -30,6 +30,7 @@ int Router::numInitStages() const
 void Router::initialize(int stage)
 {
     if (stage == InitStages::Prepare) {
+        mChannel = par("channelNumber");
         getParentModule()->subscribe(scPositionFixSignal, this);
         mMiddleware = inet::getModuleFromPar<Middleware>(par("middlewareModule"), this);
         mRadioDriver = inet::getModuleFromPar<RadioDriverBase>(par("radioDriverModule"), this);
@@ -50,19 +51,23 @@ void Router::initialize(int stage)
         if (mSecurityEntity) {
             mRouter->set_security_entity(mSecurityEntity);
         }
+    } else if (stage == InitStages::Networking) {
+        auto dccEntity = inet::findModuleFromPar<IDccEntity>(par("dccModule"), this);
+        mNetworkInterface = &mMiddleware->registerNetworkInterface(*this, *dccEntity);
 
         // pass BTP-B messages to middleware which will dispatch them to its services
         using vanetza::geonet::UpperProtocol;
-        mRouter->set_transport_handler(UpperProtocol::BTP_B, &mMiddleware->getTransportInterface());
+        mRouter->set_transport_handler(UpperProtocol::BTP_B, &mMiddleware->getTransportInterface(*this));
 
         // bind router to DCC entity
-        auto dccEntity = inet::findModuleFromPar<IDccEntity>(par("dccModule"), this);
         mRouter->set_access_interface(notNullPtr(dccEntity->getRequestInterface()));
         mRouter->set_dcc_field_generator(dccEntity->getGeonetFieldGenerator()); // nullptr is okay
-
-        using vanetza::dcc::TransmitRateThrottle;
-        mMiddleware->getFacilities().register_mutable<TransmitRateThrottle>(dccEntity->getTransmitRateThrottle());
     }
+}
+
+Channel Router::getChannel()
+{
+    return mChannel;
 }
 
 void Router::finish()
@@ -91,7 +96,7 @@ void Router::handleMessage(omnetpp::cMessage* msg)
         auto addr = generateAddress(properties->LinkLayerAddress);
         mRouter->set_address(addr);
         Identity identity;
-        identity.geonet = addr;
+        identity.geonet.insert({mNetworkInterface, addr});
         emit(Identity::changeSignal, Identity::ChangeGeoNetAddress, &identity);
     } else {
         error("Do not know how to handle received message");

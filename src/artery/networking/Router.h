@@ -7,11 +7,13 @@
 #include <vanetza/btp/data_request.hpp>
 #include <vanetza/security/security_entity.hpp>
 #include <memory>
+#include "artery/utility/Channel.h"
 
 namespace artery
 {
 
 class Middleware;
+class NetworkInterface;
 class RadioDriverBase;
 
 class Router : public omnetpp::cSimpleModule, public omnetpp::cListener
@@ -29,6 +31,7 @@ class Router : public omnetpp::cSimpleModule, public omnetpp::cListener
         void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::DownPacket>);
         vanetza::geonet::Address getAddress() const;
         const vanetza::geonet::LocationTable& getLocationTable() const;
+        Channel getChannel();
 
     protected:
         virtual void initializeManagementInformationBase(vanetza::geonet::ManagementInformationBase&);
@@ -42,6 +45,8 @@ class Router : public omnetpp::cSimpleModule, public omnetpp::cListener
         RadioDriverBase* mRadioDriver;
         omnetpp::cGate* mRadioDriverDataIn;
         omnetpp::cGate* mRadioDriverPropertiesIn;
+        Channel mChannel;
+        NetworkInterface* mNetworkInterface;
 };
 
 } // namespace artery

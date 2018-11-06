@@ -11,6 +11,7 @@ simple Router
         string radioDriverModule;
         string runtimeModule;
         string securityModule;
+        int channelNumber = default(180);
 
         bool deferInitialBeacon = default(true);
         bool isMobile = default(true);
