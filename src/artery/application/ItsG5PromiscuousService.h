@@ -1,38 +1,37 @@
-//
-// Copyright (C) 2015 Raphael Riebl <raphael.riebl@thi.de>
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-// 
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+/*
+* Artery V2X Simulation Framework
+* Copyright 2015-2019 Raphael Riebl et al.
+* Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
+*/
 
 #ifndef ARTERY_ITSG5PROMISCUOUSSERVICE_H_
 #define ARTERY_ITSG5PROMISCUOUSSERVICE_H_
 
 #include "artery/application/ItsG5BaseService.h"
+#include "artery/application/TappingInterface.h"
 #include <vanetza/btp/port_dispatcher.hpp>
 
 namespace artery
 {
 
-class ItsG5PromiscuousService :
-	public ItsG5BaseService,
-	public vanetza::btp::PortDispatcher::PromiscuousHook
+/**
+ * ItsG5PromiscuousService allows for listening on all BTP ports, i.e. tapping every received BTP packet.
+ *
+ * Inheriting classes are expected to override one of the tapPacket methods for grabbing packets.
+ */
+class ItsG5PromiscuousService : public ItsG5BaseService, public TappingInterface
 {
-	public:
-		void tap_packet(const vanetza::btp::DataIndication&, const vanetza::UpPacket&) override final;
+    public:
+        /**
+         * Tap received BTP packet with information about receiving network interface
+         */
+        virtual void tap(const vanetza::btp::DataIndication&, const vanetza::UpPacket&, const NetworkInterface&) override;
 
-	protected:
-		virtual void tapPacket(const vanetza::btp::DataIndication&, const vanetza::UpPacket&) = 0;
+        /**
+         * Tap received BTP packet without information about receiving network interface
+         * \deprecated This method is maintained for backward-compatibility, use tap() instead
+         */
+        virtual void tapPacket(const vanetza::btp::DataIndication&, const vanetza::UpPacket&) {}
 };
 
 } // namespace artery

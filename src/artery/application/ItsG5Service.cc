@@ -33,7 +33,7 @@ ItsG5Service::~ItsG5Service()
 {
 }
 
-void ItsG5Service::indicate(const vanetza::btp::DataIndication& ind, std::unique_ptr<vanetza::UpPacket> raw_packet)
+void ItsG5Service::indicate(const vanetza::btp::DataIndication& ind, std::unique_ptr<vanetza::UpPacket> raw_packet, const NetworkInterface& interface)
 {
 	using namespace vanetza;
 
@@ -64,7 +64,7 @@ void ItsG5Service::indicate(const vanetza::btp::DataIndication& ind, std::unique
 	packet_visitor visitor;
 	cPacket* packet = boost::apply_visitor(visitor, *raw_packet);
 	if (packet != nullptr) {
-		indicate(ind, packet);
+		indicate(ind, packet, interface);
 	} else {
 		throw cRuntimeError("Unable to extract cPacket out of data indication");
 	}
@@ -75,11 +75,17 @@ void ItsG5Service::indicate(const vanetza::btp::DataIndication& ind, cPacket* pa
 	delete packet;
 }
 
-void ItsG5Service::request(const vanetza::btp::DataRequestB& req, cPacket* packet)
+void ItsG5Service::indicate(const vanetza::btp::DataIndication& ind, cPacket* packet, const NetworkInterface& interface)
+{
+	// forward to "old" indicate method by default
+	this->indicate(ind, packet);
+}
+
+void ItsG5Service::request(const vanetza::btp::DataRequestB& req, cPacket* packet, const NetworkInterface* interface)
 {
 	std::unique_ptr<vanetza::DownPacket> buffer { new vanetza::DownPacket() };
 	buffer->layer(vanetza::OsiLayer::Application) = std::move(packet);
-	ItsG5BaseService::request(req, std::move(buffer));
+	ItsG5BaseService::request(req, std::move(buffer), interface);
 }
 
 } // namespace artery

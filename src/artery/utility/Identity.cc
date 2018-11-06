@@ -32,7 +32,7 @@ bool Identity::update(const Identity& update, long changes)
     }
 
     if (changes & ChangeGeoNetAddress) {
-        geonet = update.geonet;
+        geonet.insert(update.geonet.begin(), update.geonet.end());
         changed = true;
     }
 

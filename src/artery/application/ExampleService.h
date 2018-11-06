@@ -17,6 +17,7 @@
 #define EXAMPLESERVICE_H_
 
 #include "artery/application/ItsG5Service.h"
+#include "artery/application/NetworkInterface.h"
 
 namespace artery
 {
@@ -27,7 +28,7 @@ class ExampleService : public ItsG5Service
         ExampleService();
         ~ExampleService();
 
-        void indicate(const vanetza::btp::DataIndication&, omnetpp::cPacket*) override;
+        void indicate(const vanetza::btp::DataIndication&, omnetpp::cPacket*, const NetworkInterface&) override;
         void trigger() override;
         void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject*) override;
 

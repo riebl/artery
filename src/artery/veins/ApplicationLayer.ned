@@ -28,7 +28,6 @@ module ApplicationLayer like IBaseApplLayer
 		}
 
 		middleware : <default("VehicleMiddleware")> like IMiddleware {
-			routerModule = absPath("^.vanetza.router");
 		}
 
 	connections allowunconnected:

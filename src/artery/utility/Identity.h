@@ -7,11 +7,13 @@
 #ifndef IDENTITY_H_WXAWFSP2
 #define IDENTITY_H_WXAWFSP2
 
+#include "artery/application/NetworkInterface.h"
 #include <omnetpp/cmodule.h>
 #include <omnetpp/cobject.h>
 #include <vanetza/geonet/address.hpp>
 #include <vanetza/net/mac_address.hpp>
 #include <cstdint>
+#include <memory>
 #include <string>
 
 namespace artery
@@ -33,7 +35,9 @@ public:
     omnetpp::cModule* host = nullptr; /*< host module, e.g. vehicle node */
     std::string traci; /*< Vehicle ID used by TraCI protocol */
     uint32_t application = 0; /*< ETSI station ID */
-    vanetza::geonet::Address geonet; /*< GeoNetworking layer */
+
+    /* NetworkInterface <-> GeoNetworking address mapping */
+    std::map<std::shared_ptr<const NetworkInterface>, vanetza::geonet::Address> geonet;
 };
 
 } // namespace artery

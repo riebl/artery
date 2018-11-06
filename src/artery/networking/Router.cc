@@ -51,17 +51,18 @@ void Router::initialize(int stage)
             mRouter->set_security_entity(mSecurityEntity);
         }
 
-        // pass BTP-B messages to middleware which will dispatch them to its services
-        using vanetza::geonet::UpperProtocol;
-        mRouter->set_transport_handler(UpperProtocol::BTP_B, &mMiddleware->getTransportInterface());
-
         // bind router to DCC entity
         auto dccEntity = inet::findModuleFromPar<IDccEntity>(par("dccModule"), this);
         mRouter->set_access_interface(notNullPtr(dccEntity->getRequestInterface()));
         mRouter->set_dcc_field_generator(dccEntity->getGeonetFieldGenerator()); // nullptr is okay
 
-        using vanetza::dcc::TransmitRateThrottle;
-        mMiddleware->getFacilities().register_mutable<TransmitRateThrottle>(dccEntity->getTransmitRateThrottle());
+        // pass BTP-B messages to transport layer dispatcher in network interface
+        using vanetza::geonet::UpperProtocol;
+        mNetworkInterface = std::make_shared<NetworkInterface>(*this, *dccEntity, mMiddleware->getTransportDispatcher());
+        mRouter->set_transport_handler(UpperProtocol::BTP_B, &mNetworkInterface->getTransportHandler());
+
+        // finally, register new network interface at middleware
+        mMiddleware->registerNetworkInterface(mNetworkInterface);
     }
 }
 
@@ -91,8 +92,9 @@ void Router::handleMessage(omnetpp::cMessage* msg)
         auto addr = generateAddress(properties->LinkLayerAddress);
         mRouter->set_address(addr);
         Identity identity;
-        identity.geonet = addr;
+        identity.geonet.insert({mNetworkInterface, addr});
         emit(Identity::changeSignal, Identity::ChangeGeoNetAddress, &identity);
+        mNetworkInterface->channel = properties->ServingChannel;
     } else {
         error("Do not know how to handle received message");
     }
