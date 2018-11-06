@@ -8,6 +8,7 @@
 #include "artery/application/ItsG5PromiscuousService.h"
 #include "artery/application/ItsG5Service.h"
 #include "artery/networking/Router.h"
+#include "artery/networking/FsmDccEntity.h"
 #include "artery/utility/PointerCheck.h"
 #include "artery/utility/IdentityRegistry.h"
 #include "artery/utility/InitStages.h"
@@ -39,7 +40,6 @@ void Middleware::initialize(int stage)
 {
     if (stage == InitStages::Prepare) {
         mTimer.setTimebase(par("datetime"));
-        mRouter = inet::getModuleFromPar<Router>(par("routerModule"), findHost());
         mUpdateInterval = par("updateInterval");
         mUpdateMessage = new cMessage("middleware update");
         mIdentity.host = findHost();
@@ -50,8 +50,11 @@ void Middleware::initialize(int stage)
         mFacilities.register_const(&mIdentity);
         mFacilities.register_const(&mStationType);
 
+        mMcoStrategy.reset(new McoStrategy(mNetworkInterfaceTable));
+        mFacilities.register_mutable(mMcoStrategy.get());
+        mFacilities.register_mutable(&mNetworkInterfaceTable);
+    } else if (stage == InitStages::Services) {
         initializeServices(InitStages::Self);
-
         // start update cycle with random jitter to avoid unrealistic node synchronization
         const auto jitter = uniform(SimTime(0, SIMTIME_MS), mUpdateInterval);
         scheduleAt(simTime() + jitter + mUpdateInterval, mUpdateMessage);
@@ -84,20 +87,49 @@ void Middleware::initializeServices(int stage)
 
             ItsG5BaseService* service = dynamic_cast<ItsG5BaseService*>(module);
             if (service) {
-                cXMLElement* listener = service_cfg->getFirstChildWithTag("listener");
-                if (listener && listener->getAttribute("port")) {
-                    port_type port = boost::lexical_cast<port_type>(listener->getAttribute("port"));
-                    mServices.emplace(service, port);
-                    mBtpPortDispatcher.set_non_interactive_handler(vanetza::host_cast<port_type>(port), service);
-                } else if (!service->requiresListener()) {
-                        mServices.emplace(service, 0);
-                } else {
-                    auto promiscuous = dynamic_cast<ItsG5PromiscuousService*>(service);
-                    if (promiscuous != nullptr) {
-                        mServices.emplace(service, 0);
-                        mBtpPortDispatcher.add_promiscuous_hook(promiscuous);
-                    } else {
-                        error("No listener port defined for %s", service_name);
+                for (cXMLElement *listener = service_cfg->getFirstChildWithTag("listener");
+                     listener != nullptr;
+                     listener = listener->getNextSiblingWithTag("listener"))
+                {
+                    if (listener && listener->getAttribute("port")) {
+                        port_type port = boost::lexical_cast<port_type>(listener->getAttribute("port"));
+                        auto port_host = vanetza::host_cast<port_type>(port);
+                        Channel channel = boost::lexical_cast<Channel>(listener->getAttribute("channel"));
+                        vanetza::ItsAid aid = boost::lexical_cast<Channel>(listener->getAttribute("aid"));
+
+                        mServices.emplace(service);
+                        mMcoStrategy->add(aid, channel);
+
+                        auto interfaces = mNetworkInterfaceTable.getInterfaceByChannel(channel);
+                        for (auto& it : boost::make_iterator_range(interfaces)) {
+                            auto& interface = *it;
+                            auto adapter = new IndicationInterfaceAdapter(interface, (IndicationInterface*)service);
+
+                            interface.btpPortDispatcher.set_non_interactive_handler(port_host, adapter);
+                            mServiceTable.insert(service, port, interface, adapter);
+                        }
+                    } else if (!service->requiresListener()) {
+                        mServices.emplace(service);
+                    } else if (listener && listener->getAttribute("channel")) {
+                        auto promiscuous = dynamic_cast<ItsG5PromiscuousService*>(service);
+                        if (promiscuous != nullptr) {
+                            Channel channel = boost::lexical_cast<Channel>(listener->getAttribute("channel"));
+                            vanetza::ItsAid aid = boost::lexical_cast<Channel>(listener->getAttribute("aid"));
+
+                            mServices.emplace(service);
+                            mMcoStrategy->add(aid, channel);
+
+                            auto interfaces = mNetworkInterfaceTable.getInterfaceByChannel(channel);
+                            for (auto& it : interfaces) {
+                                auto& interface = *it;
+                                auto adapter = new PromiscuousHookAdapter(interface, (PromiscuousHook*)promiscuous);
+
+                                interface.btpPortDispatcher.add_promiscuous_hook(adapter);
+                                mServiceTable.insert(service, interface, adapter);
+                            }
+                        } else {
+                            error("No listener port defined for %s", service_name);
+                        }
                     }
                 }
             } else {
@@ -146,36 +178,51 @@ void Middleware::setStationType(const StationType& type)
     mStationType = type;
 }
 
-vanetza::geonet::TransportInterface& Middleware::getTransportInterface()
+
+vanetza::geonet::TransportInterface& Middleware::getTransportInterface(artery::Router& router)
 {
-    return mBtpPortDispatcher;
+    auto ifc = mNetworkInterfaceTable.getInterfaceByRouter(&router);
+    if (ifc.begin() != ifc.end()) {
+        return ifc.begin()->get()->btpPortDispatcher;
+    } else {
+        throw new cRuntimeError("Router not found");
+    }
+}
+
+NetworkInterface& Middleware::registerNetworkInterface(Router& router, IDccEntity& entity)
+{
+    mNetworkInterfaceTable.insert(&router, &entity);
+    auto ifc = mNetworkInterfaceTable.getInterfaceByRouter(&router).begin();
+    return *ifc->get();
 }
 
 void Middleware::updateServices()
 {
     mLocalDynamicMap.dropExpired();
-    for (auto& kv : mServices) {
-        kv.first->trigger();
+    for (auto& service : mServices) {
+        service->trigger();
     }
     scheduleAt(simTime() + mUpdateInterval, mUpdateMessage);
 }
 
-Middleware::port_type Middleware::getPortNumber(const ItsG5BaseService* service) const
+Middleware::PortInfoMap Middleware::getPortNumber(const ItsG5BaseService* service) const
 {
-    port_type port = 0;
-    auto it = mServices.find(const_cast<ItsG5BaseService*>(service));
-    if (it != mServices.end()) {
-        port = it->second;
-    }
-    return port;
+    return mServiceTable.getPortsForService(service);
 }
 
-void Middleware::requestTransmission(const vanetza::btp::DataRequestB& request, std::unique_ptr<vanetza::DownPacket> packet)
+void Middleware::requestTransmission(const vanetza::btp::DataRequestB& request, std::unique_ptr<vanetza::DownPacket> packet, boost::optional<NetworkInterface&> interface)
 {
-    if (mRouter) {
-        mRouter->request(request, std::move(packet));
+    Enter_Method("requestTransmission");
+    if (interface) {
+        auto router = interface->router;
+        router->request(request, std::move(packet));
     } else {
-        error("Transmission of BTP-B packet requested but router is not available");
+        auto ifcs = mMcoStrategy->choose(request.gn.its_aid);
+        for (auto& ifc : ifcs) {
+            auto router = ifc->router;
+            std::unique_ptr<vanetza::DownPacket> pkt(new vanetza::DownPacket(*packet));
+            router->request(request, std::move(pkt));
+        }
     }
 }
 

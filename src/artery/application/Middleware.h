@@ -9,6 +9,12 @@
 
 #include "artery/application/Facilities.h"
 #include "artery/application/LocalDynamicMap.h"
+#include "artery/application/IndicationInterfaceAdapter.h"
+#include "artery/application/PromiscuousHookAdapter.h"
+#include "artery/application/McoStrategy.h"
+#include "artery/application/NetworkInterface.h"
+#include "artery/application/NetworkInterfaceTable.h"
+#include "artery/application/ServiceTable.h"
 #include "artery/application/StationType.h"
 #include "artery/application/Timer.h"
 #include "artery/utility/Identity.h"
@@ -19,6 +25,11 @@
 #include <vanetza/btp/port_dispatcher.hpp>
 #include <map>
 #include <memory>
+
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/member.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/any.hpp>
 
 namespace artery
 {
@@ -33,19 +44,24 @@ class Router;
 class Middleware : public omnetpp::cSimpleModule, public omnetpp::cListener
 {
     public:
-        typedef uint16_t port_type;
+        using port_type = uint16_t;
+        using PortInfoMap = ServiceTable::PortInfoMap;
 
         Middleware();
         ~Middleware();
 
         Facilities& getFacilities() { return mFacilities; }
         const Facilities& getFacilities() const { return mFacilities; }
-        port_type getPortNumber(const ItsG5BaseService*) const;
+
+        PortInfoMap getPortNumber(const ItsG5BaseService*) const;
+
         const Identity& getIdentity() const { return mIdentity; }
         const StationType& getStationType() const { return mStationType; }
 
-        vanetza::geonet::TransportInterface& getTransportInterface();
-        void requestTransmission(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::DownPacket>);
+        vanetza::geonet::TransportInterface& getTransportInterface(artery::Router& router);
+        NetworkInterface& registerNetworkInterface(Router& router, IDccEntity& entity);
+
+        void requestTransmission(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::DownPacket>, boost::optional<NetworkInterface&> = boost::none);
 
     protected:
         // cSimpleModule
@@ -71,9 +87,14 @@ class Middleware : public omnetpp::cSimpleModule, public omnetpp::cListener
         LocalDynamicMap mLocalDynamicMap;
         Facilities mFacilities;
         StationType mStationType;
-        Router* mRouter = nullptr;
-        vanetza::btp::PortDispatcher mBtpPortDispatcher;
-        std::map<ItsG5BaseService*, port_type> mServices;
+
+        std::set<ItsG5BaseService*> mServices;
+
+    private:
+        NetworkInterfaceTable mNetworkInterfaceTable;
+        ServiceTable mServiceTable;
+
+        std::unique_ptr<McoStrategy> mMcoStrategy;
 };
 
 } // namespace artery

@@ -18,7 +18,6 @@ simple Middleware like IMiddleware
 		@signal[IdentityRemoved](type=artery::Identity);
 		@signal[StoryboardSignal](type=StoryboardSignal);
 
-		string routerModule;
 		double updateInterval = default(0.1s) @unit(s);
 		string datetime;
 		xml services;
