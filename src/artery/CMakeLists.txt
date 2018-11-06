@@ -12,6 +12,7 @@ add_library(core SHARED
     application/ItsG5PromiscuousService.cc
     application/ItsG5Service.cc
     application/LocalDynamicMap.cc
+    application/McoStrategy.cc
     application/Middleware.cc
     application/PromiscuousHookAdapter.cc
     application/StationaryMiddleware.cc
