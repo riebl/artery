@@ -12,6 +12,7 @@ add_library(core SHARED
     application/ItsG5Service.cc
     application/LocalDynamicMap.cc
     application/Middleware.cc
+    application/MultiChannelPolicy.cc
     application/NetworkInterface.cc
     application/NetworkInterfaceTable.cc
     application/StationaryMiddleware.cc
@@ -20,6 +21,7 @@ add_library(core SHARED
     application/TransportDispatcher.cc
     application/VehicleDataProvider.cc
     application/VehicleMiddleware.cc
+    application/XmlMultiChannelPolicy.cc
     application/den/ImpactReductionUseCase.cc
     application/den/Memory.cc
     application/den/SuspendableUseCase.cc
