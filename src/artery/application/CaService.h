@@ -20,6 +20,7 @@
 #define ARTERY_CASERVICE_H_
 
 #include "artery/application/ItsG5BaseService.h"
+#include "artery/application/NetworkInterface.h"
 #include "artery/utility/Geometry.h"
 #include <vanetza/asn1/cam.hpp>
 #include <vanetza/btp/data_interface.hpp>
@@ -38,7 +39,7 @@ class CaService : public ItsG5BaseService
 	public:
 		CaService();
 		void initialize() override;
-		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::UpPacket>) override;
+		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::UpPacket>, NetworkInterface& interface) override;
 		void trigger() override;
 
 	private:

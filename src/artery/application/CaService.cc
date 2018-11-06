@@ -76,7 +76,7 @@ void CaService::trigger()
 	checkTriggeringConditions(simTime());
 }
 
-void CaService::indicate(const vanetza::btp::DataIndication& ind, std::unique_ptr<vanetza::UpPacket> packet)
+void CaService::indicate(const vanetza::btp::DataIndication& ind, std::unique_ptr<vanetza::UpPacket> packet, NetworkInterface& interface)
 {
 	Asn1PacketVisitor<vanetza::asn1::Cam> visitor;
 	const vanetza::asn1::Cam* cam = boost::apply_visitor(visitor, *packet);
@@ -163,8 +163,19 @@ void CaService::sendCam(const SimTime& T_now)
 SimTime CaService::genCamDcc()
 {
 	static const vanetza::dcc::TransmissionLite ca_tx(vanetza::dcc::Profile::DP2, 0);
-	auto& trc = getFacilities().get_mutable<vanetza::dcc::TransmitRateThrottle>();
-	vanetza::Clock::duration delay = trc.delay(ca_tx);
+	auto ifcs = getFacilities().getMutable<McoStrategy>().choose(vanetza::aid::CA);
+
+    if (ifcs.size() == 0) {
+        throw cRuntimeError("No interface on selected channel");
+    }
+    // NOTE: this only considers the first NetworkInterface
+	auto dccEntity = (*ifcs.begin())->dccEntity;
+    if (!dccEntity) {
+        throw cRuntimeError("No IDccEntity on interface");
+    }
+	auto trc = dccEntity->getTransmitRateThrottle();
+
+	vanetza::Clock::duration delay = trc->delay(ca_tx);
 	SimTime dcc { std::chrono::duration_cast<std::chrono::milliseconds>(delay).count(), SIMTIME_MS };
 	return std::min(mGenCamMax, std::max(mGenCamMin, dcc));
 }
