@@ -15,6 +15,7 @@ class FsmDccEntity : public DccEntityBase
 public:
     void finish() override;
     vanetza::dcc::TransmitRateThrottle* getTransmitRateThrottle() override { return mTransmitRateControl.get(); }
+    vanetza::dcc::StateMachine* getStateMachine() { return mStateMachine.get(); }
 
 protected:
     void initializeTransmitRateControl() override;
