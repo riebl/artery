@@ -48,19 +48,18 @@ module Car extends PlainVehicle like INetworkNode
                 macModule = ".wlan[" + string(index) + "].mac";
         }
 
-        vanetza: Vanetza {
+        vanetza[numRadios]: Vanetza {
             parameters:
-                @display("p=250,200");
+                @display("p=250,200,row,100");
                 *.middlewareModule = absPath("^.middleware");
                 *.mobilityModule = absPath("^.mobility");
-                *.radioDriverModule = absPath("^.radioDriver[0]");
+                *.radioDriverModule = absPath("^.radioDriver[" + string(index) + "]");
                 runtime.datetime = middleware.datetime;
         }
 
         middleware: VehicleMiddleware {
             parameters:
                 @display("p=250,100");
-                routerModule = ".vanetza.router";
                 mobilityModule = ".mobility";
         }
 
@@ -70,8 +69,8 @@ module Car extends PlainVehicle like INetworkNode
 
             wlan[i].upperLayerOut --> radioDriver[i].lowerLayerIn;
             wlan[i].upperLayerIn <-- radioDriver[i].lowerLayerOut;
-        }
 
-        radioDriver[0].upperLayer <--> vanetza.radioDriverData;
-        radioDriver[0].properties --> vanetza.radioDriverProperties;
+            radioDriver[i].upperLayer <--> vanetza[i].radioDriverData;
+            radioDriver[i].properties --> vanetza[i].radioDriverProperties;
+        }
 }
