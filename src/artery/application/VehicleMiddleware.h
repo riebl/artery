@@ -24,7 +24,7 @@ class VehicleMiddleware : public Middleware, public omnetpp::cListener
         void initializeIdentity(Identity&) override;
         void initializeStationType(const std::string&);
         void initializeVehicleController(omnetpp::cPar&);
-        void receiveSignal(cComponent*, omnetpp::simsignal_t, cObject*, cObject*) override;
+        void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject*) override;
 
     private:
         traci::VehicleController* mVehicleController = nullptr;

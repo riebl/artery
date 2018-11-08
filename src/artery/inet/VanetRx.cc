@@ -1,6 +1,8 @@
 #include "artery/inet/VanetRx.h"
 #include <cstdint>
 
+using namespace omnetpp;
+
 namespace artery
 {
 

@@ -49,9 +49,9 @@ public:
     void finish() override;
 
     // cListener handlers
-    void receiveSignal(cComponent*, omnetpp::simsignal_t, const omnetpp::SimTime&, cObject*) override;
-    void receiveSignal(cComponent*, omnetpp::simsignal_t, const char*, cObject*) override;
-    void receiveSignal(cComponent*, omnetpp::simsignal_t, unsigned long, cObject*) override;
+    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, const omnetpp::SimTime&, omnetpp::cObject*) override;
+    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, const char*, omnetpp::cObject*) override;
+    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, unsigned long, omnetpp::cObject*) override;
 
     /**
      * Fetch an object by its external id.
@@ -128,7 +128,7 @@ private:
      * @param mod vehicle host module
      * @return nullptr if no vehicle controller is available
      */
-    virtual traci::VehicleController* getVehicleController(cModule* mod);
+    virtual traci::VehicleController* getVehicleController(omnetpp::cModule* mod);
 
     using ObstacleDB = std::map<std::string, std::shared_ptr<EnvironmentModelObstacle>>;
     using ObstacleRtreeValue = std::pair<geometry::Box, std::string>;

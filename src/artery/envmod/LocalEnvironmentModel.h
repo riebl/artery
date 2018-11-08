@@ -78,7 +78,7 @@ public:
     int numInitStages() const override;
     void initialize(int stage) override;
     void finish() override;
-    void receiveSignal(cComponent*, omnetpp::simsignal_t, cObject*, cObject*) override;
+    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject*) override;
 
     /**
      * Updates the local environment model

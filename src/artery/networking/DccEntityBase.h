@@ -24,7 +24,7 @@ public:
     void finish() override;
 
     // cListener
-    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, double, cObject*) override;
+    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, double, omnetpp::cObject*) override;
 
     // IDccEntity
     vanetza::dcc::ChannelProbeProcessor* getChannelProbeProcessor() override { return mCbrProcessor.get(); }

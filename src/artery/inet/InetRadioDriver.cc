@@ -6,6 +6,8 @@
 #include <inet/linklayer/common/Ieee802Ctrl.h>
 #include <inet/linklayer/ieee80211/mac/Ieee80211Mac.h>
 
+using namespace omnetpp;
+
 namespace artery
 {
 

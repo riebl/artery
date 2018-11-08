@@ -29,7 +29,7 @@ class ExampleService : public ItsG5Service
 
         void indicate(const vanetza::btp::DataIndication&, omnetpp::cPacket*) override;
         void trigger() override;
-        void receiveSignal(cComponent*, omnetpp::simsignal_t, cObject*, cObject*) override;
+        void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject*) override;
 
     protected:
         void initialize() override;

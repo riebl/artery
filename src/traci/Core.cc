@@ -9,9 +9,9 @@ Define_Module(traci::Core)
 
 namespace
 {
-const simsignal_t initSignal = omnetpp::cComponent::registerSignal("traci.init");
-const simsignal_t stepSignal = omnetpp::cComponent::registerSignal("traci.step");
-const simsignal_t closeSignal = omnetpp::cComponent::registerSignal("traci.close");
+const omnetpp::simsignal_t initSignal = omnetpp::cComponent::registerSignal("traci.init");
+const omnetpp::simsignal_t stepSignal = omnetpp::cComponent::registerSignal("traci.step");
+const omnetpp::simsignal_t closeSignal = omnetpp::cComponent::registerSignal("traci.close");
 }
 
 namespace traci

@@ -10,6 +10,8 @@
 #include "artery/utility/InitStages.h"
 #include "inet/common/ModuleAccess.h"
 
+using namespace omnetpp;
+
 namespace artery
 {
 
@@ -75,7 +77,7 @@ void VehicleMiddleware::initializeStationType(const std::string& vclass)
     mVehicleDataProvider.setStationType(gnStationType);
 }
 
-void VehicleMiddleware::initializeVehicleController(omnetpp::cPar& mobilityPar)
+void VehicleMiddleware::initializeVehicleController(cPar& mobilityPar)
 {
 	auto mobility = inet::getModuleFromPar<ControllableVehicle>(mobilityPar, findHost());
 	mVehicleController = mobility->getVehicleController();

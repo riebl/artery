@@ -9,6 +9,8 @@
 #include <vanetza/dcc/hooked_channel_probe_processor.hpp>
 #include <vanetza/dcc/smoothing_channel_probe_processor.hpp>
 
+using namespace omnetpp;
+
 namespace artery
 {
 

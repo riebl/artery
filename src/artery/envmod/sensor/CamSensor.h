@@ -20,7 +20,7 @@ class CamSensor : public BaseSensor, public omnetpp::cListener
 {
 public:
     void measurement() override;
-    void receiveSignal(cComponent*, omnetpp::simsignal_t, cObject*, cObject* = nullptr) override;
+    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject* = nullptr) override;
     void setVisualization(const SensorVisualizationConfig&) override {}
     const FieldOfView* getFieldOfView() const override { return nullptr; }
     omnetpp::SimTime getValidityPeriod() const override;

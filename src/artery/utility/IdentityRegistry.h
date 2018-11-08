@@ -26,7 +26,7 @@ public:
 
     void initialize() override;
     void finish() override;
-    void receiveSignal(cComponent*, omnetpp::simsignal_t, cObject*, cObject*) override;
+    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject*) override;
 
     template<typename TAG, typename VALUE>
     boost::optional<Identity> lookup(const VALUE& value)
