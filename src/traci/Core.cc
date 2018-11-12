@@ -7,11 +7,14 @@
 
 Define_Module(traci::Core)
 
+using namespace omnetpp;
+using std::endl;
+
 namespace
 {
-const omnetpp::simsignal_t initSignal = omnetpp::cComponent::registerSignal("traci.init");
-const omnetpp::simsignal_t stepSignal = omnetpp::cComponent::registerSignal("traci.step");
-const omnetpp::simsignal_t closeSignal = omnetpp::cComponent::registerSignal("traci.close");
+const simsignal_t initSignal = cComponent::registerSignal("traci.init");
+const simsignal_t stepSignal = cComponent::registerSignal("traci.step");
+const simsignal_t closeSignal = cComponent::registerSignal("traci.close");
 }
 
 namespace traci
@@ -29,9 +32,9 @@ Core::~Core()
 
 void Core::initialize()
 {
-    m_connectEvent = new omnetpp::cMessage("connect TraCI");
-    m_updateEvent = new omnetpp::cMessage("TraCI step");
-    omnetpp::cModule* manager = getParentModule();
+    m_connectEvent = new cMessage("connect TraCI");
+    m_updateEvent = new cMessage("TraCI step");
+    cModule* manager = getParentModule();
     m_launcher = inet::getModuleFromPar<Launcher>(par("launcherModule"), manager);
     m_stopping = par("selfStopping");
     scheduleAt(par("startTime"), m_connectEvent);
@@ -46,7 +49,7 @@ void Core::finish()
     }
 }
 
-void Core::handleMessage(omnetpp::cMessage* msg)
+void Core::handleMessage(cMessage* msg)
 {
     if (msg == m_updateEvent) {
         m_traci->simulationStep();
@@ -92,7 +95,7 @@ void Core::checkVersion()
 
 void Core::syncTime()
 {
-    const omnetpp::SimTime now = simTime();
+    const SimTime now = simTime();
     ASSERT(now.remainderForUnit(SIMTIME_MS).isZero());
     if (!now.isZero()) {
         m_traci->simulationStep(now.inUnit(SIMTIME_MS));
