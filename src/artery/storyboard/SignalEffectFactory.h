@@ -5,6 +5,9 @@
 #include "artery/storyboard/EffectFactory.h"
 #include "artery/traci/VehicleController.h"
 
+namespace artery
+{
+
 /**
  * SignalEffectFactory creates SignalEffects
  */
@@ -28,5 +31,7 @@ public:
 private:
     std::string mTriggerCause;
 };
+
+} // namespace artery
 
 #endif /* SIGNALEFFECTFACTORY_H */

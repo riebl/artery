@@ -1,10 +1,13 @@
-#ifndef _CONDITION_H_
-#define _CONDITION_H_
+#ifndef ARTERY_CONDITION_H_
+#define ARTERY_CONDITION_H_
 
 #include "artery/storyboard/ConditionResult.h"
 #include "artery/storyboard/Vehicle.h"
 
 namespace omnetpp { class cCanvas; }
+
+namespace artery
+{
 
 /**
  * Condition Interface
@@ -17,4 +20,6 @@ public:
     virtual void drawCondition(omnetpp::cCanvas*) {};
 };
 
-#endif  /* CONDITION_H */
+} // namespace artery
+
+#endif  /* ARTERY_CONDITION_H */

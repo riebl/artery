@@ -1,0 +1,16 @@
+<routes>
+    <vTypeDistribution id="vDist1">
+        <vType id="cars1" speedFactor="normc(1.0,0.1,0.2,2.0)" width="1.8" length="4.5" height="1.5" latAlignment="center" minGapLat="0.2" probability="0.3"/>
+        <vType id="cars2" speedFactor="normc(1.0,0.1,0.2,2.0)" width="2.0" length="5.0" height="1.8" latAlignment="left" minGapLat="0.2" probability="0.3"/>
+        <vType id="cars3" speedFactor="normc(1.0,0.1,0.2,2.0)" width="2.3" length="5.5" height="2.0" latAlignment="right" minGapLat="0.2" probability="0.3"/>
+        <vType id="trucks1" vClass="truck" maxSpeed="27.77" speedFactor="normc(1.0,0.1,0.6,1.5)" width="2.3" length="16.0" height="3.0" latAlignment="nice" minGapLat="0.2" probability="0.0"/>
+    </vTypeDistribution>
+
+    <flow id="flow1" number="20" end="5" type="vDist1" departPos="random_free" departSpeed="max" departLane="best">
+        <route edges="a" />
+    </flow>
+
+    <flow id="flow2" number="0" end="5" type="vDist1" departPos="random_free" departSpeed="max" departLane="best">
+        <route edges="b" />
+    </flow>
+</routes>

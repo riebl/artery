@@ -11,14 +11,13 @@
 #include <vanetza/asn1/denm.hpp>
 #include <functional>
 
-class StoryboardSignal;
-class VehicleDataProvider;
-
 namespace artery
 {
 
 class DenmObject;
 class DenService;
+class StoryboardSignal;
+class VehicleDataProvider;
 
 namespace den
 {

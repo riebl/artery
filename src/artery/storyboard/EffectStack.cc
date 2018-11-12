@@ -4,6 +4,9 @@
 #include "artery/storyboard/Effect.h"
 #include "artery/storyboard/Story.h"
 
+namespace artery
+{
+
 void EffectStack::addEffect(std::shared_ptr<Effect> effect)
 {
     if (std::count(m_effects.begin(), m_effects.end(), effect) == 0) {
@@ -73,3 +76,5 @@ bool EffectStack::isStoryOnStack(const Story* story)
     }
     return false;
 }
+
+} // namespace artery

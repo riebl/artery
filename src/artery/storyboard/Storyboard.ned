@@ -4,7 +4,7 @@ simple Storyboard
 {
     parameters:
         @display("i=block/blackboard;is=s");
-        @class(artery::Storyboard);
+        @class(Storyboard);
         string python = default("storyboard");
         string middlewareModule = default(".middleware");
         string traciModule = default("^.traci");

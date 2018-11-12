@@ -16,8 +16,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef FACILITIES_H_
-#define FACILITIES_H_
+#ifndef ARTERY_FACILITIES_H_
+#define ARTERY_FACILITIES_H_
 
 #include <cassert>
 #include <stdexcept>
@@ -26,15 +26,8 @@
 #include <unordered_map>
 #include <omnetpp/cexception.h>
 
-// forward declarations (for deprecated getters)
-class VehicleDataProvider;
-namespace Veins { class TraCIMobility; }
-namespace vanetza {
-namespace dcc {
-	class Scheduler;
-	class StateMachine;
-} // ns dcc
-} // ns vanetza
+namespace artery
+{
 
 /**
  * Context class for each ITS-G5 service provided by middleware
@@ -56,11 +49,23 @@ class Facilities
 		}
 
 		template<typename T>
+		typename std::decay<T>::type* getMutablePtr() const
+		{
+			return get_mutable_ptr<T>;
+		}
+
+		template<typename T>
 		typename std::decay<T>::type& get_mutable() const
 		{
 			auto obj = get_mutable_ptr<T>();
 			if (!obj) throw omnetpp::cRuntimeError("no valid object of type '%s' registered", typeid(T).name());
 			return *obj;
+		}
+
+		template<typename T>
+		typename std::decay<T>::type& getMutable() const
+		{
+			return get_mutable<T>();
 		}
 
 		template<typename T>
@@ -77,11 +82,23 @@ class Facilities
 		}
 
 		template<typename T>
+		const typename std::decay<T>::type* getConstPtr() const
+		{
+			return get_const_ptr<T>();
+		}
+
+		template<typename T>
 		const typename std::decay<T>::type& get_const() const
 		{
 			auto obj = get_const_ptr<T>();
 			if (!obj) throw omnetpp::cRuntimeError("no valid object of type '%s' registered", typeid(T).name());
 			return *obj;
+		}
+
+		template<typename T>
+		const typename std::decay<T>::type& getConst() const
+		{
+			return get_const<T>();
 		}
 
 		template<typename T>
@@ -95,6 +112,12 @@ class Facilities
 		}
 
 		template<typename T>
+		void registerMutable(T* object)
+		{
+			register_mutable(object);
+		}
+
+		template<typename T>
 		void register_const(const T* object)
 		{
 			assert(object);
@@ -103,14 +126,17 @@ class Facilities
 			m_const_objects[std::type_index(typeid(DT))] = object;
 		}
 
-		// these (deprecated) getters are only provided for compatibility reasons
-		const VehicleDataProvider& getVehicleDataProvider() const;
-		vanetza::dcc::Scheduler& getDccScheduler();
-		const vanetza::dcc::StateMachine& getDccStateMachine() const;
+		template<typename T>
+		void registerConst(const T* object)
+		{
+			register_const(object);
+		}
 
 	private:
 		std::unordered_map<std::type_index, void*> m_mutable_objects;
 		std::unordered_map<std::type_index, const void*> m_const_objects;
 };
 
-#endif /* FACILITIES_H_ */
+} // namespace artery
+
+#endif /* ARTERY_FACILITIES_H_ */

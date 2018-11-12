@@ -18,7 +18,7 @@ package artery.application;
 simple DenService like ItsG5Service
 {
     parameters:
-        @class(artery::DenService);
+        @class(DenService);
         @signal[DenmReceived](type=artery::DenmObject);
         xml useCases;
 }

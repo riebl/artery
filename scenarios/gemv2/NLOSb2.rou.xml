@@ -1,0 +1,33 @@
+<routes>
+    <vehicle id="1" departSpeed="max" depart="0">
+        <route edges="b e"/>
+    </vehicle>
+
+    <vehicle id="3" departSpeed="max" depart="0">
+        <route edges="g e"/>
+    </vehicle>
+
+    <vehicle id="4" departSpeed="max" depart="6">
+        <route edges="d h"/>
+    </vehicle>
+
+    <vehicle id="2" departSpeed="max" depart="7">
+        <route edges="f h"/>
+    </vehicle>
+
+    <vehicle id="6" departSpeed="max" depart="8">
+        <route edges="b h"/>
+    </vehicle>
+
+    <vehicle id="5" departSpeed="max" depart="9">
+        <route edges="g a"/>
+    </vehicle>
+
+    <vehicle id="7" departSpeed="max" depart="10">
+        <route edges="d a"/>
+    </vehicle>
+
+    <vehicle id="8" departSpeed="max" depart="11">
+        <route edges="f a"/>
+    </vehicle>
+</routes>

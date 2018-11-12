@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+        <!-- Channel Model Type (REAL, DUMMY) -->
+        <ChannelModel type="REAL">
+                <!-- Enable/disable shadowing -->
+                <parameter name="shadowing" type="bool" value="true"/>
+                <!-- Pathloss scenario from ITU -->
+                <parameter name="scenario" type="string" value="URBAN_MACROCELL"/>
+                <!-- eNodeB height -->
+                <parameter name="nodeb-height" type="double" value="25"/>
+                <!-- Building height -->
+                <parameter name="building-height" type="double" value="20"/>
+                <!-- Carrier Frequency (GHz) -->
+                <parameter name="carrierFrequency" type="double" value="2"/>
+                <!-- Target bler used to compute feedback -->
+                <parameter name="targetBler" type="double" value="0.001"/>
+                <!-- HARQ reduction -->
+                <parameter name="harqReduction" type="double" value="0.2"/>
+                <!-- Rank indicator tracefile -->
+                <parameter name="lambdaMinTh" type="double" value="0.02"/>
+                <parameter name="lambdaMaxTh" type="double" value="0.2"/>
+                <parameter name="lambdaRatioTh" type="double" value="20"/>
+                <!-- Antenna Gain of UE -->
+                <parameter name="antennaGainUe" type="double" value="0"/>
+                <!-- Antenna Gain of eNodeB -->
+                <parameter name="antennGainEnB" type="double" value="18"/>
+                <!-- Antenna Gain of Micro node -->
+                <parameter name="antennGainMicro" type="double" value="5"/>
+                <!-- Thermal Noise for 10 MHz of Bandwidth -->
+                <parameter name="thermalNoise" type="double" value="-104.5"/>
+                <!-- Ue noise figure -->
+                <parameter name="ue-noise-figure" type="double" value="7"/>
+                <!-- eNodeB noise figure -->
+                <parameter name="bs-noise-figure" type="double" value="5"/>
+                <!-- Cable Loss -->
+                <parameter name="cable-loss" type="double" value="2"/>
+                <!-- If true enable the possibility to switch dynamically the LOS/NLOS pathloss computation -->
+                <parameter name="dynamic-los" type="bool" value="false"/>
+                <!-- If dynamic-los is false this parameter, if true, compute LOS pathloss otherwise compute NLOS pathloss -->
+                <parameter name="fixed-los" type="bool" value="false"/>
+                <!-- Enable/disable fading -->
+                <parameter name="fading" type="bool" value="true"/>
+                <!-- Fading type (JAKES or RAYGHLEY) -->
+                <parameter name="fading-type" type="string" value="JAKES"/>
+                <!-- If jakes fading this parameter specify the number of path (tap channel) -->
+                <parameter name="fading-paths" type="int" value="6"/>
+                <!-- if true, enables the inter-cell interference computation -->
+                <parameter name="extCell-interference" type="bool" value="true"/>
+                <!-- if true, enables the multi-cell interference computation -->
+                <parameter name="multiCell-interference" type="bool" value="false"/>
+        </ChannelModel>
+
+        <!-- Feedback Type (REAL, DUMMY) -->
+        <FeedbackComputation type="REAL">
+                <!-- Target bler used to compute feedback -->
+                <parameter name="targetBler" type="double" value="0.001"/>
+                <!-- Rank indicator tracefile -->
+                <parameter name="lambdaMinTh" type="double" value="0.02"/>
+                <parameter name="lambdaMaxTh" type="double" value="0.2"/>
+                <parameter name="lambdaRatioTh" type="double" value="20"/>
+        </FeedbackComputation>
+</root>

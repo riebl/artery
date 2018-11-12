@@ -20,7 +20,7 @@ class VeinsConnectionManager : public ConnectionManager, public omnetpp::cListen
 public:
     void initialize(int stage) override;
     void finish() override;
-    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, const char*, cObject*) override;
+    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, const char*, omnetpp::cObject*) override;
 };
 
 } // namespace artery

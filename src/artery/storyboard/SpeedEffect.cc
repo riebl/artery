@@ -4,6 +4,9 @@
 #include <boost/units/io.hpp>
 #include <omnetpp/clog.h>
 
+namespace artery
+{
+
 void SpeedEffect::applyEffect()
 {
     auto& controller = getCar().getController();
@@ -27,3 +30,5 @@ void SpeedEffect::reapplyEffect()
 {
     applyEffect();
 }
+
+} // namespace artery

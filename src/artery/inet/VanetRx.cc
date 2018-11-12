@@ -1,9 +1,14 @@
 #include "artery/inet/VanetRx.h"
 #include <cstdint>
 
-Define_Module(VanetRx)
+using namespace omnetpp;
+
+namespace artery
+{
 
 const simsignal_t VanetRx::ChannelLoadSignal = cComponent::registerSignal("ChannelLoad");
+
+Define_Module(VanetRx)
 
 VanetRx::VanetRx()
 {
@@ -61,3 +66,5 @@ void VanetRx::reportChannelLoad()
 
     emit(ChannelLoadSignal, channelBusyRatio);
 }
+
+} // namespace artery

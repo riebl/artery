@@ -3,6 +3,9 @@
 
 using namespace traci;
 
+namespace artery
+{
+
 omnetpp::simsignal_t MobilityBase::stateChangedSignal = omnetpp::cComponent::registerSignal("mobilityStateChanged");
 
 void MobilityBase::initializeSink(LiteAPI* api, const std::string& id, const TraCIBoundary& boundary, std::shared_ptr<VehicleCache> cache)
@@ -37,3 +40,4 @@ VehicleController* MobilityBase::getVehicleController()
     return mController.get();
 }
 
+} // namespace artery

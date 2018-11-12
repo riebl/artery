@@ -1,1 +1,2 @@
 package artery;
+@namespace(artery);

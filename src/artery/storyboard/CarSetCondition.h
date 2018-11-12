@@ -1,9 +1,12 @@
-#ifndef CARCONDITION_H
-#define CARCONDITION_H
+#ifndef ARTERY_CARCONDITION_H
+#define ARTERY_CARCONDITION_H
 
 #include "artery/storyboard/Condition.h"
 #include <string>
 #include <set>
+
+namespace artery
+{
 
 /**
  * Condition: CarSet
@@ -35,4 +38,6 @@ private:
     std::set<std::string> m_cars;
 };
 
-#endif  /* CARCONDITION_H */
+} // namespace artery
+
+#endif  /* ARTERY_CARCONDITION_H */

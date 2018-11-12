@@ -1,11 +1,14 @@
-#ifndef VEHICLE_H_
-#define VEHICLE_H_
+#ifndef ARTERY_VEHICLE_H_
+#define ARTERY_VEHICLE_H_
 
 #include "artery/application/Middleware.h"
 #include "artery/traci/VehicleController.h"
 #include "artery/application/VehicleDataProvider.h"
 #include <map>
 #include <string>
+
+namespace artery
+{
 
 class StoryboardSignal;
 class VehicleDataProvider;
@@ -38,4 +41,6 @@ private:
     std::map<std::string, Vehicle>& mVehicles;
 };
 
-#endif /* VEHICLE_H_ */
+} // namespace artery
+
+#endif /* ARTERY_VEHICLE_H_ */

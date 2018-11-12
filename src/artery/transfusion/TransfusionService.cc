@@ -27,6 +27,9 @@
 
 using namespace omnetpp;
 
+namespace artery
+{
+
 Define_Module(TransfusionService)
 
 void TransfusionService::initialize()
@@ -43,7 +46,7 @@ void TransfusionService::initialize()
     if (ec) {
         throw cRuntimeError("remote IP address is invalid: %s", par("remote_ip").stringValue());
     }
-    unsigned remote_port = par("remote_port").longValue();
+    unsigned remote_port = par("remote_port");
     endpoint.address(remote_ip);
     endpoint.port(remote_port);
 
@@ -182,3 +185,5 @@ vanetza::geonet::Area TransfusionService::buildDestinationArea(const Transfusion
 
     return area;
 }
+
+} // namespace artery

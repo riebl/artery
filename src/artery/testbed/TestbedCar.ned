@@ -1,7 +1,7 @@
 package artery.testbed;
 
 import artery.nic.IRadioDriver;
-import artery.inet.InetRadioDriver;
+import artery.inet.RadioDriver;
 import inet.node.inet.INetworkNode;
 import inet.linklayer.contract.IWirelessNic;
 import inet.mobility.contract.IMobility;
@@ -40,7 +40,7 @@ module TestbedCar like INetworkNode
                 @display("p=50,200");
         }
 
-        radioDriver[numRadios]: InetRadioDriver {
+        radioDriver[numRadios]: RadioDriver {
             parameters:
                 @display("p=250,300,row,100");
                 macModule = ".wlan[" + string(index) + "].mac";
@@ -60,6 +60,6 @@ module TestbedCar like INetworkNode
             wlan[i].upperLayerIn <-- radioDriver[i].lowerLayerOut;
         }
 
-        otaInterfaceLayer.lowerLayerOut --> radioDriver[0].middleware$i;
-        otaInterfaceLayer.lowerLayerIn <-- radioDriver[0].middleware$o;
+        otaInterfaceLayer.lowerLayerOut --> radioDriver[0].upperLayer$i;
+        otaInterfaceLayer.lowerLayerIn <-- radioDriver[0].upperLayer$o;
 }

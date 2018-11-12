@@ -1,6 +1,7 @@
 package artery.inet;
 
 import artery.application.VehicleMiddleware;
+import artery.networking.Vanetza;
 import artery.nic.IRadioDriver;
 import inet.node.inet.INetworkNode;
 import inet.linklayer.contract.IWirelessNic;
@@ -16,6 +17,7 @@ module Car extends PlainVehicle like INetworkNode
         @statistic[posX](source="xCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
         @statistic[posY](source="yCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
         int numRadios = default(1);
+        bool withAntennaMobility = default(false);
         *.interfaceTableModule = default(absPath(".interfaceTable"));
 
     gates:
@@ -32,18 +34,34 @@ module Car extends PlainVehicle like INetworkNode
         wlan[numRadios]: <default("VanetNic")> like IWirelessNic {
             parameters:
                 @display("p=250,400,row,100;q=queue");
+                radio.antenna.mobilityModule = withAntennaMobility ? ".antennaMobility" : ".mobility";
         }
 
-        radioDriver[numRadios]: InetRadioDriver {
+        antennaMobility: AntennaMobility if withAntennaMobility == true {
+            parameters:
+                @display("p=100,200");
+                mobilityModule = "^.mobility";
+        }
+
+        radioDriver[numRadios]: RadioDriver {
             parameters:
                 @display("p=250,300,row,100");
                 macModule = ".wlan[" + string(index) + "].mac";
         }
 
-        middleware: VehicleMiddleware {
+        vanetza: Vanetza {
             parameters:
                 @display("p=250,200");
-                radioDriverModule = ".radioDriver[0]";
+                *.middlewareModule = absPath("^.middleware");
+                *.mobilityModule = absPath("^.mobility");
+                *.radioDriverModule = absPath("^.radioDriver[0]");
+                runtime.datetime = middleware.datetime;
+        }
+
+        middleware: VehicleMiddleware {
+            parameters:
+                @display("p=250,100");
+                routerModule = ".vanetza.router";
                 mobilityModule = ".mobility";
         }
 
@@ -55,6 +73,5 @@ module Car extends PlainVehicle like INetworkNode
             wlan[i].upperLayerIn <-- radioDriver[i].lowerLayerOut;
         }
 
-        middleware.radioDriverOut --> radioDriver[0].middleware$i;
-        middleware.radioDriverIn <-- radioDriver[0].middleware$o;
+        radioDriver[0].upperLayer <--> vanetza.radioDriver;
 }

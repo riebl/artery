@@ -1,8 +1,11 @@
-#ifndef EFFECTSTACK_H_
-#define EFFECTSTACK_H_
+#ifndef ARTERY_EFFECTSTACK_H_
+#define ARTERY_EFFECTSTACK_H_
 
 #include <vector>
 #include <memory>
+
+namespace artery
+{
 
 class Effect;
 class Story;
@@ -44,4 +47,6 @@ private:
     void removeFromMiddle(const Effect*);
 };
 
-#endif /* EFFECTSTACK_H_ */
+} // namespace artery
+
+#endif /* ARTERY_EFFECTSTACK_H_ */

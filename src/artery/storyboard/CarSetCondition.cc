@@ -1,6 +1,9 @@
 #include "artery/storyboard/CarSetCondition.h"
 #include <algorithm>
 
+namespace artery
+{
+
 CarSetCondition::CarSetCondition(const std::string& carName)
 {
     m_cars.insert(carName);
@@ -16,3 +19,5 @@ ConditionResult CarSetCondition::testCondition(const Vehicle& car)
     auto result = std::find(m_cars.begin(), m_cars.end(), car.getId());
     return (result != m_cars.end());
 }
+
+} // namespace artery

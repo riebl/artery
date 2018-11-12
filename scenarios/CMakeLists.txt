@@ -1,4 +1,6 @@
 add_subdirectory(artery)
+add_subdirectory(gemv2)
+add_subdirectory(highway-police)
 if(WITH_STORYBOARD)
     add_subdirectory(storyboard)
 endif()
@@ -22,6 +24,10 @@ if(TARGET lte)
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/simulte)
     add_opp_test(simulte SUFFIX cellular CONFIG VoIP-UpLink SIMTIME_LIMIT 10s)
     add_opp_test(simulte SUFFIX d2d CONFIG AlertMulticast SIMTIME_LIMIT 25s)
+endif()
+
+if(TARGET lte AND WITH_STORYBOARD)
+    add_subdirectory(lte-blackice)
 endif()
 
 add_opp_run(car2car-grid WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/car2car-grid)

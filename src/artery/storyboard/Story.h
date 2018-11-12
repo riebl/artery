@@ -1,11 +1,14 @@
-#ifndef STORY_H_
-#define STORY_H_
+#ifndef ARTERY_STORY_H_
+#define ARTERY_STORY_H_
 
 #include "artery/storyboard/Condition.h"
 #include "artery/storyboard/EffectFactory.h"
 #include "artery/storyboard/Vehicle.h"
 #include <memory>
 #include <vector>
+
+namespace artery
+{
 
 class Storyboard;
 class EffectFactory;
@@ -40,4 +43,6 @@ private:
     EffectFactories m_factories;
 };
 
-#endif /* STORY_H_ */
+} // namespace artery
+
+#endif /* ARTERY_STORY_H_ */

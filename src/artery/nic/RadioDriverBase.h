@@ -6,6 +6,9 @@
 #include <omnetpp/csimplemodule.h>
 #include <vanetza/net/mac_address.hpp>
 
+namespace artery
+{
+
 class RadioDriverBase : public omnetpp::cSimpleModule
 {
 	public:
@@ -21,9 +24,11 @@ class RadioDriverBase : public omnetpp::cSimpleModule
 		virtual void handleUpperMessage(omnetpp::cMessage*) = 0;
 
 	private:
-		omnetpp::cGate* m_middlewareInGate;
-		omnetpp::cGate* m_middlewareOutGate;
+		omnetpp::cGate* mUpperLayerIn;
+		omnetpp::cGate* mUpperLayerOut;
 };
+
+} // namespace artery
 
 #endif /* RADIODRIVERBASE_H_IHIKLETJ */
 

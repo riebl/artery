@@ -16,10 +16,13 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#ifndef ITSG5SERVICE_H_
-#define ITSG5SERVICE_H_
+#ifndef ARTERY_ITSG5SERVICE_H_
+#define ARTERY_ITSG5SERVICE_H_
 
 #include "ItsG5BaseService.h"
+
+namespace artery
+{
 
 class ItsG5Service : public ItsG5BaseService
 {
@@ -36,4 +39,6 @@ class ItsG5Service : public ItsG5BaseService
 		void request(const vanetza::btp::DataRequestB&, omnetpp::cPacket*);
 };
 
-#endif /* ITSG5SERVICE_H_ */
+} // namespace artery
+
+#endif /* ARTERY_ITSG5SERVICE_H_ */

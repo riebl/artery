@@ -7,7 +7,7 @@
 #ifndef ARTERY_OTA_INTERFACE_H
 #define ARTERY_OTA_INTERFACE_H
 
-#include "artery/messages/GeoNetPacket_m.h"
+#include "artery/networking/GeoNetPacket.h"
 #include <vanetza/common/byte_view.hpp>
 #include <vanetza/net/mac_address.hpp>
 #include <memory>

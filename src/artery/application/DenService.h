@@ -18,10 +18,10 @@
 #include <list>
 #include <memory>
 
-class Timer;
-
 namespace artery
 {
+
+class Timer;
 
 class DenService : public ItsG5BaseService
 {

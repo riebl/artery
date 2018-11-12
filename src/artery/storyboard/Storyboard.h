@@ -10,13 +10,14 @@
 #include "artery/storyboard/EffectStack.h"
 #include "artery/storyboard/Vehicle.h"
 
-class Effect;
-class Story;
-class Vehicle;
 namespace pybind11 { class module; }
 
 namespace artery
 {
+
+class Effect;
+class Story;
+class Vehicle;
 
 class Storyboard : public omnetpp::cSimpleModule, public omnetpp::cListener
 {
@@ -28,8 +29,8 @@ public:
     int numInitStages() const override;
     void handleMessage(omnetpp::cMessage * msg) override;
     // omnetpp::cListener
-    void receiveSignal(cComponent* source, omnetpp::simsignal_t, const char*, cObject*) override;
-    void receiveSignal(cComponent* source, omnetpp::simsignal_t, const omnetpp::SimTime&, cObject*) override;
+    void receiveSignal(omnetpp::cComponent* source, omnetpp::simsignal_t, const char*, omnetpp::cObject*) override;
+    void receiveSignal(omnetpp::cComponent* source, omnetpp::simsignal_t, const omnetpp::SimTime&, omnetpp::cObject*) override;
 
     /**
      * Registers a story created in the python script

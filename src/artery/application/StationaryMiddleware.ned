@@ -9,8 +9,5 @@ package artery.application;
 simple StationaryMiddleware extends Middleware
 {
 	parameters:
-		@class(artery::StationaryMiddleware);
-
-		string mobilityModule;
-		string traciCoreModule;
+		@class(StationaryMiddleware);
 }

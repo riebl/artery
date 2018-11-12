@@ -131,7 +131,7 @@ void OtaInterfaceUsrp::receiveSignal(omnetpp::cComponent* source, omnetpp::simsi
 void OtaInterfaceUsrp::receiveMessage(std::unique_ptr<GeoNetPacket> geonetPacket)
 {
     if (hasRegisteredModule()) {
-        Enter_Method("recieveMessage");
+        Enter_Method("receiveMessage");
         ++mMessagesFromDut;
         mRegisteredModule->request(std::move(geonetPacket));
     }
@@ -152,8 +152,7 @@ void OtaInterfaceUsrp::notifyQueue(const sea_v2x::MA_UNITDATA_indication& ind)
     };
 
     std::unique_ptr<GeoNetPacket> gn(new GeoNetPacket("GeoNet packet from DUT"));
-    gn->setByteLength(ind.data.size());
-    gn->setPayload(GeoNetPacketWrapper { std::move(payload) });
+    gn->setPayload(std::move(payload));
     gn->setControlInfo(new GeoNetRequest(req));
     mOtaIndicationQueue->trigger(std::move(gn));
 }

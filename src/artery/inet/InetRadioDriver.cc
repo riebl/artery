@@ -1,10 +1,15 @@
 #include "artery/inet/InetRadioDriver.h"
 #include "artery/inet/VanetRx.h"
-#include "artery/netw/GeoNetIndication.h"
-#include "artery/netw/GeoNetRequest.h"
+#include "artery/networking/GeoNetIndication.h"
+#include "artery/networking/GeoNetRequest.h"
 #include <inet/common/ModuleAccess.h>
 #include <inet/linklayer/common/Ieee802Ctrl.h>
 #include <inet/linklayer/ieee80211/mac/Ieee80211Mac.h>
+
+using namespace omnetpp;
+
+namespace artery
+{
 
 Register_Class(InetRadioDriver)
 
@@ -95,3 +100,5 @@ void InetRadioDriver::handleLowerMessage(cMessage* packet)
 
 	indicatePacket(packet);
 }
+
+} // namespace artery

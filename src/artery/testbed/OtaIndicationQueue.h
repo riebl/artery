@@ -7,7 +7,7 @@
 #ifndef ARTERY_OTA_INDICATION_QUEUE_H
 #define ARTERY_OTA_INDICATION_QUEUE_H
 
-#include "artery/messages/GeoNetPacket_m.h"
+#include "artery/networking/GeoNetPacket.h"
 #include <chrono>
 #include <condition_variable>
 #include <mutex>

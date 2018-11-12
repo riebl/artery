@@ -2,6 +2,9 @@
 #include "AsioTask.h"
 #include <boost/asio/write.hpp>
 
+namespace artery
+{
+
 AsioTask::AsioTask(AsioScheduler& scheduler, boost::asio::ip::tcp::socket socket, omnetpp::cModule& mod) :
 	m_scheduler(scheduler), m_socket(std::move(socket)), m_message(new AsioData("Asio Data")), m_module(mod)
 {
@@ -28,3 +31,5 @@ void AsioTask::handleNext()
 {
 	m_scheduler.processTask(this);
 }
+
+} // namespace artery

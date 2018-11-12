@@ -17,10 +17,11 @@
 #include <vanetza/common/clock.hpp>
 #include <memory>
 
-class Timer;
-
 namespace artery
 {
+
+class Timer;
+
 namespace den
 {
 

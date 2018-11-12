@@ -13,26 +13,13 @@ moduleinterface IMiddleware
 simple Middleware like IMiddleware
 {
 	parameters:
-		@class(artery::Middleware);
+		@class(Middleware);
 		@signal[Identity.update](type=artery::Identity);
 		@signal[Identity.remove](type=artery::Identity);
 		@signal[StoryboardSignal](type=StoryboardSignal);
 
-		string radioDriverModule;
+		string routerModule;
 		double updateInterval = default(0.1s) @unit(s);
 		string datetime;
 		xml services;
-
-		bool vanetzaDeferInitialBeacon = default(true);
-		bool vanetzaEnableSecurity = default(true);
-		string vanetzaCryptoBackend = default("Null");
-		string vanetzaCertificateProvider = default("Null");
-		string vanetzaCertificateValidator = default("NullOk");
-		string vanetzaSecuritySignService = default("dummy");
-		string vanetzaSecurityVerifyService = default("dummy");
-		int vanetzaDccQueueLength = default(2);
-
-	gates:
-		input radioDriverIn;
-		output radioDriverOut;
 }

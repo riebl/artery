@@ -1,7 +1,10 @@
-#ifndef SPEEDEFFECT_H_
-#define SPEEDEFFECT_H_
+#ifndef ARTERY_SPEEDEFFECT_H_
+#define ARTERY_SPEEDEFFECT_H_
 
 #include "artery/storyboard/Effect.h"
+
+namespace artery
+{
 
 /**
  * SpeedEffect
@@ -42,4 +45,6 @@ private:
     double m_current;
 };
 
-#endif /* SPEEDEFFECT_H_ */
+} // namespace artery
+
+#endif /* ARTERY_SPEEDEFFECT_H_ */

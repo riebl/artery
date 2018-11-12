@@ -1,8 +1,11 @@
-#ifndef ORCONDITION_H_
-#define ORCONDITION_H_
+#ifndef ARTERY_ORCONDITION_H_
+#define ARTERY_ORCONDITION_H_
 
 #include "artery/storyboard/Condition.h"
 #include <memory>
+
+namespace artery
+{
 
 /**
  * Class to create a Tree of OrConditions
@@ -28,4 +31,6 @@ private:
     ConditionPtr m_right;
 };
 
-#endif /* ORCONDITION_H_ */
+} // namespace artery
+
+#endif /* ARTERY_ORCONDITION_H_ */

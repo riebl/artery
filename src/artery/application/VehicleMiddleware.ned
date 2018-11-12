@@ -9,7 +9,7 @@ package artery.application;
 simple VehicleMiddleware extends Middleware
 {
 	parameters:
-		@class(artery::VehicleMiddleware);
+		@class(VehicleMiddleware);
 
 		string localEnvironmentModule = default("");
 		string globalEnvironmentModule = default("");

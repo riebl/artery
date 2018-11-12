@@ -3,6 +3,9 @@
 
 using namespace omnetpp;
 
+namespace artery
+{
+
 namespace {
 
 class Visitor : public boost::static_visitor<const std::set<const Vehicle*>&>
@@ -32,3 +35,5 @@ void SignalEffect::applyEffect()
 
     getCar().emit(obj);
 }
+
+} // namespace artery

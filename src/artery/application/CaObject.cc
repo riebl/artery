@@ -2,6 +2,9 @@
 #include <omnetpp.h>
 #include <cassert>
 
+namespace artery
+{
+
 using namespace vanetza::asn1;
 
 Register_Abstract_Class(CaObject)
@@ -83,3 +86,5 @@ protected:
 };
 
 Register_ResultFilter("camGenerationDeltaTime", CamGenerationDeltaTimeResultFilter)
+
+} // namespace artery

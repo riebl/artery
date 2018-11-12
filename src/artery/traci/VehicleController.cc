@@ -47,23 +47,23 @@ const std::string VehicleController::getVehicleClass() const
     return m_cache->get<VAR_VEHICLECLASS>();
 }
 
-Position VehicleController::getPosition() const
+artery::Position VehicleController::getPosition() const
 {
     return traci::position_cast(m_boundary, m_cache->get<VAR_POSITION>());
 }
 
-auto VehicleController::getGeoPosition() const -> GeoPosition
+auto VehicleController::getGeoPosition() const -> artery::GeoPosition
 {
     TraCIPosition traci_pos = m_cache->get<VAR_POSITION>();
 
     TraCIGeoPosition traci_geo = m_api.convertGeo(traci_pos);
-    GeoPosition geo;
+    artery::GeoPosition geo;
     geo.latitude = traci_geo.latitude * boost::units::degree::degree;
     geo.longitude = traci_geo.longitude * boost::units::degree::degree;
     return geo;
 }
 
-auto VehicleController::getHeading() const -> Angle
+auto VehicleController::getHeading() const -> artery::Angle
 {
     using namespace traci;
     return angle_cast(TraCIAngle { m_cache->get<VAR_ANGLE>() });
@@ -87,6 +87,11 @@ void VehicleController::setMaxSpeed(Velocity v)
 void VehicleController::setSpeed(Velocity v)
 {
     m_api.vehicle().setSpeed(m_id, v / si::meter_per_second);
+}
+
+void VehicleController::setSpeedFactor(double f)
+{
+    m_api.vehicle().setSpeedFactor(m_id, f);
 }
 
 auto VehicleController::getLength() const -> Length

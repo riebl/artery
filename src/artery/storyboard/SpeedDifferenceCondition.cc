@@ -1,5 +1,8 @@
 #include "artery/storyboard/SpeedDifferenceCondition.h"
 
+namespace artery
+{
+
 ConditionResult SpeedDifferenceConditionFaster::testCondition(const Vehicle& car)
 {
     std::set<const Vehicle*> affected;
@@ -23,3 +26,5 @@ ConditionResult SpeedDifferenceConditionSlower::testCondition(const Vehicle& car
 
     return affected;
 }
+
+} // namespace artery

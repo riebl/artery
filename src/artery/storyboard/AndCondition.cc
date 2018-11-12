@@ -1,5 +1,8 @@
 #include "artery/storyboard/AndCondition.h"
 
+namespace artery
+{
+
 class AndVisitor : public boost::static_visitor<ConditionResult>
 {
 public:
@@ -53,3 +56,5 @@ void AndCondition::drawCondition(omnetpp::cCanvas* canvas)
     m_left->drawCondition(canvas);
     m_right->drawCondition(canvas);
 }
+
+} // namespace artery

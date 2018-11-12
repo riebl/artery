@@ -1,8 +1,11 @@
-#ifndef SIGNALEFFECT_H
-#define SIGNALEFFECT_H
+#ifndef ARTERY_SIGNALEFFECT_H
+#define ARTERY_SIGNALEFFECT_H
 
 #include "artery/storyboard/Effect.h"
 #include "artery/storyboard/Condition.h"
+
+namespace artery
+{
 
 /*
  * SignalEffect
@@ -41,4 +44,6 @@ private:
     ConditionResult& mResult;
 };
 
-#endif /* SIGNALEFFECT_H */
+} // namespace artery
+
+#endif /* ARTERY_SIGNALEFFECT_H */

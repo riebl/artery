@@ -12,6 +12,7 @@ public:
     LiteAPI(API& api) : m_api(api) {}
 
     TraCIGeoPosition convertGeo(const TraCIPosition& pos) const { return m_api.convertGeo(pos); }
+    TraCIPosition convert2D(const TraCIGeoPosition& pos) const { return m_api.convert2D(pos); }
 
     API::EdgeScope& edge() { return m_api.edge; }
     const API::EdgeScope& edge() const { return m_api.edge; }

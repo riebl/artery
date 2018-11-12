@@ -10,13 +10,11 @@
 #include "artery/envmod/sensor/Sensor.h"
 #include "artery/envmod/sensor/SensorVisualizationConfig.h"
 
-// forward declarations
-class Facilities;
-
 namespace artery
 {
 
 // forward declarations
+class Facilities;
 class GlobalEnvironmentModel;
 class LocalEnvironmentModel;
 class Middleware;

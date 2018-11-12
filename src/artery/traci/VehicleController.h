@@ -31,13 +31,14 @@ public:
     const VehicleType& getVehicleType() const;
     const std::string getVehicleClass() const;
 
-    Position getPosition() const;
-    GeoPosition getGeoPosition() const;
-    Angle getHeading() const;
+    artery::Position getPosition() const;
+    artery::GeoPosition getGeoPosition() const;
+    artery::Angle getHeading() const;
     Velocity getSpeed() const;
     Velocity getMaxSpeed() const;
     void setMaxSpeed(Velocity);
     void setSpeed(Velocity);
+    void setSpeedFactor(double);
 
     Length getLength() const;
     Length getWidth() const;

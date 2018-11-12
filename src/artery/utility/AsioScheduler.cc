@@ -21,6 +21,9 @@
 #include <boost/asio/read.hpp>
 #include <boost/asio/steady_timer.hpp>
 
+namespace artery
+{
+
 Register_Class(AsioScheduler)
 
 using namespace omnetpp;
@@ -187,3 +190,5 @@ void AsioScheduler::handleTask(AsioTask* task, const boost::system::error_code& 
 		throw cRuntimeError("AsioScheduler: Failed reading from socket: %s", ec.message().c_str());
 	}
 }
+
+} // namespace artery

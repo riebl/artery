@@ -1,6 +1,6 @@
-#include "artery/messages/GeoNetPacket_m.h"
+#include "artery/networking/GeoNetIndication.h"
+#include "artery/networking/GeoNetPacket.h"
 #include "artery/nic/RadioDriverBase.h"
-#include "artery/netw/GeoNetIndication.h"
 #include "artery/testbed/OtaInterfaceLayer.h"
 #include "artery/testbed/OtaInterface.h"
 #include "artery/testbed/TestbedRadio.h"
@@ -44,21 +44,14 @@ void OtaInterfaceLayer::handleMessage(omnetpp::cMessage* message)
     if (message->getArrivalGate() == mRadioDriverIn) {
         auto packet = check_and_cast<GeoNetPacket*>(message);
         auto info = check_and_cast<GeoNetIndication*>(message->removeControlInfo());
-
-        auto payload = packet->getPayload().extract_up_packet();
-        size_t length = boost::size(*payload, vanetza::OsiLayer::Physical, vanetza::OsiLayer::Application);
-        auto range = boost::create_byte_view(*payload, vanetza::OsiLayer::Network);
-
-        if (length != range.size()) {
-            throw omnetpp::cRuntimeError(this, "Whole packet must be sent to OTA Interface");
-        }
-
         if (info) {
+            using namespace vanetza;
+            auto range = create_byte_view(packet->getPayload(), OsiLayer::Network, OsiLayer::Application);
             mOtaModule->sendMessage(info->source, info->destination, range);
         }
     }
 
-    cancelAndDelete(message);
+    delete message;
 }
 
 void OtaInterfaceLayer::request(std::unique_ptr<GeoNetPacket> packet)

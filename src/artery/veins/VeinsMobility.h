@@ -1,9 +1,12 @@
-#ifndef VEINSMOBILITY_H_JFWG67L1
-#define VEINSMOBILITY_H_JFWG67L1
+#ifndef ARTERY_VEINSMOBILITY_H_JFWG67L1
+#define ARTERY_VEINSMOBILITY_H_JFWG67L1
 
 #include "artery/traci/MobilityBase.h"
 #include <veins/base/modules/BaseMobility.h>
 #include <veins/base/utils/Coord.h>
+
+namespace artery
+{
 
 class VeinsMobility : public BaseMobility /* Veins */, public MobilityBase /* Artery */
 {
@@ -19,5 +22,7 @@ private:
     double mSpeed;
 };
 
-#endif /* VEINSMOBILITY_H_JFWG67L1 */
+} // namespace artery
+
+#endif /* ARTERY_VEINSMOBILITY_H_JFWG67L1 */
 

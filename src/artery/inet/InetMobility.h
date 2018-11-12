@@ -1,5 +1,5 @@
-#ifndef INETMOBILITY_H_SKZPGILS
-#define INETMOBILITY_H_SKZPGILS
+#ifndef ARTERY_INETMOBILITY_H_SKZPGILS
+#define ARTERY_INETMOBILITY_H_SKZPGILS
 
 #include "artery/traci/MobilityBase.h"
 #include <inet/mobility/contract/IMobility.h>
@@ -7,6 +7,8 @@
 
 namespace inet { class CanvasProjection; }
 
+namespace artery
+{
 
 class InetMobility : public inet::IMobility, public MobilityBase, public omnetpp::cSimpleModule
 {
@@ -39,4 +41,6 @@ private:
     const inet::CanvasProjection* mCanvasProjection = nullptr;
 };
 
-#endif /* INETMOBILITY_H_SKZPGILS */
+} // namespace artery
+
+#endif /* ARTERY_INETMOBILITY_H_SKZPGILS */

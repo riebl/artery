@@ -1,13 +1,15 @@
-#ifndef STORYBOARDSIGNAL_H_W6RAFKKY
-#define STORYBOARDSIGNAL_H_W6RAFKKY
+#ifndef ARTERY_STORYBOARDSIGNAL_H_W6RAFKKY
+#define ARTERY_STORYBOARDSIGNAL_H_W6RAFKKY
 
 #include <omnetpp/cobject.h>
 #include <set>
 #include <string>
 
+namespace artery
+{
+
 class Story;
 class Vehicle;
-
 
 class StoryboardSignal : public omnetpp::cObject
 {
@@ -33,5 +35,7 @@ private:
     std::set<const Vehicle*> mOthers;
 };
 
-#endif /* STORYBOARDSIGNAL_H_W6RAFKKY */
+} // namespace artery
+
+#endif /* ARTERY_STORYBOARDSIGNAL_H_W6RAFKKY */
 

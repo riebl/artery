@@ -1,6 +1,6 @@
 /*
  * Artery V2X Simulation Framework
- * Copyright 2014-2017 Raphael Riebl
+ * Copyright 2014-2018 Raphael Riebl
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
@@ -9,28 +9,26 @@
 
 #include "artery/application/Middleware.h"
 #include "artery/application/VehicleDataProvider.h"
+#include <omnetpp/clistener.h>
 
 namespace artery
 {
 
-class VehicleMiddleware : public Middleware
+class VehicleMiddleware : public Middleware, public omnetpp::cListener
 {
-	public:
-		void initialize(int stage) override;
-		void finish() override;
+    public:
+        void initialize(int stage) override;
+        void finish() override;
 
-	protected:
-		void initializeIdentity(Identity&) override;
-		void initializeManagementInformationBase(vanetza::geonet::MIB&) override;
-		void receiveSignal(cComponent*, omnetpp::simsignal_t, cObject*, cObject*) override;
-		void update() override;
+    protected:
+        void initializeIdentity(Identity&) override;
+        void initializeStationType(const std::string&);
+        void initializeVehicleController(omnetpp::cPar&);
+        void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject*) override;
 
-	private:
-		void initializeVehicleController();
-		void updatePosition();
-
-		traci::VehicleController* mVehicleController;
-		VehicleDataProvider mVehicleDataProvider;
+    private:
+        traci::VehicleController* mVehicleController = nullptr;
+        VehicleDataProvider mVehicleDataProvider;
 };
 
 } // namespace artery

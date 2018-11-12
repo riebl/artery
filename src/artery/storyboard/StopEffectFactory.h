@@ -1,8 +1,11 @@
-#ifndef SRC_ARTERY_STORYBOARD_STOPEFFECTFACTORY_H_
-#define SRC_ARTERY_STORYBOARD_STOPEFFECTFACTORY_H_
+#ifndef ARTERY_STOPEFFECTFACTORY_H_
+#define ARTERY_STOPEFFECTFACTORY_H_
 
 #include "artery/storyboard/EffectFactory.h"
 #include "artery/traci/VehicleController.h"
+
+namespace artery
+{
 
 /**
  * StopEffectFactories creates StopEffects
@@ -21,4 +24,6 @@ public:
     std::shared_ptr<Effect> create(Vehicle&, Story&, ConditionResult&) override;
 };
 
-#endif /* SRC_ARTERY_STORYBOARD_STOPEFFECTFACTORY_H_ */
+} // namespace artery
+
+#endif /* ARTERY_STOPEFFECTFACTORY_H_ */

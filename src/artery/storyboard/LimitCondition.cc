@@ -1,5 +1,8 @@
 #include "artery/storyboard/LimitCondition.h"
 
+namespace artery
+{
+
 LimitCondition::LimitCondition(unsigned limit) :
     m_limit(limit)
 {
@@ -16,3 +19,5 @@ ConditionResult LimitCondition::testCondition(const Vehicle& v)
     }
     return condition;
 }
+
+} // namespace artery

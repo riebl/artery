@@ -1,10 +1,13 @@
-#ifndef _POLYGONCONDITION_H_
-#define _POLYGONCONDITION_H_
+#ifndef ARTERY_POLYGONCONDITION_H_
+#define ARTERY_POLYGONCONDITION_H_
 
 #include "artery/storyboard/Condition.h"
 #include "artery/utility/Geometry.h"
 #include <omnetpp/ccanvas.h>
 #include <vector>
+
+namespace artery
+{
 
 class PolygonCondition : public Condition
 {
@@ -31,4 +34,6 @@ private:
     int edges() const;
 };
 
-#endif /* _POLYGONCONDITION_H_ */
+} // namespace artery
+
+#endif /* ARTERY_POLYGONCONDITION_H_ */

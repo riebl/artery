@@ -3,6 +3,9 @@
 #include "traci/LiteAPI.h"
 #include "traci/Position.h"
 
+namespace artery
+{
+
 Define_Module(VeinsObstacleControl)
 
 void VeinsObstacleControl::initialize(int stage)
@@ -44,3 +47,5 @@ void VeinsObstacleControl::fetchObstacles(traci::LiteAPI& traci)
     }
     EV_INFO << "Added " << fetched << " obstacles to " << this->getFullPath() << endl;
 }
+
+} // namespace artery
