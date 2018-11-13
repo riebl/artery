@@ -22,6 +22,7 @@ void AccessInterface::request(const DataRequest& request, std::unique_ptr<ChunkP
 {
     // Enter_Method on steroids...
     omnetpp::cMethodCallContextSwitcher ctx(mModuleOut);
+    ctx.methodCall("request");
 
     GeoNetPacket* gn = new GeoNetPacket("GeoNet packet");
     gn->setPayload(std::move(payload));
