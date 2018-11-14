@@ -21,7 +21,7 @@ class TestbedRadio : public inet::physicallayer::Ieee80211Radio
 
     protected:
         void initialize(int stage) override;
-        void endReception(cMessage *timer) override;
+        void endReception(omnetpp::cMessage* timer) override;
         virtual void updateReachableNodes();
 
     private:

@@ -6,6 +6,8 @@
 #include "veins/modules/messages/WaveShortMessage_m.h"
 #include "veins/modules/utility/Consts80211p.h"
 
+using namespace omnetpp;
+
 namespace artery
 {
 

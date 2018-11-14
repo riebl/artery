@@ -14,7 +14,7 @@ void TestbedRadio::initialize(int stage)
     mReachableTime = par("reachableTime");
 }
 
-void TestbedRadio::endReception(cMessage *timer)
+void TestbedRadio::endReception(omnetpp::cMessage *timer)
 {
     auto radioFrame = static_cast<inet::physicallayer::RadioFrame*>(timer->getControlInfo());
     auto transmission = radioFrame->getTransmission();

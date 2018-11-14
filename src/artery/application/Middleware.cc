@@ -14,6 +14,8 @@
 #include "artery/utility/FilterRules.h"
 #include "inet/common/ModuleAccess.h"
 
+using namespace omnetpp;
+
 namespace artery
 {
 
