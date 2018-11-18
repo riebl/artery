@@ -23,9 +23,19 @@ struct InitStages {
         Self = 1,
 
         /**
+         * Initialize networking
+         */
+        Networking = 2,
+
+        /**
+         * Initialize services
+         */
+        Services = 3,
+
+        /**
          * Propagate messages, events, and signals
          */
-        Propagate = 3,
+        Propagate = 4,
 
         /**
          * Total number of initialisation stages
