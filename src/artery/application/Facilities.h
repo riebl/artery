@@ -51,7 +51,7 @@ class Facilities
 		template<typename T>
 		typename std::decay<T>::type* getMutablePtr() const
 		{
-			return get_mutable_ptr<T>;
+			return get_mutable_ptr<T>();
 		}
 
 		template<typename T>
