@@ -96,7 +96,7 @@ void DccEntityBase::initializeChannelProbeProcessor(const std::string& name)
 
 void DccEntityBase::reportLocalChannelLoad(vanetza::dcc::ChannelLoad cbr)
 {
-    onLocalCbr(cbr);
+    mCbrProcessor->indicate(cbr);
 }
 
 void DccEntityBase::onLocalCbr(vanetza::dcc::ChannelLoad cbr)
