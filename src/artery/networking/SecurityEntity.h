@@ -25,6 +25,7 @@ class SecurityEntity : public omnetpp::cSimpleModule, public vanetza::security::
 {
     public:
         // cSimpleModule
+        int numInitStages() const override;
         void initialize(int stage) override;
         void finish() override;
 

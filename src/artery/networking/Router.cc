@@ -43,6 +43,11 @@ void Router::initialize(int stage)
         mRouter.reset(new vanetza::geonet::Router(*runtime, mMIB));
         mRouter->set_address(generateAddress()); // VehicleMiddleware determines station type at first stage
 
+        // register security entity if available
+        if (mSecurityEntity) {
+            mRouter->set_security_entity(mSecurityEntity);
+        }
+
         // pass BTP-B messages to middleware which will dispatch them to its services
         using vanetza::geonet::UpperProtocol;
         mRouter->set_transport_handler(UpperProtocol::BTP_B, &mMiddleware->getTransportInterface());

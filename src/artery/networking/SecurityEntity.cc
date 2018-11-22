@@ -16,12 +16,17 @@ namespace artery
 
 Define_Module(SecurityEntity)
 
+int SecurityEntity::numInitStages() const
+{
+    return 2;
+}
+
 void SecurityEntity::initialize(int stage)
 {
     if (stage == 0) {
         mRuntime = inet::findModuleFromPar<Runtime>(par("runtimeModule"), this);
         mPositionProvider = inet::findModuleFromPar<vanetza::PositionProvider>(par("positionModule"), this);
-
+    } else if (stage == 1){
         mBackend = createBackend(par("CryptoBackend"));
         mCertificateProvider = createCertificateProvider(par("CertificateProvider"));
         mCertificateValidator = createCertificateValidator(par("CertificateValidator"));

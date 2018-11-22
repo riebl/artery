@@ -1,6 +1,6 @@
 package artery.networking;
 
-simple SecurityEntity
+simple SecurityEntity like ISecurityEntity
 {
     parameters:
         @class(SecurityEntity);
