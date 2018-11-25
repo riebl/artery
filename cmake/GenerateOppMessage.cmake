@@ -15,15 +15,18 @@ macro(generate_opp_message _msg_input)
     else()
         file(RELATIVE_PATH _msg_prefix ${PROJECT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/${_msg_dir})
     endif()
-    set(_msg_output_source ${_msg_output_root}/${_msg_prefix}/${_msg_name}_m.cc)
-    set(_msg_output_header ${_msg_output_root}/${_msg_prefix}/${_msg_name}_m.h)
+    set(_msg_output_directory "${_msg_output_root}/${_msg_prefix}")
+    set(_msg_output_source "${_msg_output_directory}/${_msg_name}_m.cc")
+    set(_msg_output_header "${_msg_output_directory}/${_msg_name}_m.h")
 
-    file(MAKE_DIRECTORY ${_msg_output_root}/${_msg_prefix})
+    add_custom_command(OUTPUT ${_msg_output_directory}
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${_msg_output_root}/${_msg_prefix}"
+        WORKING_DIRECTORY ${PROJECT_BINARY_DIR} VERBATIM)
     add_custom_command(OUTPUT "${_msg_output_source}" "${_msg_output_header}"
         COMMAND ${OMNETPP_MSGC} ARGS -s _m.cc -h ${CMAKE_CURRENT_SOURCE_DIR}/${_msg_input}
-        DEPENDS ${_msg_input} ${OMNETPP_MSGC}
+        DEPENDS ${_msg_input} ${OMNETPP_MSGC} ${_msg_output_directory}
         COMMENT "Generating ${_msg_prefix}/${_msg_name}"
-        WORKING_DIRECTORY ${_msg_output_root}/${_msg_prefix} VERBATIM)
+        WORKING_DIRECTORY ${_msg_output_directory} VERBATIM)
 
     target_sources(${_gen_opp_msg_TARGET} PRIVATE "${_msg_output_source}" "${_msg_output_header}")
     target_include_directories(${_gen_opp_msg_TARGET} PUBLIC ${_msg_output_root})
