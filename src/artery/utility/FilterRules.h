@@ -32,6 +32,7 @@ public:
 protected:
     Filter createFilterNamePattern(const omnetpp::cXMLElement&) const;
     Filter createFilterPenetrationRate(const omnetpp::cXMLElement&) const;
+    Filter createFilterTypePattern(const omnetpp::cXMLElement&) const;
 
 private:
     omnetpp::cRNG* mRNG;

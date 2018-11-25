@@ -7,6 +7,7 @@
 #include "artery/utility/Identity.h"
 #include "artery/utility/FilterRules.h"
 #include <boost/lexical_cast.hpp>
+#include <omnetpp/ccomponenttype.h>
 #include <omnetpp/cexception.h>
 #include <omnetpp/cxmlelement.h>
 #include <omnetpp/distrib.h>
@@ -59,6 +60,33 @@ auto FilterRules::createFilterPenetrationRate(const cXMLElement& penetration_fil
     return penetration_filter;
 }
 
+auto FilterRules::createFilterTypePattern(const cXMLElement& type_filter_cfg) const -> Filter
+{
+    const char* type_pattern = type_filter_cfg.getAttribute("pattern");
+    const char* type_match = type_filter_cfg.getAttribute("match");
+    bool inverse = type_match && std::strcmp(type_match, "inverse") == 0;
+    if (!type_pattern) {
+        throw cRuntimeError("Required pattern attribute is missing for type filter");
+    }
+
+    double type_rate = 1.0;
+    const char* type_rate_str = type_filter_cfg.getAttribute("rate");
+    if (type_rate_str) {
+        type_rate = boost::lexical_cast<double>(type_rate_str);
+    }
+    if (type_rate > 1.0 || type_rate < 0.0) {
+        throw cRuntimeError("Type penetration rate is out of range [0.0, 1.0]");
+    }
+
+    std::regex type_regex(type_pattern);
+    Filter type_filter = [this, type_rate, type_regex, inverse]() {
+        auto rate_predicate = type_rate >= uniform(mRNG, 0.0, 1.0);
+        auto type = mIdentity.host->getModuleType()->getFullName();
+        return (std::regex_match(type, type_regex) && rate_predicate) ^ inverse;
+    };
+    return type_filter;
+}
+
 bool FilterRules::applyFilterConfig(const omnetpp::cXMLElement& filter_cfg)
 {
     std::list<Filter> filters;
@@ -71,6 +99,11 @@ bool FilterRules::applyFilterConfig(const omnetpp::cXMLElement& filter_cfg)
     cXMLElement* penetration_filter_cfg = filter_cfg.getFirstChildWithTag("penetration");
     if (penetration_filter_cfg) {
         filters.emplace_back(createFilterPenetrationRate(*penetration_filter_cfg));
+    }
+
+    cXMLElementList type_filter_cfg_list = filter_cfg.getChildrenByTagName("type");
+    for (cXMLElement* cfg : type_filter_cfg_list) {
+        filters.emplace_back(createFilterTypePattern(*cfg));
     }
 
     bool applicable = true;
