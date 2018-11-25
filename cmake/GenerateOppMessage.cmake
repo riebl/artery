@@ -20,7 +20,7 @@ macro(generate_opp_message _msg_input)
     set(_msg_output_header "${_msg_output_directory}/${_msg_name}_m.h")
 
     add_custom_command(OUTPUT ${_msg_output_directory}
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${_msg_output_root}/${_msg_prefix}"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${_msg_output_directory}"
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR} VERBATIM)
     add_custom_command(OUTPUT "${_msg_output_source}" "${_msg_output_header}"
         COMMAND ${OMNETPP_MSGC} ARGS -s _m.cc -h ${CMAKE_CURRENT_SOURCE_DIR}/${_msg_input}
