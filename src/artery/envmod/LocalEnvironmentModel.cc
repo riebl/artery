@@ -179,10 +179,11 @@ void LocalEnvironmentModel::TrackingTime::tap()
 
 TrackedObjectsFilterRange filterBySensorCategory(const LocalEnvironmentModel::TrackedObjects& all, const std::string& category)
 {
-    TrackedObjectsFilterPredicate seenByCategory = [&](const LocalEnvironmentModel::TrackedObject& obj) {
+    // capture `category` by value because lambda expression will be evaluated after this function's return
+    TrackedObjectsFilterPredicate seenByCategory = [category](const LocalEnvironmentModel::TrackedObject& obj) {
         const auto& detections = obj.second.sensors();
         return std::any_of(detections.begin(), detections.end(),
-                [&](const LocalEnvironmentModel::Tracking::TrackingMap::value_type& tracking) {
+                [&category](const LocalEnvironmentModel::Tracking::TrackingMap::value_type& tracking) {
                     const Sensor* sensor = tracking.first;
                     return sensor->getSensorCategory() == category;
                 });
