@@ -6,6 +6,7 @@
 
 #include "artery/utility/Identity.h"
 #include "artery/utility/FilterRules.h"
+#include "artery/utility/PointerCheck.h"
 #include <boost/lexical_cast.hpp>
 #include <omnetpp/ccomponenttype.h>
 #include <omnetpp/cexception.h>
@@ -81,7 +82,7 @@ auto FilterRules::createFilterTypePattern(const cXMLElement& type_filter_cfg) co
     std::regex type_regex(type_pattern);
     Filter type_filter = [this, type_rate, type_regex, inverse]() {
         auto rate_predicate = type_rate >= uniform(mRNG, 0.0, 1.0);
-        auto type = mIdentity.host->getModuleType()->getFullName();
+        auto type = notNullPtr(mIdentity.host)->getModuleType()->getFullName();
         return (std::regex_match(type, type_regex) && rate_predicate) ^ inverse;
     };
     return type_filter;
