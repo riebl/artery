@@ -11,7 +11,6 @@ module RSU
         @display("i=block/wrxtx;is=vs");
         string applType = default("artery.veins.ApplicationLayer"); // type of application layer
         string nicType = default("org.car2x.veins.modules.nic.Nic80211p"); // type of network interface card
-        string mobilityType = default("artery.veins.Mobility");
 
     gates:
         input radioIn @directIn; // gate for sendDirect
@@ -31,7 +30,7 @@ module RSU
             @display("p=60,150");
         }
 
-        mobility: <mobilityType> like IMobility {
+        mobility: org.car2x.veins.base.modules.BaseMobility {
             parameters:
                 @display("p=130,150");
         }
