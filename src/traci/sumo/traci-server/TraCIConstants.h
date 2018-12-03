@@ -667,6 +667,9 @@ constexpr ubyte JAM_LENGTH_METERS = 0x19;
 // last step person list (get: edges, vehicles)
 constexpr ubyte LAST_STEP_PERSON_ID_LIST = 0x1a;
 
+// full name (get: edges, simulation)
+constexpr ubyte VAR_NAME = 0x1b;
+
 // traffic light states, encoded as rRgGyYoO tuple (get: traffic lights)
 constexpr ubyte TL_RED_YELLOW_GREEN_STATE = 0x20;
 

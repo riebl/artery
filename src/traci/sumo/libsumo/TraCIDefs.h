@@ -241,6 +241,7 @@ public:
 
 class TraCIConnection {
 public:
+    TraCIConnection() {} // this is needed by SWIG when building a vector of this type, please don't use it
     TraCIConnection(const std::string& _approachedLane, const bool _hasPrio, const bool _isOpen, const bool _hasFoe,
                     const std::string _approachedInternal, const std::string _state, const std::string _direction, const double _length)
         : approachedLane(_approachedLane), hasPrio(_hasPrio), isOpen(_isOpen), hasFoe(_hasFoe),
@@ -337,6 +338,12 @@ public:
     std::string intended;
     /// @brief intended depart time for public transport ride or -1
     double depart;
+    /// @brief position on the lane when starting the stage
+    double departPos;
+    /// @brief position on the lane when ending the stage
+    double arrivalPos;
+    /// @brief arbitrary description string
+    std::string description;
 };
 }
 
