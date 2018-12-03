@@ -82,7 +82,7 @@ void BasicSubscriptionManager::unsubscribeVehicle(const std::string& id, bool ve
 
 void BasicSubscriptionManager::updateVehicleSubscription(const std::string& id, const std::vector<int>& vars)
 {
-    m_api->vehicle().subscribe(id, vars, Time::min(), Time::max());
+    m_api->vehicle().subscribe(id, vars, INVALID_DOUBLE_VALUE, INVALID_DOUBLE_VALUE);
 }
 
 void BasicSubscriptionManager::subscribeVehicleVariables(const std::set<int>& add_vars)
@@ -107,7 +107,7 @@ void BasicSubscriptionManager::subscribeSimulationVariables(const std::set<int>&
     ASSERT(m_sim_vars.size() >= tmp_vars.size());
 
     if (m_sim_vars.size() != tmp_vars.size()) {
-        m_api->simulation().subscribe("", m_sim_vars, Time::min(), Time::max());
+        m_api->simulation().subscribe("", m_sim_vars, INVALID_DOUBLE_VALUE, INVALID_DOUBLE_VALUE);
     }
 }
 
