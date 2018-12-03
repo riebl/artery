@@ -41,6 +41,10 @@ def try_constant_definition(line):
     if m:
         return {'type': 'integer', 'name': m.group(1), 'value': m.group(2)}
 
+    m = re.match(r"#define ([0-9A-Z_]+) (-?[0-9]+\.[0-9]*)$", line)
+    if m:
+        return {'type': 'double', 'name': m.group(1), 'value': m.group(2)}
+
     return {}
 
 

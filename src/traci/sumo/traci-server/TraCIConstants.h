@@ -434,6 +434,9 @@ constexpr ubyte RTYPE_NOTIMPLEMENTED = 0x01;
 constexpr ubyte RTYPE_ERR = 0xFF;
 
 // return value for invalid queries (especially vehicle is not on the road), see Position::INVALID
+constexpr double INVALID_DOUBLE_VALUE = -1073741824.;
+
+// return value for invalid queries (especially vehicle is not on the road), see Position::INVALID
 constexpr integer INVALID_INT_VALUE = -1073741824;
 
 // maximum value for client ordering (2 ^ 30)
