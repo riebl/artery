@@ -9,7 +9,8 @@ Please refer to its [documentation](http://veins.car2x.org/documentation) for de
 ## Requirements
 You need a C++ Compiler with C++11 support, Boost and Vanetza libraries for building Artery along with Veins.
 Artery and Veins build upon the discrete event simulator [OMNeT++](https://omnetpp.org), which you need to obtain as well.
-We have tested Artery with OMNeT++ 5.2, GNU GCC 7.3 and Boost 1.65.1 successfully.
+We have tested Artery with OMNeT++ 5.4, GNU GCC 7.3 and Boost 1.65.1 successfully.
+SUMO 1.0 or later is required since its TraCI protocol is not compatible with earlier versions anymore.
 Only [CMake](http://www.cmake.org) is the officially supported way for building Artery.
 
 Compatible versions of INET, Veins, Vanetza, and other components are managed as [git submodules](https://git-scm.com/docs/git-submodule) in the *extern* subdirectory.
