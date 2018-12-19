@@ -48,29 +48,29 @@ void VehicleMiddleware::initializeStationType(const std::string& vclass)
     using vanetza::geonet::StationType;
     StationType gnStationType;
     if (vclass == "passenger" || vclass == "private" || vclass == "taxi") {
-        gnStationType = StationType::PASSENGER_CAR;
+        gnStationType = StationType::Passenger_Car;
     } else if (vclass == "coach" || vclass == "delivery") {
-        gnStationType = StationType::LIGHT_TRUCK;
+        gnStationType = StationType::Light_Truck;
     } else if (vclass == "truck") {
-        gnStationType = StationType::HEAVY_TRUCK;
+        gnStationType = StationType::Heavy_Truck;
     } else if (vclass == "trailer") {
-        gnStationType = StationType::TRAILER;
+        gnStationType = StationType::Trailer;
     } else if (vclass == "bus") {
-        gnStationType = StationType::BUS;
+        gnStationType = StationType::Bus;
     } else if (vclass == "emergency" || vclass == "authority") {
-        gnStationType = StationType::SPECIAL_VEHICLE;
+        gnStationType = StationType::Special_Vehicle;
     } else if (vclass == "moped") {
-        gnStationType = StationType::MOPED;
+        gnStationType = StationType::Moped;
     } else if (vclass == "motorcycle") {
-        gnStationType = StationType::MOTORCYCLE;
+        gnStationType = StationType::Motorcycle;
     } else if (vclass == "tram") {
-        gnStationType = StationType::TRAM;
+        gnStationType = StationType::Tram;
     } else if (vclass == "bicycle") {
-        gnStationType = StationType::CYCLIST;
+        gnStationType = StationType::Cyclist;
     } else if (vclass == "pedestrian") {
-        gnStationType = StationType::PEDESTRIAN;
+        gnStationType = StationType::Pedestrian;
     } else {
-        gnStationType = StationType::UNKNOWN;
+        gnStationType = StationType::Unknown;
     }
 
     setStationType(gnStationType);

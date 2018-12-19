@@ -71,7 +71,7 @@ VehicleDataProvider::VehicleDataProvider() : VehicleDataProvider(rand())
 }
 
 VehicleDataProvider::VehicleDataProvider(uint32_t id) :
-	mStationId(id), mStationType(StationType::UNKNOWN),
+	mStationId(id), mStationType(StationType::Unknown),
 	mConfidence(0.0), mLastUpdate(omnetpp::SimTime::getMaxTime()),
 	mCurvatureOutput(2), mCurvatureConfidenceOutput(2)
 {

@@ -32,7 +32,7 @@ void GpsdServer::sendPositionFix(OtaInterfaceLayer& ota)
     gprmcSentence.append("\r\n");
     write(gprmcSentence);
 
-    std::string gpgaaSentence = gpgga(time, point, vanetza::nmea::Quality::SIMULATION,
+    std::string gpgaaSentence = gpgga(time, point, vanetza::nmea::Quality::Simulation,
             vanetza::units::Length(1.0 * boost::units::si::meters));
     gpgaaSentence.append("\r\n");
     write(gpgaaSentence);

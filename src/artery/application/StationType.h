@@ -10,7 +10,7 @@ namespace artery
 class StationType : public omnetpp::cObject
 {
 public:
-    StationType() : m_type(vanetza::geonet::StationType::UNKNOWN) {}
+    StationType() : m_type(vanetza::geonet::StationType::Unknown) {}
     StationType(vanetza::geonet::StationType type) : m_type(type) {}
 
     void setStationType(vanetza::geonet::StationType type) { m_type = type; }
