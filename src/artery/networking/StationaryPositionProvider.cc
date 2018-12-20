@@ -12,6 +12,8 @@ namespace artery
 
 Define_Module(StationaryPositionProvider)
 
+static const omnetpp::simsignal_t scPositionFixSignal = omnetpp::cComponent::registerSignal("PositionFix");
+
 void StationaryPositionProvider::initialize(int stage)
 {
     if (stage == 0) {
@@ -55,6 +57,10 @@ void StationaryPositionProvider::initializePosition(const Position& pos)
     mPositionFix.confidence.semi_minor = 1.0 * si::meter;
     mPositionFix.confidence.semi_major = 1.0 * si::meter;
     mPositionFix.speed.assign(0.0 * si::meter_per_second, 0.0 * si::meter_per_second);
+
+    // prevent signal listeners to modify our position data
+    PositionFixObject tmp { mPositionFix };
+    emit(scPositionFixSignal, &tmp);
 }
 
 } // namespace artery
