@@ -54,7 +54,6 @@ class Middleware : public omnetpp::cSimpleModule
         void handleMessage(omnetpp::cMessage* msg) override;
 
         virtual void initializeIdentity(Identity&);
-        virtual void update();
 
         omnetpp::cModule* findHost();
         void setStationType(const StationType&);

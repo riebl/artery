@@ -122,7 +122,7 @@ void Middleware::finish()
 void Middleware::handleMessage(cMessage *msg)
 {
     if (msg == mUpdateMessage) {
-        update();
+        updateServices();
     } else {
         error("Middleware cannot handle message '%s'", msg->getFullName());
     }
@@ -138,12 +138,6 @@ void Middleware::setStationType(const StationType& type)
     mStationType = type;
 }
 
-void Middleware::update()
-{
-    updateServices();
-    scheduleAt(simTime() + mUpdateInterval, mUpdateMessage);
-}
-
 vanetza::geonet::TransportInterface& Middleware::getTransportInterface()
 {
     return mBtpPortDispatcher;
@@ -155,6 +149,7 @@ void Middleware::updateServices()
     for (auto& kv : mServices) {
         kv.first->trigger();
     }
+    scheduleAt(simTime() + mUpdateInterval, mUpdateMessage);
 }
 
 Middleware::port_type Middleware::getPortNumber(const ItsG5BaseService* service) const
