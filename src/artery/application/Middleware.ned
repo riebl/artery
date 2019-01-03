@@ -14,8 +14,8 @@ simple Middleware like IMiddleware
 {
 	parameters:
 		@class(Middleware);
-		@signal[Identity.update](type=artery::Identity);
-		@signal[Identity.remove](type=artery::Identity);
+		@signal[IdentityUpdated](type=artery::Identity);
+		@signal[IdentityRemoved](type=artery::Identity);
 		@signal[StoryboardSignal](type=StoryboardSignal);
 
 		string routerModule;

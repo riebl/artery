@@ -43,7 +43,8 @@ void Router::initialize(int stage)
         // basic router setup
         auto runtime = inet::getModuleFromPar<Runtime>(par("runtimeModule"), this);
         mRouter.reset(new vanetza::geonet::Router(*runtime, mMIB));
-        mRouter->set_address(generateAddress()); // VehicleMiddleware determines station type at first stage
+        vanetza::MacAddress init_mac = vanetza::create_mac_address(getId());
+        mRouter->set_address(generateAddress(init_mac));
 
         // register security entity if available
         if (mSecurityEntity) {
@@ -89,6 +90,9 @@ void Router::handleMessage(omnetpp::cMessage* msg)
         auto* properties = omnetpp::check_and_cast<RadioDriverProperties*>(msg);
         auto addr = generateAddress(properties->LinkLayerAddress);
         mRouter->set_address(addr);
+        Identity identity;
+        identity.geonet = addr;
+        emit(Identity::changeSignal, Identity::ChangeGeoNetAddress, &identity);
     } else {
         error("Do not know how to handle received message");
     }
@@ -149,13 +153,14 @@ vanetza::geonet::Address Router::getAddress() const
     return mRouter->get_local_position_vector().gn_addr;
 }
 
-vanetza::geonet::Address Router::generateAddress()
+vanetza::geonet::Address Router::generateAddress(const vanetza::MacAddress& mac)
 {
     vanetza::geonet::Address gnAddr;
     gnAddr.is_manually_configured(true);
+    // VehicleMiddleware determines station type during initialisation
     gnAddr.station_type(mMiddleware->getStationType());
     gnAddr.country_code(0);
-    gnAddr.mid(mRadioDriver->getMacAddress());
+    gnAddr.mid(mac);
     return gnAddr;
 }
 

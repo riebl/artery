@@ -12,6 +12,7 @@
 #include "artery/application/StationType.h"
 #include "artery/application/Timer.h"
 #include "artery/utility/Identity.h"
+#include <omnetpp/clistener.h>
 #include <omnetpp/csimplemodule.h>
 #include <omnetpp/simtime.h>
 #include <vanetza/btp/data_request.hpp>
@@ -29,7 +30,7 @@ class Router;
 /**
  * Middleware providing a runtime context for services.
  */
-class Middleware : public omnetpp::cSimpleModule
+class Middleware : public omnetpp::cSimpleModule, public omnetpp::cListener
 {
     public:
         typedef uint16_t port_type;
@@ -53,7 +54,8 @@ class Middleware : public omnetpp::cSimpleModule
         void finish() override;
         void handleMessage(omnetpp::cMessage* msg) override;
 
-        virtual void initializeIdentity(Identity&);
+        // cListener
+        void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, long, omnetpp::cObject*) override;
 
         omnetpp::cModule* findHost();
         void setStationType(const StationType&);

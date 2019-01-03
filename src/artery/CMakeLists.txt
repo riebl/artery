@@ -39,6 +39,7 @@ add_library(core SHARED
     traci/VehicleType.cc
     utility/AsioScheduler.cc
     utility/AsioTask.cc
+    utility/Identity.cc
     utility/IdentityRegistry.cc
     utility/FilterRules.cc
     utility/Geometry.cc

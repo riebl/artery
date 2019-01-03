@@ -9,19 +9,17 @@
 
 #include "artery/application/Middleware.h"
 #include "artery/application/VehicleDataProvider.h"
-#include <omnetpp/clistener.h>
 
 namespace artery
 {
 
-class VehicleMiddleware : public Middleware, public omnetpp::cListener
+class VehicleMiddleware : public Middleware
 {
     public:
         void initialize(int stage) override;
         void finish() override;
 
     protected:
-        void initializeIdentity(Identity&) override;
         void initializeStationType(const std::string&);
         void initializeVehicleController(omnetpp::cPar&);
         void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject*) override;

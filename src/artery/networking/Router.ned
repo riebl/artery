@@ -4,6 +4,8 @@ simple Router
 {
     parameters:
         @class(Router);
+        @signal[IdentityChanged](type=long);
+
         string dccModule;
         string middlewareModule;
         string radioDriverModule;

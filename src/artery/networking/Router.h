@@ -32,7 +32,7 @@ class Router : public omnetpp::cSimpleModule, public omnetpp::cListener
 
     protected:
         virtual void initializeManagementInformationBase(vanetza::geonet::ManagementInformationBase&);
-        vanetza::geonet::Address generateAddress();
+        vanetza::geonet::Address generateAddress(const vanetza::MacAddress&);
 
     private:
         vanetza::geonet::ManagementInformationBase mMIB;

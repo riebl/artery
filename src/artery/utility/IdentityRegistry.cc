@@ -10,15 +10,12 @@
 namespace artery
 {
 
-// Identity has no source file yet
-Register_Class(Identity)
-
 Define_Module(IdentityRegistry)
 
 using namespace omnetpp;
 
-const simsignal_t IdentityRegistry::updateSignal = cComponent::registerSignal("Identity.update");
-const simsignal_t IdentityRegistry::removeSignal = cComponent::registerSignal("Identity.remove");
+const simsignal_t IdentityRegistry::updateSignal = cComponent::registerSignal("IdentityUpdated");
+const simsignal_t IdentityRegistry::removeSignal = cComponent::registerSignal("IdentityRemoved");
 
 void IdentityRegistry::initialize()
 {

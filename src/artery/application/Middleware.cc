@@ -42,13 +42,14 @@ void Middleware::initialize(int stage)
         mRouter = inet::getModuleFromPar<Router>(par("routerModule"), findHost());
         mUpdateInterval = par("updateInterval");
         mUpdateMessage = new cMessage("middleware update");
+        mIdentity.host = findHost();
+        mIdentity.host->subscribe(Identity::changeSignal, this);
     } else if (stage == InitStages::Self) {
         mFacilities.register_const(&mTimer);
         mFacilities.register_mutable(&mLocalDynamicMap);
         mFacilities.register_const(&mIdentity);
         mFacilities.register_const(&mStationType);
 
-        initializeIdentity(mIdentity);
         initializeServices(InitStages::Self);
 
         // start update cycle with random jitter to avoid unrealistic node synchronization
@@ -57,12 +58,6 @@ void Middleware::initialize(int stage)
     } else if (stage == InitStages::Propagate) {
         emit(artery::IdentityRegistry::updateSignal, &mIdentity);
     }
-}
-
-void Middleware::initializeIdentity(Identity& id)
-{
-    id.host = findHost();
-    id.geonet = notNullPtr(mRouter)->getAddress();
 }
 
 void Middleware::initializeServices(int stage)
@@ -125,6 +120,16 @@ void Middleware::handleMessage(cMessage *msg)
         updateServices();
     } else {
         error("Middleware cannot handle message '%s'", msg->getFullName());
+    }
+}
+
+void Middleware::receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t signal, long changes, omnetpp::cObject* obj)
+{
+    if (signal == Identity::changeSignal) {
+        auto identity = check_and_cast<Identity*>(obj);
+        if (mIdentity.update(*identity, changes)) {
+            emit(artery::IdentityRegistry::updateSignal, &mIdentity);
+        }
     }
 }
 

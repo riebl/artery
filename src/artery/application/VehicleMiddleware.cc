@@ -25,6 +25,11 @@ void VehicleMiddleware::initialize(int stage)
         initializeStationType(mVehicleController->getVehicleClass());
         getFacilities().register_const(&mVehicleDataProvider);
         mVehicleDataProvider.update(mVehicleController);
+
+        Identity identity;
+        identity.traci = mVehicleController->getVehicleId();
+        identity.application = mVehicleDataProvider.station_id();
+        emit(Identity::changeSignal, Identity::ChangeTraCI | Identity::ChangeStationId, &identity);
     }
 
     Middleware::initialize(stage);
@@ -34,13 +39,6 @@ void VehicleMiddleware::finish()
 {
     Middleware::finish();
     findHost()->unsubscribe(MobilityBase::stateChangedSignal, this);
-}
-
-void VehicleMiddleware::initializeIdentity(Identity& id)
-{
-    Middleware::initializeIdentity(id);
-    id.traci = mVehicleController->getVehicleId();
-    id.application = mVehicleDataProvider.station_id();
 }
 
 void VehicleMiddleware::initializeStationType(const std::string& vclass)

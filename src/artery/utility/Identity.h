@@ -20,7 +20,17 @@ namespace artery
 class Identity : public omnetpp::cObject
 {
 public:
-    omnetpp::cModule* host = nullptr; /*< host module, e.g. Car node */
+    static const omnetpp::simsignal_t changeSignal;
+    enum Changes {
+        ChangeNone = 0,
+        ChangeTraCI = 1,
+        ChangeStationId = 2,
+        ChangeGeoNetAddress = 4
+    };
+
+    bool update(const Identity&, long changes);
+
+    omnetpp::cModule* host = nullptr; /*< host module, e.g. vehicle node */
     std::string traci; /*< Vehicle ID used by TraCI protocol */
     uint32_t application = 0; /*< ETSI station ID */
     vanetza::geonet::Address geonet; /*< GeoNetworking layer */

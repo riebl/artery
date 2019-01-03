@@ -10,6 +10,7 @@ simple VehicleMiddleware extends Middleware
 {
 	parameters:
 		@class(VehicleMiddleware);
+		@signal[IdentityChanged](type=long);
 
 		string localEnvironmentModule = default("");
 		string globalEnvironmentModule = default("");
