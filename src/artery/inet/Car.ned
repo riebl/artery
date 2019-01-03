@@ -34,7 +34,7 @@ module Car extends PlainVehicle like INetworkNode
         wlan[numRadios]: <default("VanetNic")> like IWirelessNic {
             parameters:
                 @display("p=250,400,row,100;q=queue");
-                radio.antenna.mobilityModule = withAntennaMobility ? ".antennaMobility" : ".mobility";
+                radio.antenna.mobilityModule = absPath(withAntennaMobility ? "^.antennaMobility" : "^.mobility");
         }
 
         antennaMobility: AntennaMobility if withAntennaMobility == true {
