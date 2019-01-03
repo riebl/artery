@@ -12,7 +12,8 @@ module Vanetza
         *.securityModule = absPath(".security");
 
     gates:
-        inout radioDriver;
+        inout radioDriverData;
+        input radioDriverProperties;
 
     submodules:
         position: <default("VehiclePositionProvider")> like IPositionProvider {
@@ -36,7 +37,8 @@ module Vanetza
         }
 
     connections:
-        radioDriver$i --> router.radioDriverIn;
-        radioDriver$o <-- dcc.radioDriverOut;
+        radioDriverData$i --> router.radioDriverData;
+        radioDriverData$o <-- dcc.radioDriverData;
+        radioDriverProperties --> router.radioDriverProperties;
 }
 

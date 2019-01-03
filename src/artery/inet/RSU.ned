@@ -68,5 +68,6 @@ module RSU like INetworkNode
             wlan[i].upperLayerIn <-- radioDriver[i].lowerLayerOut;
         }
 
-        radioDriver[0].upperLayer <--> vanetza.radioDriver;
+        radioDriver[0].upperLayer <--> vanetza.radioDriverData;
+        radioDriver[0].properties --> vanetza.radioDriverProperties;
 }

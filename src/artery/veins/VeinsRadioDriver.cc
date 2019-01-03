@@ -1,5 +1,6 @@
 #include "artery/networking/GeoNetIndication.h"
 #include "artery/networking/GeoNetRequest.h"
+#include "artery/nic/RadioDriverProperties.h"
 #include "artery/veins/VeinsRadioDriver.h"
 #include "veins/base/utils/FindModule.h"
 #include "veins/base/utils/SimpleAddress.h"
@@ -68,12 +69,6 @@ const simsignal_t channelBusySignal = cComponent::registerSignal("sigChannelBusy
 
 } // namespace
 
-vanetza::MacAddress VeinsRadioDriver::getMacAddress()
-{
-    // Mac1609_4 uses index of host as MAC address
-    return vanetza::create_mac_address(mHost->getIndex());
-}
-
 void VeinsRadioDriver::initialize()
 {
     RadioDriverBase::initialize();
@@ -87,6 +82,11 @@ void VeinsRadioDriver::initialize()
     mChannelLoadReport = new cMessage("report channel load");
     mChannelLoadReportInterval = par("channelLoadReportInterval");
     scheduleAt(simTime() + mChannelLoadReportInterval, mChannelLoadReport);
+
+    auto properties = new RadioDriverProperties();
+    // Mac1609_4 uses index of host as MAC address
+    properties->LinkLayerAddress = vanetza::create_mac_address(mHost->getIndex());
+    indicateProperties(properties);
 }
 
 void VeinsRadioDriver::handleMessage(cMessage* msg)
@@ -95,16 +95,16 @@ void VeinsRadioDriver::handleMessage(cMessage* msg)
         double channel_load = mChannelLoadMeasurements.channel_load().value();
         emit(RadioDriverBase::ChannelLoadSignal, channel_load);
         scheduleAt(simTime() + mChannelLoadReportInterval, mChannelLoadReport);
-    } else if (RadioDriverBase::isMiddlewareRequest(msg)) {
-        handleUpperMessage(msg);
+    } else if (RadioDriverBase::isDataRequest(msg)) {
+        handleDataRequest(msg);
     } else if (msg->getArrivalGate() == mLowerLayerIn) {
-        handleLowerMessage(msg);
+        handleDataIndication(msg);
     } else {
         throw cRuntimeError("unexpected message");
     }
 }
 
-void VeinsRadioDriver::handleLowerMessage(cMessage* packet)
+void VeinsRadioDriver::handleDataIndication(cMessage* packet)
 {
     auto wsm = check_and_cast<WaveShortMessage*>(packet);
     auto gn = wsm->decapsulate();
@@ -114,10 +114,10 @@ void VeinsRadioDriver::handleLowerMessage(cMessage* packet)
     gn->setControlInfo(indication);
     delete wsm;
 
-    indicatePacket(gn);
+    indicateData(gn);
 }
 
-void VeinsRadioDriver::handleUpperMessage(cMessage* packet)
+void VeinsRadioDriver::handleDataRequest(cMessage* packet)
 {
     auto request = check_and_cast<GeoNetRequest*>(packet->removeControlInfo());
     auto wsm = new WaveShortMessage();

@@ -40,7 +40,8 @@ class Router : public omnetpp::cSimpleModule, public omnetpp::cListener
         Middleware* mMiddleware = nullptr;
         vanetza::security::SecurityEntity* mSecurityEntity = nullptr;
         RadioDriverBase* mRadioDriver;
-        omnetpp::cGate* mRadioDriverIn;
+        omnetpp::cGate* mRadioDriverDataIn;
+        omnetpp::cGate* mRadioDriverPropertiesIn;
 };
 
 } // namespace artery

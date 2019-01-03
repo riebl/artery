@@ -35,5 +35,6 @@ module ApplicationLayer like IBaseApplLayer
 		lowerLayerIn --> radioDriver.lowerLayerIn;
 		lowerLayerOut <-- radioDriver.lowerLayerOut;
 
-		radioDriver.upperLayer <--> vanetza.radioDriver;
+		radioDriver.upperLayer <--> vanetza.radioDriverData;
+		radioDriver.properties --> vanetza.radioDriverProperties;
 }

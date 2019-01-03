@@ -13,4 +13,5 @@ simple RadioDriver like IRadioDriver
 		inout upperLayer;
 		input lowerLayerIn;
 		output lowerLayerOut;
+		output properties;
 }

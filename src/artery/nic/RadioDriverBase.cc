@@ -1,4 +1,5 @@
 #include "artery/nic/RadioDriverBase.h"
+#include "artery/nic/RadioDriverProperties.h"
 
 using namespace omnetpp;
 
@@ -11,25 +12,31 @@ void RadioDriverBase::initialize()
 {
     mUpperLayerIn = gate("upperLayer$i");
     mUpperLayerOut = gate("upperLayer$o");
+    mPropertiesOut = gate("properties");
 }
 
 void RadioDriverBase::handleMessage(cMessage* msg)
 {
-    if (isMiddlewareRequest(msg)) {
-        handleUpperMessage(msg);
+    if (isDataRequest(msg)) {
+        handleDataRequest(msg);
     } else {
         throw cRuntimeError("unexpected message");
     }
 }
 
-bool RadioDriverBase::isMiddlewareRequest(cMessage* msg)
+bool RadioDriverBase::isDataRequest(cMessage* msg)
 {
     return (msg->getArrivalGate() == mUpperLayerIn);
 }
 
-void RadioDriverBase::indicatePacket(cMessage* msg)
+void RadioDriverBase::indicateData(cMessage* msg)
 {
     send(msg, mUpperLayerOut);
+}
+
+void RadioDriverBase::indicateProperties(RadioDriverProperties* properties)
+{
+    send(properties, mPropertiesOut);
 }
 
 } // namespace artery

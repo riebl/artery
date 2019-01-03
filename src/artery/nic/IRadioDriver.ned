@@ -7,4 +7,5 @@ moduleinterface IRadioDriver
 
 	gates:
 		inout upperLayer;
+		output properties;
 }

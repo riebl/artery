@@ -23,8 +23,8 @@ void DccEntityBase::initialize(int stage)
 
         auto radioDriver = inet::getModuleFromPar<RadioDriverBase>(par("radioDriverModule"), this);
         radioDriver->subscribe(RadioDriverBase::ChannelLoadSignal, this);
-        mAccessInterface.reset(new AccessInterface(gate("radioDriverOut")));
-        ASSERT(gate("radioDriverOut")->pathContains(radioDriver));
+        mAccessInterface.reset(new AccessInterface(gate("radioDriverData")));
+        ASSERT(gate("radioDriverData")->pathContains(radioDriver));
     } else if (stage == InitStages::Self) {
         initializeChannelProbeProcessor(par("ChannelProbeProcessor"));
         initializeNetworkEntity(par("NetworkEntity"));

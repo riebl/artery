@@ -2,6 +2,8 @@
 #include "artery/inet/VanetRx.h"
 #include "artery/networking/GeoNetIndication.h"
 #include "artery/networking/GeoNetRequest.h"
+#include "artery/nic/RadioDriverProperties.h"
+#include <inet/common/InitStages.h>
 #include <inet/common/ModuleAccess.h>
 #include <inet/linklayer/common/Ieee802Ctrl.h>
 #include <inet/linklayer/ieee80211/mac/Ieee80211Mac.h>
@@ -31,17 +33,23 @@ inet::MACAddress convert(const vanetza::MacAddress& mac)
 
 } // namespace
 
-vanetza::MacAddress InetRadioDriver::getMacAddress()
+int InetRadioDriver::numInitStages() const
 {
-	return convert(mLinkLayer->getAddress());
+	return inet::InitStages::NUM_INIT_STAGES;
 }
 
-void InetRadioDriver::initialize()
+void InetRadioDriver::initialize(int stage)
 {
-	RadioDriverBase::initialize();
-	cModule* host = inet::getContainingNode(this);
-	mLinkLayer = inet::findModuleFromPar<inet::ieee80211::Ieee80211Mac>(par("macModule"), host);
-	mLinkLayer->subscribe(VanetRx::ChannelLoadSignal, this);
+	if (stage == inet::INITSTAGE_LOCAL) {
+		RadioDriverBase::initialize();
+		cModule* host = inet::getContainingNode(this);
+		mLinkLayer = inet::findModuleFromPar<inet::ieee80211::Ieee80211Mac>(par("macModule"), host);
+		mLinkLayer->subscribe(VanetRx::ChannelLoadSignal, this);
+	} else if (stage == inet::InitStages::INITSTAGE_LINK_LAYER_2) {
+		auto properties = new RadioDriverProperties();
+		properties->LinkLayerAddress = convert(mLinkLayer->getAddress());
+		indicateProperties(properties);
+	}
 }
 
 void InetRadioDriver::receiveSignal(cComponent* source, simsignal_t signal, double value, cObject*)
@@ -54,13 +62,13 @@ void InetRadioDriver::receiveSignal(cComponent* source, simsignal_t signal, doub
 void InetRadioDriver::handleMessage(cMessage* msg)
 {
 	if (msg->getArrivalGate() == gate("lowerLayerIn")) {
-		handleLowerMessage(msg);
+		handleDataIndication(msg);
 	} else {
 		RadioDriverBase::handleMessage(msg);
 	}
 }
 
-void InetRadioDriver::handleUpperMessage(cMessage* packet)
+void InetRadioDriver::handleDataRequest(cMessage* packet)
 {
 	auto request = check_and_cast<GeoNetRequest*>(packet->removeControlInfo());
 	auto ctrl = new inet::Ieee802Ctrl();
@@ -89,7 +97,7 @@ void InetRadioDriver::handleUpperMessage(cMessage* packet)
 	send(packet, "lowerLayerOut");
 }
 
-void InetRadioDriver::handleLowerMessage(cMessage* packet)
+void InetRadioDriver::handleDataIndication(cMessage* packet)
 {
 	auto* info = check_and_cast<inet::Ieee802Ctrl*>(packet->removeControlInfo());
 	auto* indication = new GeoNetIndication();
@@ -98,7 +106,7 @@ void InetRadioDriver::handleLowerMessage(cMessage* packet)
 	packet->setControlInfo(indication);
 	delete info;
 
-	indicatePacket(packet);
+	indicateData(packet);
 }
 
 } // namespace artery

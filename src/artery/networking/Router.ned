@@ -14,5 +14,6 @@ simple Router
         bool isMobile = default(true);
 
     gates:
-        input radioDriverIn;
+        input radioDriverData;
+        input radioDriverProperties;
 }

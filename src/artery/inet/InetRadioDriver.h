@@ -16,18 +16,18 @@ namespace artery
 
 class InetRadioDriver : public RadioDriverBase, public omnetpp::cListener
 {
-	public:
-		vanetza::MacAddress getMacAddress() override;
-		void initialize() override;
-		void handleMessage(omnetpp::cMessage*) override;
+    public:
+        int numInitStages() const override;
+        void initialize(int stage) override;
+        void handleMessage(omnetpp::cMessage*) override;
 
-	protected:
-		void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, double, omnetpp::cObject*) override;
-		void handleLowerMessage(omnetpp::cMessage*);
-		void handleUpperMessage(omnetpp::cMessage*) override;
+    protected:
+        void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, double, omnetpp::cObject*) override;
+        void handleDataIndication(omnetpp::cMessage*);
+        void handleDataRequest(omnetpp::cMessage*) override;
 
-	private:
-		inet::ieee80211::Ieee80211Mac* mLinkLayer;
+    private:
+        inet::ieee80211::Ieee80211Mac* mLinkLayer = nullptr;
 };
 
 } // namespace artery

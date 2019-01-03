@@ -15,5 +15,5 @@ simple LimericDccEntity like IDccEntity
         int queueLength = default(2);
 
     gates:
-        output radioDriverOut;
+        output radioDriverData;
 }

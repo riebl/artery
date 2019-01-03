@@ -7,6 +7,7 @@
 #include "artery/networking/Runtime.h"
 #include "artery/networking/SecurityEntity.h"
 #include "artery/nic/RadioDriverBase.h"
+#include "artery/nic/RadioDriverProperties.h"
 #include "artery/utility/InitStages.h"
 #include "artery/utility/PointerCheck.h"
 #include <inet/common/ModuleAccess.h>
@@ -32,7 +33,8 @@ void Router::initialize(int stage)
         getParentModule()->subscribe(scPositionFixSignal, this);
         mMiddleware = inet::getModuleFromPar<Middleware>(par("middlewareModule"), this);
         mRadioDriver = inet::getModuleFromPar<RadioDriverBase>(par("radioDriverModule"), this);
-        mRadioDriverIn = gate("radioDriverIn");
+        mRadioDriverDataIn = gate("radioDriverData");
+        mRadioDriverPropertiesIn = gate("radioDriverProperties");
         mSecurityEntity = inet::findModuleFromPar<SecurityEntity>(par("securityModule"), this, false);
     } else if (stage == InitStages::Self) {
         // initialize MIB (will check for existence of security entity)
@@ -79,10 +81,14 @@ void Router::receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t signal, om
 
 void Router::handleMessage(omnetpp::cMessage* msg)
 {
-    if (msg->getArrivalGate() == mRadioDriverIn) {
-        auto* packet = check_and_cast<GeoNetPacket*>(msg);
-        auto* indication = check_and_cast<GeoNetIndication*>(packet->getControlInfo());
+    if (msg->getArrivalGate() == mRadioDriverDataIn) {
+        auto* packet = omnetpp::check_and_cast<GeoNetPacket*>(msg);
+        auto* indication = omnetpp::check_and_cast<GeoNetIndication*>(packet->getControlInfo());
         mRouter->indicate(std::move(*packet).extractPayload(), indication->source, indication->destination);
+    } else if (msg->getArrivalGate() == mRadioDriverPropertiesIn) {
+        auto* properties = omnetpp::check_and_cast<RadioDriverProperties*>(msg);
+        auto addr = generateAddress(properties->LinkLayerAddress);
+        mRouter->set_address(addr);
     } else {
         error("Do not know how to handle received message");
     }

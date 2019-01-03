@@ -62,4 +62,5 @@ module TestbedCar like INetworkNode
 
         otaInterfaceLayer.lowerLayerOut --> radioDriver[0].upperLayer$i;
         otaInterfaceLayer.lowerLayerIn <-- radioDriver[0].upperLayer$o;
+        otaInterfaceLayer.radioDriverProperties <-- radioDriver[0].properties;
 }

@@ -12,13 +12,12 @@ namespace artery
 class VeinsRadioDriver : public RadioDriverBase, public omnetpp::cListener
 {
 	public:
-		vanetza::MacAddress getMacAddress() override;
 		void initialize() override;
 		void handleMessage(omnetpp::cMessage*) override;
 
 	protected:
-		void handleLowerMessage(omnetpp::cMessage*);
-		void handleUpperMessage(omnetpp::cMessage*) override;
+		void handleDataIndication(omnetpp::cMessage*);
+		void handleDataRequest(omnetpp::cMessage*) override;
 		void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, bool, omnetpp::cObject*) override;
 
 	private:

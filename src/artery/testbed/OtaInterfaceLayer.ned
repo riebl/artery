@@ -11,4 +11,5 @@ simple OtaInterfaceLayer
 	gates:
 		input lowerLayerIn;
 		output lowerLayerOut;
+		input radioDriverProperties @loose;
 }

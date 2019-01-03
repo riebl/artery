@@ -4,28 +4,30 @@
 #include <omnetpp/ccomponent.h>
 #include <omnetpp/cmessage.h>
 #include <omnetpp/csimplemodule.h>
-#include <vanetza/net/mac_address.hpp>
 
 namespace artery
 {
 
+struct RadioDriverProperties;
+
 class RadioDriverBase : public omnetpp::cSimpleModule
 {
-	public:
-		virtual vanetza::MacAddress getMacAddress() = 0;
-		virtual void initialize() override;
-		virtual void handleMessage(omnetpp::cMessage*) override;
+    public:
+        static const omnetpp::simsignal_t ChannelLoadSignal;
 
-		static const omnetpp::simsignal_t ChannelLoadSignal;
+        virtual void initialize() override;
+        virtual void handleMessage(omnetpp::cMessage*) override;
 
-	protected:
-		void indicatePacket(omnetpp::cMessage*);
-		bool isMiddlewareRequest(omnetpp::cMessage*);
-		virtual void handleUpperMessage(omnetpp::cMessage*) = 0;
+    protected:
+        void indicateProperties(RadioDriverProperties*);
+        void indicateData(omnetpp::cMessage*);
+        bool isDataRequest(omnetpp::cMessage*);
+        virtual void handleDataRequest(omnetpp::cMessage*) = 0;
 
-	private:
-		omnetpp::cGate* mUpperLayerIn;
-		omnetpp::cGate* mUpperLayerOut;
+    private:
+        omnetpp::cGate* mUpperLayerIn;
+        omnetpp::cGate* mUpperLayerOut;
+        omnetpp::cGate* mPropertiesOut;
 };
 
 } // namespace artery
