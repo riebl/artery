@@ -63,7 +63,8 @@ void Storyboard::initialize(int stage)
 
             // Load module containing storyboard description
             m_python->module() = py::module::import(par("python").stringValue());
-            m_python->module().attr("createStories")(this);
+            py::object board = py::cast(this, py::return_value_policy::reference);
+            m_python->module().attr("createStories")(board);
 
         } catch (const py::error_already_set&) {
             PyErr_Print();
