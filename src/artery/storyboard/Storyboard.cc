@@ -3,6 +3,8 @@
 #include "artery/storyboard/Effect.h"
 #include "artery/traci/VehicleController.h"
 #include "inet/common/ModuleAccess.h"
+#include "traci/Core.h"
+#include "traci/Position.h"
 #include <omnetpp/ccomponent.h>
 #include <omnetpp/cexception.h>
 #include <pybind11/embed.h>
@@ -108,7 +110,7 @@ void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const c
     }
 }
 
-void Storyboard::receiveSignal(cComponent*, simsignal_t signalId, const simtime_t&, cObject*)
+void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const simtime_t&, cObject*)
 {
     if (signalId == traciStepSignal) {
         updateStoryboard();
@@ -117,6 +119,10 @@ void Storyboard::receiveSignal(cComponent*, simsignal_t signalId, const simtime_
         }
     }
     else if (signalId == traciInitSignal) {
+        traci::Core* core = check_and_cast<traci::Core*>(source);
+        const libsumo::TraCIPositionVector& boundary = core->getLiteAPI().simulation().getNetBoundary();
+        mNetworkBoundary = traci::Boundary { boundary };
+
         try {
             py::object board = py::cast(this, py::return_value_policy::reference);
             m_python->module().attr("createStories")(board);
@@ -172,6 +178,15 @@ void Storyboard::checkCar(Vehicle& car, ConditionResult& conditionResult, Story*
 void Storyboard::registerStory(std::shared_ptr<Story> story)
 {
     m_stories.push_back(story);
+}
+
+Position Storyboard::convertTraciPosition(double x, double y)
+{
+    libsumo::TraCIPosition traci;
+    traci.x = x;
+    traci.y = y;
+    traci.z = 0.0;
+    return position_cast(mNetworkBoundary, traci);
 }
 
 bool Storyboard::storyApplied(Vehicle* car, const Story* story)

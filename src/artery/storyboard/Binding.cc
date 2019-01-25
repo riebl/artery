@@ -91,7 +91,8 @@ PYBIND11_EMBEDDED_MODULE(storyboard, m) {
         .def(py::init<std::shared_ptr<Condition>, std::vector<std::shared_ptr<EffectFactory>>>());
 
     py::class_<artery::Storyboard>(m, "Storyboard")
-        .def("registerStory", &artery::Storyboard::registerStory);
+        .def("registerStory", &artery::Storyboard::registerStory)
+        .def("convertTraciPosition", &artery::Storyboard::convertTraciPosition);
 }
 
 /**

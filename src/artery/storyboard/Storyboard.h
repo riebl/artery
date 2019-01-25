@@ -9,6 +9,8 @@
 #include "artery/storyboard/Condition.h"
 #include "artery/storyboard/EffectStack.h"
 #include "artery/storyboard/Vehicle.h"
+#include "artery/utility/Geometry.h"
+#include "traci/Boundary.h"
 
 namespace pybind11 { class module; }
 
@@ -37,6 +39,11 @@ public:
      * \param shared_ptr to a story, which should be executed from the storyboard
      */
     void registerStory(std::shared_ptr<Story>);
+
+    /**
+     * Convert a TraCI position to an OMNeT++ position
+     */
+    Position convertTraciPosition(double x, double y);
 
     class PythonContext
     {
@@ -92,6 +99,7 @@ private:
     std::map<std::string, Vehicle> m_vehicles;
     bool mDrawConditions;
     omnetpp::cCanvas* mCanvas = nullptr;
+    traci::Boundary mNetworkBoundary;
 };
 
 } // namespace artery
