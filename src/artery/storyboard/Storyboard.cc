@@ -20,6 +20,7 @@ namespace
 
 const auto traciAddNodeSignal = omnetpp::cComponent::registerSignal("traci.node.add");
 const auto traciRemoveNodeSignal = omnetpp::cComponent::registerSignal("traci.node.remove");
+const auto traciInitSignal = omnetpp::cComponent::registerSignal("traci.init");
 const auto traciStepSignal = omnetpp::cComponent::registerSignal("traci.step");
 
 class PythonContextImpl : public Storyboard::PythonContext
@@ -52,6 +53,7 @@ void Storyboard::initialize(int stage)
         traci->subscribe(traciAddNodeSignal, this);
         traci->subscribe(traciRemoveNodeSignal, this);
         traci->subscribe(traciStepSignal, this);
+        traci->subscribe(traciInitSignal, this);
 
         try {
             // Append directory containing omnetpp.ini to Python import path
@@ -63,9 +65,6 @@ void Storyboard::initialize(int stage)
 
             // Load module containing storyboard description
             m_python->module() = py::module::import(par("python").stringValue());
-            py::object board = py::cast(this, py::return_value_policy::reference);
-            m_python->module().attr("createStories")(board);
-
         } catch (const py::error_already_set&) {
             PyErr_Print();
             throw;
@@ -115,6 +114,15 @@ void Storyboard::receiveSignal(cComponent*, simsignal_t signalId, const simtime_
         updateStoryboard();
         if(mDrawConditions) {
             drawConditions();
+        }
+    }
+    else if (signalId == traciInitSignal) {
+        try {
+            py::object board = py::cast(this, py::return_value_policy::reference);
+            m_python->module().attr("createStories")(board);
+        } catch (const py::error_already_set&) {
+            PyErr_Print();
+            throw;
         }
     }
 }
