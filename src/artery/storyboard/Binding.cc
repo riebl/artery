@@ -67,7 +67,9 @@ PYBIND11_EMBEDDED_MODULE(storyboard, m) {
 
     py::class_<TimeCondition, std::shared_ptr<TimeCondition>, Condition>(m, "TimeCondition")
         .def(py::init<omnetpp::SimTime>())
-        .def(py::init<omnetpp::SimTime, omnetpp::SimTime>());
+        .def(py::init<omnetpp::SimTime, omnetpp::SimTime>())
+        .def(py::init<omnetpp::SimTime>(), py::arg("begin"))
+        .def(py::init<omnetpp::SimTime, omnetpp::SimTime>(), py::arg("begin"), py::arg("end"));
 
     py::class_<TtcCondition, std::shared_ptr<TtcCondition>, Condition>(m, "TtcCondition")
         .def(py::init<double, double>());
