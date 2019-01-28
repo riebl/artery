@@ -18,9 +18,11 @@ namespace traci
 
 class InsertionDelayNodeManager : public BasicNodeManager
 {
+public:
+    InsertionDelayNodeManager();
+    ~InsertionDelayNodeManager();
+
 protected:
-    void initialize() override;
-    void finish() override;
     void handleMessage(omnetpp::cMessage*) override;
 
     void addVehicle(const std::string& id) override;

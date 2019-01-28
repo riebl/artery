@@ -13,16 +13,14 @@ namespace traci
 
 Define_Module(InsertionDelayNodeManager)
 
-void InsertionDelayNodeManager::initialize()
+InsertionDelayNodeManager::InsertionDelayNodeManager() :
+    m_insert_event(new omnetpp::cMessage("TraCI vehicle insertion"))
 {
-    m_insert_event = new omnetpp::cMessage("TraCI vehicle insertion");
-    BasicNodeManager::initialize();
 }
 
-void InsertionDelayNodeManager::finish()
+InsertionDelayNodeManager::~InsertionDelayNodeManager()
 {
     cancelAndDelete(m_insert_event);
-    BasicNodeManager::finish();
 }
 
 void InsertionDelayNodeManager::handleMessage(cMessage* msg)
