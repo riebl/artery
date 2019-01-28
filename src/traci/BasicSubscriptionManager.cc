@@ -50,10 +50,8 @@ void BasicSubscriptionManager::traciInit()
     subscribeSimulationVariables(vars);
 
     // subscribe already running vehicles
-    if (!m_vehicle_vars.empty()) {
-        for (const std::string& id : m_api->vehicle().getIDList()) {
-            subscribeVehicle(id);
-        }
+    for (const std::string& id : m_api->vehicle().getIDList()) {
+        subscribeVehicle(id);
     }
 }
 
@@ -67,13 +65,15 @@ void BasicSubscriptionManager::traciClose()
 
 void BasicSubscriptionManager::subscribeVehicle(const std::string& id)
 {
-    updateVehicleSubscription(id, m_vehicle_vars);
+    if (!m_vehicle_vars.empty()) {
+        updateVehicleSubscription(id, m_vehicle_vars);
+    }
     m_subscribed_vehicles.insert(id);
 }
 
 void BasicSubscriptionManager::unsubscribeVehicle(const std::string& id, bool vehicle_exists)
 {
-    if (vehicle_exists) {
+    if (vehicle_exists && !m_vehicle_vars.empty()) {
         static const std::vector<int> empty;
         updateVehicleSubscription(id, empty);
     }
