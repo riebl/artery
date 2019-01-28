@@ -92,6 +92,7 @@ PYBIND11_EMBEDDED_MODULE(storyboard, m) {
 
     py::class_<artery::Storyboard>(m, "Storyboard")
         .def("registerStory", &artery::Storyboard::registerStory)
+        .def("getWarmupEndTime", [](artery::Storyboard& board) { return board.getSimulation()->getWarmupPeriod(); })
         .def("convertTraciPosition", &artery::Storyboard::convertTraciPosition);
 }
 
