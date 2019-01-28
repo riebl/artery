@@ -80,9 +80,7 @@ void Middleware::initializeServices(int stage)
             module->finalizeParameters();
             module->buildInside();
             module->scheduleStart(simTime());
-            for (int i = 0; i <= stage; ++i) {
-                if (!module->callInitialize(i)) break;
-            }
+            // defer final module initialisation until service is attached to middleware
 
             ItsG5BaseService* service = dynamic_cast<ItsG5BaseService*>(module);
             if (service) {
@@ -104,6 +102,11 @@ void Middleware::initializeServices(int stage)
                 }
             } else {
                 error("%s is not of type ItsG5BaseService", module_type->getFullName());
+            }
+
+            // finalize module initialization now
+            for (int i = 0; i <= stage; ++i) {
+                if (!module->callInitialize(i)) break;
             }
         }
     }
