@@ -6,4 +6,5 @@ simple VehicleIndex
         @class(gemv2::VehicleIndex);
         string traciModule;
         string visualizerModule;
+        double vehicleMargin @unit(m) = default(0.01 m);
 }

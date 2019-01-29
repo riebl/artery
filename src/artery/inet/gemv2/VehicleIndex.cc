@@ -52,6 +52,7 @@ void VehicleIndex::initialize()
     }
 
     mVisualizer = inet::findModuleFromPar<Visualizer>(par("visualizerModule"), this, false);
+    mVehicleMargin = std::abs(par("vehicleMargin").doubleValue());
 }
 
 void VehicleIndex::receiveSignal(cComponent* source, simsignal_t signal, unsigned long, cObject* obj)
@@ -78,7 +79,7 @@ void VehicleIndex::receiveSignal(cComponent* source, simsignal_t signal, const c
     if (signal == traci::BasicNodeManager::addVehicleSignal) {
         traci::LiteAPI* api = check_and_cast<traci::NodeManager*>(source)->getLiteAPI();
         ASSERT(api);
-        Vehicle vehicle(*api, id);
+        Vehicle vehicle(*api, id, mVehicleMargin);
         mVehicles.emplace(id, std::move(vehicle));
     } else if (signal == traci::BasicNodeManager::updateVehicleSignal) {
         auto vehicle = check_and_cast<traci::BasicNodeManager::VehicleObject*>(obj);
@@ -133,12 +134,12 @@ VehicleIndex::getObstructingVehicles(const Position& a, const Position& b) const
     return result;
 }
 
-VehicleIndex::Vehicle::Vehicle(traci::LiteAPI& api, const std::string& id) :
+VehicleIndex::Vehicle::Vehicle(traci::LiteAPI& api, const std::string& id, double margin) :
     mBoundary(api.simulation().getNetBoundary()), mHeight(0.0)
 {
     auto vtype = api.vehicle().getTypeID(id);
     mHeight = api.vehicletype().getHeight(vtype);
-    createLocalOutline(api.vehicletype().getWidth(vtype), api.vehicletype().getLength(vtype));
+    createLocalOutline(api.vehicletype().getWidth(vtype), api.vehicletype().getLength(vtype), margin);
     update(api.vehicle().getPosition(id), traci::TraCIAngle { api.vehicle().getAngle(id) });
 }
 
@@ -149,16 +150,16 @@ void VehicleIndex::Vehicle::update(const traci::TraCIPosition& pos, traci::TraCI
     calculateWorldOutline();
 }
 
-void VehicleIndex::Vehicle::createLocalOutline(double width, double length)
+void VehicleIndex::Vehicle::createLocalOutline(double width, double length, double margin)
 {
     // vehicle corner points in clockwise order, center of front bumper at origin, heading east
     mLocalOutline.assign({
-        Position(0.0, 0.5 * width),
-        Position(0.0, -0.5 * width),
-        Position(-length, -0.5 * width),
-        Position(-length, 0.5 * width)
+        Position(margin, 0.5 * width + margin),
+        Position(margin, -(0.5 * width + margin)),
+        Position(-(length + margin), -(0.5 * width + margin)),
+        Position(-(length + margin), 0.5 * width + margin)
     });
-    mLocalMidpoint = Position { -0.5*length, 0.0 };
+    mLocalMidpoint = Position { -0.5 * length, 0.0 };
 }
 
 void VehicleIndex::Vehicle::calculateWorldOutline()

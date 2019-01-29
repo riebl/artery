@@ -35,14 +35,14 @@ public:
     class Vehicle
     {
     public:
-        Vehicle(traci::LiteAPI&, const std::string& id);
+        Vehicle(traci::LiteAPI&, const std::string& id, double margin = 0.0);
         void update(const traci::TraCIPosition& pos, traci::TraCIAngle heading);
         const std::vector<Position>& getOutline() const { return mWorldOutline; }
         const double getHeight() const { return mHeight; }
         const Position& getMidpoint() const { return mWorldMidpoint; }
 
     private:
-        void createLocalOutline(double width, double length);
+        void createLocalOutline(double width, double length, double margin);
         void calculateWorldOutline();
 
         traci::Boundary mBoundary;
@@ -98,6 +98,7 @@ private:
     Rtree mVehicleRtree;
     bool mRtreeTainted = false;
     Visualizer* mVisualizer = nullptr;
+    double mVehicleMargin = 0.0;
 };
 
 } // namespace gemv2
