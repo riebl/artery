@@ -16,7 +16,7 @@ namespace constants {
 // VERSION
 // ****************************************
 
-constexpr integer TRACI_VERSION = 18;
+constexpr integer TRACI_VERSION = 19;
 
 // ****************************************
 // COMMANDS
@@ -51,6 +51,9 @@ constexpr ubyte CMD_SLOWDOWN = 0x14;
 
 // command: set sublane (vehicle)
 constexpr ubyte CMD_CHANGESUBLANE = 0x15;
+
+// command: open gap
+constexpr ubyte CMD_OPENGAP = 0x16;
 
 // command: change target
 constexpr ubyte CMD_CHANGETARGET = 0x31;
@@ -408,9 +411,6 @@ constexpr ubyte TYPE_DOUBLE = 0x0B;
 // 8 bit ASCII string
 constexpr ubyte TYPE_STRING = 0x0C;
 
-// list of traffic light phases
-constexpr ubyte TYPE_TLPHASELIST = 0x0D;
-
 // list of strings
 constexpr ubyte TYPE_STRINGLIST = 0x0E;
 
@@ -433,33 +433,13 @@ constexpr ubyte RTYPE_NOTIMPLEMENTED = 0x01;
 // result type: error
 constexpr ubyte RTYPE_ERR = 0xFF;
 
-// return value for invalid queries (especially vehicle is not on the road), see Position::INVALID
-constexpr double INVALID_DOUBLE_VALUE = -1073741824.;
+constexpr double INVALID_DOUBLE_VALUE = -1073741824.0;
 
 // return value for invalid queries (especially vehicle is not on the road), see Position::INVALID
 constexpr integer INVALID_INT_VALUE = -1073741824;
 
 // maximum value for client ordering (2 ^ 30)
 constexpr integer MAX_ORDER = 1073741824;
-
-// ****************************************
-// TRAFFIC LIGHT PHASES
-// ****************************************
-
-// red phase
-constexpr ubyte TLPHASE_RED = 0x01;
-
-// yellow phase
-constexpr ubyte TLPHASE_YELLOW = 0x02;
-
-// green phase
-constexpr ubyte TLPHASE_GREEN = 0x03;
-
-// tl is blinking
-constexpr ubyte TLPHASE_BLINKING = 0x04;
-
-// tl is off and not blinking
-constexpr ubyte TLPHASE_NOSIGNAL = 0x05;
 
 // ****************************************
 // DIFFERENT DISTANCE REQUESTS
@@ -603,14 +583,11 @@ constexpr ubyte FILTER_TYPE_DOWNSTREAM_DIST = 0x03;
 // Specify maximal upstream distance for vehicles in context subscription result
 constexpr ubyte FILTER_TYPE_UPSTREAM_DIST = 0x04;
 
-// Only return leader and follower in context subscription result
-constexpr ubyte FILTER_TYPE_CF_MANEUVER = 0x05;
-
-// Only return leader and follower on ego and neighboring lane in context subscription result
-constexpr ubyte FILTER_TYPE_LC_MANEUVER = 0x06;
+// Only return leader and follower on the specified lanes in context subscription result
+constexpr ubyte FILTER_TYPE_LEAD_FOLLOW = 0x05;
 
 // Only return foes on upcoming junction in context subscription result
-constexpr ubyte FILTER_TYPE_TURN_MANEUVER = 0x07;
+constexpr ubyte FILTER_TYPE_TURN = 0x07;
 
 // Only return vehicles of the given vClass in context subscription result
 constexpr ubyte FILTER_TYPE_VCLASS = 0x08;
@@ -623,7 +600,7 @@ constexpr ubyte FILTER_TYPE_VTYPE = 0x09;
 // ****************************************
 
 // list of instances' ids (get: all)
-constexpr ubyte ID_LIST = 0x00;
+constexpr ubyte TRACI_ID_LIST = 0x00;
 
 // count of instances (get: all)
 constexpr ubyte ID_COUNT = 0x01;
@@ -787,7 +764,7 @@ constexpr ubyte VAR_SHAPECLASS = 0x4b;
 // minimum gap (get: vehicle types)
 constexpr ubyte VAR_MINGAP = 0x4c;
 
-// width (get: vehicle types, lanes)
+// width (get: vehicle types, lanes, polygons)
 constexpr ubyte VAR_WIDTH = 0x4d;
 
 // shape (get: polygons)
