@@ -31,6 +31,7 @@ void CarIdentityRegistrant::initializeIdentity()
 	auto i1 = path.find("]");
 	auto stationId = std::stoul(path.substr(i0+1, i1-i0-1));
 
+	mIdentity.host = parent;
 	mIdentity.application = stationId;
 	mIdentity.traci = traciId;
 }
