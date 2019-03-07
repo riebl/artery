@@ -17,7 +17,7 @@ static const std::set<int> sVehicleVariables {
     VAR_POSITION, VAR_SPEED, VAR_ANGLE
 };
 static const std::set<int> sSimulationVariables {
-    VAR_DEPARTED_VEHICLES_IDS, VAR_ARRIVED_VEHICLES_IDS, VAR_TIME
+    VAR_DEPARTED_VEHICLES_IDS, VAR_ARRIVED_VEHICLES_IDS, VAR_TELEPORT_STARTING_VEHICLES_IDS, VAR_TIME
 };
 
 class VehicleObjectImpl : public BasicNodeManager::VehicleObject
@@ -55,6 +55,7 @@ void BasicNodeManager::initialize()
     m_nodeIndex = 0;
     m_vehicleSinkModule = par("vehicleSinkModule").stringValue();
     m_subscriptions = inet::getModuleFromPar<SubscriptionManager>(par("subscriptionsModule"), this);
+    m_destroy_vehicles_on_crash = par("destroyVehiclesOnCrash");
 }
 
 void BasicNodeManager::finish()
@@ -92,6 +93,14 @@ void BasicNodeManager::traciStep()
     EV_DETAIL << "TraCI: " << arrived.size() << " vehicles arrived" << endl;
     for (const auto& id : arrived) {
         removeVehicle(id);
+    }
+
+    if (m_destroy_vehicles_on_crash) {
+        const auto& teleport = sim_cache->get<VAR_TELEPORT_STARTING_VEHICLES_IDS>();
+        for (const auto& id : teleport) {
+            EV_DETAIL << "TraCI: " << id << " got teleported and is removed!" << endl;
+            removeVehicle(id);
+        }
     }
 
     for (auto& vehicle : m_vehicles) {

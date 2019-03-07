@@ -78,6 +78,7 @@ private:
     std::map<std::string, omnetpp::cModule*> m_nodes;
     std::map<std::string, VehicleSink*> m_vehicles;
     std::string m_vehicleSinkModule;
+    bool m_destroy_vehicles_on_crash;
 };
 
 } // namespace traci
