@@ -11,6 +11,7 @@ simple Core
         string launcherModule = default(".launcher");
         string subscriptionsModule = default(".subscriptions");
         int version = default(0);
+        bool destroyOnCrash = default(false);
         bool selfStopping = default(true);
         double startTime @unit(second) = default(0.0s);
 }
