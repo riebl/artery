@@ -55,7 +55,7 @@ void BasicNodeManager::initialize()
     m_nodeIndex = 0;
     m_vehicleSinkModule = par("vehicleSinkModule").stringValue();
     m_subscriptions = inet::getModuleFromPar<SubscriptionManager>(par("subscriptionsModule"), this);
-    m_destroy_on_crash = inet::getModuleFromPar<Core>(par("coreModule"), this)->par("destroyOnCrash");
+    m_destroy_vehicles_on_crash = inet::getModuleFromPar<Core>(par("coreModule"), this)->par("destroyVehiclesOnCrash");
 }
 
 void BasicNodeManager::finish()
@@ -96,7 +96,7 @@ void BasicNodeManager::traciStep()
     }
 
     const auto& teleport = sim_cache->get<VAR_TELEPORT_STARTING_VEHICLES_IDS>();
-    if (m_destroy_on_crash) {
+    if (m_destroy_vehicles_on_crash) {
         for (const auto& id : teleport) {
             EV_DETAIL << "TraCI: " << id << " got teleported and is removed!" << endl;
             removeVehicle(id);
