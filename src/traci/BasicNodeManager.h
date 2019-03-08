@@ -77,7 +77,7 @@ private:
     unsigned m_nodeIndex;
     std::map<std::string, omnetpp::cModule*> m_nodes;
     std::map<std::string, VehicleSink*> m_vehicles;
-    std::string m_vehicleSinkModule;
+    std::string m_vehicle_sink_module;
     bool m_destroy_vehicles_on_crash;
 };
 

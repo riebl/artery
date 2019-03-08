@@ -53,7 +53,7 @@ void BasicNodeManager::initialize()
     m_api = &core->getLiteAPI();
     m_mapper = inet::getModuleFromPar<ModuleMapper>(par("mapperModule"), this);
     m_nodeIndex = 0;
-    m_vehicleSinkModule = par("vehicleSinkModule").stringValue();
+    m_vehicle_sink_module = par("vehicleSinkModule").stringValue();
     m_subscriptions = inet::getModuleFromPar<SubscriptionManager>(par("subscriptionsModule"), this);
     m_destroy_vehicles_on_crash = par("destroyVehiclesOnCrash");
 }
@@ -205,9 +205,9 @@ std::size_t BasicNodeManager::getNumberOfNodes() const
 VehicleSink* BasicNodeManager::getVehicleSink(cModule* node)
 {
     ASSERT(node);
-    cModule* module = node->getModuleByPath(m_vehicleSinkModule.c_str());
+    cModule* module = node->getModuleByPath(m_vehicle_sink_module.c_str());
     if (!module) {
-        throw cRuntimeError("No module found at %s relative to %s", m_vehicleSinkModule.c_str(), node->getFullPath().c_str());
+        throw cRuntimeError("No module found at %s relative to %s", m_vehicle_sink_module.c_str(), node->getFullPath().c_str());
     }
 
     auto* mobility = dynamic_cast<VehicleSink*>(module);
