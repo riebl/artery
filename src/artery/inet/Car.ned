@@ -14,8 +14,7 @@ module Car extends PlainVehicle like INetworkNode
         @display("i=block/wrxtx;is=vs");
         @networkNode;
         @labels(node,ethernet-node,wireless-node);
-        @statistic[posX](source="xCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
-        @statistic[posY](source="yCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
+
         int numRadios = default(1);
         bool withAntennaMobility = default(false);
         *.interfaceTableModule = default(absPath(".interfaceTable"));

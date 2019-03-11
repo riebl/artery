@@ -7,6 +7,10 @@ module PlainVehicle
     parameters:
         @display("i=blocki/process;is=vs");
         @labels(node);
+
+        @statistic[posX](source="xCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
+        @statistic[posY](source="yCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
+
         mobility.visualRepresentation = "^";
 
     submodules:
