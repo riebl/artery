@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <routes>
-   <vType id="car" vClass="passenger" length="5" maxSpeed="50" lcKeepRight="10" color="0,0.67,0"/>
+   <vType id="car" vClass="passenger" length="5" maxSpeed="50" speedDev="0.0" lcKeepRight="10" color="0,0.67,0"/>
    <vType id="police" vClass="authority" length="5" maxSpeed="60" speedFactor="1.5" minGap="0.5" guiShape="police"/>
    <route id="route0" edges="hw0"/>
 
