@@ -42,6 +42,7 @@ public:
     {
     public:
         virtual pybind11::module& module() = 0;
+        virtual ~PythonContext() = default;
     };
 
 private:
