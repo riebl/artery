@@ -40,6 +40,10 @@ Storyboard::Storyboard() :
 {
 }
 
+Storyboard::~Storyboard(){
+  py::finalize_interpreter();
+}
+
 void Storyboard::initialize(int stage)
 {
     if(stage == 0) {

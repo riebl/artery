@@ -23,6 +23,7 @@ class Storyboard : public omnetpp::cSimpleModule, public omnetpp::cListener
 {
 public:
     Storyboard();
+    ~Storyboard();
 
     // omnetpp::cSimpleModule
     void initialize(int) override;
