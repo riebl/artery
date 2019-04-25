@@ -79,7 +79,7 @@ void DenService::receiveSignal(cComponent*, simsignal_t signal, cObject* obj, cO
     }
 }
 
-void DenService::indicate(const vanetza::btp::DataIndication& indication, std::unique_ptr<vanetza::UpPacket> packet)
+void DenService::indicate(const vanetza::btp::DataIndication& indication, std::unique_ptr<vanetza::UpPacket> packet, NetworkInterface& interface)
 {
     Asn1PacketVisitor<vanetza::asn1::Denm> visitor;
     const vanetza::asn1::Denm* denm = boost::apply_visitor(visitor, *packet);
