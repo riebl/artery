@@ -19,18 +19,29 @@ void PoliceService::initialize()
 void PoliceService::trigger()
 {
     Enter_Method("PoliceService trigger");
-    btp::DataRequestB req;
-    req.destination_port = host_cast<PoliceService::port_type>(getPortNumber());
-    req.gn.transport_type = geonet::TransportType::SHB;
-    req.gn.traffic_class.tc_id(static_cast<unsigned>(dcc::Profile::DP1));
-    req.gn.communication_profile = geonet::CommunicationProfile::ITS_G5;
 
-    const std::string id = mVehicleController->getVehicleId();
-    auto& vehicle_api = mVehicleController->getLiteAPI().vehicle();
+    // use ITS-AID assigned for testing
+    vanetza::ItsAid its_aid = 16480;
 
-    auto packet = new PoliceClearLane();
-    packet->setEdgeName(vehicle_api.getRoadID(id).c_str());
-    packet->setLaneIndex(vehicle_api.getLaneIndex(id));
-    packet->setByteLength(40);
-    request(req, packet);
+    auto ifcs = getFacilities().getMutable<artery::McoStrategy>().choose(its_aid);
+	if (ifcs.begin() != ifcs.end()) {
+		for (auto& ifc : ifcs) {
+            btp::DataRequestB req;
+            auto ports = getPortNumber();
+            req.destination_port = host_cast<PoliceService::port_type>(ports.at(ifc));
+            req.gn.transport_type = geonet::TransportType::SHB;
+            req.gn.traffic_class.tc_id(static_cast<unsigned>(dcc::Profile::DP1));
+            req.gn.communication_profile = geonet::CommunicationProfile::ITS_G5;
+			req.gn.its_aid = its_aid;
+
+            const std::string id = mVehicleController->getVehicleId();
+            auto& vehicle_api = mVehicleController->getLiteAPI().vehicle();
+
+            auto packet = new PoliceClearLane();
+            packet->setEdgeName(vehicle_api.getRoadID(id).c_str());
+            packet->setLaneIndex(vehicle_api.getLaneIndex(id));
+            packet->setByteLength(40);
+            request(req, packet, *ifc);
+        }
+    }
 }
