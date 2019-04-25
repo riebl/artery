@@ -18,9 +18,9 @@
 namespace artery
 {
 
-void ItsG5PromiscuousService::tap_packet(const vanetza::btp::DataIndication& indication, const vanetza::UpPacket& packet)
+void ItsG5PromiscuousService::tap_packet(const vanetza::btp::DataIndication& indication, const vanetza::UpPacket& packet, NetworkInterface& interface)
 {
-	this->tapPacket(indication, packet);
+	this->tapPacket(indication, packet, interface);
 }
 
 } // namespace artery

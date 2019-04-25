@@ -19,6 +19,7 @@
 #define ARTERY_ITSG5PROMISCUOUSSERVICE_H_
 
 #include "artery/application/ItsG5BaseService.h"
+#include "artery/application/PromiscuousHook.h"
 #include <vanetza/btp/port_dispatcher.hpp>
 
 namespace artery
@@ -26,13 +27,13 @@ namespace artery
 
 class ItsG5PromiscuousService :
 	public ItsG5BaseService,
-	public vanetza::btp::PortDispatcher::PromiscuousHook
+	public PromiscuousHook
 {
 	public:
-		void tap_packet(const vanetza::btp::DataIndication&, const vanetza::UpPacket&) override final;
+		void tap_packet(const vanetza::btp::DataIndication&, const vanetza::UpPacket&, NetworkInterface&) override final;
 
 	protected:
-		virtual void tapPacket(const vanetza::btp::DataIndication&, const vanetza::UpPacket&) = 0;
+		virtual void tapPacket(const vanetza::btp::DataIndication&, const vanetza::UpPacket&, NetworkInterface&) = 0;
 };
 
 } // namespace artery
