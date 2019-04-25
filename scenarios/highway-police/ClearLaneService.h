@@ -9,7 +9,7 @@ namespace traci { class VehicleController; }
 class ClearLaneService : public artery::ItsG5Service
 {
     protected:
-        void indicate(const vanetza::btp::DataIndication&, omnetpp::cPacket*) override;
+        void indicate(const vanetza::btp::DataIndication&, omnetpp::cPacket*, artery::NetworkInterface&) override;
         void initialize() override;
 
     private:

@@ -13,7 +13,7 @@ void ClearLaneService::initialize()
     mVehicleController = &getFacilities().get_mutable<traci::VehicleController>();
 }
 
-void ClearLaneService::indicate(const vanetza::btp::DataIndication& ind, omnetpp::cPacket* packet)
+void ClearLaneService::indicate(const vanetza::btp::DataIndication& ind, omnetpp::cPacket* packet, artery::NetworkInterface& interface)
 {
     Enter_Method("ClearLaneService indicate");
     auto clearLaneMessage = check_and_cast<const PoliceClearLane*>(packet);
