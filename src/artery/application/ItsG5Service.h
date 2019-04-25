@@ -34,9 +34,9 @@ class ItsG5Service : public ItsG5BaseService
 		using ItsG5BaseService::indicate;
 		using ItsG5BaseService::request;
 		using ItsG5BaseService::initialize;
-		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::UpPacket>) override;
-		virtual void indicate(const vanetza::btp::DataIndication&, omnetpp::cPacket*);
-		void request(const vanetza::btp::DataRequestB&, omnetpp::cPacket*);
+		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::UpPacket>, NetworkInterface& interface) override;
+		virtual void indicate(const vanetza::btp::DataIndication&, omnetpp::cPacket*, NetworkInterface& interface);
+		void request(const vanetza::btp::DataRequestB&, omnetpp::cPacket*, boost::optional<NetworkInterface&> = boost::none);
 };
 
 } // namespace artery
