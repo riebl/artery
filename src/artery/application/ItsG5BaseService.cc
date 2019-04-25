@@ -52,7 +52,7 @@ bool ItsG5BaseService::requiresListener() const
 	return true;
 }
 
-ItsG5BaseService::port_type ItsG5BaseService::getPortNumber() const
+Middleware::PortInfoMap ItsG5BaseService::getPortNumber() const
 {
 	assert(m_middleware);
 	return m_middleware->getPortNumber(this);
@@ -94,13 +94,13 @@ void ItsG5BaseService::trigger()
 {
 }
 
-void ItsG5BaseService::request(const vanetza::btp::DataRequestB& req, std::unique_ptr<vanetza::DownPacket> packet)
+void ItsG5BaseService::request(const vanetza::btp::DataRequestB& req, std::unique_ptr<vanetza::DownPacket> packet, boost::optional<NetworkInterface&> interface)
 {
 	assert(m_middleware);
-	m_middleware->requestTransmission(req, std::move(packet));
+	m_middleware->requestTransmission(req, std::move(packet), interface);
 }
 
-void ItsG5BaseService::indicate(const vanetza::btp::DataIndication& ind, std::unique_ptr<vanetza::UpPacket> packet)
+void ItsG5BaseService::indicate(const vanetza::btp::DataIndication& ind, std::unique_ptr<vanetza::UpPacket> packet, NetworkInterface& interface)
 {
 }
 

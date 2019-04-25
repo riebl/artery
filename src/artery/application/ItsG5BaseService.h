@@ -25,13 +25,15 @@
 #include <vanetza/btp/data_request.hpp>
 #include "Facilities.h"
 #include "Middleware.h"
+#include "artery/application/IndicationInterface.h"
+#include "artery/application/NetworkInterface.h"
 
 namespace artery
 {
 
 class ItsG5BaseService :
 	public omnetpp::cSimpleModule, public omnetpp::cListener,
-	public vanetza::btp::IndicationInterface
+	public IndicationInterface
 {
 	public:
 		typedef Middleware::port_type port_type;
@@ -44,11 +46,11 @@ class ItsG5BaseService :
 	protected:
 		void initialize() override;
 		void finish() override;
-		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::DownPacket>);
-		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::UpPacket>) override;
+		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::DownPacket>, boost::optional<NetworkInterface&> = boost::none);
+		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::UpPacket>, NetworkInterface&) override;
 		Facilities& getFacilities();
 		const Facilities& getFacilities() const;
-		port_type getPortNumber() const;
+		Middleware::PortInfoMap getPortNumber() const;
 		omnetpp::cModule* findHost();
 		void subscribe(const omnetpp::simsignal_t&);
 		void unsubscribe(const omnetpp::simsignal_t&);
