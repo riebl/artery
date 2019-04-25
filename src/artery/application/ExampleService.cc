@@ -39,7 +39,7 @@ ExampleService::~ExampleService()
 	cancelAndDelete(m_self_msg);
 }
 
-void ExampleService::indicate(const btp::DataIndication& ind, cPacket* packet)
+void ExampleService::indicate(const btp::DataIndication& ind, cPacket* packet, NetworkInterface& interface)
 {
 	if (packet->getByteLength() == 42) {
 		EV_INFO << "packet indication\n";
@@ -74,17 +74,28 @@ void ExampleService::handleMessage(cMessage* msg)
 void ExampleService::trigger()
 {
 	Enter_Method("trigger");
-	btp::DataRequestB req;
-	req.destination_port = host_cast<ExampleService::port_type>(getPortNumber());
-	req.gn.transport_type = geonet::TransportType::SHB;
-	req.gn.traffic_class.tc_id(static_cast<unsigned>(dcc::Profile::DP3));
-	req.gn.communication_profile = geonet::CommunicationProfile::ITS_G5;
-	// use ITS-AID assigned for testing
-	req.gn.its_aid = 16480;
 
-	cPacket* packet = new cPacket("Example Service Packet");
-	packet->setByteLength(42);
-	request(req, packet);
+	// use ITS-AID assigned for testing
+	vanetza::ItsAid its_aid = 16480;
+
+	auto ifcs = getFacilities().getMutable<McoStrategy>().choose(its_aid);
+	if (ifcs.begin() != ifcs.end()) {
+		for (auto& ifc : ifcs) {
+			btp::DataRequestB req;
+			auto ports = getPortNumber();
+			req.destination_port = host_cast<ExampleService::port_type>(ports.at(ifc));
+			req.gn.transport_type = geonet::TransportType::SHB;
+			req.gn.traffic_class.tc_id(static_cast<unsigned>(dcc::Profile::DP3));
+			req.gn.communication_profile = geonet::CommunicationProfile::ITS_G5;
+			req.gn.its_aid = its_aid;
+
+			cPacket* packet = new cPacket("Example Service Packet");
+			packet->setByteLength(42);
+			request(req, packet, boost::optional<NetworkInterface&>(*ifc));
+		}
+	} else {
+		throw cRuntimeError("No NetworkInterface assigned for service");
+	}
 }
 
 void ExampleService::receiveSignal(cComponent* source, simsignal_t signal, cObject*, cObject*)
