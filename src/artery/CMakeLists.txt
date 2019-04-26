@@ -13,6 +13,7 @@ add_library(core SHARED
     application/LocalDynamicMap.cc
     application/Middleware.cc
     application/NetworkInterface.cc
+    application/NetworkInterfaceTable.cc
     application/StationaryMiddleware.cc
     application/StoryboardSignal.cc
     application/Timer.cc
