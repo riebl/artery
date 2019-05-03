@@ -4,6 +4,6 @@ simple CarIdentityRegistrant
 {
     parameters:
         @class(CarIdentityRegistrant);
-        @signal[Identity.update](type=artery::Identity);
-        @signal[Identity.remove](type=artery::Identity);
+        @signal[IdentityUpdated](type=artery::Identity);
+        @signal[IdentityRemoved](type=artery::Identity);
 }
