@@ -49,7 +49,7 @@ Alternatively, you can also just invoke `make veins` in the root directory of Ar
 ### Vanetza
 Similarly, you can simply call `make vanetza` in the root directory and it will try to build Vanetza for you in *extern/vanetza/build*.
 Of course, you need to install Vanetza's dependencies first.
-See the Vanetza [Readme](extern/vanetza/README.md) for details.
+See the Vanetza [Readme](https://github.com/riebl/vanetza/blob/master/README.md) for details.
 
 ### INET
 As the next step, you need to build INET. Make sure you are in the root directory of Artery and simply call `make inet` there.
