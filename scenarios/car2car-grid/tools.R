@@ -25,9 +25,9 @@ buildVectorTable <- function(db, scaleexp = 12, vectors = NULL)
     select(name = vectorName, module = moduleName, simtime, value)
 }
 
-buildNodeLookupTable <- function(db)
+buildNodeLookupTable <- function(vt)
 {
-  modules <- tbl(db, 'vector') %>% distinct(moduleName) %>% select(module = moduleName) %>% collect()
+  modules <- vt %>% distinct(module)  %>% collect()
   modules %>% rowwise() %>% mutate(node = extractNodeNumber(module))
 }
 
