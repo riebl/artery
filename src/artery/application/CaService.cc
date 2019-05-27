@@ -26,6 +26,8 @@ static const simsignal_t scSignalCamReceived = cComponent::registerSignal("CamRe
 static const simsignal_t scSignalCamSent = cComponent::registerSignal("CamSent");
 static const auto scLowFrequencyContainerInterval = std::chrono::milliseconds(500);
 
+static const vanetza::units::Angle MAXANGLE(360.0 * boost::units::degree::degree);
+
 template<typename T, typename U>
 long round(const boost::units::quantity<T>& q, const U& u)
 {
@@ -114,7 +116,13 @@ void CaService::checkTriggeringConditions(const SimTime& T_now)
 
 bool CaService::checkHeadingDelta() const
 {
-	return abs(mLastCamHeading - mVehicleDataProvider->heading()) > mHeadingDelta;
+    if(mLastCamHeading >= MAXANGLE - mHeadingDelta && mVehicleDataProvider->heading() <= mHeadingDelta)
+        return abs(mLastCamHeading - mVehicleDataProvider->heading() - MAXANGLE) > mHeadingDelta;
+
+    if(mLastCamHeading <= mHeadingDelta && mVehicleDataProvider->heading() >= MAXANGLE - mHeadingDelta)
+        return abs(mLastCamHeading - mVehicleDataProvider->heading() + MAXANGLE) > mHeadingDelta;
+
+    return abs(mLastCamHeading - mVehicleDataProvider->heading()) > mHeadingDelta;
 }
 
 bool CaService::checkPositionDelta() const
