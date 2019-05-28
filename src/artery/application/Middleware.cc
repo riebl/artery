@@ -8,6 +8,7 @@
 #include "artery/application/ItsG5PromiscuousService.h"
 #include "artery/application/ItsG5Service.h"
 #include "artery/networking/Router.h"
+#include "artery/utility/Channel.h"
 #include "artery/utility/PointerCheck.h"
 #include "artery/utility/IdentityRegistry.h"
 #include "artery/utility/InitStages.h"
@@ -20,6 +21,28 @@ namespace artery
 {
 
 Define_Module(Middleware)
+
+namespace
+{
+
+ChannelNumber getChannel(const omnetpp::cXMLElement* cfg)
+{
+    ChannelNumber channel = 0;
+
+    const char* ch_attr = cfg->getAttribute("channel");
+    if (ch_attr) {
+        channel = parseChannelNumber(ch_attr);
+    }
+
+    // fall back to control channel for backward-compatibility
+    if (channel == 0) {
+        channel = channel::CCH;
+    }
+
+    return channel;
+}
+
+} // namespace
 
 Middleware::Middleware() : mLocalDynamicMap(mTimer)
 {
