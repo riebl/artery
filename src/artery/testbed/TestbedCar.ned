@@ -44,6 +44,7 @@ module TestbedCar like INetworkNode
             parameters:
                 @display("p=250,300,row,100");
                 macModule = ".wlan[" + string(index) + "].mac";
+                radioModule = ".wlan[" + string(index) + "].radio";
         }
 
         otaInterfaceLayer: OtaInterfaceLayer {

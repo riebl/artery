@@ -42,6 +42,7 @@ module RSU like INetworkNode
         radioDriver[numRadios]: RadioDriver {
             parameters:
                 macModule = ".wlan[" + string(index) + "].mac";
+                radioModule = ".wlan[" + string(index) + "].radio";
         }
 
         vanetza: Vanetza {

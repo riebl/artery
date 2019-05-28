@@ -7,6 +7,7 @@
 #include <inet/common/ModuleAccess.h>
 #include <inet/linklayer/common/Ieee802Ctrl.h>
 #include <inet/linklayer/ieee80211/mac/Ieee80211Mac.h>
+#include <inet/physicallayer/ieee80211/packetlevel/Ieee80211Radio.h>
 
 using namespace omnetpp;
 
@@ -31,6 +32,8 @@ inet::MACAddress convert(const vanetza::MacAddress& mac)
 	return result;
 }
 
+static const simsignal_t radioChannelChangedSignal = cComponent::registerSignal("radioChannelChanged");
+
 } // namespace
 
 int InetRadioDriver::numInitStages() const
@@ -45,9 +48,13 @@ void InetRadioDriver::initialize(int stage)
 		cModule* host = inet::getContainingNode(this);
 		mLinkLayer = inet::findModuleFromPar<inet::ieee80211::Ieee80211Mac>(par("macModule"), host);
 		mLinkLayer->subscribe(VanetRx::ChannelLoadSignal, this);
+		mRadio = inet::findModuleFromPar<inet::ieee80211::Ieee80211Radio>(par("radioModule"), host);
+		mRadio->subscribe(radioChannelChangedSignal, this);
 	} else if (stage == inet::InitStages::INITSTAGE_LINK_LAYER_2) {
+		ASSERT(mChannelNumber > 0);
 		auto properties = new RadioDriverProperties();
 		properties->LinkLayerAddress = convert(mLinkLayer->getAddress());
+		properties->ServingChannel = mChannelNumber;
 		indicateProperties(properties);
 	}
 }
@@ -56,6 +63,13 @@ void InetRadioDriver::receiveSignal(cComponent* source, simsignal_t signal, doub
 {
 	if (signal == VanetRx::ChannelLoadSignal) {
 		emit(RadioDriverBase::ChannelLoadSignal, value);
+	}
+}
+
+void InetRadioDriver::receiveSignal(cComponent* source, simsignal_t signal, long value, cObject*)
+{
+	if (signal == radioChannelChangedSignal) {
+		mChannelNumber = value;
 	}
 }
 

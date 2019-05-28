@@ -86,6 +86,8 @@ void VeinsRadioDriver::initialize()
     auto properties = new RadioDriverProperties();
     // Mac1609_4 uses index of host as MAC address
     properties->LinkLayerAddress = vanetza::create_mac_address(mHost->getIndex());
+    // Mac1609_4 can only be fixed to CCH at the moment
+    properties->ServingChannel = channel::CCH;
     indicateProperties(properties);
 }
 

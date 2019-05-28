@@ -8,6 +8,7 @@ simple RadioDriver like IRadioDriver
 		@class(InetRadioDriver);
 		@signal[ChannelLoad](type=double);
 		string macModule;
+		string radioModule;
 
 	gates:
 		inout upperLayer;
