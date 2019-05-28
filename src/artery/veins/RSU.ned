@@ -28,6 +28,7 @@ module RSU
 
         nic: <nicType> like INic80211p {
             @display("p=60,150");
+            mac1609_4.useServiceChannel = default(false);
         }
 
         mobility: org.car2x.veins.base.modules.BaseMobility {
