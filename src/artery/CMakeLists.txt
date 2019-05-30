@@ -16,6 +16,7 @@ add_library(core SHARED
     application/StationaryMiddleware.cc
     application/StoryboardSignal.cc
     application/Timer.cc
+    application/TransportDispatcher.cc
     application/VehicleDataProvider.cc
     application/VehicleMiddleware.cc
     application/den/ImpactReductionUseCase.cc
