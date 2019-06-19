@@ -7,6 +7,7 @@ namespace artery
 {
 
 const simsignal_t VanetRx::ChannelLoadSignal = cComponent::registerSignal("ChannelLoad");
+static const unsigned cbrIntervalSamples = 12500;
 
 Define_Module(VanetRx)
 
@@ -23,7 +24,7 @@ void VanetRx::initialize(int stage)
 {
     Rx::initialize(stage);
     if (stage == 0) {
-        channelLoadSamples.push_front(std::tuple<int,bool>(12500, false));
+        channelLoadSamples.emplace_front(cbrIntervalSamples, false);
         channelLoadLastUpdate = simTime();
         channelBusyRatio = 0.0;
         channelReportInterval = simtime_t { 100, SIMTIME_MS };
@@ -50,7 +51,7 @@ void VanetRx::recomputeMediumFree()
     const auto updateDelta = simTime() - channelLoadLastUpdate;
     if (updateDelta >= symbolPeriod) {
         const std::size_t fillSamples = updateDelta / symbolPeriod;
-        channelLoadSamples.push_front(std::tuple<uint,bool>(fillSamples, !mediumFree));
+        channelLoadSamples.emplace_front(fillSamples, !mediumFree);
         channelLoadLastUpdate = simTime();
     }
 
@@ -59,38 +60,37 @@ void VanetRx::recomputeMediumFree()
 
 void VanetRx::reportChannelLoad()
 {
-    uint samples = 0;
-    uint busy = 0;
-    double channelBusyRatio = 0.0;
+    unsigned samples = 0;
+    unsigned busy = 0;
 
-    /* iterate recorded busy periods in reverse */
+    // iterate recorded busy periods (begin with most recent period)
     for (auto it = channelLoadSamples.begin(); it != channelLoadSamples.end();) {
-        /* get values from tuples */
-        uint sampleLength = std::get<0>(*it);
+        // get values from tuples
+        unsigned sampleLength = std::get<0>(*it);
         bool mediumBusy = std::get<1>(*it);
 
-        /* add length of list entry to total samples */
+        // add length of list entry to total samples
         samples += sampleLength;
 
-        if (samples < cbrInterval) {
+        if (samples < cbrIntervalSamples) {
             if (mediumBusy) {
-                /* increase busy time */
+                // increase busy time by full sample length
                 busy += sampleLength;
             }
             ++it;
-        }
-        else {
-            /* add remaining samples to to busy time*/
-            busy += (cbrInterval - samples) * (int)mediumBusy;
+        } else {
+            if (mediumBusy) {
+                // increase busy time up to boundary of sampling interval
+                busy += sampleLength - (samples - cbrIntervalSamples);
+            }
 
-            /* remove unused entries from list */
+            // remove obsolete periods
             it = channelLoadSamples.erase(it, channelLoadSamples.end());
         }
     }
 
     channelBusyRatio = busy;
-    channelBusyRatio /= cbrInterval;
-
+    channelBusyRatio /= cbrIntervalSamples;
     emit(ChannelLoadSignal, channelBusyRatio);
 }
 

@@ -2,6 +2,8 @@
 #define ARTERY_VANETRX_H_KTVCYSUX
 
 #include "inet/linklayer/ieee80211/mac/Rx.h"
+#include <deque>
+#include <tuple>
 
 namespace artery
 {
@@ -24,9 +26,8 @@ private:
     omnetpp::simtime_t channelReportInterval;
     omnetpp::cMessage* channelReportTrigger;
     omnetpp::simtime_t channelLoadLastUpdate;
-    std::list<std::tuple<uint,bool>> channelLoadSamples;
+    std::deque<std::tuple<unsigned, bool>> channelLoadSamples;
     double channelBusyRatio;
-    const uint cbrInterval = 12500;
 };
 
 } // namespace artery
