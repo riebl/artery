@@ -23,7 +23,7 @@ void VanetRx::initialize(int stage)
 {
     Rx::initialize(stage);
     if (stage == 0) {
-        channelLoadSamples.resize(12500);
+        channelLoadSamples.push_front(std::tuple<int,bool>(12500, false));
         channelLoadLastUpdate = simTime();
         channelBusyRatio = 0.0;
         channelReportInterval = simtime_t { 100, SIMTIME_MS };
@@ -50,7 +50,7 @@ void VanetRx::recomputeMediumFree()
     const auto updateDelta = simTime() - channelLoadLastUpdate;
     if (updateDelta >= symbolPeriod) {
         const std::size_t fillSamples = updateDelta / symbolPeriod;
-        channelLoadSamples.insert(channelLoadSamples.end(), fillSamples, !mediumFree);
+        channelLoadSamples.push_front(std::tuple<uint,bool>(fillSamples, !mediumFree));
         channelLoadLastUpdate = simTime();
     }
 
@@ -59,10 +59,37 @@ void VanetRx::recomputeMediumFree()
 
 void VanetRx::reportChannelLoad()
 {
-    const auto busy = std::count(channelLoadSamples.begin(), channelLoadSamples.end(), true);
-    const auto total = channelLoadSamples.size();
+    uint samples = 0;
+    uint busy = 0;
+    double channelBusyRatio = 0.0;
+
+    /* iterate recorded busy periods in reverse */
+    for (auto it = channelLoadSamples.begin(); it != channelLoadSamples.end();) {
+        /* get values from tuples */
+        uint sampleLength = std::get<0>(*it);
+        bool mediumBusy = std::get<1>(*it);
+
+        /* add length of list entry to total samples */
+        samples += sampleLength;
+
+        if (samples < cbrInterval) {
+            if (mediumBusy) {
+                /* increase busy time */
+                busy += sampleLength;
+            }
+            ++it;
+        }
+        else {
+            /* add remaining samples to to busy time*/
+            busy += (cbrInterval - samples) * (int)mediumBusy;
+
+            /* remove unused entries from list */
+            it = channelLoadSamples.erase(it, channelLoadSamples.end());
+        }
+    }
+
     channelBusyRatio = busy;
-    channelBusyRatio /= total;
+    channelBusyRatio /= cbrInterval;
 
     emit(ChannelLoadSignal, channelBusyRatio);
 }
