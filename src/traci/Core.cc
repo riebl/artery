@@ -75,7 +75,7 @@ void Core::checkVersion()
 {
     int expected = par("version");
     if (expected == 0) {
-        expected = constants::TRACI_VERSION;
+        expected = libsumo::TRACI_VERSION;
         EV_INFO << "Defaulting expected TraCI API level to client API version " << expected << endl;
     }
 

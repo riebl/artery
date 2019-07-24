@@ -33,7 +33,7 @@ const std::string& VehicleController::getVehicleId() const
 
 std::string VehicleController::getTypeId() const
 {
-    return m_cache->get<VAR_TYPE>();
+    return m_cache->get<libsumo::VAR_TYPE>();
 
 }
 
@@ -44,17 +44,17 @@ const VehicleType& VehicleController::getVehicleType() const
 
 const std::string VehicleController::getVehicleClass() const
 {
-    return m_cache->get<VAR_VEHICLECLASS>();
+    return m_cache->get<libsumo::VAR_VEHICLECLASS>();
 }
 
 artery::Position VehicleController::getPosition() const
 {
-    return traci::position_cast(m_boundary, m_cache->get<VAR_POSITION>());
+    return traci::position_cast(m_boundary, m_cache->get<libsumo::VAR_POSITION>());
 }
 
 auto VehicleController::getGeoPosition() const -> artery::GeoPosition
 {
-    TraCIPosition traci_pos = m_cache->get<VAR_POSITION>();
+    TraCIPosition traci_pos = m_cache->get<libsumo::VAR_POSITION>();
 
     TraCIGeoPosition traci_geo = m_api.convertGeo(traci_pos);
     artery::GeoPosition geo;
@@ -66,17 +66,17 @@ auto VehicleController::getGeoPosition() const -> artery::GeoPosition
 auto VehicleController::getHeading() const -> artery::Angle
 {
     using namespace traci;
-    return angle_cast(TraCIAngle { m_cache->get<VAR_ANGLE>() });
+    return angle_cast(TraCIAngle { m_cache->get<libsumo::VAR_ANGLE>() });
 }
 
 auto VehicleController::getSpeed() const -> Velocity
 {
-    return m_cache->get<VAR_SPEED>() * si::meter_per_second;
+    return m_cache->get<libsumo::VAR_SPEED>() * si::meter_per_second;
 }
 
 auto VehicleController::getMaxSpeed() const -> Velocity
 {
-    return m_cache->get<VAR_MAXSPEED>() * si::meter_per_second;
+    return m_cache->get<libsumo::VAR_MAXSPEED>() * si::meter_per_second;
 }
 
 void VehicleController::setMaxSpeed(Velocity v)
@@ -96,12 +96,12 @@ void VehicleController::setSpeedFactor(double f)
 
 auto VehicleController::getLength() const -> Length
 {
-    return m_cache->get<VAR_LENGTH>() * si::meter;
+    return m_cache->get<libsumo::VAR_LENGTH>() * si::meter;
 }
 
 auto VehicleController::getWidth() const -> Length
 {
-    return m_cache->get<VAR_WIDTH>() * si::meter;
+    return m_cache->get<libsumo::VAR_WIDTH>() * si::meter;
 }
 
 void VehicleController::changeTarget(const std::string& edge)

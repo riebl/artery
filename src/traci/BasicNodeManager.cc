@@ -14,10 +14,11 @@ namespace traci
 namespace
 {
 static const std::set<int> sVehicleVariables {
-    VAR_POSITION, VAR_SPEED, VAR_ANGLE
+    libsumo::VAR_POSITION, libsumo::VAR_SPEED, libsumo::VAR_ANGLE
 };
 static const std::set<int> sSimulationVariables {
-    VAR_DEPARTED_VEHICLES_IDS, VAR_ARRIVED_VEHICLES_IDS, VAR_TELEPORT_STARTING_VEHICLES_IDS, VAR_TIME
+    libsumo::VAR_DEPARTED_VEHICLES_IDS, libsumo::VAR_ARRIVED_VEHICLES_IDS, libsumo::VAR_TELEPORT_STARTING_VEHICLES_IDS,
+    libsumo::VAR_TIME
 };
 
 class VehicleObjectImpl : public BasicNodeManager::VehicleObject
@@ -26,9 +27,9 @@ public:
     VehicleObjectImpl(std::shared_ptr<VehicleCache> cache) : m_cache(cache) {}
 
     std::shared_ptr<VehicleCache> getCache() const override { return m_cache; }
-    const TraCIPosition& getPosition() const override { return m_cache->get<VAR_POSITION>(); }
-    TraCIAngle getHeading() const override { return TraCIAngle { m_cache->get<VAR_ANGLE>() }; }
-    double getSpeed() const override { return m_cache->get<VAR_SPEED>(); }
+    const TraCIPosition& getPosition() const override { return m_cache->get<libsumo::VAR_POSITION>(); }
+    TraCIAngle getHeading() const override { return TraCIAngle { m_cache->get<libsumo::VAR_ANGLE>() }; }
+    double getSpeed() const override { return m_cache->get<libsumo::VAR_SPEED>(); }
 
 private:
     std::shared_ptr<VehicleCache> m_cache;
@@ -67,7 +68,6 @@ void BasicNodeManager::finish()
 
 void BasicNodeManager::traciInit()
 {
-    using namespace traci::constants;
     m_boundary = Boundary { m_api->simulation().getNetBoundary() };
     m_subscriptions->subscribeSimulationVariables(sSimulationVariables);
     m_subscriptions->subscribeVehicleVariables(sVehicleVariables);
@@ -83,20 +83,20 @@ void BasicNodeManager::traciStep()
     auto sim_cache = m_subscriptions->getSimulationCache();
     ASSERT(checkTimeSync(*sim_cache, omnetpp::simTime()));
 
-    const auto& departed = sim_cache->get<VAR_DEPARTED_VEHICLES_IDS>();
+    const auto& departed = sim_cache->get<libsumo::VAR_DEPARTED_VEHICLES_IDS>();
     EV_DETAIL << "TraCI: " << departed.size() << " vehicles departed" << endl;
     for (const auto& id : departed) {
         addVehicle(id);
     }
 
-    const auto& arrived = sim_cache->get<VAR_ARRIVED_VEHICLES_IDS>();
+    const auto& arrived = sim_cache->get<libsumo::VAR_ARRIVED_VEHICLES_IDS>();
     EV_DETAIL << "TraCI: " << arrived.size() << " vehicles arrived" << endl;
     for (const auto& id : arrived) {
         removeVehicle(id);
     }
 
     if (m_destroy_vehicles_on_crash) {
-        const auto& teleport = sim_cache->get<VAR_TELEPORT_STARTING_VEHICLES_IDS>();
+        const auto& teleport = sim_cache->get<libsumo::VAR_TELEPORT_STARTING_VEHICLES_IDS>();
         for (const auto& id : teleport) {
             EV_DETAIL << "TraCI: " << id << " got teleported and is removed!" << endl;
             removeVehicle(id);
@@ -151,9 +151,9 @@ void BasicNodeManager::updateVehicle(const std::string& id, VehicleSink* sink)
     VehicleObjectImpl update(vehicle);
     emit(updateVehicleSignal, id.c_str(), &update);
     if (sink) {
-        sink->updateVehicle(vehicle->get<VAR_POSITION>(),
-                TraCIAngle { vehicle->get<VAR_ANGLE>() },
-                vehicle->get<VAR_SPEED>());
+        sink->updateVehicle(vehicle->get<libsumo::VAR_POSITION>(),
+                TraCIAngle { vehicle->get<libsumo::VAR_ANGLE>() },
+                vehicle->get<libsumo::VAR_SPEED>());
     }
 }
 

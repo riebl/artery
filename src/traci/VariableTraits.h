@@ -7,7 +7,7 @@
 #ifndef VARIABLETRAITS_H_LZ4RYGAV
 #define VARIABLETRAITS_H_LZ4RYGAV
 
-#include "traci/sumo/traci-server/TraCIConstants.h"
+#include "traci/sumo/libsumo/TraCIConstants.h"
 
 namespace traci
 {
@@ -37,21 +37,21 @@ RESULT_TRAIT(std::vector<std::string>, libsumo::TraCIStringList)
         using result_type = TraCIResultTrait<value_type>::result_type; \
     };
 
-VAR_TRAIT(VAR_SPEED, double)
-VAR_TRAIT(VAR_POSITION, libsumo::TraCIPosition)
-VAR_TRAIT(VAR_ANGLE, double)
-VAR_TRAIT(VAR_MAXSPEED, double)
-VAR_TRAIT(VAR_TYPE, std::string)
-VAR_TRAIT(VAR_VEHICLECLASS, std::string)
-VAR_TRAIT(VAR_LENGTH, double)
-VAR_TRAIT(VAR_WIDTH, double)
-VAR_TRAIT(VAR_ARRIVED_VEHICLES_IDS, std::vector<std::string>)
-VAR_TRAIT(VAR_DEPARTED_VEHICLES_IDS, std::vector<std::string>)
-VAR_TRAIT(VAR_DELTA_T, double)
-VAR_TRAIT(VAR_TELEPORT_STARTING_VEHICLES_IDS, std::vector<std::string>)
-VAR_TRAIT(VAR_TIME, double)
-VAR_TRAIT(VAR_TIME_STEP, int)
-VAR_TRAIT(VAR_SIGNALS, int)
+VAR_TRAIT(libsumo::VAR_SPEED, double)
+VAR_TRAIT(libsumo::VAR_POSITION, libsumo::TraCIPosition)
+VAR_TRAIT(libsumo::VAR_ANGLE, double)
+VAR_TRAIT(libsumo::VAR_MAXSPEED, double)
+VAR_TRAIT(libsumo::VAR_TYPE, std::string)
+VAR_TRAIT(libsumo::VAR_VEHICLECLASS, std::string)
+VAR_TRAIT(libsumo::VAR_LENGTH, double)
+VAR_TRAIT(libsumo::VAR_WIDTH, double)
+VAR_TRAIT(libsumo::VAR_ARRIVED_VEHICLES_IDS, std::vector<std::string>)
+VAR_TRAIT(libsumo::VAR_DEPARTED_VEHICLES_IDS, std::vector<std::string>)
+VAR_TRAIT(libsumo::VAR_DELTA_T, double)
+VAR_TRAIT(libsumo::VAR_TELEPORT_STARTING_VEHICLES_IDS, std::vector<std::string>)
+VAR_TRAIT(libsumo::VAR_TIME, double)
+VAR_TRAIT(libsumo::VAR_TIME_STEP, int)
+VAR_TRAIT(libsumo::VAR_SIGNALS, int)
 #undef VAR_TRAIT
 
 } // namespace traci
