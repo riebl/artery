@@ -89,7 +89,9 @@ double VanetNakagamiFading::computeDualSlopePathLoss(inet::m lambda, inet::m dis
     const double refLoss = computeFreeSpacePathLoss(lambda, refDist, alpha, systemLoss);
 
     double loss = 0.0;
-    if (dist < m_critical_distance) {
+    if (dist < refDist) {
+        loss = refLoss;
+    } else if (dist < m_critical_distance) {
         loss = 10.0 * m_gamma1 * std::log10(inet::unit(dist / refDist).get()) + normal(0.0, m_sigma1);
     } else {
         loss = 10.0 * m_gamma1 * std::log10(inet::unit(m_critical_distance / refDist).get())
