@@ -26,6 +26,9 @@ void VanetNakagamiFading::initialize(int stage)
 {
     if (stage == inet::INITSTAGE_LOCAL) {
         m_critical_distance = inet::m(par("criticalDistance"));
+        if (m_critical_distance < inet::m(1)) {
+            throw omnetpp::cRuntimeError("criticalDistance is expected to be greater than 1 meter");
+        }
         m_gamma1 = par("gamma1");
         m_gamma2 = par("gamma2");
         m_sigma1 = par("sigma1");
