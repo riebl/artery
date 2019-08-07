@@ -78,7 +78,7 @@ void VeinsRadioDriver::initialize()
     mLowerLayerOut = gate("lowerLayerOut");
     mLowerLayerIn = gate("lowerLayerIn");
 
-    mChannelLoadMeasurements.reset();
+    mChannelLoadSampler.reset();
     mChannelLoadReport = new cMessage("report channel load");
     mChannelLoadReportInterval = par("channelLoadReportInterval");
     scheduleAt(simTime() + mChannelLoadReportInterval, mChannelLoadReport);
@@ -94,7 +94,7 @@ void VeinsRadioDriver::initialize()
 void VeinsRadioDriver::handleMessage(cMessage* msg)
 {
     if (msg == mChannelLoadReport) {
-        double channel_load = mChannelLoadMeasurements.channel_load().value();
+        double channel_load = mChannelLoadSampler.cbr();
         emit(RadioDriverBase::ChannelLoadSignal, channel_load);
         scheduleAt(simTime() + mChannelLoadReportInterval, mChannelLoadReport);
     } else if (RadioDriverBase::isDataRequest(msg)) {
@@ -136,11 +136,7 @@ void VeinsRadioDriver::handleDataRequest(cMessage* packet)
 void VeinsRadioDriver::receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t signal, bool busy, omnetpp::cObject*)
 {
     ASSERT(signal == channelBusySignal);
-    if (busy) {
-        mChannelLoadMeasurements.busy();
-    } else {
-        mChannelLoadMeasurements.idle();
-    }
+    mChannelLoadSampler.busy(busy);
 }
 
 } // namespace artery

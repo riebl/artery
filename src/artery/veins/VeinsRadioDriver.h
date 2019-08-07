@@ -1,7 +1,7 @@
 #ifndef VEINSRADIODRIVER_H_ZJ0SI5XC
 #define VEINSRADIODRIVER_H_ZJ0SI5XC
 
-#include "artery/nic/ChannelLoadMeasurements.h"
+#include "artery/nic/ChannelLoadSampler.h"
 #include "artery/nic/RadioDriverBase.h"
 #include <omnetpp/clistener.h>
 #include <omnetpp/csimplemodule.h>
@@ -26,7 +26,7 @@ class VeinsRadioDriver : public RadioDriverBase, public omnetpp::cListener
 		omnetpp::cGate* mLowerLayerIn = nullptr;
 		omnetpp::cMessage* mChannelLoadReport = nullptr;
 		omnetpp::simtime_t mChannelLoadReportInterval;
-		ChannelLoadMeasurements mChannelLoadMeasurements;
+		ChannelLoadSampler mChannelLoadSampler;
 };
 
 } // namespace artery
