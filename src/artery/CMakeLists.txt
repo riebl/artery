@@ -95,6 +95,7 @@ if(TARGET INET)
         inet/gemv2/VehicleIndex.cc
         inet/gemv2/Visualizer.cc
         inet/VanetNakagamiFading.cc
+        inet/VanetRadio.cc
     )
     target_link_libraries(core PUBLIC INET)
 endif()
