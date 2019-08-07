@@ -7,4 +7,5 @@ simple VanetRx extends Rx
     parameters:
         @class(VanetRx);
         @signal[ChannelLoad](type=double);
+        @statistic[ChannelLoad](record=timeavg,vector?);
 }
