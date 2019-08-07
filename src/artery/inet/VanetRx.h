@@ -1,9 +1,8 @@
 #ifndef ARTERY_VANETRX_H_KTVCYSUX
 #define ARTERY_VANETRX_H_KTVCYSUX
 
+#include "artery/nic/ChannelLoadSampler.h"
 #include "inet/linklayer/ieee80211/mac/Rx.h"
-#include <deque>
-#include <tuple>
 
 namespace artery
 {
@@ -25,9 +24,7 @@ protected:
 private:
     omnetpp::simtime_t channelReportInterval;
     omnetpp::cMessage* channelReportTrigger;
-    omnetpp::simtime_t channelLoadLastUpdate;
-    std::deque<std::tuple<unsigned, bool>> channelLoadSamples;
-    double channelBusyRatio;
+    ChannelLoadSampler channelLoadSampler;
 };
 
 } // namespace artery
