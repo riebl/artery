@@ -25,6 +25,7 @@ private:
     omnetpp::simtime_t channelReportInterval;
     omnetpp::cMessage* channelReportTrigger;
     ChannelLoadSampler channelLoadSampler;
+    bool mCbrWithTx = false;
 };
 
 } // namespace artery

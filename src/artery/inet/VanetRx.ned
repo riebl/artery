@@ -8,4 +8,6 @@ simple VanetRx extends Rx
         @class(VanetRx);
         @signal[ChannelLoad](type=double);
         @statistic[ChannelLoad](record=timeavg,vector?);
+
+        bool cbrWithTx = default(false);
 }

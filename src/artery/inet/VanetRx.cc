@@ -22,6 +22,7 @@ void VanetRx::initialize(int stage)
 {
     Rx::initialize(stage);
     if (stage == 0) {
+        mCbrWithTx = par("cbrWithTx");
         channelReportInterval = simtime_t { 100, SIMTIME_MS };
         channelReportTrigger = new cMessage("report CL");
         scheduleAt(simTime() + channelReportInterval, channelReportTrigger);
@@ -43,7 +44,13 @@ void VanetRx::handleMessage(cMessage* msg)
 void VanetRx::recomputeMediumFree()
 {
     Rx::recomputeMediumFree();
-    channelLoadSampler.busy(!mediumFree);
+
+    using ReceptionState = inet::physicallayer::IRadio::ReceptionState;
+    if (mCbrWithTx) {
+        channelLoadSampler.busy(!mediumFree);
+    } else {
+        channelLoadSampler.busy(!mediumFree && receptionState > ReceptionState::RECEPTION_STATE_IDLE);
+    }
 }
 
 void VanetRx::reportChannelLoad()
