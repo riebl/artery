@@ -9,6 +9,7 @@
 
 #include <omnetpp/simtime.h>
 #include <deque>
+#include <ostream>
 #include <tuple>
 
 namespace artery
@@ -22,14 +23,16 @@ class ChannelLoadSampler
         void busy(bool flag);
         double cbr();
 
+        friend std::ostream& operator<<(std::ostream& os, const ChannelLoadSampler&);
+
     private:
         void updateCbr();
         unsigned computePendingSamples() const;
 
-        omnetpp::SimTime m_last_update;
-        std::deque<std::tuple<unsigned, bool>> m_samples;
-        bool m_busy;
-        double m_cbr;
+        omnetpp::SimTime mLastUpdate;
+        std::deque<std::tuple<unsigned, bool>> mSamples;
+        bool mBusy;
+        double mCbr;
 };
 
 } // namespace artery

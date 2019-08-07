@@ -5,29 +5,29 @@
 namespace artery
 {
 
-ChannelLoadSampler::ChannelLoadSampler() : m_busy(false), m_cbr(0.0)
+ChannelLoadSampler::ChannelLoadSampler() : mBusy(false), mCbr(0.0)
 {
     reset();
 }
 
 void ChannelLoadSampler::reset()
 {
-    m_last_update = omnetpp::simTime();
-    m_samples.clear();
-    m_busy = false;
-    m_cbr = 0.0;
+    mLastUpdate = omnetpp::simTime();
+    mSamples.clear();
+    mBusy = false;
+    mCbr = 0.0;
 }
 
 void ChannelLoadSampler::busy(bool flag)
 {
-    if (m_busy != flag) {
+    if (mBusy != flag) {
         const auto fillSamples = computePendingSamples();
         if (fillSamples > 0) {
             // fill if busy state changed for at least one sample
-            m_samples.emplace_front(fillSamples, m_busy);
+            mSamples.emplace_front(fillSamples, mBusy);
         }
-        m_busy = flag;
-        m_last_update = omnetpp::simTime();
+        mBusy = flag;
+        mLastUpdate = omnetpp::simTime();
     }
 }
 
@@ -35,7 +35,7 @@ unsigned ChannelLoadSampler::computePendingSamples() const
 {
     static const omnetpp::SimTime cbrSamplePeriod { 8, omnetpp::SIMTIME_US };
 
-    const auto updateDelta = omnetpp::simTime() - m_last_update;
+    const auto updateDelta = omnetpp::simTime() - mLastUpdate;
     return updateDelta / cbrSamplePeriod;
 }
 
@@ -50,11 +50,11 @@ void ChannelLoadSampler::updateCbr()
     const auto pendingSamples = computePendingSamples();
     if (pendingSamples > 0) {
         samples = std::min(cbrIntervalSamples, pendingSamples);
-        busy = m_busy ? samples : 0;
+        busy = mBusy ? samples : 0;
     }
 
     // iterate recorded busy periods (begin with most recent period)
-    for (auto it = m_samples.begin(); it != m_samples.end();) {
+    for (auto it = mSamples.begin(); it != mSamples.end();) {
         // get values from tuples
         unsigned sampleLength = std::get<0>(*it);
         bool mediumBusy = std::get<1>(*it);
@@ -75,17 +75,23 @@ void ChannelLoadSampler::updateCbr()
             }
 
             // remove obsolete periods
-            it = m_samples.erase(it, m_samples.end());
+            it = mSamples.erase(it, mSamples.end());
         }
     }
 
-    m_cbr = static_cast<double>(busy) / static_cast<double>(cbrIntervalSamples);
+    mCbr = static_cast<double>(busy) / static_cast<double>(cbrIntervalSamples);
 }
 
 double ChannelLoadSampler::cbr()
 {
     updateCbr();
-    return m_cbr;
+    return mCbr;
+}
+
+std::ostream& operator<<(std::ostream& os, const ChannelLoadSampler& sampler)
+{
+    os << "CBR=" << sampler.mCbr << " (" << sampler.mSamples.size() << " busy edges pending)";
+    return os;
 }
 
 } // namespace artery
