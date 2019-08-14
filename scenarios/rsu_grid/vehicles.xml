@@ -1,0 +1,4 @@
+<vehicles>
+    <vehicle type="artery.envmod.Car" rate="0.5" />
+    <vehicle type="artery.inet.PlainVehicle" rate="0.5" />
+</vehicles>

@@ -1,0 +1,27 @@
+<shapes>
+<poly id="poly_0" type="building" color="106,168,219" fill="1" layer="4" shape="10.0,10.0 110.0,10.0 110.0,110.0 10.0,110.0 10.0,10.0"/>
+<poly id="poly_1" type="building" color="106,168,219" fill="1" layer="4" shape="130.0,10.0 230.0,10.0 230.0,110.0 130.0,110.0 130.0,10.0"/>
+<poly id="poly_2" type="building" color="106,168,219" fill="1" layer="4" shape="250.0,10.0 350.0,10.0 350.0,110.0 250.0,110.0 250.0,10.0"/>
+<poly id="poly_3" type="building" color="106,168,219" fill="1" layer="4" shape="370.0,10.0 470.0,10.0 470.0,110.0 370.0,110.0 370.0,10.0"/>
+<poly id="poly_4" type="building" color="106,168,219" fill="1" layer="4" shape="490.0,10.0 590.0,10.0 590.0,110.0 490.0,110.0 490.0,10.0"/>
+<poly id="poly_5" type="building" color="106,168,219" fill="1" layer="4" shape="10.0,130.0 110.0,130.0 110.0,230.0 10.0,230.0 10.0,130.0"/>
+<poly id="poly_6" type="building" color="106,168,219" fill="1" layer="4" shape="130.0,130.0 230.0,130.0 230.0,230.0 130.0,230.0 130.0,130.0"/>
+<poly id="poly_7" type="building" color="106,168,219" fill="1" layer="4" shape="250.0,130.0 350.0,130.0 350.0,230.0 250.0,230.0 250.0,130.0"/>
+<poly id="poly_8" type="building" color="106,168,219" fill="1" layer="4" shape="370.0,130.0 470.0,130.0 470.0,230.0 370.0,230.0 370.0,130.0"/>
+<poly id="poly_9" type="building" color="106,168,219" fill="1" layer="4" shape="490.0,130.0 590.0,130.0 590.0,230.0 490.0,230.0 490.0,130.0"/>
+<poly id="poly_10" type="building" color="106,168,219" fill="1" layer="4" shape="10.0,250.0 110.0,250.0 110.0,350.0 10.0,350.0 10.0,250.0"/>
+<poly id="poly_11" type="building" color="106,168,219" fill="1" layer="4" shape="130.0,250.0 230.0,250.0 230.0,350.0 130.0,350.0 130.0,250.0"/>
+<poly id="poly_12" type="building" color="106,168,219" fill="1" layer="4" shape="250.0,250.0 350.0,250.0 350.0,350.0 250.0,350.0 250.0,250.0"/>
+<poly id="poly_13" type="building" color="106,168,219" fill="1" layer="4" shape="370.0,250.0 470.0,250.0 470.0,350.0 370.0,350.0 370.0,250.0"/>
+<poly id="poly_14" type="building" color="106,168,219" fill="1" layer="4" shape="490.0,250.0 590.0,250.0 590.0,350.0 490.0,350.0 490.0,250.0"/>
+<poly id="poly_15" type="building" color="106,168,219" fill="1" layer="4" shape="10.0,370.0 110.0,370.0 110.0,470.0 10.0,470.0 10.0,370.0"/>
+<poly id="poly_16" type="building" color="106,168,219" fill="1" layer="4" shape="130.0,370.0 230.0,370.0 230.0,470.0 130.0,470.0 130.0,370.0"/>
+<poly id="poly_17" type="building" color="106,168,219" fill="1" layer="4" shape="250.0,370.0 350.0,370.0 350.0,470.0 250.0,470.0 250.0,370.0"/>
+<poly id="poly_18" type="building" color="106,168,219" fill="1" layer="4" shape="370.0,370.0 470.0,370.0 470.0,470.0 370.0,470.0 370.0,370.0"/>
+<poly id="poly_19" type="building" color="106,168,219" fill="1" layer="4" shape="490.0,370.0 590.0,370.0 590.0,470.0 490.0,470.0 490.0,370.0"/>
+<poly id="poly_20" type="building" color="106,168,219" fill="1" layer="4" shape="10.0,490.0 110.0,490.0 110.0,590.0 10.0,590.0 10.0,490.0"/>
+<poly id="poly_21" type="building" color="106,168,219" fill="1" layer="4" shape="130.0,490.0 230.0,490.0 230.0,590.0 130.0,590.0 130.0,490.0"/>
+<poly id="poly_22" type="building" color="106,168,219" fill="1" layer="4" shape="250.0,490.0 350.0,490.0 350.0,590.0 250.0,590.0 250.0,490.0"/>
+<poly id="poly_23" type="building" color="106,168,219" fill="1" layer="4" shape="370.0,490.0 470.0,490.0 470.0,590.0 370.0,590.0 370.0,490.0"/>
+<poly id="poly_24" type="building" color="106,168,219" fill="1" layer="4" shape="490.0,490.0 590.0,490.0 590.0,590.0 490.0,590.0 490.0,490.0"/>
+</shapes>
