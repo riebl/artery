@@ -1,5 +1,6 @@
 package artery.inet;
 
+import artery.StaticNodeManager;
 import artery.storyboard.Storyboard;
 import inet.environment.contract.IPhysicalEnvironment;
 import inet.physicallayer.contract.packetlevel.IRadioMedium;
@@ -40,5 +41,10 @@ network World
         rsu[numRoadSideUnits]: RSU {
             parameters:
                 mobility.initFromDisplayString = false;
+        }
+
+        staticNodes: StaticNodeManager {
+            parameters:
+                @display("p=20,40");
         }
 }
