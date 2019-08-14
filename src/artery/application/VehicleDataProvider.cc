@@ -139,6 +139,17 @@ void VehicleDataProvider::calculateCurvatureConfidence()
 	mConfidence = mapOntoConfidence(abs(filter));
 }
 
+void VehicleDataProvider::computeGeoPosition(traci::LiteAPI* traci_api){
+    Position rsuOmnetPos(mPosition.x, mPosition.y);
+
+    const traci::Boundary boundary { traci_api->simulation().getNetBoundary() };
+    traci::TraCIPosition rsuSumoPos = position_cast(boundary, rsuOmnetPos);
+    traci::TraCIGeoPosition rsuGeoPos = traci_api->convertGeo(rsuSumoPos);
+
+    mGeoPosition.latitude = rsuGeoPos.latitude * boost::units::degree::degree;
+    mGeoPosition.longitude = rsuGeoPos.longitude * boost::units::degree::degree;
+}
+
 void VehicleDataProvider::update(const traci::VehicleController* controller)
 {
 	using namespace omnetpp;
@@ -188,6 +199,11 @@ double VehicleDataProvider::mapOntoConfidence(AngularAcceleration x) const
 		throw std::domain_error("input value is less than smallest entry in confidence table");
 	}
 	return it->second;
+}
+
+void VehicleDataProvider::set_station_id(uint32_t stationId)
+{
+	mStationId = stationId;
 }
 
 void VehicleDataProvider::setStationType(StationType type)

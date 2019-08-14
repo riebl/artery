@@ -10,4 +10,7 @@ simple StationaryMiddleware extends Middleware
 {
 	parameters:
 		@class(StationaryMiddleware);
+
+		string mobilityModule;
+		string coreModule = default("traci.core");
 }

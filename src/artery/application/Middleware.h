@@ -70,14 +70,15 @@ class Middleware : public omnetpp::cSimpleModule, public omnetpp::cListener
 
         omnetpp::cModule* findHost();
         void setStationType(const StationType&);
-
-    private:
         void updateServices();
-        void initializeServices(int stage);
 
         omnetpp::SimTime mUpdateInterval;
         omnetpp::cMessage* mUpdateMessage = nullptr;
         Timer mTimer;
+
+    private:
+        void initializeServices(int stage);
+
         Identity mIdentity;
         LocalDynamicMap mLocalDynamicMap;
         Facilities mFacilities;

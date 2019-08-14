@@ -8,6 +8,8 @@
 #define ARTERY_STATIONARYMIDDLEWARE_H_IE9M1YJ3
 
 #include "artery/application/Middleware.h"
+#include "artery/application/LocalDynamicMap.h"
+#include "artery/application/VehicleDataProvider.h"
 
 namespace artery
 {
@@ -15,7 +17,18 @@ namespace artery
 class StationaryMiddleware : public Middleware
 {
     public:
+        StationaryMiddleware();
         void initialize(int stage) override;
+
+    protected:
+        void handleMessage(omnetpp::cMessage* msg) override;
+
+    private:
+        void updateServices();
+
+    private:
+        LocalDynamicMap mLocalDynamicMap;
+        VehicleDataProvider mVehicleDataProvider;
 };
 
 } // namespace artery

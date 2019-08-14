@@ -84,6 +84,7 @@ if(TARGET INET)
         inet/DistanceSwitchPathLoss.cc
         inet/InetRadioDriver.cc
         inet/InetMobility.cc
+        inet/RSUMobility.cc
         inet/gemv2/LinkClassifier.cc
         inet/gemv2/NLOSb.cc
         inet/gemv2/NLOSf.cc

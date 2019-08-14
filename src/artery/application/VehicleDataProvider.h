@@ -51,8 +51,11 @@ class VehicleDataProvider
 		void update(const traci::VehicleController*);
 		omnetpp::SimTime updated() const { return mLastUpdate; }
 
+		void set_station_id(uint32_t stationId);
 		uint32_t station_id() const { return mStationId; }
+		void setPosition(Position pos){mPosition = pos;}
 		const Position& position() const { return mPosition; }
+		void computeGeoPosition(traci::LiteAPI*);
 		vanetza::units::GeoAngle longitude() const { return mGeoPosition.longitude; } // positive for east
 		vanetza::units::GeoAngle latitude() const { return mGeoPosition.latitude; } // positive for north
 		vanetza::units::Velocity speed() const { return mSpeed; }
@@ -64,6 +67,8 @@ class VehicleDataProvider
 
 		void setStationType(StationType);
 		StationType getStationType() const;
+		void setAntennaDirections(std::set<double> directions){antennaDirections = directions;}
+		std::set<double> getAntennaDirections() {return antennaDirections; }
 
 	private:
 		typedef boost::units::quantity<boost::units::si::angular_acceleration> AngularAcceleration;
@@ -86,6 +91,7 @@ class VehicleDataProvider
 		boost::circular_buffer<AngularAcceleration> mCurvatureConfidenceOutput;
 		vanetza::units::AngularVelocity mCurvatureConfidenceInput;
 		static const std::map<AngularAcceleration, double> mConfidenceTable;
+		std::set<double> antennaDirections;
 };
 
 } // namespace artery

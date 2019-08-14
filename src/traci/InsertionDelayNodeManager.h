@@ -26,6 +26,7 @@ protected:
     void handleMessage(omnetpp::cMessage*) override;
 
     void addVehicle(const std::string& id) override;
+    void addRSU(const std::string& index) override;
     void updateVehicle(const std::string& id, VehicleSink*) override;
     void removeVehicle(const std::string& id) override;
 
@@ -33,9 +34,12 @@ private:
     using InsertionQueue = boost::bimaps::bimap<std::string, boost::bimaps::multiset_of<omnetpp::SimTime>>;
 
     void scheduleVehicleInsertion();
+    void scheduleRSUInsertion();
 
     omnetpp::cMessage* m_insert_event;
     InsertionQueue m_insert_queue;
+    omnetpp::cMessage* m_rsu_insert_event;
+    InsertionQueue m_rsu_insert_queue;
 };
 
 } // namespace traci

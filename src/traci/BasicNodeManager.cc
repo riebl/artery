@@ -6,6 +6,8 @@
 #include "traci/VariableCache.h"
 #include "traci/VehicleSink.h"
 #include <inet/common/ModuleAccess.h>
+#include "artery/inet/RSUMobility.h"
+#include <artery/inet/AntennaMobility.h>
 
 using namespace omnetpp;
 
@@ -54,9 +56,12 @@ void BasicNodeManager::initialize()
     m_api = &core->getLiteAPI();
     m_mapper = inet::getModuleFromPar<ModuleMapper>(par("mapperModule"), this);
     m_nodeIndex = 0;
+    m_rsuIndex = 0;
+    m_probeIndex = 0;
     m_vehicle_sink_module = par("vehicleSinkModule").stringValue();
     m_subscriptions = inet::getModuleFromPar<SubscriptionManager>(par("subscriptionsModule"), this);
     m_destroy_vehicles_on_crash = par("destroyVehiclesOnCrash");
+    directional = par("directional");
 }
 
 void BasicNodeManager::finish()
@@ -76,6 +81,8 @@ void BasicNodeManager::traciInit()
     for (const std::string& id : m_api->vehicle().getIDList()) {
         addVehicle(id);
     }
+
+    addRSUs();
 }
 
 void BasicNodeManager::traciStep()
@@ -119,6 +126,75 @@ void BasicNodeManager::traciClose()
     }
 }
 
+void BasicNodeManager::addRSUs()
+{
+    cXMLElement* config = par("RSUs").xmlValue();
+
+    int index = 0;
+    for (cXMLElement* rsu : config->getChildrenByTagName("rsu")) {
+
+        TraCIPosition sumoPos;
+        sumoPos.x = std::stod(rsu->getAttribute("positionX"));
+        sumoPos.y = std::stod(rsu->getAttribute("positionY"));
+        artery::Position omnetPos = position_cast(m_boundary, sumoPos);
+
+        std::list<double> antennaDirections;
+
+        for (cXMLElement* antenna : rsu->getChildrenByTagName("antenna")){
+            double direction = std::stod(antenna->getAttribute("direction"));
+            antennaDirections.push_back(direction);
+        }
+
+        RSU rsuStruct;
+        rsuStruct.position = omnetPos;
+        rsuStruct.antennaDirections = antennaDirections;
+
+        rsuMap.insert(std::make_pair(std::to_string(index), rsuStruct));
+
+        addRSU(std::to_string(index));
+        index++;
+    }
+}
+
+void BasicNodeManager::addRSU(const std::string& index)
+{
+    artery::Position omnetPos(rsuMap.at(index).position);
+    std::list<double> antennaDirections = rsuMap.at(index).antennaDirections;
+
+
+    std::string rsuID = "rsu" + index;
+    cModuleType* type = cModuleType::get("artery.inet.RSU");
+    cModule* rsuModule = createRSUModule(rsuID, type);
+
+    rsuModule->par("numRadios") = (directional? antennaDirections.size() : 1);
+    rsuModule->par("directionalAntennas") = (directional ? true : false);
+    rsuModule->finalizeParameters();
+    rsuModule->buildInside();
+    m_nodes[rsuID] = rsuModule;
+    rsuModule->scheduleStart(simTime());
+
+    cModule* mobilityModule = rsuModule->getModuleByPath(m_vehicle_sink_module.c_str());
+    auto* mobility = dynamic_cast<artery::RSUMobility*>(mobilityModule);
+    mobility->setPosition(inet::Coord(omnetPos.x.value(), omnetPos.y.value(), 7.1));
+
+    if(directional){
+        int antennaMobilityIndex = 0;
+        for (std::list<double>::iterator it = antennaDirections.begin(); it != antennaDirections.end(); it++){
+            std::stringstream ss;
+            ss << ".antennaMobility[" << antennaMobilityIndex << "]";
+            std::string antennaMobilityPath = ss.str();
+            cModule* antennaMobilityModule = rsuModule->getModuleByPath(antennaMobilityPath.c_str());
+            auto* antennaMobility = dynamic_cast<artery::AntennaMobility*>(antennaMobilityModule);
+            antennaMobility->setOffsetAlpha(*it);
+            antennaMobilityIndex++;
+        }
+    }
+
+    rsuModule->callInitialize();
+    emit(addNodeSignal, rsuID.c_str(), rsuModule);
+}
+
+
 void BasicNodeManager::addVehicle(const std::string& id)
 {
     NodeInitializer init = [this, &id](cModule* module) {
@@ -161,6 +237,20 @@ cModule* BasicNodeManager::createModule(const std::string&, cModuleType* type)
 {
     cModule* module = type->create("node", getSystemModule(), m_nodeIndex, m_nodeIndex);
     ++m_nodeIndex;
+    return module;
+}
+
+cModule* BasicNodeManager::createRSUModule(const std::string&, cModuleType* type)
+{
+    cModule* module = type->create("rsu", getSystemModule(), m_rsuIndex, m_rsuIndex);
+    ++m_rsuIndex;
+    return module;
+}
+
+cModule* BasicNodeManager::createProbeModule(const std::string&, cModuleType* type)
+{
+    cModule* module = type->create("probe", getSystemModule(), m_probeIndex, m_probeIndex);
+    ++m_probeIndex;
     return module;
 }
 

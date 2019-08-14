@@ -14,7 +14,8 @@ namespace traci
 Define_Module(InsertionDelayNodeManager)
 
 InsertionDelayNodeManager::InsertionDelayNodeManager() :
-    m_insert_event(new omnetpp::cMessage("TraCI vehicle insertion"))
+    m_insert_event(new omnetpp::cMessage("TraCI vehicle insertion")),
+    m_rsu_insert_event(new omnetpp::cMessage("TraCI RSU insertion"))
 {
 }
 
@@ -35,7 +36,17 @@ void InsertionDelayNodeManager::handleMessage(cMessage* msg)
         BasicNodeManager::updateVehicle(id, getVehicleSink(id));
         m_insert_queue.right.erase(next_insertion);
         scheduleVehicleInsertion();
-    } else {
+    } else if(msg == m_rsu_insert_event && !m_rsu_insert_queue.empty()){
+        auto next_insertion = m_rsu_insert_queue.right.begin();
+        const SimTime& when = next_insertion->first;
+        const std::string& id = next_insertion->second;
+        ASSERT(when == simTime());
+
+        BasicNodeManager::addRSU(id);
+        m_rsu_insert_queue.right.erase(next_insertion);
+        scheduleRSUInsertion();
+    }
+    else {
         BasicNodeManager::handleMessage(msg);
     }
 }
@@ -51,6 +62,17 @@ void InsertionDelayNodeManager::scheduleVehicleInsertion()
     }
 }
 
+void InsertionDelayNodeManager::scheduleRSUInsertion()
+{
+    cancelEvent(m_rsu_insert_event);
+    if (!m_rsu_insert_queue.empty()) {
+        auto next_insertion = m_rsu_insert_queue.right.begin();
+        const SimTime& when = next_insertion->first;
+        ASSERT(when >= simTime());
+        scheduleAt(when, m_rsu_insert_event);
+    }
+}
+
 void InsertionDelayNodeManager::addVehicle(const std::string& id)
 {
     Enter_Method_Silent();
@@ -58,6 +80,15 @@ void InsertionDelayNodeManager::addVehicle(const std::string& id)
     m_insert_queue.insert(InsertionQueue::relation(id, when));
     EV_DETAIL << "vehicle " << id << " will be inserted at time " << when << "\n";
     scheduleVehicleInsertion();
+}
+
+void InsertionDelayNodeManager::addRSU(const std::string& index)
+{
+    Enter_Method_Silent();
+    const SimTime when = simTime() + par("insertionDelay");
+    m_rsu_insert_queue.insert(InsertionQueue::relation(index, when));
+    EV_DETAIL << "rsu " << index << " will be inserted at time " << when << "\n";
+    scheduleRSUInsertion();
 }
 
 void InsertionDelayNodeManager::updateVehicle(const std::string& id, VehicleSink* sink)

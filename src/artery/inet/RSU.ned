@@ -7,6 +7,7 @@ import inet.node.inet.INetworkNode;
 import inet.linklayer.contract.IWirelessNic;
 import inet.mobility.contract.IMobility;
 import inet.networklayer.common.InterfaceTable;
+import artery.envmod.LocalEnvironmentModel;
 
 module RSU like INetworkNode
 {
@@ -17,6 +18,7 @@ module RSU like INetworkNode
         int numRadios = default(1);
         *.interfaceTableModule = default(absPath(".interfaceTable"));
         mobility.visualRepresentation = "^";
+        bool directionalAntennas = default(false);
 
     gates:
         input radioIn[numRadios] @directIn;
@@ -32,6 +34,13 @@ module RSU like INetworkNode
         wlan[numRadios]: <default("VanetNic")> like IWirelessNic {
             parameters:
                 @display("p=216,406,row,60;q=queue");
+                radio.antenna.mobilityModule = directionalAntennas ? ".antennaMobility[" + string(index) + "]" : ".mobility";
+        }
+
+        antennaMobility[numRadios]: AntennaMobility if directionalAntennas == true {
+            parameters:
+                @display("p=100,200");
+                mobilityModule = "^.mobility";
         }
 
         radioDriver[numRadios]: RadioDriver {
@@ -48,10 +57,11 @@ module RSU like INetworkNode
                 *.traciCoreModule = "traci.core";
                 position.typename = default("StationaryPositionProvider");
                 runtime.datetime = middleware.datetime;
+                router.antennaMobilityModule = directionalAntennas ? ".antennaMobility[" + string(index) + "]" : ".mobility";
                 router.isMobile = false;
         }
 
-        mobility: <default("inet.mobility.static.StationaryMobility")> like IMobility {
+        mobility: <default("artery.inet.RSUMobility")> like IMobility {
             parameters:
                 @display("p=53,200");
         }
@@ -59,6 +69,12 @@ module RSU like INetworkNode
         middleware: StationaryMiddleware {
             parameters:
                 @display("p=50,100");
+                mobilityModule = ".mobility";
+        }
+
+        environmentModel: LocalEnvironmentModel {
+            @display("p=214,57");
+            middlewareModule = default(".middleware");
         }
 
     connections:
@@ -67,8 +83,8 @@ module RSU like INetworkNode
 
             wlan[i].upperLayerOut --> radioDriver[i].lowerLayerIn;
             wlan[i].upperLayerIn <-- radioDriver[i].lowerLayerOut;
-        }
 
-        radioDriver[0].upperLayer <--> vanetza.radioDriverData;
-        radioDriver[0].properties --> vanetza.radioDriverProperties;
+            radioDriver[i].upperLayer <--> vanetza[i].radioDriverData;
+            radioDriver[i].properties --> vanetza[i].radioDriverProperties;
+        }
 }
