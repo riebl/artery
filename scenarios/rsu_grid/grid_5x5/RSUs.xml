@@ -1,6 +1,31 @@
 <RSUs>
+  <!--This file was generated with './RSUGenerator.py -n grid_5x5/grid_scenario_traffic_light.net.xml -o grid_5x5/RSUs.xml'-->
+  <rsu junctionID="A0" positionX="0.0" positionY="0.0">
+    <antenna direction="-1.5707963267948966"/>
+    <antenna direction="0"/>
+  </rsu>
+  <rsu junctionID="A1" positionX="0.0" positionY="120.0">
+    <antenna direction="1.5707963267948966"/>
+    <antenna direction="-1.5707963267948966"/>
+    <antenna direction="0"/>
+  </rsu>
+  <rsu junctionID="B0" positionX="120.0" positionY="0.0">
+    <antenna direction="3.141592653589793"/>
+    <antenna direction="-1.5707963267948966"/>
+    <antenna direction="0"/>
+  </rsu>
+  <rsu junctionID="A2" positionX="0.0" positionY="240.0">
+    <antenna direction="1.5707963267948966"/>
+    <antenna direction="-1.5707963267948966"/>
+    <antenna direction="0"/>
+  </rsu>
   <rsu junctionID="B1" positionX="120.0" positionY="120.0">
     <antenna direction="3.141592653589793"/>
+    <antenna direction="1.5707963267948966"/>
+    <antenna direction="-1.5707963267948966"/>
+    <antenna direction="0"/>
+  </rsu>
+  <rsu junctionID="A3" positionX="0.0" positionY="360.0">
     <antenna direction="1.5707963267948966"/>
     <antenna direction="-1.5707963267948966"/>
     <antenna direction="0"/>
@@ -11,15 +36,34 @@
     <antenna direction="-1.5707963267948966"/>
     <antenna direction="0"/>
   </rsu>
+  <rsu junctionID="A4" positionX="0.0" positionY="480.0">
+    <antenna direction="1.5707963267948966"/>
+    <antenna direction="-1.5707963267948966"/>
+    <antenna direction="0"/>
+  </rsu>
   <rsu junctionID="B3" positionX="120.0" positionY="360.0">
     <antenna direction="3.141592653589793"/>
     <antenna direction="1.5707963267948966"/>
     <antenna direction="-1.5707963267948966"/>
     <antenna direction="0"/>
   </rsu>
+  <rsu junctionID="A5" positionX="0.0" positionY="600.0">
+    <antenna direction="1.5707963267948966"/>
+    <antenna direction="0"/>
+  </rsu>
   <rsu junctionID="B4" positionX="120.0" positionY="480.0">
     <antenna direction="3.141592653589793"/>
     <antenna direction="1.5707963267948966"/>
+    <antenna direction="-1.5707963267948966"/>
+    <antenna direction="0"/>
+  </rsu>
+  <rsu junctionID="B5" positionX="120.0" positionY="600.0">
+    <antenna direction="3.141592653589793"/>
+    <antenna direction="1.5707963267948966"/>
+    <antenna direction="0"/>
+  </rsu>
+  <rsu junctionID="C0" positionX="240.0" positionY="0.0">
+    <antenna direction="3.141592653589793"/>
     <antenna direction="-1.5707963267948966"/>
     <antenna direction="0"/>
   </rsu>
@@ -47,6 +91,16 @@
     <antenna direction="-1.5707963267948966"/>
     <antenna direction="0"/>
   </rsu>
+  <rsu junctionID="C5" positionX="240.0" positionY="600.0">
+    <antenna direction="3.141592653589793"/>
+    <antenna direction="1.5707963267948966"/>
+    <antenna direction="0"/>
+  </rsu>
+  <rsu junctionID="D0" positionX="360.0" positionY="0.0">
+    <antenna direction="3.141592653589793"/>
+    <antenna direction="-1.5707963267948966"/>
+    <antenna direction="0"/>
+  </rsu>
   <rsu junctionID="D1" positionX="360.0" positionY="120.0">
     <antenna direction="3.141592653589793"/>
     <antenna direction="1.5707963267948966"/>
@@ -68,6 +122,16 @@
   <rsu junctionID="D4" positionX="360.0" positionY="480.0">
     <antenna direction="3.141592653589793"/>
     <antenna direction="1.5707963267948966"/>
+    <antenna direction="-1.5707963267948966"/>
+    <antenna direction="0"/>
+  </rsu>
+  <rsu junctionID="D5" positionX="360.0" positionY="600.0">
+    <antenna direction="3.141592653589793"/>
+    <antenna direction="1.5707963267948966"/>
+    <antenna direction="0"/>
+  </rsu>
+  <rsu junctionID="E0" positionX="480.0" positionY="0.0">
+    <antenna direction="3.141592653589793"/>
     <antenna direction="-1.5707963267948966"/>
     <antenna direction="0"/>
   </rsu>
@@ -94,5 +158,38 @@
     <antenna direction="1.5707963267948966"/>
     <antenna direction="-1.5707963267948966"/>
     <antenna direction="0"/>
+  </rsu>
+  <rsu junctionID="E5" positionX="480.0" positionY="600.0">
+    <antenna direction="3.141592653589793"/>
+    <antenna direction="1.5707963267948966"/>
+    <antenna direction="0"/>
+  </rsu>
+  <rsu junctionID="F0" positionX="600.0" positionY="0.0">
+    <antenna direction="3.141592653589793"/>
+    <antenna direction="-1.5707963267948966"/>
+  </rsu>
+  <rsu junctionID="F1" positionX="600.0" positionY="120.0">
+    <antenna direction="3.141592653589793"/>
+    <antenna direction="1.5707963267948966"/>
+    <antenna direction="-1.5707963267948966"/>
+  </rsu>
+  <rsu junctionID="F2" positionX="600.0" positionY="240.0">
+    <antenna direction="3.141592653589793"/>
+    <antenna direction="1.5707963267948966"/>
+    <antenna direction="-1.5707963267948966"/>
+  </rsu>
+  <rsu junctionID="F3" positionX="600.0" positionY="360.0">
+    <antenna direction="3.141592653589793"/>
+    <antenna direction="1.5707963267948966"/>
+    <antenna direction="-1.5707963267948966"/>
+  </rsu>
+  <rsu junctionID="F4" positionX="600.0" positionY="480.0">
+    <antenna direction="3.141592653589793"/>
+    <antenna direction="1.5707963267948966"/>
+    <antenna direction="-1.5707963267948966"/>
+  </rsu>
+  <rsu junctionID="F5" positionX="600.0" positionY="600.0">
+    <antenna direction="3.141592653589793"/>
+    <antenna direction="1.5707963267948966"/>
   </rsu>
 </RSUs>
