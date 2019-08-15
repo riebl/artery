@@ -21,22 +21,24 @@ parser = argparse.ArgumentParser(
 	epilog="""This script reads junctions coordinates and their edges from SUMO network XML file. 
 				Generates a RSU in the center of every junction and adds an antenna for each outgoing edge.""")
 
-parser.add_argument('--net',
+parser.add_argument('-n',
     help='SUMO network file to parse', 
 	type=str, metavar='<path>/<scenario>.net.xml', required=True)
 
-parser.add_argument('--output',
+parser.add_argument('-o',
     help='File to write RSU definitions to', 
 	type=str, metavar='<path>/RSU.xml', required=True)
 
 	
 args = parser.parse_args()
 
-net = sumolib.net.readNet(args.net)
+net = sumolib.net.readNet(args.n)
 
 junctionCount = 0
 
 root = etree.Element("RSUs")
+
+root.append(etree.Comment("This file was generated with \'" + " ".join(sys.argv) + "\'"))
 
 for junction in net.getNodes():
 	junctionCount += 1
@@ -63,4 +65,4 @@ for junction in net.getNodes():
 
 tree = etree.ElementTree(root)
 
-tree.write(args.output, pretty_print=True)
+tree.write(args.o, pretty_print=True)
