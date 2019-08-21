@@ -1,4 +1,5 @@
 #include "artery/inet/ChannelLoadRx.h"
+#include <cmath>
 
 using namespace omnetpp;
 
@@ -21,11 +22,17 @@ ChannelLoadRx::~ChannelLoadRx()
 void ChannelLoadRx::initialize(int stage)
 {
     Rx::initialize(stage);
-    if (stage == 0) {
+    if (stage == inet::INITSTAGE_LOCAL) {
         mCbrWithTx = par("cbrWithTx");
         mChannelReportInterval = simtime_t { 100, SIMTIME_MS };
         mChannelReportTrigger = new cMessage("report CL");
-        scheduleAt(simTime() + mChannelReportInterval, mChannelReportTrigger);
+
+        if (par("asyncChannelReport").boolValue()) {
+            scheduleAt(simTime() + mChannelReportInterval, mChannelReportTrigger);
+        } else {
+            double cycle = simTime() / mChannelReportInterval;
+            scheduleAt((1.0 + std::ceil(cycle)) * mChannelReportInterval, mChannelReportTrigger);
+        }
 
         omnetpp::createWatch("channelLoadSampler", mChannelLoadSampler);
     }
