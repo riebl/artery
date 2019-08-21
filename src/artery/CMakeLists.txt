@@ -97,6 +97,7 @@ if(TARGET INET)
         inet/PowerLevelRx.cc
         inet/VanetNakagamiFading.cc
         inet/VanetRadio.cc
+        inet/VanetReceiver.cc
     )
     target_link_libraries(core PUBLIC INET)
 endif()
