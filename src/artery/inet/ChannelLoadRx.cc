@@ -34,7 +34,7 @@ void ChannelLoadRx::initialize(int stage)
 void ChannelLoadRx::handleMessage(cMessage* msg)
 {
     if (msg == mChannelReportTrigger) {
-        reportChannelLoad();
+        emit(ChannelLoadSignal, mChannelLoadSampler.cbr());
         scheduleAt(simTime() + mChannelReportInterval, mChannelReportTrigger);
     } else {
         Rx::handleMessage(msg);
@@ -51,11 +51,6 @@ void ChannelLoadRx::recomputeMediumFree()
     } else {
         mChannelLoadSampler.busy(!mediumFree && receptionState > ReceptionState::RECEPTION_STATE_IDLE);
     }
-}
-
-void ChannelLoadRx::reportChannelLoad()
-{
-    emit(ChannelLoadSignal, mChannelLoadSampler.cbr());
 }
 
 } // namespace artery

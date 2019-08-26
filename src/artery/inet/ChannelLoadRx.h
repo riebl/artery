@@ -19,7 +19,6 @@ protected:
     void initialize(int stage) override;
     void handleMessage(omnetpp::cMessage*) override;
     void recomputeMediumFree() override;
-    virtual void reportChannelLoad();
 
 private:
     omnetpp::simtime_t mChannelReportInterval;
