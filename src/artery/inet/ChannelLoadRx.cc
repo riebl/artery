@@ -1,24 +1,24 @@
-#include "artery/inet/VanetRx.h"
+#include "artery/inet/ChannelLoadRx.h"
 
 using namespace omnetpp;
 
 namespace artery
 {
 
-const simsignal_t VanetRx::ChannelLoadSignal = cComponent::registerSignal("ChannelLoad");
+const simsignal_t ChannelLoadRx::ChannelLoadSignal = cComponent::registerSignal("ChannelLoad");
 
-Define_Module(VanetRx)
+Define_Module(ChannelLoadRx)
 
-VanetRx::VanetRx()
+ChannelLoadRx::ChannelLoadRx()
 {
 }
 
-VanetRx::~VanetRx()
+ChannelLoadRx::~ChannelLoadRx()
 {
     cancelAndDelete(channelReportTrigger);
 }
 
-void VanetRx::initialize(int stage)
+void ChannelLoadRx::initialize(int stage)
 {
     Rx::initialize(stage);
     if (stage == 0) {
@@ -31,7 +31,7 @@ void VanetRx::initialize(int stage)
     }
 }
 
-void VanetRx::handleMessage(cMessage* msg)
+void ChannelLoadRx::handleMessage(cMessage* msg)
 {
     if (msg == channelReportTrigger) {
         reportChannelLoad();
@@ -41,7 +41,7 @@ void VanetRx::handleMessage(cMessage* msg)
     }
 }
 
-void VanetRx::recomputeMediumFree()
+void ChannelLoadRx::recomputeMediumFree()
 {
     Rx::recomputeMediumFree();
 
@@ -53,7 +53,7 @@ void VanetRx::recomputeMediumFree()
     }
 }
 
-void VanetRx::reportChannelLoad()
+void ChannelLoadRx::reportChannelLoad()
 {
     emit(ChannelLoadSignal, channelLoadSampler.cbr());
 }

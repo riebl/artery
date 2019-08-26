@@ -1,5 +1,4 @@
 #include "artery/inet/InetRadioDriver.h"
-#include "artery/inet/VanetRx.h"
 #include "artery/networking/GeoNetIndication.h"
 #include "artery/networking/GeoNetRequest.h"
 #include "artery/nic/RadioDriverProperties.h"
@@ -33,6 +32,7 @@ inet::MACAddress convert(const vanetza::MacAddress& mac)
 }
 
 static const simsignal_t radioChannelChangedSignal = cComponent::registerSignal("radioChannelChanged");
+static const simsignal_t channelLoadSignal = cComponent::registerSignal("ChannelLoad");
 
 } // namespace
 
@@ -47,7 +47,7 @@ void InetRadioDriver::initialize(int stage)
 		RadioDriverBase::initialize();
 		cModule* host = inet::getContainingNode(this);
 		mLinkLayer = inet::findModuleFromPar<inet::ieee80211::Ieee80211Mac>(par("macModule"), host);
-		mLinkLayer->subscribe(VanetRx::ChannelLoadSignal, this);
+		mLinkLayer->subscribe(channelLoadSignal, this);
 		mRadio = inet::findModuleFromPar<inet::ieee80211::Ieee80211Radio>(par("radioModule"), host);
 		mRadio->subscribe(radioChannelChangedSignal, this);
 	} else if (stage == inet::InitStages::INITSTAGE_LINK_LAYER_2) {
@@ -61,7 +61,7 @@ void InetRadioDriver::initialize(int stage)
 
 void InetRadioDriver::receiveSignal(cComponent* source, simsignal_t signal, double value, cObject*)
 {
-	if (signal == VanetRx::ChannelLoadSignal) {
+	if (signal == channelLoadSignal) {
 		emit(RadioDriverBase::ChannelLoadSignal, value);
 	}
 }

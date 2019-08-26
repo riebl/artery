@@ -1,5 +1,5 @@
-#ifndef ARTERY_VANETRX_H_KTVCYSUX
-#define ARTERY_VANETRX_H_KTVCYSUX
+#ifndef ARTERY_CHANNELLOADRX_H_C0YJMQTS
+#define ARTERY_CHANNELLOADRX_H_C0YJMQTS
 
 #include "artery/nic/ChannelLoadSampler.h"
 #include "inet/linklayer/ieee80211/mac/Rx.h"
@@ -7,11 +7,11 @@
 namespace artery
 {
 
-class VanetRx : public inet::ieee80211::Rx
+class ChannelLoadRx : public inet::ieee80211::Rx
 {
 public:
-    VanetRx();
-    ~VanetRx();
+    ChannelLoadRx();
+    ~ChannelLoadRx();
 
     static const omnetpp::simsignal_t ChannelLoadSignal;
 
@@ -30,5 +30,5 @@ private:
 
 } // namespace artery
 
-#endif /* ARTERY_VANETRX_H_KTVCYSUX */
+#endif /* ARTERY_CHANNELLOADRX_H_C0YJMQTS */
 

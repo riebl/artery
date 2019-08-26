@@ -2,10 +2,10 @@ package artery.inet;
 
 import inet.linklayer.ieee80211.mac.Rx;
 
-simple VanetRx extends Rx
+simple ChannelLoadRx extends Rx
 {
     parameters:
-        @class(VanetRx);
+        @class(ChannelLoadRx);
         @signal[ChannelLoad](type=double);
         @statistic[ChannelLoad](record=timeavg,vector?);
 
