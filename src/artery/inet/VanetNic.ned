@@ -14,11 +14,13 @@ module VanetNic extends Ieee80211Nic
         mac.qosStation = true;
         mac.rx.typename = default("ChannelLoadRx");
 
+        radioType = default("VanetRadio");
         radio.bandName = "5 GHz";
         radio.bandwidth = 10 MHz;
         radio.channelNumber = default(180);
         // carrierFrequency is automatically set by the radio
         radio.carrierFrequency = default(5.9 GHz);
+        radio.receiverType = default("VanetReceiver");
 
         mac.hcf.rateSelection.dataFrameBitrate = bitrate;
         mac.hcf.rateSelection.mgmtFrameBitrate = bitrate;
