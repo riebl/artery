@@ -61,7 +61,7 @@ module RSU like INetworkNode
                 router.isMobile = false;
         }
 
-        mobility: <default("artery.inet.RSUMobility")> like IMobility {
+        mobility: <default("inet.mobility.static.StationaryMobility")> like IMobility {
             parameters:
                 @display("p=53,200");
         }
