@@ -7,7 +7,6 @@ import inet.node.inet.INetworkNode;
 import inet.linklayer.contract.IWirelessNic;
 import inet.mobility.contract.IMobility;
 import inet.networklayer.common.InterfaceTable;
-import artery.envmod.LocalEnvironmentModel;
 
 module RSU like INetworkNode
 {
@@ -70,11 +69,6 @@ module RSU like INetworkNode
             parameters:
                 @display("p=50,100");
                 mobilityModule = ".mobility";
-        }
-
-        environmentModel: LocalEnvironmentModel {
-            @display("p=214,57");
-            middlewareModule = default(".middleware");
         }
 
     connections:
