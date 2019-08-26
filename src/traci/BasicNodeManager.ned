@@ -15,6 +15,4 @@ simple BasicNodeManager like NodeManager
         string vehicleSinkModule;
         string subscriptionsModule;
         bool destroyVehiclesOnCrash = default(false);
-        xml RSUs;
-        bool directional = default(false);
 }

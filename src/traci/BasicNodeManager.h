@@ -13,7 +13,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include "artery/utility/Geometry.h"
 
 namespace traci
 {
@@ -56,14 +55,10 @@ protected:
     void initialize() override;
     void finish() override;
 
-    virtual void addRSUs();
-    virtual void addRSU(const std::string& index);
     virtual void addVehicle(const std::string&);
     virtual void removeVehicle(const std::string&);
     virtual void updateVehicle(const std::string&, VehicleSink*);
     virtual omnetpp::cModule* createModule(const std::string&, omnetpp::cModuleType*);
-    virtual omnetpp::cModule* createRSUModule(const std::string&, omnetpp::cModuleType*);
-    virtual omnetpp::cModule* createProbeModule(const std::string&, omnetpp::cModuleType*);
     virtual omnetpp::cModule* addNodeModule(const std::string&, omnetpp::cModuleType*, NodeInitializer&);
     virtual void removeNodeModule(const std::string&);
     virtual omnetpp::cModule* getNodeModule(const std::string&);
@@ -75,26 +70,15 @@ private:
     void traciStep() override;
     void traciClose() override;
 
-    struct RSU
-    {
-        artery::Position position;
-        std::list<double> antennaDirections;
-    };
-
-    std::map<std::string, RSU> rsuMap;
-
     LiteAPI* m_api;
     ModuleMapper* m_mapper;
     Boundary m_boundary;
     SubscriptionManager* m_subscriptions;
     unsigned m_nodeIndex;
-    unsigned m_rsuIndex;
-    unsigned m_probeIndex;
     std::map<std::string, omnetpp::cModule*> m_nodes;
     std::map<std::string, VehicleSink*> m_vehicles;
     std::string m_vehicle_sink_module;
     bool m_destroy_vehicles_on_crash;
-    bool directional;
 };
 
 } // namespace traci
