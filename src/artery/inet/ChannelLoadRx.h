@@ -22,9 +22,9 @@ protected:
     virtual void reportChannelLoad();
 
 private:
-    omnetpp::simtime_t channelReportInterval;
-    omnetpp::cMessage* channelReportTrigger;
-    ChannelLoadSampler channelLoadSampler;
+    omnetpp::simtime_t mChannelReportInterval;
+    omnetpp::cMessage* mChannelReportTrigger;
+    ChannelLoadSampler mChannelLoadSampler;
     bool mCbrWithTx = false;
 };
 

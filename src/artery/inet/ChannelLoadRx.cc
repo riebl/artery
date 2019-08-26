@@ -15,7 +15,7 @@ ChannelLoadRx::ChannelLoadRx()
 
 ChannelLoadRx::~ChannelLoadRx()
 {
-    cancelAndDelete(channelReportTrigger);
+    cancelAndDelete(mChannelReportTrigger);
 }
 
 void ChannelLoadRx::initialize(int stage)
@@ -23,19 +23,19 @@ void ChannelLoadRx::initialize(int stage)
     Rx::initialize(stage);
     if (stage == 0) {
         mCbrWithTx = par("cbrWithTx");
-        channelReportInterval = simtime_t { 100, SIMTIME_MS };
-        channelReportTrigger = new cMessage("report CL");
-        scheduleAt(simTime() + channelReportInterval, channelReportTrigger);
+        mChannelReportInterval = simtime_t { 100, SIMTIME_MS };
+        mChannelReportTrigger = new cMessage("report CL");
+        scheduleAt(simTime() + mChannelReportInterval, mChannelReportTrigger);
 
-        WATCH(channelLoadSampler);
+        omnetpp::createWatch("channelLoadSampler", mChannelLoadSampler);
     }
 }
 
 void ChannelLoadRx::handleMessage(cMessage* msg)
 {
-    if (msg == channelReportTrigger) {
+    if (msg == mChannelReportTrigger) {
         reportChannelLoad();
-        scheduleAt(simTime() + channelReportInterval, channelReportTrigger);
+        scheduleAt(simTime() + mChannelReportInterval, mChannelReportTrigger);
     } else {
         Rx::handleMessage(msg);
     }
@@ -47,15 +47,15 @@ void ChannelLoadRx::recomputeMediumFree()
 
     using ReceptionState = inet::physicallayer::IRadio::ReceptionState;
     if (mCbrWithTx) {
-        channelLoadSampler.busy(!mediumFree);
+        mChannelLoadSampler.busy(!mediumFree);
     } else {
-        channelLoadSampler.busy(!mediumFree && receptionState > ReceptionState::RECEPTION_STATE_IDLE);
+        mChannelLoadSampler.busy(!mediumFree && receptionState > ReceptionState::RECEPTION_STATE_IDLE);
     }
 }
 
 void ChannelLoadRx::reportChannelLoad()
 {
-    emit(ChannelLoadSignal, channelLoadSampler.cbr());
+    emit(ChannelLoadSignal, mChannelLoadSampler.cbr());
 }
 
 } // namespace artery
