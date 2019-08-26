@@ -32,6 +32,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 net = sumolib.net.readNet(args.n)
+netBBox = net.getBBoxXY()
 junctionCount = 0
 
 root = etree.Element("RSUs")
@@ -42,11 +43,13 @@ for junction in net.getNodes():
     junctionCount += 1
 
     nodePos = junction.getCoord()
+    oppPosX = nodePos[0] - netBBox[0][0]
+    oppPosY = netBBox[1][1] - nodePos[1]
 
     doc = etree.SubElement(
         root, "rsu",
         junctionID=junction.getID(),
-        positionX=str(nodePos[0]), positionY=str(nodePos[1]))
+        positionX=str(oppPosX), positionY=str(oppPosY))
 
     for edge in junction.getOutgoing():
         outgoingNodePos = edge.getToNode().getCoord()
