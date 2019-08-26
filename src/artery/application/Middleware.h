@@ -70,7 +70,7 @@ class Middleware : public omnetpp::cSimpleModule, public omnetpp::cListener
 
         omnetpp::cModule* findHost();
         void setStationType(const StationType&);
-        void updateServices();
+        virtual void updateServices();
 
         omnetpp::SimTime mUpdateInterval;
         omnetpp::cMessage* mUpdateMessage = nullptr;

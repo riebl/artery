@@ -68,7 +68,6 @@ module RSU like INetworkNode
         middleware: StationaryMiddleware {
             parameters:
                 @display("p=50,100");
-                mobilityModule = ".mobility";
         }
 
     connections:
