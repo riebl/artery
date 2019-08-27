@@ -18,7 +18,6 @@ public:
     inet::EulerAngles getCurrentAngularSpeed() override;
     inet::Coord getConstraintAreaMax() const override;
     inet::Coord getConstraintAreaMin() const override;
-    void setOffsetAlpha(double offsetAlpha){mOffsetAngles.alpha = offsetAlpha;}
 
     // omnetpp::cSimpleModule
     void initialize(int stage) override;
