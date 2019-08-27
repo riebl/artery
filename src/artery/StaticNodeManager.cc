@@ -10,6 +10,16 @@ Define_Module(StaticNodeManager)
 const simsignal_t StaticNodeManager::addRoadSideUnitSignal = cComponent::registerSignal("addRoadSideUnit");
 
 
+StaticNodeManager::StaticNodeManager() :
+    mInsertionEvent(new omnetpp::cMessage("insert static node"))
+{
+}
+
+StaticNodeManager::~StaticNodeManager()
+{
+    cancelAndDelete(mInsertionEvent);
+}
+
 int StaticNodeManager::numInitStages() const
 {
     return InitStages::Total;
@@ -22,6 +32,30 @@ void StaticNodeManager::initialize(int stage)
         mRsuPrefix = par("rsuPrefix").stdstringValue();
     } else if (stage == InitStages::Self) {
         loadRoadSideUnits();
+    }
+}
+
+void StaticNodeManager::handleMessage(omnetpp::cMessage* msg)
+{
+    if (msg == mInsertionEvent) {
+        for (auto it = mInsertionQueue.begin(); it != mInsertionQueue.end();) {
+            if (it->first <= simTime()) {
+                addRoadSideUnit(it->second);
+                it = mInsertionQueue.erase(it);
+            } else {
+                break;
+            }
+        }
+
+        scheduleInsertionEvent();
+    }
+}
+
+void StaticNodeManager::scheduleInsertionEvent()
+{
+    cancelEvent(mInsertionEvent);
+    if (!mInsertionQueue.empty()) {
+        scheduleAt(mInsertionQueue.begin()->first, mInsertionEvent);
     }
 }
 
@@ -46,8 +80,10 @@ void StaticNodeManager::loadRoadSideUnits()
         }
 
         mRsuMap.emplace(id, std::move(rsuStruct));
-        addRoadSideUnit(id);
+        mInsertionQueue.emplace(simTime() + par("insertionDelay"), id);
     }
+
+    scheduleInsertionEvent();
 }
 
 void StaticNodeManager::addRoadSideUnit(const std::string& id)
@@ -109,9 +145,7 @@ void StaticNodeManager::addRoadSideUnit(const std::string& id)
     }
 
     rsuModule->scheduleStart(simTime());
-    for (int i = 0; i < InitStages::Self; ++i) {
-        if (!rsuModule->callInitialize(i)) break;
-    }
+    rsuModule->callInitialize();
     emit(addRoadSideUnitSignal, id.c_str(), rsuModule);
 }
 
