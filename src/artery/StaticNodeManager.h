@@ -20,20 +20,18 @@ public:
 
     struct RSU
     {
-        artery::Position position;
+        Position position;
         std::list<double> antennaDirections;
     };
 
 protected:
     virtual void loadRoadSideUnits();
     virtual void addRoadSideUnit(const std::string& index);
-    virtual omnetpp::cModule* createRSUModule(const std::string&, omnetpp::cModuleType*);
-    virtual omnetpp::cModule* createProbeModule(const std::string&, omnetpp::cModuleType*);
+    virtual omnetpp::cModule* createRoadSideUnitModule(const std::string&);
 
 private:
-    unsigned mRsuIndex;
-    unsigned mProbeIndex;
     bool mDirectional;
+    std::string mRsuPrefix;
     std::map<std::string, RSU> mRsuMap;
 };
 

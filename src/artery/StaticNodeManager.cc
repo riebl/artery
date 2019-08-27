@@ -17,11 +17,10 @@ int StaticNodeManager::numInitStages() const
 
 void StaticNodeManager::initialize(int stage)
 {
-    if (stage == InitStages::Self) {
-        mRsuIndex = 0;
-        mProbeIndex = 0;
+    if (stage == InitStages::Prepare) {
         mDirectional = par("directional");
-    } else if (stage == InitStages::Prepare) {
+        mRsuPrefix = par("rsuPrefix").stdstringValue();
+    } else if (stage == InitStages::Self) {
         loadRoadSideUnits();
     }
 }
@@ -30,14 +29,19 @@ void StaticNodeManager::loadRoadSideUnits()
 {
     cXMLElement* config = par("nodes").xmlValue();
 
-    int index = 0;
     for (cXMLElement* rsu : config->getChildrenByTagName("rsu")) {
+        const char* id = rsu->getAttribute("junctionID");
+        if (!id) {
+            EV_WARN << "rsu has no id specified, skip" << endl;
+        } else if (mRsuMap.find(id) != mRsuMap.end()) {
+            EV_WARN << "rsu with id " << id << " already exists, skip" << endl;
+        }
+
         Position pos;
         pos.x = std::stod(rsu->getAttribute("positionX")) * boost::units::si::meter;
         pos.y = std::stod(rsu->getAttribute("positionY")) * boost::units::si::meter;
 
         std::list<double> antennaDirections;
-
         for (cXMLElement* antenna : rsu->getChildrenByTagName("antenna")){
             double direction = std::stod(antenna->getAttribute("direction"));
             antennaDirections.push_back(direction);
@@ -47,49 +51,52 @@ void StaticNodeManager::loadRoadSideUnits()
         rsuStruct.position = pos;
         rsuStruct.antennaDirections = antennaDirections;
 
-        mRsuMap.insert(std::make_pair(std::to_string(index), rsuStruct));
-
-        addRoadSideUnit(std::to_string(index));
-        index++;
+        mRsuMap.insert(std::make_pair(id, rsuStruct));
+        addRoadSideUnit(id);
     }
 }
 
-void StaticNodeManager::addRoadSideUnit(const std::string& index)
+void StaticNodeManager::addRoadSideUnit(const std::string& id)
 {
-    artery::Position omnetPos(mRsuMap.at(index).position);
-    std::list<double> antennaDirections = mRsuMap.at(index).antennaDirections;
+    artery::Position& omnetPos = mRsuMap.at(id).position;
+    std::list<double>& antennaDirections = mRsuMap.at(id).antennaDirections;
 
-    std::string rsuID = "rsu" + index;
-    cModuleType* type = cModuleType::get(par("rsuType"));
-    cModule* rsuModule = createRSUModule(rsuID, type);
-
+    cModule* rsuModule = createRoadSideUnitModule(id);
     rsuModule->par("numRadios") = (mDirectional? antennaDirections.size() : 1);
     rsuModule->par("directionalAntennas") = (mDirectional ? true : false);
-
-    const int idxParX = rsuModule->findPar("initialX");
-    if (idxParX >= 0) {
-        rsuModule->par(idxParX) = omnetPos.x.value();
-    } else {
-        error("RSU module type has no initialX parameter");
-    }
-
-    const int idxParY = rsuModule->findPar("initialY");
-    if (idxParY >= 0) {
-        rsuModule->par(idxParY) = omnetPos.y.value();
-    } else {
-        error("RSU module type has no initialY parameter");
-    }
-
-    const int idxParZ = rsuModule->findPar("initialZ");
-    if (idxParZ >= 0) {
-        rsuModule->par(idxParZ) = par("rsuHeight");
-    } else {
-        error("RSU module type has no initialZ parameter");
-    }
-
     rsuModule->finalizeParameters();
     rsuModule->buildInside();
-    rsuModule->scheduleStart(simTime());
+
+    cModule* mobilityModule = rsuModule->getSubmodule("mobility");
+    if (mobilityModule) {
+        const int idxParInitFromDisplayString = mobilityModule->findPar("initFromDisplayString");
+        if (idxParInitFromDisplayString >= 0) {
+            mobilityModule->par(idxParInitFromDisplayString) = false;
+        }
+
+        const int idxParX = mobilityModule->findPar("initialX");
+        if (idxParX >= 0) {
+            mobilityModule->par(idxParX) = omnetPos.x.value();
+        } else {
+            error("RSU module type has no initialX parameter");
+        }
+
+        const int idxParY = mobilityModule->findPar("initialY");
+        if (idxParY >= 0) {
+            mobilityModule->par(idxParY) = omnetPos.y.value();
+        } else {
+            error("RSU module type has no initialY parameter");
+        }
+
+        const int idxParZ = mobilityModule->findPar("initialZ");
+        if (idxParZ >= 0) {
+            mobilityModule->par(idxParZ) = par("rsuHeight");
+        } else {
+            error("RSU module type has no initialZ parameter");
+        }
+    } else {
+        error("no mobility submodule found in RSU node");
+    }
 
     if (mDirectional) {
         int antennaMobilityIndex = 0;
@@ -104,21 +111,18 @@ void StaticNodeManager::addRoadSideUnit(const std::string& index)
         }
     }
 
-    rsuModule->callInitialize();
-    emit(addRoadSideUnitSignal, rsuID.c_str(), rsuModule);
+    rsuModule->scheduleStart(simTime());
+    for (int i = 0; i < InitStages::Self; ++i) {
+        if (!rsuModule->callInitialize(i)) break;
+    }
+    emit(addRoadSideUnitSignal, id.c_str(), rsuModule);
 }
 
-cModule* StaticNodeManager::createRSUModule(const std::string&, cModuleType* type)
+cModule* StaticNodeManager::createRoadSideUnitModule(const std::string& id)
 {
-    cModule* module = type->create("rsu", getSystemModule(), mRsuIndex, mRsuIndex);
-    ++mRsuIndex;
-    return module;
-}
-
-cModule* StaticNodeManager::createProbeModule(const std::string&, cModuleType* type)
-{
-    cModule* module = type->create("probe", getSystemModule(), mProbeIndex, mProbeIndex);
-    ++mProbeIndex;
+    cModuleType* type = cModuleType::get(par("rsuType"));
+    std::string name = mRsuPrefix + id;
+    cModule* module = type->create(name.c_str(), getSystemModule());
     return module;
 }
 
