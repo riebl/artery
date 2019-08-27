@@ -15,9 +15,9 @@ module RSU like INetworkNode
         @networkNode;
         @labels(node,ethernet-node,wireless-node);
         int numRadios = default(1);
+        bool withAntennaMobility = default(false);
         *.interfaceTableModule = default(absPath(".interfaceTable"));
         mobility.visualRepresentation = "^";
-        bool directionalAntennas = default(false);
 
     gates:
         input radioIn[numRadios] @directIn;
@@ -33,10 +33,11 @@ module RSU like INetworkNode
         wlan[numRadios]: <default("VanetNic")> like IWirelessNic {
             parameters:
                 @display("p=216,406,row,60;q=queue");
-                radio.antenna.mobilityModule = directionalAntennas ? ".antennaMobility[" + string(index) + "]" : ".mobility";
+                radio.antenna.mobilityModule = withAntennaMobility ?
+                    ".antennaMobility[" + string(index) + "]" : ".mobility";
         }
 
-        antennaMobility[numRadios]: AntennaMobility if directionalAntennas == true {
+        antennaMobility[numRadios]: AntennaMobility if withAntennaMobility == true {
             parameters:
                 @display("p=100,200");
                 mobilityModule = "^.mobility";
@@ -56,7 +57,6 @@ module RSU like INetworkNode
                 *.traciCoreModule = "traci.core";
                 position.typename = default("StationaryPositionProvider");
                 runtime.datetime = middleware.datetime;
-                router.antennaMobilityModule = directionalAntennas ? ".antennaMobility[" + string(index) + "]" : ".mobility";
                 router.isMobile = false;
         }
 
