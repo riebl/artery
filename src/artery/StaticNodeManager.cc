@@ -41,8 +41,8 @@ void StaticNodeManager::loadRoadSideUnits()
         pos.x = std::stod(rsu->getAttribute("positionX")) * boost::units::si::meter;
         pos.y = std::stod(rsu->getAttribute("positionY")) * boost::units::si::meter;
 
-        std::list<double> antennaDirections;
-        for (cXMLElement* antenna : rsu->getChildrenByTagName("antenna")){
+        std::vector<double> antennaDirections;
+        for (cXMLElement* antenna : rsu->getChildrenByTagName("antenna")) {
             double direction = std::stod(antenna->getAttribute("direction"));
             antennaDirections.push_back(direction);
         }
@@ -59,11 +59,11 @@ void StaticNodeManager::loadRoadSideUnits()
 void StaticNodeManager::addRoadSideUnit(const std::string& id)
 {
     artery::Position& omnetPos = mRsuMap.at(id).position;
-    std::list<double>& antennaDirections = mRsuMap.at(id).antennaDirections;
+    std::vector<double>& antennaDirections = mRsuMap.at(id).antennaDirections;
 
     cModule* rsuModule = createRoadSideUnitModule(id);
-    rsuModule->par("numRadios") = (mDirectional? antennaDirections.size() : 1);
-    rsuModule->par("directionalAntennas") = (mDirectional ? true : false);
+    rsuModule->par("numRadios") = mDirectional ? std::max(1ul, antennaDirections.size()) : 1;
+    rsuModule->par("withAntennaMobility") = mDirectional;
     rsuModule->finalizeParameters();
     rsuModule->buildInside();
 
@@ -99,15 +99,19 @@ void StaticNodeManager::addRoadSideUnit(const std::string& id)
     }
 
     if (mDirectional) {
-        int antennaMobilityIndex = 0;
-        for (std::list<double>::iterator it = antennaDirections.begin(); it != antennaDirections.end(); it++){
-            std::stringstream ss;
-            ss << ".antennaMobility[" << antennaMobilityIndex << "]";
-            std::string antennaMobilityPath = ss.str();
-            cModule* antennaMobilityModule = rsuModule->getModuleByPath(antennaMobilityPath.c_str());
-            auto* antennaMobility = dynamic_cast<artery::AntennaMobility*>(antennaMobilityModule);
-            antennaMobility->setOffsetAlpha(*it);
-            antennaMobilityIndex++;
+        for (int i = 0; i < antennaDirections.size(); ++i) {
+            auto* antennaMobilityModule = rsuModule->getSubmodule("antennaMobility", i);
+            if (!antennaMobilityModule) {
+                error("missing antenna mobility submodule in RSU node at index %i", i);
+            }
+
+            const int idxParOffsetAlpha = antennaMobilityModule->findPar("offsetAlpha");
+            if (idxParOffsetAlpha) {
+                antennaMobilityModule->par(idxParOffsetAlpha) = antennaDirections[i];
+            } else {
+                error("%s has no offsetAlpha parameter", antennaMobilityModule->getFullPath().c_str());
+            }
+
         }
     }
 

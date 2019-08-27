@@ -3,9 +3,9 @@
 
 #include "artery/utility/Geometry.h"
 #include <omnetpp/csimplemodule.h>
-#include <list>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace artery
 {
@@ -21,7 +21,7 @@ public:
     struct RSU
     {
         Position position;
-        std::list<double> antennaDirections;
+        std::vector<double> antennaDirections;
     };
 
 protected:
