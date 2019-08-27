@@ -30,7 +30,7 @@ protected:
     virtual omnetpp::cModule* createRoadSideUnitModule(const std::string&);
 
 private:
-    bool mDirectional;
+    bool mDirectionalAntennas;
     std::string mRsuPrefix;
     std::map<std::string, RSU> mRsuMap;
 };

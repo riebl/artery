@@ -18,7 +18,7 @@ int StaticNodeManager::numInitStages() const
 void StaticNodeManager::initialize(int stage)
 {
     if (stage == InitStages::Prepare) {
-        mDirectional = par("directional");
+        mDirectionalAntennas = par("directionalAntennas");
         mRsuPrefix = par("rsuPrefix").stdstringValue();
     } else if (stage == InitStages::Self) {
         loadRoadSideUnits();
@@ -62,8 +62,8 @@ void StaticNodeManager::addRoadSideUnit(const std::string& id)
     std::vector<double>& antennaDirections = mRsuMap.at(id).antennaDirections;
 
     cModule* rsuModule = createRoadSideUnitModule(id);
-    rsuModule->par("numRadios") = mDirectional ? std::max(1ul, antennaDirections.size()) : 1;
-    rsuModule->par("withAntennaMobility") = mDirectional;
+    rsuModule->par("numRadios") = mDirectionalAntennas ? std::max(1ul, antennaDirections.size()) : 1;
+    rsuModule->par("withAntennaMobility") = mDirectionalAntennas;
     rsuModule->finalizeParameters();
     rsuModule->buildInside();
 
@@ -98,7 +98,7 @@ void StaticNodeManager::addRoadSideUnit(const std::string& id)
         error("no mobility submodule found in RSU node");
     }
 
-    if (mDirectional) {
+    if (mDirectionalAntennas) {
         for (int i = 0; i < antennaDirections.size(); ++i) {
             auto* antennaMobilityModule = rsuModule->getSubmodule("antennaMobility", i);
             if (!antennaMobilityModule) {
