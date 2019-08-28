@@ -40,6 +40,7 @@ private:
     bool mDirectionalAntennas;
     std::string mRsuPrefix;
     std::map<std::string, RSU> mRsuMap;
+    omnetpp::simtime_t mStartTime;
 };
 
 } // namespace artery

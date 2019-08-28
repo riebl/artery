@@ -30,6 +30,10 @@ void StaticNodeManager::initialize(int stage)
     if (stage == InitStages::Prepare) {
         mDirectionalAntennas = par("directionalAntennas");
         mRsuPrefix = par("rsuPrefix").stdstringValue();
+
+        omnetpp:cModule * core = getParentModule()->getSubmodule("traci")->getSubmodule("core");
+        mStartTime = core->par("startTime");
+
     } else if (stage == InitStages::Self) {
         loadRoadSideUnits();
     }
@@ -80,7 +84,7 @@ void StaticNodeManager::loadRoadSideUnits()
         }
 
         mRsuMap.emplace(id, std::move(rsuStruct));
-        mInsertionQueue.emplace(simTime() + par("insertionDelay"), id);
+        mInsertionQueue.emplace(simTime() + mStartTime + par("insertionDelay"), id);
     }
 
     scheduleInsertionEvent();
