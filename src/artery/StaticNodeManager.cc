@@ -64,7 +64,7 @@ void StaticNodeManager::loadRoadSideUnits()
     cXMLElement* config = par("nodes").xmlValue();
 
     for (cXMLElement* rsu : config->getChildrenByTagName("rsu")) {
-        const char* id = rsu->getAttribute("junctionID");
+        const char* id = rsu->getAttribute("id");
         if (!id) {
             EV_WARN << "rsu has no id specified, skip" << endl;
         } else if (mRsuMap.find(id) != mRsuMap.end()) {

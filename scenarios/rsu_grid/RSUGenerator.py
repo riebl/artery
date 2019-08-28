@@ -48,7 +48,7 @@ for junction in net.getNodes():
 
     doc = etree.SubElement(
         root, "rsu",
-        junctionID=junction.getID(),
+        id=junction.getID(),
         positionX=str(oppPosX), positionY=str(oppPosY))
 
     for edge in junction.getOutgoing():
