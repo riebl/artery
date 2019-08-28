@@ -10,9 +10,8 @@
 #include <inet/common/ModuleAccess.h>
 #include <inet/common/Units.h>
 #include <inet/physicallayer/contract/packetlevel/IRadioMedium.h>
-#include <algorithm>
 #include <cmath>
-#include <numeric>
+#include <limits>
 #include <vector>
 
 namespace artery
@@ -81,23 +80,32 @@ double NLOSv::computeVehiclePathLoss(const Coord& pos_tx, const Coord& pos_rx, m
     DiffractionObstacle Rx { distTxRx, meter(pos_rx.z) };
 
     auto vehicles = mVehicleIndex->getObstructingVehicles(Position { pos_tx.x, pos_tx.y }, Position { pos_rx.x, pos_rx.y });
+    std::vector<DiffractionPath> paths;
+    paths.reserve(3);
+
     auto obsTop = buildTopObstacles(vehicles, pos_tx, pos_rx);
-    obsTop.push_front(Tx);
-    obsTop.push_back(Rx);
+    if (!obsTop.empty()) {
+        obsTop.push_front(Tx);
+        obsTop.push_back(Rx);
+        paths.push_back(computeMultipleKnifeEdge(obsTop, lambda));
+    }
 
     // original GEMV² code uses same Tx and Rx heights for all three paths: we assume zero "height" on side paths
     auto obsSides = buildSideObstacles(vehicles, pos_tx, pos_rx);
     Tx.h = meter(0.0);
     Rx.h = meter(0.0);
-    obsSides.left.push_front(Tx);
-    obsSides.right.push_front(Tx);
-    obsSides.left.push_back(Rx);
-    obsSides.right.push_back(Rx);
+    if (!obsSides.left.empty()) {
+        obsSides.left.push_front(Tx);
+        obsSides.left.push_back(Rx);
+        paths.push_back(computeMultipleKnifeEdge(obsSides.left, lambda));
+    }
+    if (!obsSides.right.empty()) {
+        obsSides.right.push_front(Tx);
+        obsSides.right.push_back(Rx);
+        paths.push_back(computeMultipleKnifeEdge(obsSides.right, lambda));
+    }
 
-    DiffractionPath top = computeMultipleKnifeEdge(obsTop, lambda);
-    DiffractionPath left = computeMultipleKnifeEdge(obsSides.left, lambda);
-    DiffractionPath right = computeMultipleKnifeEdge(obsSides.right, lambda);
-    return combineDiffractionLoss(top, left, right, lambda);
+    return combineDiffractionLoss(paths, lambda);
 }
 
 double NLOSv::computePathLoss(mps propagationSpeed, Hz frequency, m distance) const
@@ -307,13 +315,19 @@ NLOSv::SideObstacles NLOSv::buildSideObstacles(const VehicleList& vehicles, cons
     return SideObstacles { std::move(diffOnLeftSide), std::move(diffOnRightSide) };
 }
 
-double NLOSv::combineDiffractionLoss(const DiffractionPath& a, const DiffractionPath& b, const DiffractionPath& c, m /* lambda */) const
+double NLOSv::combineDiffractionLoss(const std::vector<DiffractionPath>& paths, m /* lambda */) const
 {
-    // use only smallest diffraction attenuation (maximum E-field)
-    const DiffractionPath& ref = std::min({a, b, c},
-            [](const DiffractionPath& a, const DiffractionPath& b) { return a.attenuation < b.attenuation; });
+    ASSERT(!paths.empty());
 
-    return 1.0 / ref.attenuation;
+    // use only smallest diffraction attenuation (maximum E-field)
+    double min_attenuation = std::numeric_limits<double>::infinity();
+    for (const DiffractionPath& path : paths) {
+        if (path.attenuation < min_attenuation) {
+            min_attenuation = path.attenuation;
+        }
+    }
+
+    return 1.0 / min_attenuation;
 }
 
 namespace {

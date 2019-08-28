@@ -53,7 +53,7 @@ protected:
     virtual double computeSimpleKnifeEdge(inet::m heightTx, inet::m heightRx, inet::m heightObs, inet::m distTxRx, inet::m distTxObs, inet::m lambda) const;
     virtual std::list<DiffractionObstacle> buildTopObstacles(const VehicleList&, const inet::Coord& tx, const inet::Coord& rx) const;
     virtual SideObstacles buildSideObstacles(const VehicleList&, const inet::Coord& tx, const inet::Coord& rx) const;
-    virtual double combineDiffractionLoss(const DiffractionPath&, const DiffractionPath&, const DiffractionPath&, inet::m lambda) const;
+    virtual double combineDiffractionLoss(const std::vector<DiffractionPath>&, inet::m lambda) const;
 
     const VehicleIndex* mVehicleIndex;
 };
