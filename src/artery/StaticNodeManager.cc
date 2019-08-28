@@ -7,7 +7,13 @@ namespace artery
 
 Define_Module(StaticNodeManager)
 
+// emitted signals
 const simsignal_t StaticNodeManager::addRoadSideUnitSignal = cComponent::registerSignal("addRoadSideUnit");
+
+namespace {
+    // subscribed signals
+    const simsignal_t initSignal = cComponent::registerSignal("traci.init");
+} // namespace
 
 
 StaticNodeManager::StaticNodeManager() :
@@ -31,7 +37,11 @@ void StaticNodeManager::initialize(int stage)
         mDirectionalAntennas = par("directionalAntennas");
         mRsuPrefix = par("rsuPrefix").stdstringValue();
     } else if (stage == InitStages::Self) {
-        loadRoadSideUnits();
+        if (par("waitForTraCI")) {
+            getSystemModule()->subscribe(initSignal, this);
+        } else {
+            loadRoadSideUnits();
+        }
     }
 }
 
@@ -48,6 +58,13 @@ void StaticNodeManager::handleMessage(omnetpp::cMessage* msg)
         }
 
         scheduleInsertionEvent();
+    }
+}
+
+void StaticNodeManager::receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t signal, const omnetpp::SimTime&, omnetpp::cObject*)
+{
+    if (signal == initSignal) {
+        loadRoadSideUnits();
     }
 }
 

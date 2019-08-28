@@ -46,5 +46,6 @@ network World
         staticNodes: StaticNodeManager {
             parameters:
                 @display("p=20,40");
+                waitForTraCI = default(true);
         }
 }
