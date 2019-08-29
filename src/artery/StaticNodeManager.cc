@@ -8,6 +8,7 @@ namespace artery
 Define_Module(StaticNodeManager)
 
 const simsignal_t StaticNodeManager::addRoadSideUnitSignal = cComponent::registerSignal("addRoadSideUnit");
+const simsignal_t StaticNodeManager::initSignal = cComponent::registerSignal("traci.init");
 
 
 StaticNodeManager::StaticNodeManager() :
@@ -30,12 +31,14 @@ void StaticNodeManager::initialize(int stage)
     if (stage == InitStages::Prepare) {
         mDirectionalAntennas = par("directionalAntennas");
         mRsuPrefix = par("rsuPrefix").stdstringValue();
-
-        omnetpp:cModule * core = getParentModule()->getSubmodule("traci")->getSubmodule("core");
-        mStartTime = core->par("startTime");
-
     } else if (stage == InitStages::Self) {
-        loadRoadSideUnits();
+        cModule* core = getModuleByPath("traci.core");
+        if (core) {
+            core->subscribe(initSignal, this);
+        }
+        else {
+            EV_ERROR << "StaticNodeManager failed to get module 'core'";
+        }
     }
 }
 
@@ -52,6 +55,13 @@ void StaticNodeManager::handleMessage(omnetpp::cMessage* msg)
         }
 
         scheduleInsertionEvent();
+    }
+}
+
+void StaticNodeManager::receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t signal, const omnetpp::SimTime&, omnetpp::cObject*)
+{
+    if (signal == initSignal) {
+        loadRoadSideUnits();
     }
 }
 
@@ -84,7 +94,7 @@ void StaticNodeManager::loadRoadSideUnits()
         }
 
         mRsuMap.emplace(id, std::move(rsuStruct));
-        mInsertionQueue.emplace(simTime() + mStartTime + par("insertionDelay"), id);
+        mInsertionQueue.emplace(simTime() + par("insertionDelay"), id);
     }
 
     scheduleInsertionEvent();

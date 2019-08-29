@@ -3,6 +3,7 @@
 
 #include "artery/utility/Geometry.h"
 #include <omnetpp/csimplemodule.h>
+#include <omnetpp/clistener.h>
 #include <map>
 #include <string>
 #include <vector>
@@ -10,10 +11,11 @@
 namespace artery
 {
 
-class StaticNodeManager : public omnetpp::cSimpleModule
+class StaticNodeManager : public omnetpp::cSimpleModule, public omnetpp::cListener
 {
 public:
     static const omnetpp::simsignal_t addRoadSideUnitSignal;
+    static const omnetpp::simsignal_t initSignal;
 
     StaticNodeManager();
     virtual ~StaticNodeManager();
@@ -28,6 +30,7 @@ protected:
     void initialize(int stage) override;
     int numInitStages() const override;
     void handleMessage(omnetpp::cMessage*) override;
+    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t signal, const omnetpp::SimTime&, omnetpp::cObject*) override;
 
     virtual void loadRoadSideUnits();
     virtual void addRoadSideUnit(const std::string& index);
@@ -40,7 +43,6 @@ private:
     bool mDirectionalAntennas;
     std::string mRsuPrefix;
     std::map<std::string, RSU> mRsuMap;
-    omnetpp::simtime_t mStartTime;
 };
 
 } // namespace artery
