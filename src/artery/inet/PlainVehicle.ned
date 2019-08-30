@@ -5,7 +5,7 @@ import inet.mobility.contract.IMobility;
 module PlainVehicle
 {
     parameters:
-        @display("i=blocki/process;is=vs");
+        @display("i=block/process;is=vs");
         @labels(node);
 
         @statistic[posX](source="xCoord(mobilityPos(mobilityStateChanged))"; record=vector?);
