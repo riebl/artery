@@ -1,3 +1,9 @@
+/*
+* Artery V2X Simulation Framework
+* Copyright 2019 Caglar Kaya, Alexander Willecke, Raphael Riebl
+* Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
+*/
+
 #include "artery/StaticNodeManager.h"
 #include "artery/inet/AntennaMobility.h"
 #include "artery/utility/InitStages.h"

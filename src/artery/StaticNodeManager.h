@@ -1,3 +1,9 @@
+/*
+* Artery V2X Simulation Framework
+* Copyright 2019 Caglar Kaya, Alexander Willecke, Raphael Riebl
+* Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
+*/
+
 #ifndef ARTERY_STATICNODEMANAGER_H_EZRAPHTB
 #define ARTERY_STATICNODEMANAGER_H_EZRAPHTB
 
