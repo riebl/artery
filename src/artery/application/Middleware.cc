@@ -15,6 +15,7 @@
 #include "artery/utility/InitStages.h"
 #include "artery/utility/FilterRules.h"
 #include "inet/common/ModuleAccess.h"
+#include <vanetza/common/position_provider.hpp>
 
 using namespace omnetpp;
 
@@ -75,6 +76,7 @@ void Middleware::initialize(int stage)
         mFacilities.register_const(&mStationType);
         mFacilities.register_const(mMultiChannelPolicy.get());
         mFacilities.register_const(&mNetworkInterfaceTable);
+        mFacilities.register_mutable(inet::getModuleFromPar<vanetza::PositionProvider>(par("positionProviderModule"), findHost()));
 
         initializeServices(InitStages::Self);
 

@@ -28,6 +28,7 @@ module ApplicationLayer like IBaseApplLayer
 		}
 
 		middleware : <default("VehicleMiddleware")> like IMiddleware {
+			positionProviderModule = absPath("^.vanetza.position");
 		}
 
 	connections allowunconnected:
