@@ -8,7 +8,7 @@
 #define ARTERY_INFRASTRUCTUREMOCKSERVICE_H_9QTWT1BY
 
 #include "artery/application/ItsG5Service.h"
-#include <vanetza/common/position_provider.hpp>
+#include "artery/networking/PositionProvider.h"
 #include <vanetza/units/length.hpp>
 #include <string>
 
@@ -26,7 +26,7 @@ class InfrastructureMockService : public artery::ItsG5Service
         void generatePacket();
 
     private:
-        vanetza::PositionProvider* mPositionProvider = nullptr;
+        const PositionProvider* mPositionProvider = nullptr;
         omnetpp::cMessage* mTrigger = nullptr;
         omnetpp::SimTime mInterval = omnetpp::SimTime::ZERO;
         vanetza::units::Length mDisseminationRadius;

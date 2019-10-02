@@ -8,6 +8,7 @@
 #include "artery/application/ItsG5PromiscuousService.h"
 #include "artery/application/ItsG5Service.h"
 #include "artery/application/XmlMultiChannelPolicy.h"
+#include "artery/networking/PositionProvider.h"
 #include "artery/networking/Router.h"
 #include "artery/utility/Channel.h"
 #include "artery/utility/PointerCheck.h"
@@ -15,7 +16,6 @@
 #include "artery/utility/InitStages.h"
 #include "artery/utility/FilterRules.h"
 #include "inet/common/ModuleAccess.h"
-#include <vanetza/common/position_provider.hpp>
 
 using namespace omnetpp;
 
@@ -76,7 +76,7 @@ void Middleware::initialize(int stage)
         mFacilities.register_const(&mStationType);
         mFacilities.register_const(mMultiChannelPolicy.get());
         mFacilities.register_const(&mNetworkInterfaceTable);
-        mFacilities.register_mutable(inet::getModuleFromPar<vanetza::PositionProvider>(par("positionProviderModule"), findHost()));
+        mFacilities.register_const(inet::getModuleFromPar<PositionProvider>(par("positionProviderModule"), findHost()));
 
         initializeServices(InitStages::Self);
 
