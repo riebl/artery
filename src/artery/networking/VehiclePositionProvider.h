@@ -2,6 +2,7 @@
 #define ARTERY_VEHICLEPOSITIONPROVIDER_H_NNR8FIJ5
 
 #include "artery/networking/PositionFixObject.h"
+#include "artery/networking/PositionProvider.h"
 #include <omnetpp/clistener.h>
 #include <omnetpp/csimplemodule.h>
 #include <vanetza/common/position_provider.hpp>
@@ -15,7 +16,7 @@ class Runtime;
 
 class VehiclePositionProvider :
     public omnetpp::cSimpleModule, public omnetpp::cListener,
-    public vanetza::PositionProvider
+    public artery::PositionProvider, public vanetza::PositionProvider
 {
     public:
         // cSimpleModule
@@ -26,6 +27,10 @@ class VehiclePositionProvider :
         void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject*) override;
 
         // PositionProvider
+        Position getCartesianPosition() const override;
+        GeoPosition getGeodeticPosition() const override;
+
+        // vanetza::PositionProvider
         const vanetza::PositionFix& position_fix() override { return mPositionFix; }
 
     private:

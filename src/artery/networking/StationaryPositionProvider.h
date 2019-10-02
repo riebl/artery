@@ -2,6 +2,7 @@
 #define ARTERY_STATIONARYPOSITIONPROVIDER_H_LHFQCP18
 
 #include "artery/networking/PositionFixObject.h"
+#include "artery/networking/PositionProvider.h"
 #include "artery/utility/Geometry.h"
 #include "traci/Listener.h"
 #include <omnetpp/csimplemodule.h>
@@ -10,13 +11,19 @@
 namespace artery
 {
 
-class StationaryPositionProvider : public omnetpp::cSimpleModule, public traci::Listener, public vanetza::PositionProvider
+class StationaryPositionProvider :
+    public omnetpp::cSimpleModule, public traci::Listener,
+    public artery::PositionProvider, public vanetza::PositionProvider
 {
     public:
         // cSimpleModule
         void initialize(int stage) override;
 
         // PositionProvider
+        Position getCartesianPosition() const override { return mCartesianPosition; }
+        GeoPosition getGeodeticPosition() const override { return mGeodeticPosition; }
+
+        // vanetza::PositionProvider
         const vanetza::PositionFix& position_fix() override { return mPositionFix; }
 
     protected:
@@ -27,6 +34,8 @@ class StationaryPositionProvider : public omnetpp::cSimpleModule, public traci::
         void initializePosition(const Position&);
 
         PositionFixObject mPositionFix;
+        Position mCartesianPosition;
+        GeoPosition mGeodeticPosition;
 };
 
 } // namespace artery
