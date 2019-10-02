@@ -24,7 +24,7 @@ void InfrastructureMockService::initialize()
 {
     ItsG5Service::initialize();
     mTrigger = new omnetpp::cMessage("triggger infrastructure mock message");
-    mPositionProvider = &getFacilities().get_mutable<vanetza::PositionProvider>();
+    mPositionProvider = &getFacilities().get_const<PositionProvider>();
 
     mPacketName = (boost::format("%1% mock-up packet") % this->getName()).str();
     mMessageLength = par("messageLength");
@@ -65,8 +65,8 @@ void InfrastructureMockService::generatePacket()
     geonet::Circle circle;
     circle.r = mDisseminationRadius;
     destination.shape = circle;
-    destination.position.latitude = mPositionProvider->position_fix().latitude;
-    destination.position.longitude = mPositionProvider->position_fix().longitude;
+    destination.position.latitude = mPositionProvider->getGeodeticPosition().latitude;
+    destination.position.longitude = mPositionProvider->getGeodeticPosition().longitude;
     req.gn.destination = destination;
 
     auto packet = new omnetpp::cPacket(mPacketName.c_str());
