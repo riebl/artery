@@ -64,4 +64,14 @@ void VehiclePositionProvider::updatePosition()
     emit(scPositionFixSignal, &tmp);
 }
 
+Position VehiclePositionProvider::getCartesianPosition() const
+{
+    return mVehicleController->getPosition();
+}
+
+GeoPosition VehiclePositionProvider::getGeodeticPosition() const
+{
+    return mVehicleController->getGeoPosition();
+}
+
 } // namespace artery

@@ -24,8 +24,8 @@ void StationaryPositionProvider::initialize(int stage)
 
 void StationaryPositionProvider::traciInit()
 {
-    auto pos = getInitialPosition();
-    initializePosition(pos);
+    mCartesianPosition = getInitialPosition();
+    initializePosition(mCartesianPosition);
 }
 
 Position StationaryPositionProvider::getInitialPosition()
@@ -50,6 +50,8 @@ void StationaryPositionProvider::initializePosition(const Position& pos)
     traci::LiteAPI& api = traci->getLiteAPI();
     const traci::Boundary boundary { api.simulation().getNetBoundary() };
     traci::TraCIGeoPosition geopos = api.convertGeo(traci::position_cast(boundary, Position { pos.x, pos.y }));
+    mGeodeticPosition.latitude = geopos.latitude * boost::units::degree::degree;
+    mGeodeticPosition.longitude = geopos.longitude * boost::units::degree::degree;
 
     using namespace vanetza::units;
     mPositionFix.timestamp = inet::getModuleFromPar<vanetza::Runtime>(par("runtimeModule"), this)->now();
