@@ -144,7 +144,7 @@ void Middleware::initializeServices(int stage)
             }
 
             // finalize module initialization now
-            for (int i = 0; i <= stage; ++i) {
+            for (int i = 0; i < stage; ++i) {
                 if (!module->callInitialize(i)) break;
             }
         }
