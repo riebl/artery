@@ -56,6 +56,7 @@ void StationaryPositionProvider::initializePosition(const Position& pos)
     mPositionFix.longitude = geopos.longitude * degree;
     mPositionFix.confidence.semi_minor = 1.0 * si::meter;
     mPositionFix.confidence.semi_major = 1.0 * si::meter;
+    mPositionFix.course.assign(TrueNorth {}, TrueNorth {});
     mPositionFix.speed.assign(0.0 * si::meter_per_second, 0.0 * si::meter_per_second);
 
     // prevent signal listeners to modify our position data

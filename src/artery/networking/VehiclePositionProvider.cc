@@ -56,7 +56,7 @@ void VehiclePositionProvider::updatePosition()
     mPositionFix.longitude = geopos.longitude;
     mPositionFix.confidence.semi_minor = 5.0 * si::meter;
     mPositionFix.confidence.semi_major = 5.0 * si::meter;
-    mPositionFix.course.assign(north + mVehicleController->getHeading().degree() * degree, north + 3.0 * degree);
+    mPositionFix.course.assign(north + GeoAngle { mVehicleController->getHeading().getTrueNorth() }, north + 3.0 * degree);
     mPositionFix.speed.assign(mVehicleController->getSpeed(), 1.0 * si::meter_per_second);
 
     // prevent signal listeners to modify our position data
