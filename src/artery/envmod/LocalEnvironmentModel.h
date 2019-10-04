@@ -102,6 +102,13 @@ public:
      */
     const TrackedObjects& allObjects() const { return mObjects; }
 
+    /**
+     * Get local sensors
+     *
+     * Sensor pointers are only valid as long as this LocalEnvironmentModel exists!
+     */
+    const std::vector<Sensor*>& getSensors() const { return mSensors; }
+
 private:
     void initializeSensors();
 
