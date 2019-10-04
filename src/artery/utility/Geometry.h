@@ -85,6 +85,7 @@ struct Angle
 
     double radian() const;
     double degree() const;
+    value_type getTrueNorth() const;
 
     value_type value;
 };
