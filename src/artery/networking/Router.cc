@@ -10,10 +10,29 @@
 #include "artery/nic/RadioDriverProperties.h"
 #include "artery/utility/InitStages.h"
 #include "artery/utility/PointerCheck.h"
+#include <boost/units/cmath.hpp>
+#include <boost/units/io.hpp>
 #include <inet/common/ModuleAccess.h>
 #include <vanetza/btp/header.hpp>
 #include <vanetza/btp/header_conversion.hpp>
 #include <vanetza/geonet/data_confirm.hpp>
+
+namespace vanetza {
+namespace geonet {
+
+static inline std::ostream& operator<<(std::ostream& os, const vanetza::geonet::LongPositionVector& epv)
+{
+    using namespace boost::units;
+    os << "\n"
+        << "latitude: \t" << abs(epv.position().latitude) << (epv.latitude.value() < 0 ? " S" : " N") << "\n"
+        << "longitude: \t" << abs(epv.position().longitude) << (epv.longitude.value() < 0 ? " W" : " E") << "\n"
+        << "heading: \t" << vanetza::units::GeoAngle { epv.heading };
+    return os;
+}
+
+} // namespace geonet
+} // namespace vanetza
+
 
 namespace artery
 {
@@ -63,6 +82,8 @@ void Router::initialize(int stage)
 
         // finally, register new network interface at middleware
         mMiddleware->registerNetworkInterface(mNetworkInterface);
+
+        omnetpp::createWatch("EPV", mRouter->get_local_position_vector());
     }
 }
 
