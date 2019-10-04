@@ -56,15 +56,17 @@ public:
     public:
         using TrackingMap = std::map<const Sensor*, TrackingTime>;
 
-        Tracking(const Sensor* sensor);
+        Tracking(int id, const Sensor* sensor);
 
         bool expired() const;
         void update();
         void tap(const Sensor*);
 
+        int id() const { return mId; }
         const TrackingMap& sensors() const { return mSensors; }
 
     private:
+        int mId;
         TrackingMap mSensors;
     };
 
@@ -105,6 +107,7 @@ private:
 
     Middleware* mMiddleware;
     GlobalEnvironmentModel* mGlobalEnvironmentModel;
+    int mTrackingCounter = 0;
     TrackedObjects mObjects;
     std::vector<Sensor*> mSensors;
 };
