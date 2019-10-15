@@ -32,7 +32,7 @@ void VeinsMobility::initialize(const Position& pos, Angle heading, double speed)
     mSpeed = speed;
     move.setSpeed(mSpeed);
 
-    mDirection = Coord { cos(heading.radian()), -sin(heading.radian()) };
+    mDirection = veins::Coord { cos(heading.radian()), -sin(heading.radian()) };
     move.setDirectionByVector(mDirection);
 }
 
@@ -40,9 +40,9 @@ void VeinsMobility::update(const Position& pos, Angle heading, double speed)
 {
     initialize(pos, heading, speed);
 
-    BaseMobility::updatePosition(); // emits update signal for Veins
+    veins::BaseMobility::updatePosition(); // emits update signal for Veins
     // assert there is no identical signal emitted twice
-    ASSERT(BaseMobility::mobilityStateChangedSignal != MobilityBase::stateChangedSignal);
+    ASSERT(veins::BaseMobility::mobilityStateChangedSignal != MobilityBase::stateChangedSignal);
     emit(MobilityBase::stateChangedSignal, this);
 }
 

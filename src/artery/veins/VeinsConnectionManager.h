@@ -15,7 +15,7 @@ namespace artery
  * Originally,this is done by Veins' TraCIScenarioManager.
  * Note: NICs register automatically at the networks' connection manager.
  */
-class VeinsConnectionManager : public ConnectionManager, public omnetpp::cListener
+class VeinsConnectionManager : public veins::ConnectionManager, public omnetpp::cListener
 {
 public:
     void initialize(int stage) override;

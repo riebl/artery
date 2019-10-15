@@ -18,7 +18,7 @@
 
 #include "artery/application/ItsG5Service.h"
 #include "artery/application/Middleware.h"
-#include "veins/base/utils/FindModule.h"
+#include <inet/common/ModuleAccess.h>
 #include <omnetpp/clog.h>
 #include <cassert>
 
@@ -72,7 +72,7 @@ PortNumber ItsG5BaseService::getPortNumber(ChannelNumber ch) const
 
 cModule* ItsG5BaseService::findHost()
 {
-	return FindModule<>::findHost(this);
+	return inet::findContainingNode(m_middleware);
 }
 
 void ItsG5BaseService::initialize()

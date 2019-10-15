@@ -10,7 +10,7 @@ Define_Module(VeinsObstacleControl)
 
 void VeinsObstacleControl::initialize(int stage)
 {
-    Veins::ObstacleControl::initialize(stage);
+    veins::ObstacleControl::initialize(stage);
     if (stage == 0) {
         subscribeTraCI(getSystemModule());
     }
@@ -35,11 +35,11 @@ void VeinsObstacleControl::fetchObstacles(traci::LiteAPI& traci)
     for (const std::string& id : polygons.getIDList()) {
         std::string type = polygons.getType(id);
         if (this->isTypeSupported(type)) {
-            std::vector<Coord> shape;
+            std::vector<veins::Coord> shape;
             for (const traci::TraCIPosition& traci_point : polygons.getShape(id)) {
                 using boost::units::si::meter;
                 Position point = traci::position_cast(boundary, traci_point);
-                shape.push_back(Coord { point.x / meter, point.y / meter});
+                shape.push_back(veins::Coord { point.x / meter, point.y / meter});
             }
             this->addFromTypeAndShape(id, type, shape);
             ++fetched;

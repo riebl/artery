@@ -1,10 +1,10 @@
 #include "artery/networking/GeoNetIndication.h"
 #include "artery/networking/GeoNetRequest.h"
 #include "artery/nic/RadioDriverProperties.h"
+#include "artery/veins/VeinsMacFrame.h"
 #include "artery/veins/VeinsRadioDriver.h"
 #include "veins/base/utils/FindModule.h"
 #include "veins/base/utils/SimpleAddress.h"
-#include "veins/modules/messages/WaveShortMessage_m.h"
 #include "veins/modules/utility/Consts80211p.h"
 
 using namespace omnetpp;
@@ -16,12 +16,12 @@ Register_Class(VeinsRadioDriver)
 
 namespace {
 
-LAddress::L2Type convert(const vanetza::MacAddress& mac)
+veins::LAddress::L2Type convert(const vanetza::MacAddress& mac)
 {
     if (mac == vanetza::cBroadcastMacAddress) {
-        return LAddress::L2BROADCAST();
+        return veins::LAddress::L2BROADCAST();
     } else {
-        LAddress::L2Type addr = 0;
+        veins::LAddress::L2Type addr = 0;
         for (unsigned i = 0; i < mac.octets.size(); ++i) {
             addr <<= 8;
             addr |= mac.octets[i];
@@ -30,9 +30,9 @@ LAddress::L2Type convert(const vanetza::MacAddress& mac)
     }
 }
 
-vanetza::MacAddress convert(LAddress::L2Type addr)
+vanetza::MacAddress convert(veins::LAddress::L2Type addr)
 {
-    if (LAddress::isL2Broadcast(addr)) {
+    if (veins::LAddress::isL2Broadcast(addr)) {
         return vanetza::cBroadcastMacAddress;
     } else {
         vanetza::MacAddress mac;
@@ -72,7 +72,7 @@ const simsignal_t channelBusySignal = cComponent::registerSignal("sigChannelBusy
 void VeinsRadioDriver::initialize()
 {
     RadioDriverBase::initialize();
-    mHost = FindModule<>::findHost(this);
+    mHost = veins::FindModule<>::findHost(this);
     mHost->subscribe(channelBusySignal, this);
 
     mLowerLayerOut = gate("lowerLayerOut");
@@ -108,13 +108,13 @@ void VeinsRadioDriver::handleMessage(cMessage* msg)
 
 void VeinsRadioDriver::handleDataIndication(cMessage* packet)
 {
-    auto wsm = check_and_cast<WaveShortMessage*>(packet);
-    auto gn = wsm->decapsulate();
+    auto frame = check_and_cast<VeinsMacFrame*>(packet);
+    auto gn = frame->decapsulate();
     auto* indication = new GeoNetIndication();
-    indication->source = convert(wsm->getSenderAddress());
-    indication->destination = convert(wsm->getRecipientAddress());
+    indication->source = convert(frame->getSenderAddress());
+    indication->destination = convert(frame->getRecipientAddress());
     gn->setControlInfo(indication);
-    delete wsm;
+    delete frame;
 
     indicateData(gn);
 }
@@ -122,15 +122,15 @@ void VeinsRadioDriver::handleDataIndication(cMessage* packet)
 void VeinsRadioDriver::handleDataRequest(cMessage* packet)
 {
     auto request = check_and_cast<GeoNetRequest*>(packet->removeControlInfo());
-    auto wsm = new WaveShortMessage();
-    wsm->encapsulate(check_and_cast<cPacket*>(packet));
-    wsm->setSenderAddress(convert(request->source_addr));
-    wsm->setRecipientAddress(convert(request->destination_addr));
-    wsm->setUserPriority(user_priority(request->access_category));
-    wsm->setChannelNumber(Channels::CCH);
+    auto frame = new VeinsMacFrame();
+    frame->encapsulate(check_and_cast<cPacket*>(packet));
+    frame->setSenderAddress(convert(request->source_addr));
+    frame->setRecipientAddress(convert(request->destination_addr));
+    frame->setUserPriority(user_priority(request->access_category));
+    frame->setChannelNumber(static_cast<int>(veins::Channel::cch));
 
     delete request;
-    send(wsm, mLowerLayerOut);
+    send(frame, mLowerLayerOut);
 }
 
 void VeinsRadioDriver::receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t signal, bool busy, omnetpp::cObject*)

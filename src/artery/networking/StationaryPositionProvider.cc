@@ -33,8 +33,8 @@ Position StationaryPositionProvider::getInitialPosition()
     if (auto mobility = dynamic_cast<inet::IMobility*>(mobilityModule)) {
         inet::Coord inet_pos = mobility->getCurrentPosition();
         return Position { inet_pos.x, inet_pos.y };
-    } else if (auto mobility = dynamic_cast<BaseMobility*>(mobilityModule)) {
-        Coord veins_pos = mobility->getCurrentPosition();
+    } else if (auto mobility = dynamic_cast<veins::BaseMobility*>(mobilityModule)) {
+        veins::Coord veins_pos = mobility->getPositionAt(omnetpp::simTime());
         return Position { veins_pos.x, veins_pos.y };
     } else {
         error("no suitable mobility module found");

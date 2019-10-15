@@ -9,7 +9,7 @@ namespace traci { class LiteAPI; }
 namespace artery
 {
 
-class VeinsObstacleControl : public Veins::ObstacleControl, public traci::Listener
+class VeinsObstacleControl : public veins::ObstacleControl, public traci::Listener
 {
 public:
     void initialize(int stage) override;

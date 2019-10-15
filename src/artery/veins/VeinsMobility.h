@@ -8,7 +8,7 @@
 namespace artery
 {
 
-class VeinsMobility : public BaseMobility /* Veins */, public MobilityBase /* Artery */
+class VeinsMobility : public veins::BaseMobility, public artery::MobilityBase
 {
 public:
     void initialize(int stage) override;
@@ -17,8 +17,8 @@ private:
     void initialize(const Position&, Angle, double speed) override;
     void update(const Position&, Angle, double speed) override;
 
-    Coord mPosition;
-    Coord mDirection;
+    veins::Coord mPosition;
+    veins::Coord mDirection;
     double mSpeed;
 };
 
