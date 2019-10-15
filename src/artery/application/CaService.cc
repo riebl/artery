@@ -41,6 +41,20 @@ long round(const boost::units::quantity<T>& q, const U& u)
 	return std::round(v.value());
 }
 
+SpeedValue_t buildSpeedValue(const vanetza::units::Velocity& v)
+{
+	static const vanetza::units::Velocity lower { 0.0 * boost::units::si::meter_per_second };
+	static const vanetza::units::Velocity upper { 163.82 * boost::units::si::meter_per_second };
+
+	SpeedValue_t speed = SpeedValue_unavailable;
+	if (v >= upper) {
+		speed = 16382; // see CDD A.74 (TS 102 894 v1.2.1)
+	} else if (v >= lower) {
+		speed = round(v, centimeter_per_second) * SpeedValue_oneCentimeterPerSec;
+	}
+	return speed;
+}
+
 
 Define_Module(CaService)
 
@@ -219,7 +233,7 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 	BasicVehicleContainerHighFrequency& bvc = hfc.choice.basicVehicleContainerHighFrequency;
 	bvc.heading.headingValue = round(vdp.heading(), decidegree);
 	bvc.heading.headingConfidence = HeadingConfidence_equalOrWithinOneDegree;
-	bvc.speed.speedValue = round(vdp.speed(), centimeter_per_second) * SpeedValue_oneCentimeterPerSec;
+	bvc.speed.speedValue = buildSpeedValue(vdp.speed());
 	bvc.speed.speedConfidence = SpeedConfidence_equalOrWithinOneCentimeterPerSec * 3;
 	bvc.driveDirection = vdp.speed().value() >= 0.0 ?
 			DriveDirection_forward : DriveDirection_backward;
