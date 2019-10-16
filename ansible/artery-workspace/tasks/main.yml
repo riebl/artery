@@ -1,0 +1,40 @@
+---
+- name: install Artery dependencies
+  package:
+      name: "{{ packages }}"
+      state: present
+  vars:
+      packages:
+          - cmake
+          - cmake-curses-gui
+          - g++
+          - libboost-dev
+          - libboost-date-time-dev
+          - libboost-system-dev
+          - libcrypto++-dev
+          - libgeographic-dev
+          - libpython3-dev
+          - libssl-dev
+          - python3-distutils
+          - sumo
+  become: yes
+
+- name: build all Artery dependencies
+  make:
+      chdir: "{{ artery_source_dir }}"
+      target: all
+
+- name: create Artery build directory
+  file:
+      path: "{{ artery_build_dir }}"
+      state: directory
+
+- name: configure Artery build directory
+  command: cmake {{ artery_source_dir }}
+  args:
+      chdir: "{{ artery_build_dir }}"
+      creates: "{{ artery_build_dir }}/Makefile"
+
+- name: build Artery
+  make:
+      chdir: "{{ artery_build_dir }}"

@@ -1,0 +1,60 @@
+---
+- name: install OMNeT++ dependencies
+  package:
+      name: "{{ packages }}"
+      state: present
+  vars:
+      packages:
+          - build-essential
+          - gcc
+          - g++
+          - bison
+          - flex
+          - perl
+          - python3
+          - qt5-default
+          - libosgearth-dev
+          - libqt5opengl5-dev
+          - libxml2-dev
+          - zlib1g-dev
+          - default-jre
+  become: yes
+
+- name: create /opt/omnetpp directory
+  file:
+      path: /opt/omnetpp
+      state: directory
+      owner: "{{ ansible_user }}"
+  become: yes
+
+- name: download OMNeT++ archive
+  get_url:
+      url: https://github.com/omnetpp/omnetpp/releases/download/omnetpp-5.5.1/omnetpp-5.5.1-src-linux.tgz
+      dest: /tmp/omnetpp-src-linux.tgz
+      checksum: md5:f7abe260ff47ec02a665e287c653db86
+
+- name: extract OMNeT++ archive
+  unarchive:
+      src: /tmp/omnetpp-src-linux.tgz
+      dest: /opt/omnetpp/
+      creates: /opt/omnetpp/configure
+      extra_opts:
+          - --strip-components=1
+
+- name: configure OMNeT++
+  command: ./configure
+  args:
+      chdir: /opt/omnetpp
+      creates: /opt/omnetpp/Makefile.inc
+
+- name: build OMNeT++
+  make:
+      chdir: /opt/omnetpp
+  environment:
+      PATH: /opt/omnetpp/bin:{{ ansible_env.PATH }}
+
+- name: add OMNeT++ binary path to PATH
+  copy:
+      content: export PATH=/opt/omnetpp/bin:$PATH
+      dest: /etc/profile.d/omnetpp.sh
+  become: yes

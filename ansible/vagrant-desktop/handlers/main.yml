@@ -1,0 +1,6 @@
+---
+- name: start sddm
+  systemd:
+    name: sddm
+    state: started
+  become: yes

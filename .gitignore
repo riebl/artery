@@ -1,5 +1,7 @@
+ansible/*.retry
 scenarios/**/*.pyc
 scenarios/*/results/*
 scenarios/*/.tkenvrc
 src/artery/messages/*_m.cc
 src/artery/messages/*_m.h
+.vagrant/

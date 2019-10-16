@@ -1,0 +1,28 @@
+---
+- name: update apt databae
+  apt:
+    update_cache: yes
+  become: yes
+
+- name: install LXQt desktop environment
+  package:
+    name: task-lxqt-desktop
+    state: present
+  notify: start sddm
+  become: yes
+
+- name: ensure /etc/sddm.conf.d existis
+  file:
+    path: /etc/sddm.conf.d
+    state: directory
+  become: yes
+
+- name: enable LXQt autologin
+  copy:
+    content: |
+      [Autologin]
+      User={{ ansible_user }}
+      Session=lxqt.desktop
+      Relogin=false
+    dest: /etc/sddm.conf.d/autologin
+  become: yes
