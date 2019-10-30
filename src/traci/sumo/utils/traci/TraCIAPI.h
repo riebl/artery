@@ -451,6 +451,7 @@ public:
         std::vector<std::string> getIDList() const;
         int getIDCount() const;
         double getLineWidth(const std::string& polygonID) const;
+        bool getFilled(const std::string& polygonID) const;
         std::string getType(const std::string& polygonID) const;
         libsumo::TraCIPositionVector getShape(const std::string& polygonID) const;
         libsumo::TraCIColor getColor(const std::string& polygonID) const;
