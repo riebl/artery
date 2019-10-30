@@ -6,7 +6,7 @@ simple ObstacleIndex
         @class(gemv2::ObstacleIndex);
         string traciModule;
         string visualizerModule;
-        string filterTypes = default("building shop");
+        string filterTypes = default("building");
         string obstacleColor = default("Black");
         bool requireFilled = default(false);
 }
