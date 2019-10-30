@@ -8,4 +8,5 @@ simple ObstacleIndex
         string visualizerModule;
         string filterTypes = default("building shop");
         string obstacleColor = default("Black");
+        bool requireFilled = default(false);
 }
