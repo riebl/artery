@@ -73,6 +73,7 @@ void ObstacleIndex::fetchObstacles(traci::LiteAPI& traci)
 {
     const auto& polygons = traci.polygon();
     const traci::Boundary boundary { traci.simulation().getNetBoundary() };
+    const bool require_filled = par("requireFilled");
     unsigned ignored = 0;
     std::string shape_msg;
     for (const std::string& id : polygons.getIDList()) {
@@ -82,6 +83,14 @@ void ObstacleIndex::fetchObstacles(traci::LiteAPI& traci)
             if (found == mFilterTypes.end()) {
                 EV_DEBUG << "ignore polygon " << id << " of type " << type << "\n";
                 // skip polygon because its type is not in our filter set
+                ++ignored;
+                continue;
+            }
+        }
+
+        if (require_filled) {
+            if (!polygons.getFilled(id)) {
+                EV_DEBUG << "ignore unfilled polygon " << id << "\n";
                 ++ignored;
                 continue;
             }
