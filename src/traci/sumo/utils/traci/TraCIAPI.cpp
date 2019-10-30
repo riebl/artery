@@ -1491,6 +1491,11 @@ TraCIAPI::PolygonScope::getLineWidth(const std::string& polygonID) const {
     return myParent.getDouble(libsumo::CMD_GET_POLYGON_VARIABLE, libsumo::VAR_WIDTH, polygonID);
 }
 
+bool
+TraCIAPI::PolygonScope::getFilled(const std::string& polygonID) const {
+    return myParent.getInt(libsumo::CMD_GET_POLYGON_VARIABLE, libsumo::VAR_FILL, polygonID) != 0;
+}
+
 std::string
 TraCIAPI::PolygonScope::getType(const std::string& polygonID) const {
     return myParent.getString(libsumo::CMD_GET_POLYGON_VARIABLE, libsumo::VAR_TYPE, polygonID);
