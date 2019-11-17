@@ -63,7 +63,7 @@ class CaService : public ItsG5BaseService
 };
 
 vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider&, uint16_t genDeltaTime);
-void addLowFrequencyContainer(vanetza::asn1::Cam&);
+void addLowFrequencyContainer(vanetza::asn1::Cam&, unsigned pathHistoryLength = 0);
 
 } // namespace artery
 

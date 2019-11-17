@@ -166,7 +166,7 @@ void CaService::sendCam(const SimTime& T_now)
 	mLastCamHeading = mVehicleDataProvider->heading();
 	mLastCamTimestamp = T_now;
 	if (T_now - mLastLowCamTimestamp >= artery::simtime_cast(scLowFrequencyContainerInterval)) {
-		addLowFrequencyContainer(cam);
+		addLowFrequencyContainer(cam, par("pathHistoryLength"));
 		mLastLowCamTimestamp = T_now;
 	}
 
@@ -268,8 +268,13 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 	return message;
 }
 
-void addLowFrequencyContainer(vanetza::asn1::Cam& message)
+void addLowFrequencyContainer(vanetza::asn1::Cam& message, unsigned pathHistoryLength)
 {
+	if (pathHistoryLength > 40) {
+		EV_WARN << "path history can contain 40 elements at maximum";
+		pathHistoryLength = 40;
+	}
+
 	LowFrequencyContainer_t*& lfc = message->cam.camParameters.lowFrequencyContainer;
 	lfc = vanetza::asn1::allocate<LowFrequencyContainer_t>();
 	lfc->present = LowFrequencyContainer_PR_basicVehicleContainerLowFrequency;
@@ -279,7 +284,16 @@ void addLowFrequencyContainer(vanetza::asn1::Cam& message)
 	assert(nullptr != bvc.exteriorLights.buf);
 	bvc.exteriorLights.size = 1;
 	bvc.exteriorLights.buf[0] |= 1 << (7 - ExteriorLights_daytimeRunningLightsOn);
-	// TODO: add pathHistory
+
+	for (int i = 0; i < pathHistoryLength; ++i) {
+		PathPoint* pathPoint = vanetza::asn1::allocate<PathPoint>();
+		pathPoint->pathDeltaTime = vanetza::asn1::allocate<PathDeltaTime_t>();
+		*(pathPoint->pathDeltaTime) = 0;
+		pathPoint->pathPosition.deltaLatitude = DeltaLatitude_unavailable;
+		pathPoint->pathPosition.deltaLongitude = DeltaLongitude_unavailable;
+		pathPoint->pathPosition.deltaAltitude = DeltaAltitude_unavailable;
+		ASN_SEQUENCE_ADD(&bvc.pathHistory, pathPoint);
+	}
 
 	std::string error;
 	if (!message.validate(error)) {
