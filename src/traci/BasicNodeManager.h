@@ -33,6 +33,8 @@ public:
     static const omnetpp::simsignal_t removeVehicleSignal;
 
     LiteAPI* getLiteAPI() override { return m_api; }
+    SubscriptionManager* getSubscriptions() {return m_subscriptions; }
+    std::map<std::string, VehicleSink*>& getVehicleMap() { return m_vehicles; }
     std::size_t getNumberOfNodes() const override;
 
     /**
@@ -65,11 +67,13 @@ protected:
     virtual VehicleSink* getVehicleSink(omnetpp::cModule*);
     virtual VehicleSink* getVehicleSink(const std::string&);
 
-private:
+    void processVehiclesFromSimCache();
+
     void traciInit() override;
     void traciStep() override;
     void traciClose() override;
 
+private:
     LiteAPI* m_api;
     ModuleMapper* m_mapper;
     Boundary m_boundary;
