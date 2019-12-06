@@ -80,6 +80,19 @@ void BasicNodeManager::traciInit()
 
 void BasicNodeManager::traciStep()
 {
+    processVehicles();
+    emit(updateNodeSignal, getNumberOfNodes());
+}
+
+void BasicNodeManager::traciClose()
+{
+    for (unsigned i = m_nodes.size(); i > 0; --i) {
+        removeNodeModule(m_nodes.begin()->first);
+    }
+}
+
+void BasicNodeManager::processVehicles()
+{
     auto sim_cache = m_subscriptions->getSimulationCache();
     ASSERT(checkTimeSync(*sim_cache, omnetpp::simTime()));
 
@@ -107,15 +120,6 @@ void BasicNodeManager::traciStep()
         const std::string& id = vehicle.first;
         VehicleSink* sink = vehicle.second;
         updateVehicle(id, sink);
-    }
-
-    emit(updateNodeSignal, getNumberOfNodes());
-}
-
-void BasicNodeManager::traciClose()
-{
-    for (unsigned i = m_nodes.size(); i > 0; --i) {
-        removeNodeModule(m_nodes.begin()->first);
     }
 }
 
