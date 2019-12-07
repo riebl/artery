@@ -33,8 +33,7 @@ public:
     static const omnetpp::simsignal_t removeVehicleSignal;
 
     LiteAPI* getLiteAPI() override { return m_api; }
-    SubscriptionManager* getSubscriptions() {return m_subscriptions; }
-    std::map<std::string, VehicleSink*>& getVehicleMap() { return m_vehicles; }
+    SubscriptionManager* getSubscriptions() { return m_subscriptions; }
     std::size_t getNumberOfNodes() const override;
 
     /**

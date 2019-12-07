@@ -13,6 +13,7 @@ set(SOURCES
     MultiTypeModuleMapper.cc
     Position.cc
     PosixLauncher.cc
+    RegionsOfInterest.cc
     RegionOfInterestNodeManager.cc
     TestbedModuleMapper.cc
     TestbedNodeManager.cc

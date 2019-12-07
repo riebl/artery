@@ -8,17 +8,8 @@
 #define REGIONOFINTERESTNODEMANAGER_H_AGMBROIE
 
 #include "traci/BasicNodeManager.h"
-
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/point_xy.hpp>
-#include <boost/geometry/geometries/polygon.hpp>
-#include <boost/geometry/geometries/adapted/boost_tuple.hpp>
-
-#include "traci/VariableCache.h"
-
-BOOST_GEOMETRY_REGISTER_BOOST_TUPLE_CS(cs::cartesian)
-
-using namespace boost::geometry;
+#include "traci/RegionsOfInterest.h"
+#include <unordered_set>
 
 namespace traci
 {
@@ -26,7 +17,6 @@ namespace traci
 class RegionOfInterestNodeManager : public BasicNodeManager
 {
 protected:
-    void initialize() override;
     void traciInit() override;
 
     void addVehicle(const std::string& id) override;
@@ -37,7 +27,8 @@ protected:
 private:
     void checkRegionOfInterest();
 
-    std::list< model::polygon<model::d2::point_xy<double>> > m_regions;
+    RegionsOfInterest m_regions;
+    std::unordered_set<std::string> m_outside;
 };
 
 } // namespace traci
