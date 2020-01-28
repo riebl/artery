@@ -11,7 +11,7 @@
   notify: start sddm
   become: yes
 
-- name: ensure /etc/sddm.conf.d existis
+- name: ensure /etc/sddm.conf.d exists
   file:
     path: /etc/sddm.conf.d
     state: directory
