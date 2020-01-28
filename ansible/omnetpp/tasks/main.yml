@@ -50,6 +50,7 @@
 - name: build OMNeT++
   make:
       chdir: /opt/omnetpp
+      params: --jobs={{ ansible_processor_vcpus }}
   environment:
       PATH: /opt/omnetpp/bin:{{ ansible_env.PATH }}
 

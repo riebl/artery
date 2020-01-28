@@ -19,10 +19,11 @@
           - sumo
   become: yes
 
-- name: build all Artery dependencies
+- name: build bundled dependencies
   make:
       chdir: "{{ artery_source_dir }}"
       target: all
+      params: --jobs={{ ansible_processor_vcpus }}
 
 - name: create Artery build directory
   file:
@@ -38,3 +39,4 @@
 - name: build Artery
   make:
       chdir: "{{ artery_build_dir }}"
+      params: --jobs={{ ansible_processor_vcpus }}
