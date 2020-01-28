@@ -53,6 +53,8 @@
       params: --jobs={{ ansible_processor_vcpus }}
   environment:
       PATH: /opt/omnetpp/bin:{{ ansible_env.PATH }}
+  register: build_omnetpp
+  changed_when: build_omnetpp.stdout is search('Creating')
 
 - name: add OMNeT++ binary path to PATH
   copy:
