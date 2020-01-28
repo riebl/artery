@@ -129,3 +129,7 @@ endif()
 if(WITH_TESTBED)
     add_subdirectory(testbed)
 endif()
+
+if(WITH_ROS)
+    add_subdirectory(ros)
+endif()
