@@ -1,0 +1,8 @@
+---
+ros_build_environment: True
+ros_distro: melodic
+ros_num_workers: "{{ (ansible_processor_vcpus > 1) | ternary(ansible_processor_vcpus - 1, 1) }}"
+ros_repo_url: http://packages.ros.org/ros/{{ ansible_distribution | lower }}
+ros_repo_key_id: C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+ros_repo_key_server: hkp://keyserver.ubuntu.com:80
+ros_system_path: /opt/ros/{{ ros_distro }}

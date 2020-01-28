@@ -1,0 +1,7 @@
+---
+- name: source ROS setup script by bash shell
+  lineinfile:
+    path: "{{ ansible_user_dir }}/.bashrc"
+    regexp: '^source /opt/ros/[a-z]+/setup.bash'
+    line: "source /opt/ros/{{ ros_distro }}/setup.bash"
+    insertafter: EOF

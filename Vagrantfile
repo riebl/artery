@@ -16,6 +16,9 @@ Vagrant.configure("2") do |config|
     config.vm.provision "ansible_local" do |ansible|
       ansible.compatibility_mode = "2.0"
       ansible.playbook = "ansible/vagrant.yml"
+      ansible.groups = {
+        "ros_machines" => [:ros]
+      }
     end
 
     config.vm.define :basic, primary: true

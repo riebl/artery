@@ -1,0 +1,7 @@
+---
+- name: install ROS base system
+  import_tasks: system.yml
+  become: yes
+
+- name: configure user environment for ROS
+  import_tasks: user.yml

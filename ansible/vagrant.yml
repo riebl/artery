@@ -11,3 +11,6 @@
   environment:
     PATH: /opt/omnetpp/bin:{{ ansible_env.PATH }}
 
+- hosts: ros_machines
+  roles:
+    - ros-environment

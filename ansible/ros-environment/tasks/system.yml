@@ -1,0 +1,34 @@
+---
+- name: add ROS repository key
+  apt_key:
+    id: "{{ ros_repo_key_id }}"
+    keyserver: "{{ ros_repo_key_server }}"
+    state: present
+
+- name: add ROS repository
+  apt_repository:
+    repo: deb {{ ros_repo_url }} {{ ansible_lsb.codename }} main
+    filename: ros-latest
+    state: present
+
+- name: install ros-base package
+  apt:
+    pkg: ros-{{ ros_distro }}-ros-base
+    update_cache: yes
+
+- name: install ROS packages for building workspaces
+  apt:
+    pkg: "{{ packages }}"
+  vars:
+    packages:
+    - build-essential
+    - python-rosinstall
+    - python-rosinstall-generator
+    - python-wstool
+  when: ros_build_environment
+
+- name: initialise rosdep
+  command: rosdep init
+  args:
+      creates: /etc/ros/rosdep
+  notify: update rosdep
