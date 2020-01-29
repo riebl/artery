@@ -1,6 +1,6 @@
 ---
-- name: start sddm
+- name: start desktop
   systemd:
-    name: sddm
+    name: "{{ desktop_service }}"
     state: started
   become: yes

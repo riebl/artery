@@ -1,0 +1,3 @@
+desktop_packages: ubuntu-budgie-desktop
+desktop_session: budgie-desktop
+desktop_service: lightdm

@@ -1,14 +1,20 @@
 ---
-- name: update apt databae
+- name: load distribution specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+
+- name: update apt database
   apt:
     update_cache: yes
   become: yes
 
-- name: install LXQt desktop environment
+- name: install desktop environment
   package:
-    name: task-lxqt-desktop
+    name: "{{ desktop_packages }}"
     state: present
-  notify: start sddm
+  notify: start desktop
   become: yes
 
 - name: ensure /etc/sddm.conf.d exists
@@ -17,12 +23,27 @@
     state: directory
   become: yes
 
-- name: enable LXQt autologin
+- name: enable SDDM autologin
   copy:
     content: |
       [Autologin]
       User={{ ansible_user }}
-      Session=lxqt.desktop
+      Session={{ desktop_session }}.desktop
       Relogin=false
     dest: /etc/sddm.conf.d/autologin
+  become: yes
+
+- name: ensure /etc/lightdm/lightdm.conf.d exists
+  file:
+    path: /etc/lightdm/lightdm.conf.d
+    state: directory
+  become: yes
+
+- name: enable LightDM autologn
+  copy:
+    content: |
+      [SeatDefaults]
+      autologin-user={{ ansible_user }}
+      user-session={{ desktop_session }}
+    dest: /etc/lightdm/lightdm.conf.d/autologin.conf
   become: yes

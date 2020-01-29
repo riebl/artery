@@ -1,0 +1,3 @@
+desktop_packages: task-lxqt-desktop
+desktop_session: lxqt
+desktop_service: sddm
