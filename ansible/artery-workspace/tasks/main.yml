@@ -1,4 +1,12 @@
 ---
+- name: add SUMO PPA repository on Ubuntu
+  apt_repository:
+      repo: ppa:sumo/stable
+      update_cache: yes
+      state: present
+  when: ansible_distribution == "Ubuntu"
+  become: yes
+
 - name: install Artery dependencies
   package:
       name: "{{ packages }}"
