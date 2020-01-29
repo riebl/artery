@@ -33,3 +33,15 @@
              x-systemd.requires-mounts-for={{ ansible_user_dir }}/.overlay/artery-host"
       state: mounted
   become: yes
+
+- name: find files in upper overlay
+  find:
+      paths: "{{ ansible_user_dir }}/.overlay/artery-upper/"
+      file_type: any
+  register: artery_upper_files
+
+- name: clean artifacts inherited from host
+  make:
+      chdir: "{{ ansible_user_dir }}/artery"
+      target: clean
+  when: artery_upper_files.matched == 0
