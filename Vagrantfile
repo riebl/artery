@@ -1,3 +1,9 @@
+require 'etc'
+
+def vbox_cpus()
+  return [1, Etc.nprocessors / 2].max
+end
+
 def vbox_name(variant="")
   name = "Artery Vagrant VM"
   if not variant.empty? then
@@ -33,6 +39,7 @@ Vagrant.configure("2") do |config|
       vb.name = vbox_name()
       vb.gui = true
       vb.memory = 2048
+      vb.cpus = vbox_cpus()
       vb.customize ["modifyvm", :id, "--vram", "32"]
     end
 end
