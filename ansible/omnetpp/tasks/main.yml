@@ -29,13 +29,13 @@
 
 - name: download OMNeT++ archive
   get_url:
-      url: https://github.com/omnetpp/omnetpp/releases/download/omnetpp-5.5.1/omnetpp-5.5.1-src-linux.tgz
-      dest: /tmp/omnetpp-src-linux.tgz
-      checksum: md5:f7abe260ff47ec02a665e287c653db86
+      url: "{{ omnetpp_url }}/{{ omnetpp_archive }}"
+      dest: /var/tmp/{{ omnetpp_archive }}
+      checksum: "{{ omnetpp_checksum }}"
 
 - name: extract OMNeT++ archive
   unarchive:
-      src: /tmp/omnetpp-src-linux.tgz
+      src: /var/tmp/{{ omnetpp_archive }}
       dest: /opt/omnetpp/
       creates: /opt/omnetpp/configure
       extra_opts:
