@@ -1,4 +1,5 @@
 add_artery_feature(ros
+    ProxyService.cc
     Scheduler.cc
 )
 
