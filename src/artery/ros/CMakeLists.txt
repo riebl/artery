@@ -13,6 +13,6 @@ macro(find_ros)
     endforeach()
 endmacro()
 
-find_ros(roscpp rosgraph_msgs sensor_msgs)
+find_ros(etsi_its_msgs roscpp rosgraph_msgs sensor_msgs)
 target_include_directories(ros PUBLIC ${ROS_INCLUDE_DIRS})
 target_link_libraries(ros PUBLIC ${ROS_LIBRARIES})
