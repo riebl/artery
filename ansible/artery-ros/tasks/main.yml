@@ -1,0 +1,26 @@
+---
+- name: create catkin workspace
+  file:
+    path: "{{ ansible_user_dir }}/catkin_ws/src"
+    state: directory
+
+- name: clone etsi_its_msgs into workspace
+  git:
+    repo: http://github.com/riebl/ros_etsi_its_msgs.git
+    dest: "{{ ansible_user_dir }}/catkin_ws/src/etsi_its_msgs"
+
+- name: build and install catkin workspace
+  shell: |
+      source {{ ros_system_path }}/setup.bash
+      catkin_make install -DCMAKE_INSTALL_PREFIX={{ ansible_user_dir }}/ros
+  args:
+    chdir: "{{ ansible_user_dir }}/catkin_ws"
+    executable: /bin/bash
+
+- name: source installed workspace by bash
+  lineinfile:
+    path: "{{ ansible_user_dir }}/.bashrc"
+    line: "source {{ ansible_user_dir }}/ros/setup.bash"
+
+- name: enable ROS feature in Artery build
+  shell: cmake -DWITH_ROS=ON {{ artery_build_dir }}
