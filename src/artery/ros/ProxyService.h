@@ -2,6 +2,7 @@
 #define ARTERY_ROS_PROXYSERVICE_H_PNI671CK
 
 #include "artery/application/ItsG5PromiscuousService.h"
+#include <ros/ros.h>
 
 namespace artery
 {
@@ -17,6 +18,7 @@ public:
 
 protected:
     const VehicleDataProvider* mVehicleDataProvider = nullptr;
+    ros::Publisher mNavSatPublisher;
 };
 
 } // namespace artery

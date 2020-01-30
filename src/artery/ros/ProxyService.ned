@@ -6,4 +6,5 @@ simple ProxyService like ItsG5Service
 {
     parameters:
         @class(RosProxyService);
+        string namespace = default("artery/%SUMO_ID%");
 }

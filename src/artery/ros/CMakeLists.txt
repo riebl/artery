@@ -3,8 +3,16 @@ add_artery_feature(ros
     Scheduler.cc
 )
 
-find_package(roscpp REQUIRED)
-find_package(rosgraph_msgs REQUIRED)
+macro(find_ros)
+    set(ROS_INCLUDE_DIRS "")
+    set(ROS_LIBRARIES "")
+    foreach(ros_pkg ${ARGV})
+        find_package("${ros_pkg}" REQUIRED)
+        list(APPEND ROS_INCLUDE_DIRS "${${ros_pkg}_INCLUDE_DIRS}")
+        list(APPEND ROS_LIBRARIES "${${ros_pkg}_LIBRARIES}")
+    endforeach()
+endmacro()
 
-target_include_directories(ros PUBLIC ${roscpp_INCLUDE_DIRS} ${rosgraph_msgs_INCLUDE_DIRS})
-target_link_libraries(ros PUBLIC ${roscpp_LIBRARIES} ${rosgraph_msgs_LIBRARIES})
+find_ros(roscpp rosgraph_msgs sensor_msgs)
+target_include_directories(ros PUBLIC ${ROS_INCLUDE_DIRS})
+target_link_libraries(ros PUBLIC ${ROS_LIBRARIES})
