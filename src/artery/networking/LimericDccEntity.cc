@@ -33,6 +33,10 @@ void LimericDccEntity::initializeTransmitRateControl()
     params.cbr_target = mTargetCbr;
 
     mAlgorithm.reset(new Limeric(*mRuntime, params));
+    if (par("enableDualAlpha")) {
+        Limeric::DualAlphaParameters dual_params;
+        mAlgorithm->configure_dual_alpha(dual_params);
+    }
     mTransmitRateControl.reset(new LimericTransmitRateControl(*mRuntime, *mAlgorithm));
 
     mAlgorithm->on_duty_cycle_change = [this](const Limeric*, vanetza::Clock::time_point) {
