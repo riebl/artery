@@ -90,16 +90,16 @@ void InetRadioDriver::handleDataRequest(cMessage* packet)
 	ctrl->setSourceAddress(convert(request->source_addr));
 	ctrl->setEtherType(request->ether_type.host());
 	switch (request->access_category) {
-		case vanetza::AccessCategory::VO:
+		case vanetza::access::AccessCategory::VO:
 			ctrl->setUserPriority(7);
 			break;
-		case vanetza::AccessCategory::VI:
+		case vanetza::access::AccessCategory::VI:
 			ctrl->setUserPriority(5);
 			break;
-		case vanetza::AccessCategory::BE:
+		case vanetza::access::AccessCategory::BE:
 			ctrl->setUserPriority(3);
 			break;
-		case vanetza::AccessCategory::BK:
+		case vanetza::access::AccessCategory::BK:
 			ctrl->setUserPriority(1);
 			break;
 		default:

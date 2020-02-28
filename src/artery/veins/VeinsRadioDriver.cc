@@ -44,9 +44,9 @@ vanetza::MacAddress convert(veins::LAddress::L2Type addr)
     }
 }
 
-int user_priority(vanetza::AccessCategory ac)
+int user_priority(vanetza::access::AccessCategory ac)
 {
-    using AC = vanetza::AccessCategory;
+    using AC = vanetza::access::AccessCategory;
     int up = 0;
     switch (ac) {
         case AC::BK:
