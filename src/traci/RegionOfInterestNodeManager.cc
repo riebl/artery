@@ -19,8 +19,6 @@ Define_Module(RegionOfInterestNodeManager)
 
 void RegionOfInterestNodeManager::traciInit()
 {
-    BasicNodeManager::traciInit();
-
     /* validate regions */
     cXMLElement* regions = par("regionsOfInterest").xmlValue();
     if (regions) {
@@ -28,6 +26,8 @@ void RegionOfInterestNodeManager::traciInit()
         m_regions.initialize(*regions, boundary);
         EV_INFO << "Added " << m_regions.size() << " Regions of Interest to simulation" << endl;
     }
+
+    BasicNodeManager::traciInit();
 }
 
 void RegionOfInterestNodeManager::processVehicles()
