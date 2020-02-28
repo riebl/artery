@@ -84,6 +84,7 @@ void CaService::initialize()
 	// generation rate boundaries
 	mGenCamMin = par("minInterval");
 	mGenCamMax = par("maxInterval");
+	mGenCam = mGenCamMax;
 
 	// vehicle dynamics thresholds
 	mHeadingDelta = vanetza::units::Angle { par("headingDelta").doubleValue() * vanetza::units::degree };
