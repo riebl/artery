@@ -43,10 +43,10 @@ vanetza::Clock::time_point Timer::reconstructMilliseconds(uint16_t ms16) const
 
     if (tai_now > tai_rec + 0x7fff) {
         tai_rec += 0x10000;
-        assert(tai_rec - tai_now <= 0x7fff);
+        assert(tai_rec - tai_now <= 0x8000);
     } else if (tai_now + 0x7fff < tai_rec) {
         tai_rec -= 0x10000;
-        assert(tai_now - tai_rec <= 0x7fff);
+        assert(tai_now - tai_rec <= 0x8000);
     }
 
     return vanetza::Clock::time_point { std::chrono::milliseconds(tai_rec) };
