@@ -10,7 +10,6 @@
 #include "artery/application/den/Memory.h"
 #include "artery/application/den/UseCase.h"
 #include "artery/application/ItsG5BaseService.h"
-#include <boost/ptr_container/ptr_list.hpp>
 #include <vanetza/asn1/denm.hpp>
 #include <vanetza/btp/data_indication.hpp>
 #include <vanetza/btp/data_request.hpp>
@@ -46,7 +45,7 @@ class DenService : public ItsG5BaseService
         const Timer* mTimer;
         uint16_t mSequenceNumber;
         std::shared_ptr<artery::den::Memory> mMemory;
-        boost::ptr_list<artery::den::UseCase> mUseCases;
+        std::list<artery::den::UseCase*> mUseCases;
 };
 
 } // namespace artery
