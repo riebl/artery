@@ -1,13 +1,11 @@
 package traci;
 
-//
-// Specialised node manager which will only create modules for 
-// SUMO vehicles if in a region of interest.
-// This is useful when running large scenarios
-//
-simple RegionOfInterestNodeManager extends BasicNodeManager
+module RegionOfInterestNodeManager extends ExtensibleNodeManager
 {
     parameters:
-        @class(traci::RegionOfInterestNodeManager);
         xml regionsOfInterest = default(xml("<regions />"));
+
+        numVehiclePolicies = 1;
+        vehiclePolicy[0].typename = "RegionOfInterestVehiclePolicy";
+        vehiclePolicy[0].regionsOfInterest = regionsOfInterest;
 }

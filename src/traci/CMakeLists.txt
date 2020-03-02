@@ -15,7 +15,7 @@ set(SOURCES
     Position.cc
     PosixLauncher.cc
     RegionsOfInterest.cc
-    RegionOfInterestNodeManager.cc
+    RegionOfInterestVehiclePolicy.cc
     TestbedModuleMapper.cc
     TestbedNodeManager.cc
     ValueUtils.cc
