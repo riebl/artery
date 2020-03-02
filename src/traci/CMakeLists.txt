@@ -7,6 +7,7 @@ set(SOURCES
     CheckTimeSync.cc
     Core.cc
     ConnectLauncher.cc
+    ExtensibleNodeManager.cc
     InsertionDelayNodeManager.cc
     Listener.cc
     LiteAPI.cc

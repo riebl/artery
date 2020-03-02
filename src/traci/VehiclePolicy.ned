@@ -1,0 +1,5 @@
+package traci;
+
+moduleinterface VehiclePolicy
+{
+}
