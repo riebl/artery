@@ -1,29 +1,30 @@
 /*
  * Artery V2X Simulation Framework
- * Copyright 2018 Raphael Riebl
+ * Copyright 2020 Raphael Riebl
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
-#include "traci/InsertionDelayNodeManager.h"
+#include "traci/InsertionDelayVehiclePolicy.h"
+#include "traci/VehicleLifecycle.h"
 
 using namespace omnetpp;
 
 namespace traci
 {
 
-Define_Module(InsertionDelayNodeManager)
+Define_Module(InsertionDelayVehiclePolicy);
 
-InsertionDelayNodeManager::InsertionDelayNodeManager() :
+InsertionDelayVehiclePolicy::InsertionDelayVehiclePolicy() :
     m_insert_event(new omnetpp::cMessage("TraCI vehicle insertion"))
 {
 }
 
-InsertionDelayNodeManager::~InsertionDelayNodeManager()
+InsertionDelayVehiclePolicy::~InsertionDelayVehiclePolicy()
 {
     cancelAndDelete(m_insert_event);
 }
 
-void InsertionDelayNodeManager::handleMessage(cMessage* msg)
+void InsertionDelayVehiclePolicy::handleMessage(cMessage* msg)
 {
     if (msg == m_insert_event && !m_insert_queue.empty()) {
         auto next_insertion = m_insert_queue.right.begin();
@@ -31,16 +32,18 @@ void InsertionDelayNodeManager::handleMessage(cMessage* msg)
         const std::string& id = next_insertion->second;
         ASSERT(when == simTime());
 
-        BasicNodeManager::addVehicle(id);
-        BasicNodeManager::updateVehicle(id, getVehicleSink(id));
+        if (m_lifecycle) {
+            m_lifecycle->addVehicle(id);
+        } else {
+            EV_FATAL << "no lifecycle interface registered\n";
+        }
+
         m_insert_queue.right.erase(next_insertion);
         scheduleVehicleInsertion();
-    } else {
-        BasicNodeManager::handleMessage(msg);
     }
 }
 
-void InsertionDelayNodeManager::scheduleVehicleInsertion()
+void InsertionDelayVehiclePolicy::scheduleVehicleInsertion()
 {
     cancelEvent(m_insert_event);
     if (!m_insert_queue.empty()) {
@@ -51,32 +54,41 @@ void InsertionDelayNodeManager::scheduleVehicleInsertion()
     }
 }
 
-void InsertionDelayNodeManager::addVehicle(const std::string& id)
+void InsertionDelayVehiclePolicy::initialize(VehicleLifecycle* lifecycle)
+{
+    m_lifecycle = lifecycle;
+}
+
+VehiclePolicy::Decision InsertionDelayVehiclePolicy::addVehicle(const std::string& id)
 {
     Enter_Method_Silent();
     const SimTime when = simTime() + par("insertionDelay");
     m_insert_queue.insert(InsertionQueue::relation(id, when));
     EV_DETAIL << "vehicle " << id << " will be inserted at time " << when << "\n";
     scheduleVehicleInsertion();
+    return Decision::Discard;
 }
 
-void InsertionDelayNodeManager::updateVehicle(const std::string& id, VehicleSink* sink)
+VehiclePolicy::Decision InsertionDelayVehiclePolicy::updateVehicle(const std::string& id)
 {
     Enter_Method_Silent();
     if (m_insert_queue.left.find(id) == m_insert_queue.left.end()) {
-        BasicNodeManager::updateVehicle(id, sink);
+        return Decision::Continue;
+    } else {
+        return Decision::Discard;
     }
 }
 
-void InsertionDelayNodeManager::removeVehicle(const std::string& id)
+VehiclePolicy::Decision InsertionDelayVehiclePolicy::removeVehicle(const std::string& id)
 {
     Enter_Method_Silent();
     const auto found = m_insert_queue.left.find(id);
     if (found == m_insert_queue.left.end()) {
-        BasicNodeManager::removeVehicle(id);
+        return Decision::Continue;
     } else {
         m_insert_queue.left.erase(found);
         scheduleVehicleInsertion();
+        return Decision::Discard;
     }
 }
 

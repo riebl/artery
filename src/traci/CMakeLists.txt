@@ -8,7 +8,7 @@ set(SOURCES
     Core.cc
     ConnectLauncher.cc
     ExtensibleNodeManager.cc
-    InsertionDelayNodeManager.cc
+    InsertionDelayVehiclePolicy.cc
     Listener.cc
     LiteAPI.cc
     MultiTypeModuleMapper.cc
