@@ -1,11 +1,15 @@
 /****************************************************************************/
 // Eclipse SUMO, Simulation of Urban MObility; see https://eclipse.org/sumo
-// Copyright (C) 2007-2019 German Aerospace Center (DLR) and others.
-// This program and the accompanying materials
-// are made available under the terms of the Eclipse Public License v2.0
-// which accompanies this distribution, and is available at
-// http://www.eclipse.org/legal/epl-v20.html
-// SPDX-License-Identifier: EPL-2.0
+// Copyright (C) 2007-2020 German Aerospace Center (DLR) and others.
+// This program and the accompanying materials are made available under the
+// terms of the Eclipse Public License 2.0 which is available at
+// https://www.eclipse.org/legal/epl-2.0/
+// This Source Code may also be made available under the following Secondary
+// Licenses when the conditions for such availability set forth in the Eclipse
+// Public License 2.0 are satisfied: GNU General Public License, version 2
+// or later which is available at
+// https://www.gnu.org/licenses/old-licenses/gpl-2.0-standalone.html
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 /****************************************************************************/
 /// @file    TraCIConstants.h
 /// @author  Axel Wegener
@@ -20,7 +24,6 @@
 /// @author  Jakob Erdmann
 /// @author  Laura Bieker
 /// @date    2007/10/24
-/// @version $Id$
 ///
 // holds codes used for TraCI
 /****************************************************************************/
@@ -397,10 +400,16 @@ TRACI_CONST int REMOVE_TELEPORT_ARRIVED = 0x04;
 TRACI_CONST int STAGE_WAITING_FOR_DEPART = 0x00;
 // person / container stopping
 TRACI_CONST int STAGE_WAITING = 0x01;
-// person walking / container transhiping
+// person walking
 TRACI_CONST int STAGE_WALKING = 0x02;
 // person riding / container being transported
 TRACI_CONST int STAGE_DRIVING = 0x03;
+// person accessing stopping place
+TRACI_CONST int STAGE_ACCESS = 0x04;
+// stage for encoding abstract travel demand
+TRACI_CONST int STAGE_TRIP = 0x05;
+// person / container transhiping
+TRACI_CONST int STAGE_TRANSHIP = 0x06;
 
 // ****************************************
 // Stop Flags
@@ -485,9 +494,11 @@ TRACI_CONST int FILTER_TYPE_VCLASS = 0x08;
 // Only return vehicles of the given vType in context subscription result
 TRACI_CONST int FILTER_TYPE_VTYPE = 0x09;
 
+// Only return vehicles within field of vision in context subscription result
+TRACI_CONST int FILTER_TYPE_FIELD_OF_VISION = 0x0A;
 
-
-
+// Only return vehicles within the given lateral distance in context subscription result
+TRACI_CONST int FILTER_TYPE_LATERAL_DIST = 0x0B;
 
 // ****************************************
 // VARIABLE TYPES (for CMD_GET_*_VARIABLE)
@@ -605,6 +616,9 @@ TRACI_CONST int VAR_SLOPE = 0x36;
 
 // speed (get: vehicle)
 TRACI_CONST int VAR_SPEED = 0x40;
+
+// lateral speed (get: vehicle)
+TRACI_CONST int VAR_SPEED_LAT = 0x32;
 
 // maximum allowed/possible speed (get: vehicle types, lanes, set: edges, lanes)
 TRACI_CONST int VAR_MAXSPEED = 0x41;
@@ -799,8 +813,16 @@ TRACI_CONST int VAR_NOISEEMISSION = 0x66;
 // current person number (get: vehicle)
 TRACI_CONST int VAR_PERSON_NUMBER = 0x67;
 
+// person capacity (vehicle , vehicle type)
+TRACI_CONST int VAR_PERSON_CAPACITY = 0x38;
+
+TRACI_CONST int VAR_BUS_STOP_ID_LIST = 0x9f;
+
 // number of persons waiting at a defined bus stop (get: simulation)
 TRACI_CONST int VAR_BUS_STOP_WAITING = 0x67;
+
+// ids of persons waiting at a defined bus stop (get: simulation)
+TRACI_CONST int VAR_BUS_STOP_WAITING_IDS = 0xef;
 
 // current leader together with gap (get: vehicle)
 TRACI_CONST int VAR_LEADER = 0x68;
@@ -822,6 +844,9 @@ TRACI_CONST int VAR_NEXT_STOPS = 0x73;
 
 // current acceleration (get: vehicle)
 TRACI_CONST int VAR_ACCELERATION = 0x72;
+
+// add log message (set: simulation)
+TRACI_CONST int CMD_MESSAGE = 0x65;
 
 // current time in seconds (get: simulation)
 TRACI_CONST int VAR_TIME = 0x66;
@@ -888,6 +913,12 @@ TRACI_CONST int VAR_PARKING_STARTING_VEHICLES_NUMBER = 0x6c;
 
 // ids of vehicles starting to park (get: simulation)
 TRACI_CONST int VAR_PARKING_STARTING_VEHICLES_IDS = 0x6d;
+
+// number of vehicles maneuvering (get: simulation)
+TRACI_CONST int VAR_PARKING_MANEUVERING_VEHICLES_NUMBER = 0x3a;
+
+// ids of vehicles maneuvering (get: simulation)
+TRACI_CONST int VAR_PARKING_MANEUVERING_VEHICLES_IDS = 0x3b;
 
 // number of vehicles ending to park (get: simulation)
 TRACI_CONST int VAR_PARKING_ENDING_VEHICLES_NUMBER = 0x6e;
@@ -967,6 +998,9 @@ TRACI_CONST int VAR_VEHICLE = 0xc3;
 
 // append a person stage (person)
 TRACI_CONST int APPEND_STAGE = 0xc4;
+
+// replace a person stage (person)
+TRACI_CONST int REPLACE_STAGE = 0xcd;
 
 // append a person stage (person)
 TRACI_CONST int REMOVE_STAGE = 0xc5;

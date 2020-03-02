@@ -1,18 +1,21 @@
 /****************************************************************************/
 // Eclipse SUMO, Simulation of Urban MObility; see https://eclipse.org/sumo
-// Copyright (C) 2012-2019 German Aerospace Center (DLR) and others.
-// This program and the accompanying materials
-// are made available under the terms of the Eclipse Public License v2.0
-// which accompanies this distribution, and is available at
-// http://www.eclipse.org/legal/epl-v20.html
-// SPDX-License-Identifier: EPL-2.0
+// Copyright (C) 2012-2020 German Aerospace Center (DLR) and others.
+// This program and the accompanying materials are made available under the
+// terms of the Eclipse Public License 2.0 which is available at
+// https://www.eclipse.org/legal/epl-2.0/
+// This Source Code may also be made available under the following Secondary
+// Licenses when the conditions for such availability set forth in the Eclipse
+// Public License 2.0 are satisfied: GNU General Public License, version 2
+// or later which is available at
+// https://www.gnu.org/licenses/old-licenses/gpl-2.0-standalone.html
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 /****************************************************************************/
 /// @file    TraCIAPI.h
 /// @author  Daniel Krajzewicz
 /// @author  Mario Krumnow
 /// @author  Michael Behrisch
 /// @date    30.05.2012
-/// @version $Id$
 ///
 // C++ TraCI client API implementation
 /****************************************************************************/
@@ -23,7 +26,6 @@
 // ===========================================================================
 // included modules
 // ===========================================================================
-
 #include <vector>
 #include <limits>
 #include <string>
@@ -92,6 +94,7 @@ public:
     std::string getString(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
     std::vector<std::string> getStringVector(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
     libsumo::TraCIColor getColor(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
+    libsumo::TraCIStage getTraCIStage(int cmd, int var, const std::string& id, tcpip::Storage* add = 0);
     /// @}
 
     const tcpip::Storage& getCommandStorage() const {
@@ -286,7 +289,9 @@ public:
         virtual ~JunctionScope() {}
 
         std::vector<std::string> getIDList() const;
+        int getIDCount() const;
         libsumo::TraCIPosition getPosition(const std::string& junctionID) const;
+        libsumo::TraCIPositionVector getShape(const std::string& junctionID) const;
 
     private:
         /// @brief invalidated copy constructor
@@ -523,6 +528,9 @@ public:
         libsumo::TraCIPositionVector getNetBoundary() const;
         int getMinExpectedNumber() const;
 
+        int getBusStopWaiting(const std::string& stopID) const;
+        std::vector<std::string> getBusStopWaitingIDList(const std::string& stopID) const;
+
         libsumo::TraCIPosition convert2D(const std::string& edgeID, double pos, int laneIndex = 0, bool toGeo = false) const;
         libsumo::TraCIPosition convert3D(const std::string& edgeID, double pos, int laneIndex = 0, bool toGeo = false) const;
         libsumo::TraCIRoadPosition convertRoad(double x, double y, bool isGeo = false, const std::string& vClass = "ignoring") const;
@@ -530,7 +538,8 @@ public:
 
         double getDistance2D(double x1, double y1, double x2, double y2, bool isGeo = false, bool isDriving = false);
         double getDistanceRoad(const std::string& edgeID1, double pos1, const std::string& edgeID2, double pos2, bool isDriving = false);
-
+        libsumo::TraCIStage findRoute(const std::string& fromEdge, const std::string& toEdge, const std::string& vType = "", double pos = -1., int routingMode = 0) const;
+        void writeMessage(const std::string msg);
 
     private:
         /// @brief invalidated copy constructor
@@ -563,6 +572,7 @@ public:
         int getPhase(const std::string& tlsID) const;
         double getPhaseDuration(const std::string& tlsID) const;
         double getNextSwitch(const std::string& tlsID) const;
+        int getServedPersonCount(const std::string& tlsID, int index) const;
         std::string getPhaseName(const std::string& tlsID) const;
 
         void setRedYellowGreenState(const std::string& tlsID, const std::string& state) const;
@@ -614,6 +624,7 @@ public:
         double getMinGapLat(const std::string& typeID) const;
         double getMaxSpeedLat(const std::string& typeID) const;
         std::string getLateralAlignment(const std::string& typeID) const;
+        int getPersonCapacity(const std::string& typeID) const;
 
         void setLength(const std::string& typeID, double length) const;
         void setMaxSpeed(const std::string& typeID, double speed) const;
@@ -681,6 +692,7 @@ public:
         std::vector<std::string> getIDList() const;
         int getIDCount() const;
         double getSpeed(const std::string& vehicleID) const;
+        double getLateralSpeed(const std::string& vehicleID) const;
         double getAcceleration(const std::string& vehicleID) const;
         libsumo::TraCIPosition getPosition(const std::string& vehicleID) const;
         libsumo::TraCIPosition getPosition3D(const std::string& vehicleID) const;
@@ -741,6 +753,7 @@ public:
         double getHeight(const std::string& veihcleID) const;
         double getMaxSpeedLat(const std::string& vehicleID) const;
         double getMinGapLat(const std::string& vehicleID) const;
+        int getPersonCapacity(const std::string& vehicleID) const;
         std::string getVehicleClass(const std::string& vehicleID) const;
         std::string getEmissionClass(const std::string& vehicleID) const;
         std::string getShapeClass(const std::string& vehicleID) const;
@@ -799,7 +812,64 @@ public:
         void setMaxSpeed(const std::string& vehicleID, double speed) const;
         /// @}
 
+        /// @name subscription filtering
+        /* @brief Filters are added to the last modified vehicle context
+         *  subscription (call these fucntions right after subscribing) */
+        /// @{
+
+        /* @brief Adds a lane-filter, lanes is a list of relative lane indices (-1 -> right neighboring lane of the ego, 0 -> ego lane, etc.)
+         * noOpposite specifies whether vehicles on opposite direction lanes shall be returned
+         * downstreamDist and upstreamDist specify the range of the search for surrounding vehicles along the road net. */
+        void addSubscriptionFilterLanes(const std::vector<int>& lanes,
+                                        bool noOpposite = false, double downstreamDist = -1, double upstreamDist = -1) const;
+
+        /* @brief Omits vehicles on other edges than the ego's */
+        void addSubscriptionFilterNoOpposite() const;
+
+        /* @brief Limits the downstream distance for resulting vehicles */
+        void addSubscriptionFilterDownstreamDistance(double dist) const;
+
+        /* @brief Limits the updstream distance for resulting vehicles */
+        void addSubscriptionFilterUpstreamDistance(double dist) const;
+
+        /* @brief Restricts vehicles returned by the last modified vehicle context subscription to leader and follower of the ego.
+         * downstreamDist and upstreamDist specify the range of the search for leader and follower along the road net. */
+        void addSubscriptionFilterCFManeuver(double downstreamDist = -1, double upstreamDist = -1) const;
+
+        /* @brief Restricts returned vehicles to neighbor and ego-lane leader
+         *  and follower of the ego in the given direction
+         * noOpposite specifies whether vehicles on opposite direction lanes shall be returned
+         * downstreamDist and upstreamDist specify the range of the search for leader and follower along the road net.
+         * Combine with: distance filters; vClass/vType filter. */
+        void addSubscriptionFilterLCManeuver(int direction, bool noOpposite = false, double downstreamDist = -1, double upstreamDist = -1) const;
+
+        /* @brief Restricts returned vehicles to neighbor and ego-lane leader and follower of the ego.
+         * Combine with: lanes-filter to restrict to one direction; distance filters; vClass/vType filter. */
+        void addSubscriptionFilterLeadFollow(const std::vector<int>& lanes) const;
+
+        /* @brief Restricts returned vehicles to foes on an upcoming junction */
+        void addSubscriptionFilterTurn(double downstreamDist = -1, double upstreamDist = -1) const;
+
+        /* @brief Restricts returned vehicles to the given classes */
+        void addSubscriptionFilterVClass(const std::vector<std::string>& vClasses) const;
+
+        /* @brief Restricts returned vehicles to the given types */
+        void addSubscriptionFilterVType(const std::vector<std::string>& vTypes) const;
+
+        /* @brief Restricts returned vehicles to the given FOV-angle */
+        void addSubscriptionFilterFieldOfVision(double angle) const;
+
+        /* @brief Restricts returned vehicles to the given lateral distance */
+        void addSubscriptionFilterLateralDistance(double lateralDist, double downstreamDist = -1, double upstreamDist = -1) const;
+
+        /// @}
+
     private:
+        void addSubscriptionFilterEmpty(int filterType) const;
+        void addSubscriptionFilterFloat(int filterType, double val) const;
+        void addSubscriptionFilterStringList(int filterType, const std::vector<std::string>& vals) const;
+        void addSubscriptionFilterByteList(int filterType, const std::vector<int>& vals) const;
+
         /// @brief invalidated copy constructor
         VehicleScope(const VehicleScope& src);
 
@@ -827,7 +897,7 @@ public:
         std::string getNextEdge(const std::string& personID) const;
         std::string getVehicle(const std::string& personID) const;
         int getRemainingStages(const std::string& personID) const;
-        int getStage(const std::string& personID, int nextStageIndex = 0) const;
+        libsumo::TraCIStage getStage(const std::string& personID, int nextStageIndex = 0) const;
         std::vector<std::string> getEdges(const std::string& personID, int nextStageIndex = 0) const;
         double getAngle(const std::string& personID) const;
         double getSlope(const std::string& personID) const;
@@ -842,6 +912,7 @@ public:
 
         void removeStages(const std::string& personID) const;
         void add(const std::string& personID, const std::string& edgeID, double pos, double depart = libsumo::DEPARTFLAG_NOW, const std::string typeID = "DEFAULT_PEDTYPE");
+        void appendStage(const std::string& personID, const libsumo::TraCIStage& stage);
         void appendWaitingStage(const std::string& personID, double duration, const std::string& description = "waiting", const std::string& stopID = "");
         void appendWalkingStage(const std::string& personID, const std::vector<std::string>& edges, double arrivalPos, double duration = -1, double speed = -1, const std::string& stopID = "");
         void appendDrivingStage(const std::string& personID, const std::string& toEdge, const std::string& lines, const std::string& stopID = "");
@@ -924,6 +995,7 @@ protected:
      * @param[in] add Optional additional parameter
      */
     void createCommand(int cmdID, int varID, const std::string& objID, tcpip::Storage* add = nullptr) const;
+    void createFilterCommand(int cmdID, int varID, tcpip::Storage* add = nullptr) const;
 
 
     /** @brief Sends a SubscribeVariable request
