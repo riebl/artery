@@ -24,9 +24,6 @@ public:
     virtual LiteAPI* getLiteAPI() = 0;
 
     virtual ~NodeManager() = default;
-
-private:
-    //LiteAPI* m_api = nullptr;
 };
 
 } // namespace traci
