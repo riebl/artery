@@ -104,6 +104,16 @@ if(TARGET INET)
     target_link_libraries(core PUBLIC INET)
 endif()
 
+if(TARGET ots)
+    message(STATUS "Enable OpenTrafficSim integration")
+    set_property(TARGET core APPEND PROPERTY SOURCES
+        ots/GtuMiddleware.cc
+        ots/GtuPositionProvider.cc
+        ots/GtuInetMobility.cc
+    )
+    target_link_libraries(core PUBLIC ots)
+endif()
+
 macro(add_artery_feature name)
     add_library(${name} SHARED ${ARGN})
     add_library(Artery::${name} ALIAS ${name})
