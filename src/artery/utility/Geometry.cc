@@ -1,8 +1,8 @@
 #include "artery/utility/Geometry.h"
 #include <boost/geometry/algorithms/distance.hpp>
 #include <boost/math/constants/constants.hpp>
+#include <boost/units/cmath.hpp>
 #include <cassert>
-#include <cmath>
 
 namespace artery
 {
@@ -29,10 +29,13 @@ Angle::value_type Angle::getTrueNorth() const
     // rotate zero from east to north
     heading += 0.5 * pi * radians;
     // normalize angle to [0; 2*pi[
-    heading -= 2.0 * pi * radians * std::floor(heading / (2.0 * pi * radians));
+    static const auto circle = 2.0 * pi * radians;
+    while (heading >= circle || heading < 0.0 * radians) {
+        heading -= boost::units::copysign(circle, heading);
+    }
 
     assert(heading >= 0.0 * radians);
-    assert(heading < 2.0 * pi * radians);
+    assert(heading < circle);
     return heading;
 }
 
