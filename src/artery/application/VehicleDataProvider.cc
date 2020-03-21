@@ -76,12 +76,12 @@ void VehicleDataProvider::calculateCurvature()
 	static const vanetza::units::Curvature upper_threshold = 1.0 * vanetza::units::reciprocal_metre;
 	static const double damping = 1.0;
 
-	if (fabs(mSpeed) < 1.0 * meter_per_second) {
+	if (fabs(mVehicleKinematics.speed) < 1.0 * meter_per_second) {
 		// assume straight road below minimum speed
 		mCurvature = 0.0 * vanetza::units::reciprocal_metre;
 	} else {
 		// curvature calculation algorithm
-		mCurvature = (mYawRate / radians) / mSpeed;
+		mCurvature = (mVehicleKinematics.yaw_rate / radians) / mVehicleKinematics.speed;
 
 		if (!mCurvatureOutput.full()) {
 			// save first two values for initialization
@@ -117,52 +117,56 @@ void VehicleDataProvider::calculateCurvatureConfidence()
 
 	AngularAcceleration filter = -mCurvatureConfidenceOutput[1] +
 		(2.0 + 2.0 * omega * damping * t_sample) * mCurvatureConfidenceOutput[0] +
-		omega * omega * t_sample * mYawRate -
+		omega * omega * t_sample * mVehicleKinematics.yaw_rate -
 		omega * omega * t_sample * mCurvatureConfidenceInput;
 	filter /= 1.0 + 2.0 * omega * damping * t_sample + omega * omega * t_sample * t_sample;
 	mCurvatureConfidenceOutput.push_front(filter);
-	mCurvatureConfidenceInput = mYawRate;
+	mCurvatureConfidenceInput = mVehicleKinematics.yaw_rate;
 	mConfidence = mapOntoConfidence(abs(filter));
 }
 
-void VehicleDataProvider::update(const traci::VehicleController* controller)
+void VehicleDataProvider::update(const VehicleKinematics& dynamics)
 {
 	using namespace omnetpp;
 	using namespace vanetza::units::si;
-	using boost::units::si::milli;
+	using boost::units::isnan;
+
 	const vanetza::units::Duration delta {
-		(simTime() - mLastUpdate).inUnit(SIMTIME_MS) * milli * seconds
+		(simTime() - mLastUpdate).inUnit(SIMTIME_MS) * boost::units::si::milli * seconds
 	};
 
-	if (delta > 0.0 * seconds) {
-		using boost::units::abs;
-		auto new_speed = controller->getSpeed();
-		mAccel = (new_speed - mSpeed) / delta;
-		mSpeed = new_speed;
+	const auto old_heading = mVehicleKinematics.heading;
+	const auto old_speed = mVehicleKinematics.speed;
+	mVehicleKinematics = dynamics;
 
-		auto new_heading = controller->getHeading().getTrueNorth();
-		auto diff_heading = mHeading - new_heading; // left turn positive
-		if (diff_heading > pi * radian) {
-			diff_heading -= 2.0 * pi * radians;
-		} else if (diff_heading < -pi * radians) {
-			diff_heading += 2.0 * pi * radians;
+	if (delta > 0.0 * seconds) {
+		if (isnan(mVehicleKinematics.acceleration)) {
+			mVehicleKinematics.acceleration = (mVehicleKinematics.speed - old_speed) / delta;
 		}
 
-		mYawRate = diff_heading / delta;
-		mHeading = new_heading;
+		if (isnan(mVehicleKinematics.yaw_rate)) {
+			auto diff_heading = old_heading - mVehicleKinematics.heading; // left turn positive
+			if (diff_heading > pi * radian) {
+				diff_heading -= 2.0 * pi * radians;
+			} else if (diff_heading < -pi * radians) {
+				diff_heading += 2.0 * pi * radians;
+			}
+			 mVehicleKinematics.yaw_rate = diff_heading / delta;
+		}
 	} else if (delta < 0.0 * seconds) {
 		// initialization
-		mSpeed = controller->getSpeed();
-		mHeading = controller->getHeading().getTrueNorth();
+		if (isnan(mVehicleKinematics.acceleration)) {
+			mVehicleKinematics.acceleration = vanetza::units::Acceleration::from_value(0.0);
+		}
+		if (isnan(mVehicleKinematics.yaw_rate)) {
+			mVehicleKinematics.yaw_rate = vanetza::units::AngularVelocity::from_value(0.0);
+		}
 	} else {
 		// update has been called for this time step already before
 		return;
 	}
 
-	mPosition = controller->getPosition();
-	mGeoPosition = controller->getGeoPosition();
 	mLastUpdate = simTime();
-
 	calculateCurvature();
 	calculateCurvatureConfidence();
 }

@@ -10,6 +10,7 @@
 #include "artery/application/VehicleDataProvider.h"
 #include "artery/envmod//Geometry.h"
 #include "artery/envmod/sensor/SensorPosition.h"
+#include "artery/traci/VehicleType.h"
 #include "artery/utility/Geometry.h"
 #include <boost/optional/optional.hpp>
 #include <cstdint>

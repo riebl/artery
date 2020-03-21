@@ -88,7 +88,7 @@ EnvironmentModelObject::EnvironmentModelObject(const traci::VehicleController* v
 void EnvironmentModelObject::update()
 {
     // Update the internal vdp
-    VehicleDataProvider::update(mVehicleController);
+    VehicleDataProvider::update(getKinematics(*mVehicleController));
 
     // Recalculate all time and position dependent attributes
     using namespace boost::math::double_constants;

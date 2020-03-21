@@ -24,7 +24,7 @@ void VehicleMiddleware::initialize(int stage)
         initializeVehicleController(par("mobilityModule"));
         initializeStationType(mVehicleController->getVehicleClass());
         getFacilities().register_const(&mVehicleDataProvider);
-        mVehicleDataProvider.update(mVehicleController);
+        mVehicleDataProvider.update(getKinematics(*mVehicleController));
 
         Identity identity;
         identity.traci = mVehicleController->getVehicleId();
@@ -85,8 +85,8 @@ void VehicleMiddleware::initializeVehicleController(cPar& mobilityPar)
 
 void VehicleMiddleware::receiveSignal(cComponent* component, simsignal_t signal, cObject* obj, cObject* details)
 {
-	if (signal == MobilityBase::stateChangedSignal) {
-		mVehicleDataProvider.update(mVehicleController);
+	if (signal == MobilityBase::stateChangedSignal && mVehicleController) {
+		mVehicleDataProvider.update(getKinematics(*mVehicleController));
 	}
 }
 

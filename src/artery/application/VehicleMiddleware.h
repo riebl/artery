@@ -9,6 +9,7 @@
 
 #include "artery/application/Middleware.h"
 #include "artery/application/VehicleDataProvider.h"
+#include "artery/traci/VehicleController.h"
 
 namespace artery
 {
