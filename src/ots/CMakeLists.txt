@@ -9,6 +9,7 @@ add_library(ots SHARED ${SOURCES})
 target_include_directories(ots PUBLIC $<TARGET_PROPERTY:core,INCLUDE_DIRECTORIES>)
 set_property(TARGET ots PROPERTY NED_FOLDERS ${CMAKE_CURRENT_SOURCE_DIR})
 
+find_package(PkgConfig MODULE REQUIRED)
 pkg_check_modules(ZEROMQ REQUIRED libzmq)
 target_include_directories(ots PUBLIC "${ZEROMQ_INCLUDE_DIRS}")
 target_link_libraries(ots PUBLIC "${ZEROMQ_LIBRARIES}")
