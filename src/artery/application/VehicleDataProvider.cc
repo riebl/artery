@@ -135,11 +135,11 @@ void VehicleDataProvider::update(const VehicleKinematics& dynamics)
 		(simTime() - mLastUpdate).inUnit(SIMTIME_MS) * boost::units::si::milli * seconds
 	};
 
-	const auto old_heading = mVehicleKinematics.heading;
-	const auto old_speed = mVehicleKinematics.speed;
-	mVehicleKinematics = dynamics;
-
 	if (delta > 0.0 * seconds) {
+		const auto old_heading = mVehicleKinematics.heading;
+		const auto old_speed = mVehicleKinematics.speed;
+		mVehicleKinematics = dynamics;
+
 		if (isnan(mVehicleKinematics.acceleration)) {
 			mVehicleKinematics.acceleration = (mVehicleKinematics.speed - old_speed) / delta;
 		}
@@ -155,6 +155,8 @@ void VehicleDataProvider::update(const VehicleKinematics& dynamics)
 		}
 	} else if (delta < 0.0 * seconds) {
 		// initialization
+		mVehicleKinematics = dynamics;
+
 		if (isnan(mVehicleKinematics.acceleration)) {
 			mVehicleKinematics.acceleration = vanetza::units::Acceleration::from_value(0.0);
 		}
