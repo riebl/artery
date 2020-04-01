@@ -95,7 +95,7 @@ void CaService::initialize()
 	mFixedRate = par("fixedRate");
 
 	// look up primary channel for CA
-	ChannelNumber mPrimaryChannel = getFacilities().get_const<MultiChannelPolicy>().primaryChannel(vanetza::aid::CA);
+	mPrimaryChannel = getFacilities().get_const<MultiChannelPolicy>().primaryChannel(vanetza::aid::CA);
 }
 
 void CaService::trigger()
