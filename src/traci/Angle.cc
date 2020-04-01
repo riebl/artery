@@ -10,7 +10,7 @@ namespace traci
 artery::Angle angle_cast(TraCIAngle traci)
 {
     // change orientation and align "neutral" angle to east
-    double opp = 90.0 - traci.degree;
+    double opp = traci.degree - 90.0;
     // convert to radian
     opp *= pi / 180.0;
 
