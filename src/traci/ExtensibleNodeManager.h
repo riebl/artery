@@ -32,6 +32,7 @@ protected:
 
     void traciInit() override;
 
+    void processVehicles() override;
     void addVehicle(const std::string&) override;
     void updateVehicle(const std::string&, VehicleSink*) override;
     void removeVehicle(const std::string&) override;
@@ -57,6 +58,7 @@ private:
 
     std::vector<VehiclePolicy*> m_policies;
     std::list<VehicleLifecycle> m_lifecycles;
+    std::vector<std::string> m_remove_vehicles;
 };
 
 } // namespace traci

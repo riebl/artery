@@ -62,6 +62,16 @@ void ExtensibleNodeManager::traciInit()
     BasicNodeManager::traciInit();
 }
 
+void ExtensibleNodeManager::processVehicles()
+{
+    BasicNodeManager::processVehicles();
+    for (const std::string& id : m_remove_vehicles) {
+        BasicNodeManager::removeVehicle(id);
+    }
+    m_remove_vehicles.clear();
+}
+
+
 void ExtensibleNodeManager::addVehicle(const std::string& id)
 {
     addVehicle(nullptr, id);
@@ -91,7 +101,11 @@ void ExtensibleNodeManager::removeVehicle(const VehiclePolicy* omit, const std::
         }
     }
 
-    BasicNodeManager::removeVehicle(id);
+    if (omit == nullptr) {
+        BasicNodeManager::removeVehicle(id);
+    } else {
+        m_remove_vehicles.push_back(id);
+    }
 }
 
 void ExtensibleNodeManager::updateVehicle(const std::string& id, VehicleSink* sink)
