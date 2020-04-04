@@ -21,6 +21,13 @@ RadarSensor::RadarSensor() :
 {
 }
 
+RadarSensor::~RadarSensor()
+{
+    if (mGroupFigure) {
+        delete mGroupFigure->removeFromParent();
+    }
+}
+
 void RadarSensor::initialize()
 {
     BaseSensor::initialize();
@@ -32,17 +39,6 @@ void RadarSensor::initialize()
     mRadarConfig.fieldOfView.range = par("fovRange").doubleValue() * boost::units::si::meters;
     mRadarConfig.fieldOfView.angle = par("fovAngle").doubleValue() * boost::units::degree::degrees;
     mRadarConfig.numSegments = par("numSegments");
-}
-
-void RadarSensor::finish()
-{
-    BaseSensor::finish();
-    // these pointers are freed by the owning canvas
-    mGroupFigure = nullptr;
-    mSensorConeFigure = nullptr;
-    mLinesOfSightFigure = nullptr;
-    mObjectsFigure = nullptr;
-    mObstaclesFigure = nullptr;
 }
 
 void RadarSensor::measurement()
@@ -139,6 +135,7 @@ void RadarSensor::refreshDisplay() const
         for (const Position& endPoint : mLastDetection->visiblePoints) {
             auto line = new cLineFigure();
             line->setLineColor(mColor);
+            line->setLineStyle(cFigure::LINE_DASHED);
             line->setStart(cFigure::Point { startPoint.x.value(), startPoint.y.value() });
             line->setEnd(cFigure::Point { endPoint.x.value(), endPoint.y.value() });
             mLinesOfSightFigure->addFigure(line);

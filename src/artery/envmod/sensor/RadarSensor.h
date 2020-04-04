@@ -20,6 +20,8 @@ class RadarSensor : public BaseSensor
 {
 public:
     RadarSensor();
+    ~RadarSensor();
+
     void measurement() override;
     void setVisualization(const SensorVisualizationConfig&) override;
     const FieldOfView* getFieldOfView() const override;
@@ -43,7 +45,6 @@ protected:
     };
 
     void initialize() override;
-    void finish() override;
     void refreshDisplay() const override;
 
     SensorConfigRadar mRadarConfig;
