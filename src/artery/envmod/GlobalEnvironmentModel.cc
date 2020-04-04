@@ -58,6 +58,39 @@ void GlobalEnvironmentModel::refresh()
     mPreselector->update();
     mTainted = false;
 
+    if (mDrawVehicles) {
+        int numObjects = mObjects.size();
+        int numFigures = mDrawVehicles->getNumFigures();
+
+        // add missing polygon figures
+        while (numFigures < numObjects) {
+            auto polygon = new cPolygonFigure();
+            polygon->setFillColor(cFigure::BLUE);
+            polygon->setFilled(true);
+            mDrawVehicles->addFigure(polygon);
+            ++numFigures;
+        }
+
+        // remove excessive polygon figures
+        while (numFigures > numObjects) {
+            --numFigures;
+            delete mDrawVehicles->removeFigure(numFigures);
+        }
+
+        // update figures with current outlines
+        int figureIndex = 0;
+        for (const auto& object : mObjects) {
+            // we add only polygon figures, thus static_cast should be safe
+            auto polygon = static_cast<cPolygonFigure*>(mDrawVehicles->getFigure(figureIndex));
+            std::vector<cFigure::Point> points;
+            for (const Position& pos : object->getOutline()) {
+                points.push_back(cFigure::Point { pos.x.value(), pos.y.value() });
+            }
+            polygon->setPoints(points);
+            ++figureIndex;
+        }
+    }
+
     emit(refreshSignal, this);
 }
 
@@ -80,6 +113,18 @@ bool GlobalEnvironmentModel::addObstacle(std::string id, std::vector<Position> o
 {
     boost::geometry::correct(outline);
     auto insertion = mObstacles.emplace(id, std::make_shared<EnvironmentModelObstacle>(id, outline));
+
+    if (mDrawObstacles) {
+        auto polygon = new cPolygonFigure();
+        polygon->setFilled(true);
+        polygon->setFillColor(cFigure::BLACK);
+        polygon->setFillOpacity(0.7);
+        for (const Position& pos : outline) {
+            polygon->addPoint(cFigure::Point { pos.x.value(), pos.y.value() });
+        }
+        mDrawObstacles->addFigure(polygon);
+    }
+
     return insertion.second;
 }
 
@@ -100,8 +145,8 @@ void GlobalEnvironmentModel::buildObstacleRtree()
 
 bool GlobalEnvironmentModel::removeVehicle(std::string objID)
 {
-    return mObjects.erase(objID) > 0;
     mTainted = true; /*< pending preselector update */
+    return mObjects.erase(objID) > 0;
 }
 
 void GlobalEnvironmentModel::removeVehicles()
@@ -109,6 +154,13 @@ void GlobalEnvironmentModel::removeVehicles()
     mObjects.clear();
     mPreselector->update();
     mTainted = false;
+
+    if (mDrawVehicles) {
+        // remove all polygons
+        for (int i = mDrawVehicles->getNumFigures() - 1; i >= 0; --i) {
+            delete mDrawVehicles->removeFigure(i);
+        }
+    }
 }
 
 void GlobalEnvironmentModel::clear()
@@ -238,6 +290,16 @@ void GlobalEnvironmentModel::initialize()
 
     mIdentityRegistry = inet::findModuleFromPar<IdentityRegistry>(par("identityRegistryModule"), this);
     mTainted = false;
+
+    if (par("drawObstacles")) {
+        mDrawObstacles = new omnetpp::cGroupFigure("obstacles");
+        getCanvas()->addFigure(mDrawObstacles);
+    }
+
+    if (par("drawVehicles")) {
+        mDrawVehicles = new omnetpp::cGroupFigure("vehicles");
+        getCanvas()->addFigure(mDrawVehicles);
+    }
 }
 
 void GlobalEnvironmentModel::finish()

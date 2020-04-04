@@ -12,6 +12,7 @@
 #include "artery/envmod/Geometry.h"
 #include "artery/envmod/EnvironmentModelObject.h"
 #include "artery/utility/Geometry.h"
+#include <omnetpp/ccanvas.h>
 #include <omnetpp/clistener.h>
 #include <omnetpp/csimplemodule.h>
 #include <boost/geometry/index/rtree.hpp>
@@ -139,6 +140,8 @@ private:
     std::unique_ptr<PreselectionMethod> mPreselector;
     IdentityRegistry* mIdentityRegistry;
     bool mTainted;
+    omnetpp::cGroupFigure* mDrawObstacles = nullptr;
+    omnetpp::cGroupFigure* mDrawVehicles = nullptr;
 };
 
 } // namespace artery

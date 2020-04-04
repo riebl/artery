@@ -20,4 +20,6 @@ simple GlobalEnvironmentModel
         string traciModule;
         string nodeMobilityModule;
         string identityRegistryModule;
+        bool drawObstacles = default(false);
+        bool drawVehicles = default(false);
 }
