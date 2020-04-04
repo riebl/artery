@@ -1,0 +1,43 @@
+site_name: Artery V2X Simulation Framework
+site_dir: www
+repo_name: 'Artery on GitHub'
+repo_url: https://github.com/riebl/artery
+
+theme:
+    name: 'material'
+    logo:
+        icon: 'wifi'
+    feature:
+        tabs: true
+    palette:
+        primary: 'teal'
+        accent: 'deep orange'
+    font:
+        text: 'Lato'
+        code: 'Oxygen Mono'
+
+markdown_extensions:
+    - admonition
+    - attr_list
+    - codehilite:
+        guess_lang: false
+    - footnotes
+    - meta
+    - toc:
+        permalink: true
+    - vidify
+
+plugins:
+    - search
+    - git-revision-date-localized
+
+nav:
+    - Artery: index.md
+    - Features:
+        - Middleware: features/middleware.md
+        - Environment Model: features/envmod.md
+        - GEMV²: features/gemv2.md
+        - Storyboard: features/storyboard.md
+    - Install Instructions: install.md
+    - Architecture: architecture.md
+    - Legal Notice: legal.md
