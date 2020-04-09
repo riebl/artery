@@ -5,10 +5,10 @@ repo_url: https://github.com/riebl/artery
 
 theme:
     name: 'material'
-    logo:
-        icon: 'wifi'
-    feature:
-        tabs: true
+    features:
+        - tabs
+    icon:
+        logo: fontawesome/solid/wifi
     palette:
         primary: 'teal'
         accent: 'deep orange'
