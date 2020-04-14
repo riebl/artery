@@ -105,9 +105,9 @@ Invoke following commands from **$ARTERY_PATH** to create a *build* directory fo
     cmake --build .
 
 !!! note
-    Artery's build directory does not be located at *$ARTERY_PATH/build*.
+    It is not a strict requirement that Artery's build directory is located at *$ARTERY_PATH/build*.
     You can name it in any way you like and also have multiple build directories, e.g. one for release and one for debug builds.
-    Out-of-source builds are supported as well.
+    A build directory does not need to be a subdirectory of *$ARTERY_PATH* either, i.e. out-of-source builds are supported as well.
 
 
 ### Automated creation of a virtual machine
