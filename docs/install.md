@@ -56,6 +56,11 @@ Hence, make sure the following requirements are fulfilled:
 
 We have tested Artery with OMNeT++ 5.4, GNU GCC 7.3 and Boost 1.65.1 successfully.
 
+!!! danger
+    OMNeT++ 6.0 (available as Preview 7 at the time of writing) breaks compatibility of models written for 5.x versions.
+    We recommend to stick with a 5.6 release of OMNeT++ when using Artery for now.
+    An upgrade to 6.x will be possible as soon as all dependencies have been ported.
+
 Vanetza is an integral part of Artery because it provides the ITS-G5 network stack.
 On top of the dependencies listed above, Vanetza requires
 
