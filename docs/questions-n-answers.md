@@ -19,3 +19,5 @@ Otherwise, this change does not come into effect.
 ##Enable EV_ messages 
 
 ##Debugging 
+#How can I add my own story on Storyboard
+#Are there any limiatations on the conditions? (Does stop effect has to be applied in a specific vehicle necessarily? )
