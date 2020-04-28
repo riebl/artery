@@ -14,3 +14,8 @@ You can turn off the osgEarth in OMNeT++ by setting `WTIH_OSGEARTH=no` in *confi
 Remember to recompile OMNeT++ after editing its *configure.user* file.
 Otherwise, this change does not come into effect.
 
+
+
+##Enable EV_ messages 
+
+##Debugging 
