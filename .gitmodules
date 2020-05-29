@@ -12,7 +12,6 @@
 [submodule "extern/simulte"]
 	path = extern/simulte
 	url = https://github.com/riebl/simulte.git
-	branch = artery-integration
 [submodule "extern/vanetza"]
 	path = extern/vanetza
 	url = https://github.com/riebl/vanetza.git
