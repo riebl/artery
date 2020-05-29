@@ -17,6 +17,7 @@ namespace artery
 class VehicleMiddleware : public Middleware
 {
     public:
+        VehicleMiddleware();
         void initialize(int stage) override;
         void finish() override;
 

@@ -16,6 +16,11 @@ namespace
 const simsignal_t gtuPositionChangedSignal = cComponent::registerSignal("gtuPositionChanged");
 } // namespace
 
+GtuMiddleware::GtuMiddleware() :
+    mVehicleDataProvider(Identity::randomStationId(getRNG(0)))
+{
+}
+
 void GtuMiddleware::initialize(int stage)
 {
     if (stage == InitStages::Self) {

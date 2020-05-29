@@ -41,7 +41,6 @@ class VehicleDataProvider
 	public:
 		using StationType = vanetza::geonet::StationType;
 
-		VehicleDataProvider();
 		VehicleDataProvider(uint32_t id);
 
 		// prevent inadvertent VDP copies
