@@ -52,10 +52,6 @@ const std::map<VehicleDataProvider::AngularAcceleration, double> VehicleDataProv
 };
 
 
-VehicleDataProvider::VehicleDataProvider() : VehicleDataProvider(rand())
-{
-}
-
 VehicleDataProvider::VehicleDataProvider(uint32_t id) :
 	mStationId(id), mStationType(StationType::Unknown),
 	mConfidence(0.0), mLastUpdate(omnetpp::SimTime::getMaxTime()),

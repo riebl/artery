@@ -17,6 +17,11 @@ namespace artery
 
 Define_Module(VehicleMiddleware)
 
+VehicleMiddleware::VehicleMiddleware() :
+    mVehicleDataProvider(Identity::randomStationId(getRNG(0)))
+{
+}
+
 void VehicleMiddleware::initialize(int stage)
 {
     if (stage == InitStages::Self) {

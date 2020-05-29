@@ -13,6 +13,7 @@ class GtuInetMobility;
 class GtuMiddleware : public Middleware
 {
 public:
+    GtuMiddleware();
     void initialize(int stage) override;
     void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject*) override;
 
