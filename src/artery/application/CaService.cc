@@ -210,7 +210,7 @@ vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider& 
 	vanetza::asn1::Cam message;
 
 	ItsPduHeader_t& header = (*message).header;
-	header.protocolVersion = 1;
+	header.protocolVersion = 2;
 	header.messageID = ItsPduHeader__messageID_cam;
 	header.stationID = vdp.station_id();
 
