@@ -10,4 +10,5 @@ simple StationaryMiddleware extends Middleware
 {
 	parameters:
 		@class(StationaryMiddleware);
+		@signal[IdentityChanged](type=long);
 }
