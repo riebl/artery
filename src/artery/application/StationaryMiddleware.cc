@@ -23,6 +23,10 @@ void StationaryMiddleware::initialize(int stage)
     if (stage == InitStages::Self) {
         setStationType(vanetza::geonet::StationType::RSU);
 
+        Identity identity;
+        identity.application = Identity::randomStationId(getRNG(0));
+        emit(Identity::changeSignal, Identity::ChangeStationId, &identity);
+
         if (cModule* host = findHost()) {
             // position will be set by PositionFix signal
             host->subscribe(scPositionFixSignal, this);
