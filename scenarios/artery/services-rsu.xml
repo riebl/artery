@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services>
+    <service type="artery.application.RsuCaService">
+        <listener port="2001" />
+    </service>
+</services>
