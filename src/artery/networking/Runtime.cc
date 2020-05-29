@@ -56,7 +56,7 @@ Clock::time_point Runtime::now() const
 {
     if (mLastUpdate != omnetpp::simTime()) {
         // updating runtime's current time here will not trigger any callbacks
-        ASSERT(convertSimTime(mRuntime.next()) > omnetpp::simTime());
+        ASSERT(mRuntime.next() == Clock::time_point::max() || convertSimTime(mRuntime.next()) > omnetpp::simTime());
         // hence, const_cast is just a little bit of cheating
         const_cast<Runtime*>(this)->update();
     }
