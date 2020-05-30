@@ -38,7 +38,7 @@ Core::Core()
         throw omnetpp::cRuntimeError("Creation of ZMQ context failed: %s", zmq_strerror(errno));
     }
 
-    m_zmq_socket = zmq_socket(m_zmq_context, ZMQ_DEALER);
+    m_zmq_socket = zmq_socket(m_zmq_context, ZMQ_PAIR);
     if (!m_zmq_socket) {
         throw omnetpp::cRuntimeError("Creation of ZMQ socket failed: %s", zmq_strerror(errno));
     }
