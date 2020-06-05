@@ -20,11 +20,6 @@
 ///
 // C++ TraCI client API implementation
 /****************************************************************************/
-
-
-// ===========================================================================
-// included modules
-// ===========================================================================
 #include "TraCIAPI.h"
 
 
@@ -1927,7 +1922,7 @@ TraCIAPI::TrafficLightScope::getCompleteRedYellowGreenDefinition(const std::stri
                 }
                 myParent.myInput.readUnsignedByte();
                 const std::string name = myParent.myInput.readString();
-                logic.phases.emplace_back(libsumo::TraCIPhase(duration, state, minDur, maxDur, next, name));
+                logic.phases.emplace_back(new libsumo::TraCIPhase(duration, state, minDur, maxDur, next, name));
             }
             myParent.myInput.readUnsignedByte();
             const int paramNumber = myParent.myInput.readInt();
@@ -2068,25 +2063,25 @@ TraCIAPI::TrafficLightScope::setCompleteRedYellowGreenDefinition(const std::stri
     content.writeInt(logic.currentPhaseIndex);
     content.writeUnsignedByte(libsumo::TYPE_COMPOUND);
     content.writeInt((int)logic.phases.size());
-    for (const libsumo::TraCIPhase& p : logic.phases) {
+    for (const libsumo::TraCIPhase* p : logic.phases) {
         content.writeUnsignedByte(libsumo::TYPE_COMPOUND);
         content.writeInt(6);
         content.writeUnsignedByte(libsumo::TYPE_DOUBLE);
-        content.writeDouble(p.duration);
+        content.writeDouble(p->duration);
         content.writeUnsignedByte(libsumo::TYPE_STRING);
-        content.writeString(p.state);
+        content.writeString(p->state);
         content.writeUnsignedByte(libsumo::TYPE_DOUBLE);
-        content.writeDouble(p.minDur);
+        content.writeDouble(p->minDur);
         content.writeUnsignedByte(libsumo::TYPE_DOUBLE);
-        content.writeDouble(p.maxDur);
+        content.writeDouble(p->maxDur);
         content.writeUnsignedByte(libsumo::TYPE_COMPOUND);
-        content.writeInt((int)p.next.size());
-        for (int n : p.next) {
+        content.writeInt((int)p->next.size());
+        for (int n : p->next) {
             content.writeUnsignedByte(libsumo::TYPE_INTEGER);
             content.writeInt(n);
         }
         content.writeUnsignedByte(libsumo::TYPE_STRING);
-        content.writeString(p.name);
+        content.writeString(p->name);
     }
     content.writeUnsignedByte(libsumo::TYPE_COMPOUND);
     content.writeInt((int)logic.subParameter.size());
@@ -2440,6 +2435,54 @@ TraCIAPI::VehicleScope::getAcceleration(const std::string& vehicleID) const {
 }
 
 double
+TraCIAPI::VehicleScope::getFollowSpeed(const std::string& vehicleID, double speed, double gap, double leaderSpeed, double leaderMaxDecel, const std::string& leaderID) const {
+    tcpip::Storage content;
+    content.writeUnsignedByte(libsumo::TYPE_COMPOUND);
+    content.writeInt(5);
+    content.writeByte(libsumo::TYPE_DOUBLE);
+    content.writeDouble(speed);
+    content.writeByte(libsumo::TYPE_DOUBLE);
+    content.writeDouble(gap);
+    content.writeByte(libsumo::TYPE_DOUBLE);
+    content.writeDouble(leaderSpeed);
+    content.writeByte(libsumo::TYPE_DOUBLE);
+    content.writeDouble(leaderMaxDecel);
+    content.writeByte(libsumo::TYPE_STRING);
+    content.writeString(leaderID);
+    return myParent.getDouble(libsumo::CMD_GET_VEHICLE_VARIABLE, libsumo::VAR_FOLLOW_SPEED, vehicleID, &content);
+}
+
+
+double
+TraCIAPI::VehicleScope::getSecureGap(const std::string& vehicleID, double speed, double leaderSpeed, double leaderMaxDecel, const std::string& leaderID) const {
+    tcpip::Storage content;
+    content.writeUnsignedByte(libsumo::TYPE_COMPOUND);
+    content.writeInt(4);
+    content.writeByte(libsumo::TYPE_DOUBLE);
+    content.writeDouble(speed);
+    content.writeByte(libsumo::TYPE_DOUBLE);
+    content.writeDouble(leaderSpeed);
+    content.writeByte(libsumo::TYPE_DOUBLE);
+    content.writeDouble(leaderMaxDecel);
+    content.writeByte(libsumo::TYPE_STRING);
+    content.writeString(leaderID);
+    return myParent.getDouble(libsumo::CMD_GET_VEHICLE_VARIABLE, libsumo::VAR_SECURE_GAP, vehicleID, &content);
+}
+
+double
+TraCIAPI::VehicleScope::getStopSpeed(const std::string& vehicleID, double speed, double gap) const {
+    tcpip::Storage content;
+    content.writeUnsignedByte(libsumo::TYPE_COMPOUND);
+    content.writeInt(2);
+    content.writeByte(libsumo::TYPE_DOUBLE);
+    content.writeDouble(speed);
+    content.writeByte(libsumo::TYPE_DOUBLE);
+    content.writeDouble(gap);
+    return myParent.getDouble(libsumo::CMD_GET_VEHICLE_VARIABLE, libsumo::VAR_STOP_SPEED, vehicleID, &content);
+}
+
+
+double
 TraCIAPI::VehicleScope::getMaxSpeed(const std::string& vehicleID) const {
     return myParent.getDouble(libsumo::CMD_GET_VEHICLE_VARIABLE, libsumo::VAR_MAXSPEED, vehicleID);
 }
@@ -2710,6 +2753,12 @@ int
 TraCIAPI::VehicleScope::getRoutingMode(const std::string& vehicleID) const {
     return myParent.getInt(libsumo::CMD_GET_VEHICLE_VARIABLE, libsumo::VAR_ROUTING_MODE, vehicleID);
 }
+
+double
+TraCIAPI::VehicleScope::getStopDelay(const std::string& vehicleID) const {
+    return myParent.getDouble(libsumo::CMD_GET_VEHICLE_VARIABLE, libsumo::VAR_STOP_DELAY, vehicleID);
+}
+
 
 double
 TraCIAPI::VehicleScope::getAccel(const std::string& vehicleID) const {

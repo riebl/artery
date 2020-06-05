@@ -19,13 +19,7 @@
 ///
 // C++ TraCI client API implementation
 /****************************************************************************/
-#ifndef TraCIAPI_h
-#define TraCIAPI_h
-
-
-// ===========================================================================
-// included modules
-// ===========================================================================
+#pragma once
 #include <vector>
 #include <limits>
 #include <string>
@@ -694,6 +688,9 @@ public:
         double getSpeed(const std::string& vehicleID) const;
         double getLateralSpeed(const std::string& vehicleID) const;
         double getAcceleration(const std::string& vehicleID) const;
+        double getFollowSpeed(const std::string& vehicleID, double speed, double gap, double leaderSpeed, double leaderMaxDecel, const std::string& leaderID = "") const;
+        double getSecureGap(const std::string& vehicleID, double speed, double leaderSpeed, double leaderMaxDecel, const std::string& leaderID = "") const;
+        double getStopSpeed(const std::string& vehicleID, double speed, double gap) const;
         libsumo::TraCIPosition getPosition(const std::string& vehicleID) const;
         libsumo::TraCIPosition getPosition3D(const std::string& vehicleID) const;
         double getAngle(const std::string& vehicleID) const;
@@ -734,6 +731,7 @@ public:
         std::vector<libsumo::TraCIBestLanesData> getBestLanes(const std::string& vehicleID) const;
         std::pair<std::string, double> getLeader(const std::string& vehicleID, double dist) const;
         int getRoutingMode(const std::string& vehicleID) const;
+        double getStopDelay(const std::string& vehicleID) const;
         std::pair<int, int> getLaneChangeState(const std::string& vehicleID, int direction) const;
         /// @}
 
@@ -1067,8 +1065,3 @@ protected:
     /// @brief The reusable input storage
     mutable tcpip::Storage myInput;
 };
-
-
-#endif
-
-/****************************************************************************/

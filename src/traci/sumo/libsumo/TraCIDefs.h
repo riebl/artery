@@ -20,13 +20,7 @@
 ///
 // C++ TraCI client API implementation
 /****************************************************************************/
-#ifndef TraCIDefs_h
-#define TraCIDefs_h
-
-
-// ===========================================================================
-// included modules
-// ===========================================================================
+#pragma once
 // we do not include config.h here, since we should be independent of a special sumo build
 #include <libsumo/TraCIConstants.h>
 #include <vector>
@@ -152,6 +146,21 @@ struct TraCIColor : TraCIResult {
     int r, g, b, a;
 };
 
+
+/** @struct TraCILeaderDistance
+ * @brief A leaderId and distance to leader
+ */
+struct TraCILeaderDistance : TraCIResult {
+    std::string getString() {
+        std::ostringstream os;
+        os << "TraCILeaderDistance(" << leaderID << "," << dist << ")";
+        return os.str();
+    }
+    std::string leaderID;
+    double dist;
+};
+
+
 /** @struct TraCIPositionVector
     * @brief A list of positions
     */
@@ -233,7 +242,7 @@ public:
 
 
 #ifdef SWIG
-%template(TraCIPhaseVector) std::vector<libsumo::TraCIPhase>; // *NOPAD*
+%template(TraCIPhaseVector) std::vector<libsumo::TraCIPhase*>; // *NOPAD*
 #endif
 
 
@@ -242,19 +251,14 @@ class TraCILogic {
 public:
     TraCILogic() {}
     TraCILogic(const std::string& _programID, const int _type, const int _currentPhaseIndex,
-               const std::vector<libsumo::TraCIPhase>& _phases = std::vector<libsumo::TraCIPhase>())
+               const std::vector<libsumo::TraCIPhase*>& _phases = std::vector<libsumo::TraCIPhase*>())
         : programID(_programID), type(_type), currentPhaseIndex(_currentPhaseIndex), phases(_phases) {}
     ~TraCILogic() {}
 
-#ifndef SWIGJAVA
-    std::vector<TraCIPhase> getPhases() {
-        return phases;
-    }
-#endif
     std::string programID;
     int type;
     int currentPhaseIndex;
-    std::vector<TraCIPhase> phases;
+    std::vector<TraCIPhase*> phases;
     std::map<std::string, std::string> subParameter;
 };
 
@@ -318,7 +322,13 @@ struct TraCINextTLSData {
 };
 
 
-struct TraCINextStopData {
+struct TraCINextStopData : TraCIResult {
+    std::string getString() {
+        std::ostringstream os;
+        os << "TraCINextStopData(" << lane << "," << endPos << "," << stoppingPlaceID << "," << stopFlags << "," << duration << "," << until << ")";
+        return os.str();
+    }
+
     /// @brief The lane to stop at
     std::string lane;
     /// @brief The stopping position end
@@ -331,6 +341,25 @@ struct TraCINextStopData {
     double duration;
     /// @brief The time at which the vehicle may continue its journey
     double until;
+};
+
+
+/** @struct TraCINextStopDataVector
+ * @brief A list of vehicle stops
+ * @see TraCINextStopData
+ */
+struct TraCINextStopDataVector : TraCIResult {
+    std::string getString() {
+        std::ostringstream os;
+        os << "TraCINextStopDataVector[";
+        for (TraCINextStopData v : value) {
+            os << v.getString() << ",";
+        }
+        os << "]";
+        return os.str();
+    }
+
+    std::vector<TraCINextStopData> value;
 };
 
 
@@ -387,8 +416,3 @@ public:
     std::string description;
 };
 }
-
-
-#endif
-
-/****************************************************************************/
