@@ -40,6 +40,7 @@ namespace artery
 Define_Module(Router)
 
 static const omnetpp::simsignal_t scPositionFixSignal = omnetpp::cComponent::registerSignal("PositionFix");
+static const omnetpp::simsignal_t scLinkReceptionSignal = omnetpp::cComponent::registerSignal("LinkReception");
 
 int Router::numInitStages() const
 {
@@ -107,6 +108,7 @@ void Router::handleMessage(omnetpp::cMessage* msg)
     if (msg->getArrivalGate() == mRadioDriverDataIn) {
         auto* packet = omnetpp::check_and_cast<GeoNetPacket*>(msg);
         auto* indication = omnetpp::check_and_cast<GeoNetIndication*>(packet->getControlInfo());
+        emit(scLinkReceptionSignal, packet);
         mRouter->indicate(std::move(*packet).extractPayload(), indication->source, indication->destination);
     } else if (msg->getArrivalGate() == mRadioDriverPropertiesIn) {
         auto* properties = omnetpp::check_and_cast<RadioDriverProperties*>(msg);
