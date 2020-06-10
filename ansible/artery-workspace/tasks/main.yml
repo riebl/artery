@@ -45,6 +45,8 @@
   make:
       chdir: "{{ artery_source_dir }}"
       target: all
+  register: artery_deps_make
+  changed_when: "'Creating shared library' in artery_deps_make.stdout"
 
 - name: create Artery build directory
   file:
@@ -60,3 +62,5 @@
 - name: build Artery
   make:
       chdir: "{{ artery_build_dir }}"
+  register: artery_make
+  changed_when: "'Linking CXX shared library' in artery_make.stdout"
