@@ -5,6 +5,7 @@ simple Router
     parameters:
         @class(Router);
         @signal[IdentityChanged](type=long);
+        @signal[LinkReception](type=GeoNetPacket);
 
         string dccModule;
         string middlewareModule;
