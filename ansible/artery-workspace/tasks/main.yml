@@ -19,6 +19,28 @@
           - sumo
   become: yes
 
+- name: clone Artery repository
+  git:
+    repo: /vagrant/.git
+    dest: "{{ ansible_user_dir }}/artery"
+    clone: yes
+    recursive: yes
+    remote: vagrant
+
+- name: add 'origin' remote to upstream repository
+  git_config:
+    repo: "{{ ansible_user_dir }}/artery"
+    scope: local
+    name: remote.origin.url
+    value: https://github.com/riebl/artery.git
+
+- name: configure refs to fetch for 'origin'
+  git_config:
+    repo: "{{ ansible_user_dir }}/artery"
+    scope: local
+    name: remote.origin.fetch
+    value: +refs/heads/*:refs/remotes/origin/*
+
 - name: build all Artery dependencies
   make:
       chdir: "{{ artery_source_dir }}"

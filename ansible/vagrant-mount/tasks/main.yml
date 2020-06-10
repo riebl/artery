@@ -1,35 +1,22 @@
 ---
-- name: overlayfs directories
-  file:
-      path: "{{ ansible_user_dir }}/.overlay/{{ item }}"
-      state: directory
-  with_items:
-      - artery-host
-      - artery-upper
-      - artery-work
+# Previously, we used overlayfs to mount the Artery repository located
+# on the host machine in the virtual machine. This approach is ill-fated
+# because the "lower layer" (the directory on the host machine) may change
+# while being mounted as part of overlayfs in the virtual machine.
+# This is not supported by overlayfs and leads to undefined behaviour.
+#
+# We now add the repository located on host as git remote 'vagrant' instead.
+# This role can be removed in the future when no old deployments exist anymore.
 
-- name: mount artery-host
+- name: remove deprecated mount of overlay filesystem
   mount:
-    path: "{{ ansible_user_dir }}/.overlay/artery-host"
-    src: vagrant
-    fstype: vboxsf
-    opts: uid={{ ansible_user_uid }},gid={{ ansible_user_gid }}
-    state: mounted
+    path: "{{ ansible_user_dir }}/artery"
+    src: overlay
+    state: absent
   become: yes
 
-- name: mountpoint for overlayfs
-  file:
-      path: "{{ ansible_user_dir }}/artery"
-      state: directory
-
-- name: mount overlay filesystem
+- name: remove deprecated mount of artery-host
   mount:
-      path: "{{ ansible_user_dir }}/artery"
-      src: overlay
-      fstype: overlay
-      opts: "lowerdir={{ ansible_user_dir }}/.overlay/artery-host,\
-             upperdir={{ ansible_user_dir }}/.overlay/artery-upper,\
-             workdir={{ ansible_user_dir }}/.overlay/artery-work,\
-             x-systemd.requires-mounts-for={{ ansible_user_dir }}/.overlay/artery-host"
-      state: mounted
+    path: "{{ ansible_user_dir }}/.overlay/artery-host"
+    state: absent
   become: yes
