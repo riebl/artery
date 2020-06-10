@@ -41,6 +41,12 @@
     name: remote.origin.fetch
     value: +refs/heads/*:refs/remotes/origin/*
 
+- name: clean Artery's dependencies
+  make:
+      chdir: "{{ artery_source_dir }}"
+      target: clean
+  when: omnetpp_current.changed
+
 - name: build all Artery dependencies
   make:
       chdir: "{{ artery_source_dir }}"
@@ -58,6 +64,12 @@
   args:
       chdir: "{{ artery_build_dir }}"
       creates: "{{ artery_build_dir }}/Makefile"
+
+- name: clean build directory
+  make:
+      chdir: "{{ artery_build_dir }}"
+      target: clean
+  when: omnetpp_current.changed
 
 - name: build Artery
   make:
