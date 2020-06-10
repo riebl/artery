@@ -52,6 +52,8 @@
       chdir: /opt/omnetpp
   environment:
       PATH: /opt/omnetpp/bin:{{ ansible_env.PATH }}
+  register: omnetpp_make
+  changed_when: "'Creating' in omnetpp_make.stdout"
 
 - name: add OMNeT++ binary path to PATH
   copy:
