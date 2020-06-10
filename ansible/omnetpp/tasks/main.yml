@@ -20,40 +20,60 @@
           - default-jre
   become: yes
 
-- name: create /opt/omnetpp directory
+- name: check state of /opt/omnetpp
+  stat:
+      path: /opt/omnetpp
+  register: opt_omnetpp
+
+- name: delete deprecated /opt/omnetpp directory
   file:
       path: /opt/omnetpp
-      state: directory
-      owner: "{{ ansible_user }}"
+      state: absent
+  when: opt_omnetpp.stat.isdir
   become: yes
 
 - name: download OMNeT++ archive
   get_url:
-      url: https://github.com/omnetpp/omnetpp/releases/download/omnetpp-5.5.1/omnetpp-5.5.1-src-linux.tgz
-      dest: /tmp/omnetpp-src-linux.tgz
-      checksum: md5:f7abe260ff47ec02a665e287c653db86
+      url: "{{ omnetpp_url }}"
+      dest: "{{ ansible_user_dir }}/{{ omnetpp_archive }}"
+      checksum: "{{ omnetpp_checksum }}"
+
+- name: create OMNeT++ directory
+  file:
+      path: "{{ omnetpp_dir }}"
+      state: directory
+      owner: "{{ ansible_user }}"
+  become: yes
 
 - name: extract OMNeT++ archive
   unarchive:
-      src: /tmp/omnetpp-src-linux.tgz
-      dest: /opt/omnetpp/
-      creates: /opt/omnetpp/configure
+      src: "{{ ansible_user_dir }}/{{ omnetpp_archive }}"
+      dest: "{{ omnetpp_dir }}"
+      creates: "{{ omnetpp_dir }}/configure"
       extra_opts:
           - --strip-components=1
 
 - name: configure OMNeT++
   command: ./configure
   args:
-      chdir: /opt/omnetpp
-      creates: /opt/omnetpp/Makefile.inc
+      chdir: "{{ omnetpp_dir }}"
+      creates: "{{ omnetpp_dir }}/Makefile.inc"
 
 - name: build OMNeT++
   make:
-      chdir: /opt/omnetpp
+      chdir: "{{ omnetpp_dir }}"
   environment:
-      PATH: /opt/omnetpp/bin:{{ ansible_env.PATH }}
+      PATH: "{{ omnetpp_dir }}/bin:{{ ansible_env.PATH }}"
   register: omnetpp_make
   changed_when: "'Creating' in omnetpp_make.stdout"
+
+- name: create symlink to current OMNeT++ installation
+  file:
+      src: "{{ omnetpp_dir }}"
+      dest: /opt/omnetpp
+      state: link
+  register: omnetpp_current
+  become: yes
 
 - name: add OMNeT++ binary path to PATH
   copy:
