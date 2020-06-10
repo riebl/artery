@@ -1,5 +1,7 @@
 #include "artery/networking/GeoNetPacket.h"
 
+Register_Class(artery::GeoNetPacket)
+
 namespace artery
 {
 
