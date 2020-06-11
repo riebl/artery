@@ -5,8 +5,8 @@ import inet.linklayer.ieee80211.Ieee80211Nic;
 module VanetNic extends Ieee80211Nic
 {
     parameters:
-        macType = "Ieee80211Mac";
-        mgmtType = "Ieee80211MgmtAdhoc";
+        macType = default("VanetMac");
+        mgmtType = default("VanetMgmt");
         opMode = "p";
         bitrate = default(6 Mbps);
 
@@ -18,7 +18,6 @@ module VanetNic extends Ieee80211Nic
         radio.bandName = "5 GHz";
         radio.bandwidth = 10 MHz;
         radio.channelNumber = default(180);
-        // carrierFrequency is automatically set by the radio
         radio.carrierFrequency = default(5.9 GHz);
         radio.receiverType = default("VanetReceiver");
 

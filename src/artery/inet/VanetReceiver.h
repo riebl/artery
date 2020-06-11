@@ -1,6 +1,6 @@
 /*
 * Artery V2X Simulation Framework
-* Copyright 2019 Raphael Riebl
+* Copyright 2019-2020 Raphael Riebl
 * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
 */
 
@@ -23,6 +23,7 @@ public:
 
 protected:
     void initialize(int stage) override;
+    const inet::physicallayer::ReceptionIndication* computeReceptionIndication(const inet::physicallayer::ISNIR*) const override;
 
 private:
     double mCaptureThreshold;

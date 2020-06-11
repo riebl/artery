@@ -1,10 +1,11 @@
 #include "artery/inet/InetRadioDriver.h"
+#include "artery/inet/VanetRxControl.h"
+#include "artery/inet/VanetTxControl.h"
 #include "artery/networking/GeoNetIndication.h"
 #include "artery/networking/GeoNetRequest.h"
 #include "artery/nic/RadioDriverProperties.h"
 #include <inet/common/InitStages.h>
 #include <inet/common/ModuleAccess.h>
-#include <inet/linklayer/common/Ieee802Ctrl.h>
 #include <inet/linklayer/ieee80211/mac/Ieee80211Mac.h>
 #include <inet/physicallayer/ieee80211/packetlevel/Ieee80211Radio.h>
 
@@ -85,7 +86,7 @@ void InetRadioDriver::handleMessage(cMessage* msg)
 void InetRadioDriver::handleDataRequest(cMessage* packet)
 {
 	auto request = check_and_cast<GeoNetRequest*>(packet->removeControlInfo());
-	auto ctrl = new inet::Ieee802Ctrl();
+	auto ctrl = new VanetTxControl();
 	ctrl->setDest(convert(request->destination_addr));
 	ctrl->setSourceAddress(convert(request->source_addr));
 	ctrl->setEtherType(request->ether_type.host());
@@ -113,7 +114,7 @@ void InetRadioDriver::handleDataRequest(cMessage* packet)
 
 void InetRadioDriver::handleDataIndication(cMessage* packet)
 {
-	auto* info = check_and_cast<inet::Ieee802Ctrl*>(packet->removeControlInfo());
+	auto* info = check_and_cast<VanetRxControl*>(packet->removeControlInfo());
 	auto* indication = new GeoNetIndication();
 	indication->source = convert(info->getSrc());
 	indication->destination = convert(info->getDest());

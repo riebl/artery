@@ -98,9 +98,13 @@ if(TARGET INET)
         inet/gemv2/VehicleIndex.cc
         inet/gemv2/Visualizer.cc
         inet/PowerLevelRx.cc
+        inet/VanetHcf.cc
+        inet/VanetMgmt.cc
         inet/VanetNakagamiFading.cc
         inet/VanetRadio.cc
         inet/VanetReceiver.cc
+        inet/VanetRxControl.cc
+        inet/VanetTxControl.cc
     )
     target_link_libraries(core PUBLIC INET)
 endif()
