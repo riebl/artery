@@ -1,12 +1,14 @@
 /*
 * Artery V2X Simulation Framework
-* Copyright 2019 Raphael Riebl
+* Copyright 2019-2020 Raphael Riebl
 * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
 */
 
 #include "artery/inet/VanetReceiver.h"
-#include "inet/physicallayer/contract/packetlevel/IRadio.h"
-#include "inet/physicallayer/contract/packetlevel/IRadioMedium.h"
+#include <inet/physicallayer/analogmodel/packetlevel/ScalarReception.h>
+#include <inet/physicallayer/contract/packetlevel/IRadio.h>
+#include <inet/physicallayer/contract/packetlevel/IRadioMedium.h>
+#include <inet/physicallayer/ieee80211/packetlevel/Ieee80211ControlInfo_m.h>
 
 namespace artery
 {
@@ -41,6 +43,16 @@ bool VanetReceiver::computeIsReceptionAttempted(const phy::IListening* listening
     } else {
         return true; // let's try, why not?
     }
+}
+
+const phy::ReceptionIndication* VanetReceiver::computeReceptionIndication(const phy::ISNIR* snir) const
+{
+    using namespace phy;
+    auto basicIndication = const_cast<ReceptionIndication*>(Ieee80211ScalarReceiver::computeReceptionIndication(snir));
+    auto wlanIndication = check_and_cast<Ieee80211ReceptionIndication*>(basicIndication);
+    auto reception = check_and_cast<const ScalarReception*>(snir->getReception());
+    wlanIndication->setMinRSSI(reception->getPower());
+    return wlanIndication;
 }
 
 } // namespace artery
