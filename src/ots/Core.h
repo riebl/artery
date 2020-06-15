@@ -5,6 +5,7 @@
 #include <sim0mqpp/any.hpp>
 #include <sim0mqpp/message.hpp>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 namespace ots
@@ -20,14 +21,20 @@ public:
     void handleMessage(omnetpp::cMessage*) override;
 
 protected:
-    void sendCommand(const std::string& cmd, std::vector<sim0mqpp::Any>&& payload);
-    void loadNetwork(const std::string& path);
+    void sendCommand(const sim0mqpp::Identifier& cmd);
+    void sendCommand(const sim0mqpp::Identifier& cmd, std::int32_t cmd_id);
+    void sendCommand(const sim0mqpp::Identifier& cmd, std::int32_t cmd_id, std::vector<sim0mqpp::Any>&& payload);
+    void sendCommand(const sim0mqpp::Identifier& cmd, std::vector<sim0mqpp::Any>&& payload);
+    void startSimulation(const std::string& path);
+    void stopSimulation();
     void simulateUntil(omnetpp::SimTime);
     void requestGtuPositions();
+    void requestGtuPosition(const sim0mqpp::Any&);
 
     bool receive(std::size_t maxlen, bool block = true);
-    void queryResponses();
-    void processGtuPosition(const sim0mqpp::Message&);
+    void queryResponses(const sim0mqpp::Identifier&);
+    void processCurrentNetwork(const sim0mqpp::Message&);
+    void processGtuMove(const sim0mqpp::Message&);
     void processGtuAdd(const sim0mqpp::Message&);
     void processGtuRemove(const sim0mqpp::Message&);
 
@@ -41,6 +48,7 @@ private:
     std::string m_sim_sender;
     std::string m_sim_receiver;
     std::vector<std::uint8_t> m_buffer;
+    std::unordered_set<sim0mqpp::Identifier> m_pending;
 };
 
 } // namespace ots
