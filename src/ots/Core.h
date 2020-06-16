@@ -37,6 +37,9 @@ protected:
     void processGtuMove(const sim0mqpp::Message&);
     void processGtuAdd(const sim0mqpp::Message&);
     void processGtuRemove(const sim0mqpp::Message&);
+    void processSimulationStart(const sim0mqpp::Message&);
+    void processSimulationStep(const sim0mqpp::Message&);
+    void processSubscriptionReply(const sim0mqpp::Message&, const std::string&);
 
 private:
     void* m_zmq_context = nullptr;
@@ -49,6 +52,8 @@ private:
     std::string m_sim_receiver;
     std::vector<std::uint8_t> m_buffer;
     std::unordered_set<sim0mqpp::Identifier> m_pending;
+    bool m_gtu_add_subscribed = false;
+    bool m_gtu_remove_subscribed = false;
 };
 
 } // namespace ots

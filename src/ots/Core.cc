@@ -37,6 +37,19 @@ const simsignal_t gtu_add_signal = cComponent::registerSignal("ots-gtu-add");
 const simsignal_t gtu_remove_signal = cComponent::registerSignal("ots-gtu-remove");
 const simsignal_t gtu_position_signal = cComponent::registerSignal("ots-gtu-position");
 
+bool isGoodReply(const sim0mqpp::Message& msg)
+{
+    auto success = msg.get_payload<bool>(0);
+    return success && *success;
+}
+
+const std::string& getReplyMessage(const sim0mqpp::Message& msg)
+{
+    static const std::string fallback = "(no message)";
+    auto message = msg.get_payload<std::string>(1);
+    return message ? *message : fallback;
+}
+
 } // namespace
 
 
@@ -173,8 +186,7 @@ void Core::queryResponses(const sim0mqpp::Identifier& wait_for)
             m_pending.erase(msg.message_type_id);
 
             if (msg.message_type_id == sim_until_msg) {
-                // TODO add check if simulation times are in sync as soon as OTS reports time as scalar quantity
-                EV_DETAIL << "OTS time has changed\n";
+                processSimulationStep(msg);
             } else if (msg.message_type_id == gtu_move_msg) {
                 processGtuMove(msg);
             } else if (msg.message_type_id == gtu_network_msg) {
@@ -183,15 +195,27 @@ void Core::queryResponses(const sim0mqpp::Identifier& wait_for)
                     if (*msg_id == 0) {
                         processCurrentNetwork(msg);
                     } else if (*msg_id == gtu_add_subscription) {
-                        processGtuAdd(msg);
+                        if (m_gtu_add_subscribed) {
+                            processGtuAdd(msg);
+                        } else {
+                            processSubscriptionReply(msg, "GTU add");
+                            m_gtu_add_subscribed = isGoodReply(msg);
+                        }
                     } else if (*msg_id == gtu_remove_subscription) {
-                        processGtuRemove(msg);
+                        if (m_gtu_remove_subscribed) {
+                            processGtuRemove(msg);
+                        } else {
+                            processSubscriptionReply(msg, "GTU remove");
+                            m_gtu_remove_subscribed = isGoodReply(msg);
+                        }
                     } else {
                         EV_WARN << "do not know how to process network message with ID " << *msg_id << "\n";
                     }
                 } else {
                     EV_ERROR << "network message contains invalid ID\n";
                 }
+            } else if (msg.message_type_id == sim_start_msg) {
+                processSimulationStart(msg);
             } else {
                 EV_WARN << "ignoring message " << sim0mqpp::to_string(msg.message_type_id) << "\n";
             }
@@ -236,7 +260,7 @@ void Core::processGtuMove(const sim0mqpp::Message& msg)
 {
     auto id = msg.get_payload<std::string>(0);
     auto type = msg.get_payload<std::string>(1);
-    auto pos = msg.get_payload<sim0mqpp::Unit::Position, sim0mqpp::VectorQuantity<double>>(2);
+    auto pos = msg.get_payload<sim0mqpp::VectorQuantity<double>, sim0mqpp::Unit::Position>(2);
     auto heading = msg.get_payload<sim0mqpp::Unit::Direction>(3);
     auto speed = msg.get_payload<sim0mqpp::Unit::Speed>(4);
     auto accel = msg.get_payload<sim0mqpp::Unit::Acceleration>(5);
@@ -253,6 +277,34 @@ void Core::processGtuMove(const sim0mqpp::Message& msg)
         EV_DETAIL << "GTU position update for ID " << *id << "\n";
     } else {
         EV_ERROR << "received broken GTU position\n";
+    }
+}
+
+void Core::processSubscriptionReply(const sim0mqpp::Message& msg, const std::string& event)
+{
+    if (isGoodReply(msg)) {
+        EV_DETAIL << "Subscribed to " << event << " events\n";
+    } else {
+        EV_ERROR << "Subscribing to " << event << " events failed: " << getReplyMessage(msg) << "\n";
+    }
+}
+
+void Core::processSimulationStart(const sim0mqpp::Message& msg)
+{
+    if (isGoodReply(msg)) {
+        EV_INFO << "OTS simulation started\n";
+    } else {
+        EV_ERROR << "starting OTS simulation failed: " << getReplyMessage(msg) << "\n";
+    }
+}
+
+void Core::processSimulationStep(const sim0mqpp::Message& msg)
+{
+    if (isGoodReply(msg)) {
+        // TODO add check if simulation times are in sync as soon as OTS reports time as scalar quantity
+        EV_DETAIL << "OTS time has changed\n";
+    } else {
+        EV_ERROR << "OTS reported a problem advancing in time: " << getReplyMessage(msg) << "\n";
     }
 }
 
