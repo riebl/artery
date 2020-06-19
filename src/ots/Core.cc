@@ -36,6 +36,7 @@ const std::int32_t gtu_remove_subscription = 0x20202;
 const std::int32_t sim_change_subscription = 0x20301;
 
 using namespace omnetpp;
+const simsignal_t lifecycle_signal = cComponent::registerSignal("ots-lifecycle");
 const simsignal_t gtu_add_signal = cComponent::registerSignal("ots-gtu-add");
 const simsignal_t gtu_remove_signal = cComponent::registerSignal("ots-gtu-remove");
 const simsignal_t gtu_position_signal = cComponent::registerSignal("ots-gtu-position");
@@ -101,6 +102,8 @@ void Core::initialize()
     // schedule first OTS step
     m_step_length = par("stepLength");
     scheduleAt(omnetpp::simTime(), m_step_event);
+
+    m_stop_time = par("otsRunDuration");
 }
 
 void Core::handleMessage(omnetpp::cMessage* msg)
@@ -112,14 +115,20 @@ void Core::handleMessage(omnetpp::cMessage* msg)
             sendCommand(gtu_network_subscribe_remove_msg, gtu_remove_subscription);
             sendCommand(sim_subscribe_change_msg, sim_change_subscription);
             m_network_loaded = true;
+            emit(lifecycle_signal, true);
         }
 
-        // trigger OTS to advance by step length
-        simulateUntil(omnetpp::simTime());
-        scheduleAt(omnetpp::simTime() + m_step_length, m_step_event);
+        if (omnetpp::simTime() < m_stop_time) {
+            // trigger OTS to advance by step length
+            simulateUntil(omnetpp::simTime());
+            scheduleAt(omnetpp::simTime() + m_step_length, m_step_event);
 
-        // request all initial GTU positions
-        requestGtuPositions();
+            // request positions of all GTUs at current time step
+            requestGtuPositions();
+        } else {
+            // end of OTS simulation reached
+            emit(lifecycle_signal, false);
+        }
     }
 }
 
