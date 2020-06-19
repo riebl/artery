@@ -27,10 +27,13 @@ const sim0mqpp::Identifier gtu_network_subscribe_remove_msg = std::string("GTUs 
 const sim0mqpp::Identifier sim_start_msg = std::string("NEWSIMULATION");
 const sim0mqpp::Identifier sim_stop_msg = std::string("DIE");
 const sim0mqpp::Identifier sim_until_msg = std::string("SIMULATEUNTIL");
+const sim0mqpp::Identifier sim_state_msg = std::string("Simulator running");
+const sim0mqpp::Identifier sim_subscribe_change_msg = std::string("Simulator running|SUBSCRIBE_TO_CHANGE");
 
 // subscription IDs are arbitrarily chosen, just need to be distinct
 const std::int32_t gtu_add_subscription = 0x20201;
 const std::int32_t gtu_remove_subscription = 0x20202;
+const std::int32_t sim_change_subscription = 0x20301;
 
 using namespace omnetpp;
 const simsignal_t gtu_add_signal = cComponent::registerSignal("ots-gtu-add");
@@ -107,6 +110,7 @@ void Core::handleMessage(omnetpp::cMessage* msg)
             startSimulation(par("otsNetworkFile").stringValue());
             sendCommand(gtu_network_subscribe_add_msg, gtu_add_subscription);
             sendCommand(gtu_network_subscribe_remove_msg, gtu_remove_subscription);
+            sendCommand(sim_subscribe_change_msg, sim_change_subscription);
             m_network_loaded = true;
         }
 
@@ -186,34 +190,13 @@ void Core::queryResponses(const sim0mqpp::Identifier& wait_for)
             m_pending.erase(msg.message_type_id);
 
             if (msg.message_type_id == sim_until_msg) {
-                processSimulationStep(msg);
+                processSimulationTrigger(msg);
+            } else if (msg.message_type_id == sim_state_msg) {
+                processSimulationChange(msg);
             } else if (msg.message_type_id == gtu_move_msg) {
                 processGtuMove(msg);
             } else if (msg.message_type_id == gtu_network_msg) {
-                std::int32_t* msg_id = boost::get<std::int32_t>(&msg.message_id);
-                if (msg_id) {
-                    if (*msg_id == 0) {
-                        processCurrentNetwork(msg);
-                    } else if (*msg_id == gtu_add_subscription) {
-                        if (m_gtu_add_subscribed) {
-                            processGtuAdd(msg);
-                        } else {
-                            processSubscriptionReply(msg, "GTU add");
-                            m_gtu_add_subscribed = isGoodReply(msg);
-                        }
-                    } else if (*msg_id == gtu_remove_subscription) {
-                        if (m_gtu_remove_subscribed) {
-                            processGtuRemove(msg);
-                        } else {
-                            processSubscriptionReply(msg, "GTU remove");
-                            m_gtu_remove_subscribed = isGoodReply(msg);
-                        }
-                    } else {
-                        EV_WARN << "do not know how to process network message with ID " << *msg_id << "\n";
-                    }
-                } else {
-                    EV_ERROR << "network message contains invalid ID\n";
-                }
+                processNetwork(msg);
             } else if (msg.message_type_id == sim_start_msg) {
                 processSimulationStart(msg);
             } else {
@@ -249,10 +232,34 @@ void Core::processGtuRemove(const sim0mqpp::Message& msg)
     }
 }
 
-void Core::processCurrentNetwork(const sim0mqpp::Message& msg)
+void Core::processNetwork(const sim0mqpp::Message& msg)
 {
-    for (const auto& gtu_id : msg.payload) {
-        requestGtuPosition(gtu_id);
+    const std::int32_t* msg_id = boost::get<const std::int32_t>(&msg.message_id);
+    if (!msg_id) {
+        EV_ERROR << "network message contains invalid ID\n";
+        return;
+    }
+
+    if (*msg_id == 0) {
+        for (const auto& gtu_id : msg.payload) {
+            requestGtuPosition(gtu_id);
+        }
+    } else if (*msg_id == gtu_add_subscription) {
+        if (m_gtu_add_subscribed) {
+            processGtuAdd(msg);
+        } else {
+            processSubscriptionReply(msg, "GTU add");
+            m_gtu_add_subscribed = isGoodReply(msg);
+        }
+    } else if (*msg_id == gtu_remove_subscription) {
+        if (m_gtu_remove_subscribed) {
+            processGtuRemove(msg);
+        } else {
+            processSubscriptionReply(msg, "GTU remove");
+            m_gtu_remove_subscribed = isGoodReply(msg);
+        }
+    } else {
+        EV_WARN << "do not know how to process network message with ID " << *msg_id << "\n";
     }
 }
 
@@ -298,13 +305,31 @@ void Core::processSimulationStart(const sim0mqpp::Message& msg)
     }
 }
 
-void Core::processSimulationStep(const sim0mqpp::Message& msg)
+void Core::processSimulationTrigger(const sim0mqpp::Message& msg)
 {
     if (isGoodReply(msg)) {
-        // TODO add check if simulation times are in sync as soon as OTS reports time as scalar quantity
-        EV_DETAIL << "OTS time has changed\n";
+        EV_DETAIL << "OTS will advance in time\n";
     } else {
-        EV_ERROR << "OTS reported a problem advancing in time: " << getReplyMessage(msg) << "\n";
+        EV_ERROR << "OTS reported a problem to advance in time: " << getReplyMessage(msg) << "\n";
+    }
+}
+
+void Core::processSimulationChange(const sim0mqpp::Message& msg)
+{
+    if (m_sim_state_subscribed) {
+        auto time = msg.get_payload<sim0mqpp::Unit::Time>(0);
+        auto running = msg.get_payload<bool>(1);
+        if (running && time) {
+            if (!*running) {
+                m_ots_time = omnetpp::SimTime { time->value() };
+            }
+            EV_DETAIL << "OTS " << (*running ? "started" : "stopped") << " at time point " << time->value() << "\n";
+        } else {
+            EV_ERROR << "received broken simulator state message\n";
+        }
+    } else {
+        processSubscriptionReply(msg, "simulation state");
+        m_sim_state_subscribed = isGoodReply(msg);
     }
 }
 
@@ -344,7 +369,11 @@ void Core::simulateUntil(omnetpp::SimTime time)
     std::vector<sim0mqpp::Any> payload;
     payload.push_back(sim0mqpp::ScalarQuantity<double> { time.dbl(), sim0mqpp::Unit::Time });
     sendCommand(sim_until_msg, std::move(payload));
-    queryResponses(sim_until_msg);
+    queryResponses(sim_until_msg); // response only acknowledges intention to advance in time
+
+    while (m_ots_time < time) {
+        queryResponses(sim_state_msg); // actual time changes of simulator
+    }
 }
 
 void Core::requestGtuPositions()

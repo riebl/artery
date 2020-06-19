@@ -33,12 +33,13 @@ protected:
 
     bool receive(std::size_t maxlen, bool block = true);
     void queryResponses(const sim0mqpp::Identifier&);
-    void processCurrentNetwork(const sim0mqpp::Message&);
+    void processNetwork(const sim0mqpp::Message&);
     void processGtuMove(const sim0mqpp::Message&);
     void processGtuAdd(const sim0mqpp::Message&);
     void processGtuRemove(const sim0mqpp::Message&);
     void processSimulationStart(const sim0mqpp::Message&);
-    void processSimulationStep(const sim0mqpp::Message&);
+    void processSimulationTrigger(const sim0mqpp::Message&);
+    void processSimulationChange(const sim0mqpp::Message&);
     void processSubscriptionReply(const sim0mqpp::Message&, const std::string&);
 
 private:
@@ -47,6 +48,7 @@ private:
     bool m_network_loaded = false;
     omnetpp::cMessage* m_step_event = nullptr;
     omnetpp::SimTime m_step_length;
+    omnetpp::SimTime m_ots_time;
     std::string m_sim_federation;
     std::string m_sim_sender;
     std::string m_sim_receiver;
@@ -54,6 +56,7 @@ private:
     std::unordered_set<sim0mqpp::Identifier> m_pending;
     bool m_gtu_add_subscribed = false;
     bool m_gtu_remove_subscribed = false;
+    bool m_sim_state_subscribed = false;
 };
 
 } // namespace ots
