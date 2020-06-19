@@ -10,6 +10,7 @@ namespace
 {
 
 using namespace omnetpp;
+const simsignal_t otsLifecycleSignal = cComponent::registerSignal("ots-lifecycle");
 const simsignal_t otsGtuAddSignal = cComponent::registerSignal("ots-gtu-add");
 const simsignal_t otsGtuRemoveSignal = cComponent::registerSignal("ots-gtu-remove");
 const simsignal_t otsGtuPositionSignal = cComponent::registerSignal("ots-gtu-position");
@@ -19,6 +20,7 @@ const simsignal_t otsGtuPositionSignal = cComponent::registerSignal("ots-gtu-pos
 void BasicGtuLifecycleController::initialize()
 {
     if (auto emitter = getParentModule()) {
+        emitter->subscribe(otsLifecycleSignal, this);
         emitter->subscribe(otsGtuAddSignal, this);
         emitter->subscribe(otsGtuRemoveSignal, this);
         emitter->subscribe(otsGtuPositionSignal, this);
@@ -27,6 +29,17 @@ void BasicGtuLifecycleController::initialize()
     m_creation_policy = dynamic_cast<GtuCreationPolicy*>(getSubmodule("creationPolicy"));
     if (!m_creation_policy) {
         throw cRuntimeError("missing GtuCreationPolicy");
+    }
+}
+
+void BasicGtuLifecycleController::receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t signal, bool flag, omnetpp::cObject*)
+{
+    if (signal == otsLifecycleSignal && !flag) {
+        m_pending_gtus.clear();
+        m_gtu_sinks.clear();
+        while (!m_nodes.empty()) {
+            removeModule(m_nodes.begin()->first);
+        }
     }
 }
 

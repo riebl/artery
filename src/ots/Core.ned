@@ -3,6 +3,7 @@ package ots;
 simple Core
 {
     parameters:
+        @signal[ots-lifecycle](type=bool);
         @signal[ots-gtu-add](type=string);
         @signal[ots-gtu-remove](type=string);
         @signal[ots-gtu-position](type=GtuObject);

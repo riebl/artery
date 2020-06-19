@@ -48,6 +48,7 @@ private:
     bool m_network_loaded = false;
     omnetpp::cMessage* m_step_event = nullptr;
     omnetpp::SimTime m_step_length;
+    omnetpp::SimTime m_stop_time;
     omnetpp::SimTime m_ots_time;
     std::string m_sim_federation;
     std::string m_sim_sender;

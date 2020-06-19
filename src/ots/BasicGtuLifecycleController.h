@@ -18,6 +18,7 @@ class BasicGtuLifecycleController : public omnetpp::cListener, public omnetpp::c
 {
 public:
     void initialize() override;
+    void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, bool, omnetpp::cObject* = nullptr) override;
     void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, const char*, omnetpp::cObject* = nullptr) override;
     void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject* = nullptr) override;
 
