@@ -5,6 +5,7 @@
 #include "artery/veins/VeinsRadioDriver.h"
 #include "veins/base/utils/FindModule.h"
 #include "veins/base/utils/SimpleAddress.h"
+#include "veins/modules/mac/ieee80211p/Mac1609_4.h"
 #include "veins/modules/utility/Consts80211p.h"
 
 using namespace omnetpp;
@@ -65,7 +66,7 @@ int user_priority(vanetza::access::AccessCategory ac)
     return up;
 }
 
-const simsignal_t channelBusySignal = cComponent::registerSignal("sigChannelBusy");
+const simsignal_t channelBusySignal = veins::Mac1609_4::sigChannelBusy;
 
 } // namespace
 
