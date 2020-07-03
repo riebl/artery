@@ -29,7 +29,7 @@
   file:
       path: /opt/omnetpp
       state: absent
-  when: opt_omnetpp.stat.isdir
+  when: opt_omnetpp.stat.exists and opt_omnetpp.stat.isdir
   become: yes
 
 - name: download OMNeT++ archive
