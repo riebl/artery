@@ -131,6 +131,7 @@ void Router::initializeManagementInformationBase(vanetza::geonet::ManagementInfo
     mib.itsGnIsMobile = par("isMobile");
     mib.itsGnSecurity = (mSecurityEntity != nullptr);
     mib.vanetzaDeferInitialBeacon = par("deferInitialBeacon");
+    mib.vanetzaDisableBeaconing = par("disableBeaconing");
 }
 
 void Router::request(const vanetza::btp::DataRequestB& request, std::unique_ptr<vanetza::DownPacket> packet)

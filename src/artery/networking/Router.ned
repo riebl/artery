@@ -16,6 +16,7 @@ simple Router
         string securityModule;
 
         bool deferInitialBeacon = default(true);
+        bool disableBeaconing = default(false);
         bool isMobile = default(true);
 
     gates:
