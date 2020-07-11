@@ -66,7 +66,7 @@ set_target_properties(core PROPERTIES
 target_include_directories(core PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(core PUBLIC ${Boost_INCLUDE_DIRS})
 target_link_libraries(core PUBLIC ${Boost_LIBRARIES})
-target_link_libraries(core PUBLIC opp_interface)
+target_link_libraries(core PUBLIC OmnetPP::envir)
 target_link_libraries(core PUBLIC traci)
 target_link_libraries(core PUBLIC Vanetza::vanetza)
 

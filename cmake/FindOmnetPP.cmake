@@ -19,9 +19,10 @@ if(EXISTS ${OMNETPP_ROOT}/Makefile.inc)
     endforeach()
 endif()
 
-add_library(opp_interface INTERFACE)
-target_compile_definitions(opp_interface INTERFACE ${_compile_definitions})
-target_include_directories(opp_interface INTERFACE ${OMNETPP_INCLUDE_DIR})
+add_library(opp_header INTERFACE)
+target_compile_definitions(opp_header INTERFACE ${_compile_definitions})
+target_include_directories(opp_header INTERFACE ${OMNETPP_INCLUDE_DIR})
+add_library(OmnetPP::header ALIAS opp_header)
 
 # create imported library targets
 set(_libraries cmdenv common envir eventlog layout main nedxml scave sim tkenv)
@@ -29,13 +30,13 @@ foreach(_library IN LISTS _libraries)
     string(TOUPPER ${_library} _LIBRARY)
     find_library(OMNETPP_${_LIBRARY}_LIBRARY_RELEASE opp${_library} PATHS ${OMNETPP_ROOT}/lib)
     find_library(OMNETPP_${_LIBRARY}_LIBRARY_DEBUG NAMES opp${_library}d opp${_library}_dbg PATHS ${OMNETPP_ROOT}/lib)
-    add_library(opp_${_library} SHARED IMPORTED)
-    list(APPEND OMNETPP_LIBRARIES opp_${_library})
-    set_target_properties(opp_${_library} PROPERTIES
+    add_library(OmnetPP::${_library} SHARED IMPORTED)
+    list(APPEND OMNETPP_LIBRARIES OmnetPP::${_library})
+    set_target_properties(OmnetPP::${_library} PROPERTIES
         IMPORTED_LOCATION_RELEASE ${OMNETPP_${_LIBRARY}_LIBRARY_RELEASE}
         IMPORTED_LOCATION_DEBUG ${OMNETPP_${_LIBRARY}_LIBRARY_DEBUG}
-        INTERFACE_LINK_LIBRARIES opp_interface)
-    set_property(TARGET opp_${_library} PROPERTY IMPORTED_CONFIGURATIONS "DEBUG" "RELEASE")
+        INTERFACE_LINK_LIBRARIES OmnetPP::header)
+    set_property(TARGET OmnetPP::${_library} PROPERTY IMPORTED_CONFIGURATIONS "DEBUG" "RELEASE")
     mark_as_advanced(OMNETPP_${_LIBRARY}_LIBRARY_RELEASE OMNETPP_${_LIBRARY}_LIBRARY_DEBUG)
 endforeach()
 unset(_libraries)
