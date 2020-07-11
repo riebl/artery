@@ -1,6 +1,10 @@
 find_path(OMNETPP_ROOT NAMES bin/omnetpp PATHS ENV PATH PATH_SUFFIXES .. DOC "Path to OMNeT++ root directory")
-find_program(OMNETPP_MSGC NAMES nedtool opp_msgc PATHS ${OMNETPP_ROOT}/bin DOC "OMNeT++ message compiler")
 find_path(OMNETPP_INCLUDE_DIR NAMES omnetpp.h PATHS ${OMNETPP_ROOT}/include DOC "OMNeT++ include directory")
+find_program(OMNETPP_MSGC NAMES nedtool opp_msgc PATHS ${OMNETPP_ROOT}/bin DOC "OMNeT++ message compiler")
+find_program(OMNETPP_RUN NAMES opp_run_release opp_run PATHS ${OMNETPP_ROOT}/bin DOC "OMNeT++ opp_run executable")
+find_program(OMNETPP_RUN_DEBUG NAMES opp_run_dbg opp_run PATHS ${OMNETPP_ROOT}/bin DOC "OMNeT++ opp_run_dbg executable")
+get_filename_component(OMNETPP_ROOT "${OMNETPP_ROOT}" REALPATH)
+mark_as_advanced(OMNETPP_INCLUDE_DIR OMNETPP_MSGC OMNETPP_ROOT OMNETPP_RUN OMNETPP_RUN_DEBUG)
 
 if(EXISTS ${OMNETPP_ROOT}/Makefile.inc)
     # extract version from Makefile.inc
