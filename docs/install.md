@@ -55,6 +55,9 @@ Hence, make sure the following requirements are fulfilled:
 - [Python](https://www.python.org) 3
 
 We have tested Artery with OMNeT++ 5.4, GNU GCC 7.3 and Boost 1.65.1 successfully.
+Please note that these versions are just minimum requirements.
+You may benefit from bugfixes when using more recent versions.
+For example, OMNeT++ 5.6 is working great as well.
 
 !!! danger
     OMNeT++ 6.0 (available as Preview 7 at the time of writing) breaks compatibility of models written for 5.x versions.
@@ -78,25 +81,13 @@ You will need version 1.0 or later of SUMO because its TraCI protocol of earlier
 
 ### Build 'extern' components
 
-INET, Vanetza, and Veins located in their respective *extern* subdirectories need to be built before Artery itself.
-A *Makefile* is located in Artery's root directory to make this build step more convenient.
-Simply call `make all` from this directory and INET, Veins and Vanetza will be built accordingly.
-Optionally, if you intend to enable the SimuLTE integration, call `make simulte` in addition.
+Bundled third-party dependencies in *extern* subdirectories are built along with Artery.
+Artery's build process integrates those dependencies seamlessly without manual intervention.
 
-#### Vanetza
-Our *Makefile* tries to build Vanetza in *extern/vanetza/build*.
-Usually, if all dependencies are installed system-wide, no manual intervention is necessary.
-Since Vanetza is using CMake as well, you can customise its build directory with the usual CMake tools.
-Please consult the [Vanetza website](https://www.vanetza.org) and its [Readme](https://github.com/riebl/vanetza/blob/master/README.md) for details.
-
-#### INET Framework
-The `make inet` target resembles the install steps given in the [INET install guide](https://github.com/inet-framework/inet/blob/master/INSTALL).
-As long as OMNeT++ is installed in your environment, this should run smoothly.
-
-#### Veins
-Please make sure you have all dependencies of Veins installed and set up OMNeT++ beforehand.
-Veins' build scripts depend on Python, so a Python interpreter needs to be accessible on your system.
-If you have any doubts, refer to the [Veins tutorial](http://veins.car2x.org/tutorial).
+!!! note
+    Previously, users needed to build these dependencies before building Artery.
+    A *Makefile* located in Artery's root directory aided this step.
+    Since July 2020, CMake handles the whole build process alone.
 
 
 ### Create build directory
@@ -140,6 +131,7 @@ invoking `make run_example`.
 Please note that the *artery* directory mirrors the cloned repository on your host machine.
 
 ![Starting Artery in virtual machine supplied by Vagrant](../assets/vagrant.webm){:autoplay loop}
+
 
 ## Running Artery for the first time
 
