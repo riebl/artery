@@ -78,12 +78,3 @@ endif()
 add_subdirectory(src/artery)
 add_subdirectory(src/traci)
 add_subdirectory(scenarios)
-
-# sumo-launchd should be run from root directory for correct file look-up
-set(SUMO_LAUNCHD_ARGUMENTS "--daemon --kill" CACHE STRING "Additional arguments passed to sumo-launchd")
-string(REPLACE " " ";" _sumo_launchd_args "${SUMO_LAUNCHD_ARGUMENTS}")
-add_custom_target(launch_sumo
-    COMMAND ${Veins_DIR}/sumo-launchd.py ${_sumo_launchd_args}
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-    COMMENT "Launching SUMO"
-    VERBATIM)
