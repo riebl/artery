@@ -18,7 +18,7 @@ if(WITH_OTS)
 endif()
 
 
-if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mt-its2017/omnetpp.ini)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mt-its2017/omnetpp.ini AND WITH_STORYBOARD)
     add_opp_run(mtits2017 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/mt-its2017)
     add_opp_test(mtits2017 SUFFIX test SIMTIME_LIMIT 30s)
 endif()
