@@ -146,6 +146,10 @@ function(add_opp_test name)
         list(APPEND opp_run_args "--sim-time-limit=${args_SIMTIME_LIMIT}")
     endif()
 
+    if(NOT TARGET run_${name})
+        message(FATAL_ERROR "add_opp_test(${name} ...) requires a prior add_opp_run(${name} ...)")
+    endif()
+
     get_target_property(target run_${name} OPP_RUN_TARGET)
     get_target_property(working_directory run_${name} OPP_RUN_WORKING_DIRECTORY)
     get_target_property(config run_${name} OPP_RUN_CONFIG_FILE)
