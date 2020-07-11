@@ -1,4 +1,5 @@
 include(CMakeParseArguments)
+include(GetNedFolders)
 
 find_program(GDB_COMMAND gdb DOC "GNU debugger")
 find_program(VALGRIND_COMMAND valgrind DOC "Valgrind executable")
