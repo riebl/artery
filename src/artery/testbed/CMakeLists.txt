@@ -11,6 +11,7 @@ add_artery_feature(testbed
 target_link_libraries(testbed PUBLIC INET)
 
 find_package(SEA_V2X CONFIG)
+mark_as_advanced(SEA_V2X_DIR)
 if (SEA_V2X_FOUND)
     target_sources(testbed PUBLIC
         OtaInterfaceUsrp.cc
