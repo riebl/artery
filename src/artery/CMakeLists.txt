@@ -150,3 +150,7 @@ endif()
 install(TARGETS core LIBRARY DESTINATION lib)
 set_property(TARGET core APPEND PROPERTY INSTALL_NED_FOLDERS share/ned/artery)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ DESTINATION share/ned/artery FILES_MATCHING PATTERN "*.ned")
+
+generate_run_script(TARGET artery FILE ${PROJECT_BINARY_DIR}/run_artery.sh)
+generate_run_script(TARGET artery FILE ${PROJECT_BINARY_DIR}/run_artery.sh.install INSTALL)
+install(PROGRAMS ${PROJECT_BINARY_DIR}/run_artery.sh.install DESTINATION bin RENAME run_artery.sh)

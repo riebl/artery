@@ -1,0 +1,6 @@
+#!/bin/bash
+OPP_RUN=@opp_run_executable@
+NED_FOLDERS="@opp_run_ned_folders@"
+LIBRARIES="@opp_run_libraries@"
+
+$OPP_RUN -n $NED_FOLDERS $LIBRARIES $@
