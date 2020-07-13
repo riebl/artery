@@ -23,10 +23,14 @@ include(GenerateOppMessage)
 set(BUILD_SHARED_LIBS ON)
 
 check_git_submodule(PATH extern/vanetza REQUIRED_FILES CMakeLists.txt)
+set(VANETZA_INSTALL OFF)
 add_subdirectory(${PROJECT_SOURCE_DIR}/extern/vanetza)
 mark_as_advanced(BUILD_BENCHMARK BUILD_CERTIFY BUILD_SOCKTAP BUILD_TESTS BUILD_USING_CONAN)
 mark_as_advanced(VANETZA_ASN1_WITH_ASN1C VANETZA_EXPORT_PACKAGE VANETZA_NET_WITH_POSIX)
-
+get_property(VANETZA_COMPONENTS GLOBAL PROPERTY VANETZA_COMPONENTS)
+foreach(VANETZA_COMPONENT IN LISTS VANETZA_COMPONENTS)
+    install(TARGETS ${VANETZA_COMPONENT} LIBRARY DESTINATION lib)
+endforeach()
 
 check_git_submodule(PATH extern/veins REQUIRED_FILES src/veins/package.ned)
 find_path(Veins_DIR NAMES src/veins/package.ned PATHS extern/veins DOC "Veins root directory")

@@ -63,21 +63,28 @@ function(add_opp_target)
         list(APPEND cpp_files "${msg_out_dir}/${msg_name}_m.cc" "${msg_out_dir}/${msg_name}_m.h")
     endforeach()
 
-    # look up NED folders, use source directory as default if no .nedfolders file exists
-    set(ned_folders ${args_SOURCE_DIR})
-    if(EXISTS "${args_ROOT_DIR}/.nedfolders")
-        file(STRINGS "${args_ROOT_DIR}/.nedfolders" ned_folders)
-    endif()
-    foreach(ned_folder IN LISTS ned_folders)
-        get_filename_component(ned_folder_abs ${ned_folder} ABSOLUTE BASE_DIR ${args_ROOT_DIR})
-        list(APPEND ned_folders_abs ${ned_folder_abs})
-    endforeach()
-    
     # set up target for OMNeT++ project
     add_library(${args_TARGET} SHARED ${cpp_files} ${args_DEPENDS})
     target_include_directories(${args_TARGET} PUBLIC ${msg_gen_dir} ${args_SOURCE_DIR})
     target_link_libraries(${args_TARGET} PUBLIC OmnetPP::envir)
     set_property(TARGET ${args_TARGET} PROPERTY LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/extern)
     set_property(TARGET ${args_TARGET} PROPERTY OMNETPP_LIBRARY TRUE)
+    install(TARGETS ${args_TARGET} LIBRARY DESTINATION lib)
+
+    # look up NED folders, use source directory as default if no .nedfolders file exists
+    set(ned_folders ${args_SOURCE_DIR})
+    if(EXISTS "${args_ROOT_DIR}/.nedfolders")
+        file(STRINGS "${args_ROOT_DIR}/.nedfolders" ned_folders)
+    endif()
+
+    # determine absolute NED paths and install NED files
+    set(ned_folders_abs "")
+    foreach(ned_folder IN LISTS ned_folders)
+        get_filename_component(ned_folder_abs ${ned_folder} ABSOLUTE BASE_DIR ${args_ROOT_DIR})
+        list(APPEND ned_folders_abs ${ned_folder_abs})
+        set(ned_folder_install share/ned/${args_TARGET}/${ned_folder})
+        set_property(TARGET ${args_TARGET} APPEND PROPERTY INSTALL_NED_FOLDERS ${ned_folder_install})
+        install(DIRECTORY ${ned_folder_abs}/ DESTINATION ${ned_folder_install} FILES_MATCHING PATTERN "*.ned")
+    endforeach()
     set_property(TARGET ${args_TARGET} PROPERTY NED_FOLDERS ${ned_folders_abs})
 endfunction()
