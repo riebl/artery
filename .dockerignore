@@ -1,0 +1,23 @@
+*
+# whitelisting essential files
+!CMakeLists.txt
+!extern/inet/inet_featuretool
+!extern/inet/.nedfolders
+!extern/inet/.oppfeatures
+!extern/inet/examples/*
+!extern/inet/showcases/*
+!extern/inet/src/*
+!extern/inet/tutorials/*
+!extern/pybind11/CMakeLists.txt
+!extern/pybind11/include/*
+!extern/pybind11/tools/*
+!extern/sim0mqpp/*
+!extern/simulte/.nedfolders
+!extern/simulte/simulations/package.ned
+!extern/simulte/src/*
+!extern/vanetza/*
+!extern/veins/examples/veins/*.ned
+!extern/veins/src/*
+!extern/veins/.nedfolders
+!cmake/*
+!src/*
