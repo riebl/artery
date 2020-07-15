@@ -119,6 +119,12 @@ if(TARGET ots)
     target_link_libraries(core PUBLIC ots)
 endif()
 
+if(TARGET lte)
+    # SimuLTE is a non-integral feature: add it to "artery" but not "core"
+    message(STATUS "Enable SimuLTE integration")
+    target_link_libraries(artery INTERFACE lte)
+endif()
+
 macro(add_artery_feature name)
     add_library(${name} SHARED ${ARGN})
     add_library(Artery::${name} ALIAS ${name})

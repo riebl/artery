@@ -24,11 +24,9 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mt-its2017/omnetpp.ini AND WITH_STORYBOARD
 endif()
 
 if(TARGET lte)
-    add_library(artery-lte INTERFACE)
-    target_link_libraries(artery-lte INTERFACE artery lte)
-    add_opp_run(simulte
-        DEPENDENCY artery-lte
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/simulte)
+    # keep artery-lte target for backward-compatibility
+    add_library(artery-lte ALIAS artery)
+    add_opp_run(simulte WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/simulte)
     add_opp_test(simulte SUFFIX cellular CONFIG VoIP-UpLink SIMTIME_LIMIT 10s)
     add_opp_test(simulte SUFFIX d2d CONFIG AlertMulticast SIMTIME_LIMIT 25s)
 endif()
