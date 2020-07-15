@@ -91,7 +91,11 @@ option(WITH_OTS "Build Artery with support for OpenTrafficSim" OFF)
 if(WITH_OTS)
     add_subdirectory(src/ots)
 endif()
+add_subdirectory(src/traci)
 
 add_subdirectory(src/artery)
-add_subdirectory(src/traci)
-add_subdirectory(scenarios)
+
+# scenarios directory is part of repository but omitted for Docker build context
+if(EXISTS scenarios)
+    add_subdirectory(scenarios)
+endif()
