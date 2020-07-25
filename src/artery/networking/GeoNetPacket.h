@@ -13,6 +13,7 @@ class GeoNetPacket : public omnetpp::cPacket
     public:
         using omnetpp::cPacket::cPacket;
 
+        GeoNetPacket() = default;
         GeoNetPacket(const GeoNetPacket&);
         GeoNetPacket& operator=(const GeoNetPacket&);
         GeoNetPacket(GeoNetPacket&&) = default;
