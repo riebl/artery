@@ -1,6 +1,6 @@
 #include "ots/Core.h"
 #include "ots/GtuObject.h"
-#include <boost/container_hash/hash.hpp> // for hashing sim0mq::Identifier
+#include <boost/functional/hash.hpp> // for hashing sim0mq::Identifier's strings
 #include <omnetpp/cmessage.h>
 #include <sim0mqpp/buffer_serialization.hpp>
 #include <sim0mqpp/quantity.hpp>
