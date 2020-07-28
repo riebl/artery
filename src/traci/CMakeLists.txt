@@ -35,3 +35,6 @@ set_property(TARGET traci PROPERTY OMNETPP_LIBRARY ON)
 install(TARGETS traci LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ DESTINATION ${CMAKE_INSTALL_DATADIR}/ned/traci FILES_MATCHING PATTERN "*.ned")
 set_property(TARGET traci APPEND PROPERTY INSTALL_NED_FOLDERS ${CMAKE_INSTALL_DATADIR}/ned/traci)
+
+# traci library uses inet/common/ModuleAccess.h
+add_dependencies(traci INET)
