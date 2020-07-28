@@ -93,6 +93,6 @@ add_subdirectory(src/traci)
 add_subdirectory(src/artery)
 
 # scenarios directory is part of repository but omitted for Docker build context
-if(EXISTS scenarios)
+if(EXISTS ${PROJECT_SOURCE_DIR}/scenarios)
     add_subdirectory(scenarios)
 endif()
