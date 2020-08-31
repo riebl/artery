@@ -4,6 +4,7 @@
 #include "traci/API.h"
 #include "traci/SubscriptionManager.h"
 #include <inet/common/ModuleAccess.h>
+#include <limits>
 
 Define_Module(traci::Core)
 
@@ -34,6 +35,7 @@ void Core::initialize()
 {
     m_connectEvent = new cMessage("connect TraCI");
     m_updateEvent = new cMessage("TraCI step");
+    m_updateEvent->setSchedulingPriority(std::numeric_limits<short>::min());
     cModule* manager = getParentModule();
     m_launcher = inet::getModuleFromPar<Launcher>(par("launcherModule"), manager);
     m_stopping = par("selfStopping");
