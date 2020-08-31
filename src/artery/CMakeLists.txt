@@ -14,6 +14,7 @@ add_library(core SHARED
     application/MultiChannelPolicy.cc
     application/NetworkInterface.cc
     application/NetworkInterfaceTable.cc
+    application/PeriodicLoadService.cc
     application/RsuCaService.cc
     application/StationType.cc
     application/StationaryMiddleware.cc
