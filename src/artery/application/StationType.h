@@ -22,6 +22,8 @@ public:
     StationType& operator=(vanetza::geonet::StationType type);
     operator vanetza::geonet::StationType() const;
 
+    omnetpp::cObject* dup() const override { return new StationType(*this); }
+
 private:
     vanetza::geonet::StationType m_type;
 };

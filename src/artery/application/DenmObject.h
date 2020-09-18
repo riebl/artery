@@ -27,6 +27,8 @@ class DenmObject : public omnetpp::cObject
 
         std::shared_ptr<const vanetza::asn1::Denm> shared_ptr() const;
 
+        omnetpp::cObject* dup() const override;
+
     private:
         std::shared_ptr<const vanetza::asn1::Denm> m_denm_wrapper;
 };
