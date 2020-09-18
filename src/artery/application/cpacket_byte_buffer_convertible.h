@@ -29,7 +29,7 @@ namespace vanetza {
 namespace convertible {
 
 template<>
-class byte_buffer_impl<omnetpp::cPacket*> : public byte_buffer, public omnetpp::cObject
+class byte_buffer_impl<omnetpp::cPacket*> : public byte_buffer, private omnetpp::cObject
 {
 	public:
 		byte_buffer_impl(omnetpp::cPacket* packet) : m_packet(packet)

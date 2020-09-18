@@ -27,6 +27,8 @@ public:
 
     std::shared_ptr<const vanetza::asn1::Cam> shared_ptr() const;
 
+    omnetpp::cObject* dup() const override;
+
 private:
     std::shared_ptr<const vanetza::asn1::Cam> m_cam_wrapper;
 };

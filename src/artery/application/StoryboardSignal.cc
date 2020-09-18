@@ -51,4 +51,9 @@ const Story* StoryboardSignal::getStory() const
     return mStory;
 }
 
+omnetpp::cObject* StoryboardSignal::dup() const
+{
+    return new StoryboardSignal(*this);
+}
+
 } // namespace artery

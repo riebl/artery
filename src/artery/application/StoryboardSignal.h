@@ -28,6 +28,8 @@ public:
     void setOtherVehicles(const std::set<const Vehicle*>&);
     const std::set<const Vehicle*> getOtherVehicles() const;
 
+    omnetpp::cObject* dup() const override;
+
 private:
     std::string mCause;
     Vehicle* mEgo;

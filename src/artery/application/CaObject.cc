@@ -55,6 +55,10 @@ const vanetza::asn1::Cam& CaObject::asn1() const
     return *m_cam_wrapper;
 }
 
+omnetpp::cObject* CaObject::dup() const
+{
+    return new CaObject { *this };
+}
 
 using namespace omnetpp;
 

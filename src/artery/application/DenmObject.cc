@@ -57,4 +57,9 @@ bool operator&(const DenmObject& obj, den::CauseCode cause)
     return (obj_cause && obj_cause.get() == cause);
 }
 
+omnetpp::cObject* DenmObject::dup() const
+{
+    return new DenmObject { *this };
+}
+
 } // namespace artery
