@@ -31,11 +31,13 @@ void SmallScaleVariation::initialize()
     mMinStdDevLOS = par("minStdDevLOS");
     mMinStdDevNLOSv = par("minStdDevNLOSv");
     mMinStdDevNLOSb = par("minStdDevNLOSb");
+    mMinStdDevNLOSf = par("minStdDevNLOSf");
 
     // Maximum stddev of small scale variation
     mMaxStdDevLOS = par("maxStdDevLOS");
     mMaxStdDevNLOSv = par("maxStdDevNLOSv");
     mMaxStdDevNLOSb = par("maxStdDevNLOSb");
+    mMaxStdDevNLOSf = par("maxStdDevNLOSf");
 
     mMaxVehicleDensity = par("maxVehicleDensity");
     mMaxObstacleDensity = par("maxObstacleDensity");
@@ -77,6 +79,10 @@ double SmallScaleVariation::computeVariation(const Position& a, const Position& 
         case LinkClass::NLOSb:
             minDev = mMinStdDevNLOSb;
             maxDev = mMaxStdDevNLOSb;
+            break;
+        case LinkClass::NLOSf:
+            minDev = mMinStdDevNLOSf;
+            maxDev = mMaxStdDevNLOSf;
             break;
         default:
             EV_ERROR << "Unknown link class, falling back to zero deviation\n";

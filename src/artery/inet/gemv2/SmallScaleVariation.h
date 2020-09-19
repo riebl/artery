@@ -48,11 +48,13 @@ private:
    double mMinStdDevLOS;
    double mMinStdDevNLOSv;
    double mMinStdDevNLOSb;
+   double mMinStdDevNLOSf;
 
    // Maximum stddev of small scale variation for LOS and NLOSv / b links
    double mMaxStdDevLOS;
    double mMaxStdDevNLOSv;
    double mMaxStdDevNLOSb;
+   double mMaxStdDevNLOSf;
 };
 
 } // namespace gemv2
