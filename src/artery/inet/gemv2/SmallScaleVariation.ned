@@ -18,6 +18,10 @@ simple SmallScaleVariation
         double minStdDevNLOSb @unit(dB) = default(4.1 dB);
         double maxStdDevNLOSb @unit(dB) = default(6.8 dB);
 
+        // use same as for NLOSb by default
+        double minStdDevNLOSf @unit(dB) = default(4.1 dB);
+        double maxStdDevNLOSf @unit(dB) = default(6.8 dB);
+
         // Following parameters depend on the used map and its traffic demand.
         // Hence, it is hard to give reasonable default values.
         // SmallScaleVariation module reports proper values after each run,
