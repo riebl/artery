@@ -11,6 +11,7 @@ simple GbcMockService like ItsG5Service
 
         volatile double generationInterval @unit(s) = default(1s);
         double generationOffset @unit(s) = default(uniform(0.0s, 1.0s));
+        string generationSignal = default("");
         volatile int payloadLength @unit(byte) = default(500B);
         double gnLifetime @unit(s) = default(5s);
         double gnRadius @unit(m) = default(1000m);
