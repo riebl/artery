@@ -6,6 +6,7 @@
 
 #include "artery/application/GbcMockMessage.h"
 #include "artery/application/GbcMockService.h"
+#include "artery/application/StoryboardSignal.h"
 #include <inet/common/geometry/common/Coord.h>
 #include <omnetpp/cmessage.h>
 #include <omnetpp/cpacket.h>
@@ -21,6 +22,7 @@ namespace
 {
 static const simsignal_t scSignalReceived = cComponent::registerSignal("GbcMockReceived");
 static const simsignal_t scSignalSent = cComponent::registerSignal("GbcMockSent");
+static const simsignal_t scSignalStoryboard = cComponent::registerSignal("StoryboardSignal");
 } // namespace
 
 GbcMockService::~GbcMockService()
@@ -50,6 +52,7 @@ void GbcMockService::initialize()
         scheduleAt(simTime() + par("generationOffset"), mTrigger);
     }
     WATCH(mPacketCounter);
+    subscribe(scSignalStoryboard);
 }
 
 void GbcMockService::handleMessage(cMessage* msg)
@@ -103,6 +106,17 @@ void GbcMockService::indicate(const vanetza::btp::DataIndication&, cPacket* pack
     inet::Coord position { cartesian.x.value(), cartesian.y.value() };
     emit(scSignalReceived, omnetpp::check_and_cast<GbcMockMessage*>(packet), &position);
     delete packet;
+}
+
+void GbcMockService::receiveSignal(cComponent*, simsignal_t sig, cObject* obj, cObject*)
+{
+    if (sig == scSignalStoryboard) {
+        auto sigobj = check_and_cast<artery::StoryboardSignal*>(obj);
+        if (sigobj->getCause() == par("generationSignal").stdstringValue()) {
+            ++mPacketCounter;
+            generatePacket();
+        }
+    }
 }
 
 } // namespace artery

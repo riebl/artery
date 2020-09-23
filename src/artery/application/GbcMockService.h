@@ -21,6 +21,7 @@ class GbcMockService : public artery::ItsG5Service
 
     protected:
         void initialize() override;
+        void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject*) override;
         void handleMessage(omnetpp::cMessage*) override;
         void indicate(const vanetza::btp::DataIndication&, omnetpp::cPacket*) override;
         void generatePacket();
