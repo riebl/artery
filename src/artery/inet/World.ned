@@ -16,6 +16,10 @@ network World
         traci.nodes.vehicleSinkModule = default(".mobility");
         storyboard.middlewareModule = default(".middleware");
 
+        int numProbeCols = default(0);
+        int numProbeRows = default(0);
+        double probeInterval @unit(m) = default(25m);
+
     submodules:
         traci: Manager {
             parameters:
@@ -47,5 +51,12 @@ network World
             parameters:
                 @display("p=20,40");
                 waitForTraCI = default(true);
+        }
+
+        probes[numProbeCols * numProbeRows]: PassiveProbe {
+            parameters:
+                mobility.numHosts = numProbeCols * numProbeRows;
+                mobility.columns = numProbeCols;
+                mobility.rows = numProbeRows;
         }
 }
