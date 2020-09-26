@@ -102,6 +102,7 @@ if(TARGET INET)
         inet/gemv2/SmallScaleVariation.cc
         inet/gemv2/VehicleIndex.cc
         inet/gemv2/Visualizer.cc
+        inet/PassiveLogger.cc
         inet/PowerLevelRx.cc
         inet/VanetHcf.cc
         inet/VanetMgmt.cc
