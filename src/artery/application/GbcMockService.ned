@@ -8,6 +8,7 @@ simple GbcMockService like ItsG5Service
 
         @statistic[reception](source=GbcMockReceived;record=vector(gbcLatency)?,vector(gbcRange)?);
         @statistic[transmission](source=GbcMockSent;record=vector(constant1)?);
+        @statistic[uniqueReception](source=gbcUniqueReception(GbcMockReceived);record=vector(gbcLatency)?,vector(gbcRange)?);
 
         volatile double generationInterval @unit(s) = default(1s);
         double generationOffset @unit(s) = default(uniform(0.0s, 1.0s));
