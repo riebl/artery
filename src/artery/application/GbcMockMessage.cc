@@ -1,6 +1,7 @@
 #include "GbcMockMessage.h"
 #include <inet/common/geometry/common/Coord.h>
 #include <omnetpp.h>
+#include <set>
 
 namespace artery
 {
@@ -37,5 +38,26 @@ protected:
 };
 
 Register_ResultFilter("gbcRange", GbcRangeResultFilter)
+
+
+class GbcUniqueReceptionResultFilter : public cObjectResultFilter
+{
+protected:
+    using Identifier = std::tuple<int, SimTime>;
+
+    void receiveSignal(cResultFilter* prev, simtime_t_cref t, cObject* object, cObject* details) override
+    {
+        auto msg = check_and_cast<GbcMockMessage*>(object);
+        auto insert = mIdentifiers.emplace(msg->getSourceStation(), msg->getGenerationTimestamp());
+        if (insert.second) {
+            fire(this, t, msg, details);
+        }
+    }
+
+private:
+    std::set<Identifier> mIdentifiers;
+};
+
+Register_ResultFilter("gbcUniqueReception", GbcUniqueReceptionResultFilter)
 
 } // namespace artery
