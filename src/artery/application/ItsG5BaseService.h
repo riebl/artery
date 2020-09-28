@@ -76,7 +76,9 @@ class ItsG5BaseService :
 		const std::set<TransportDescriptor>& getTransportDescriptors() const { return m_listeners; }
 
 	protected:
-		void initialize() override;
+		int numInitStages() const override;
+		using omnetpp::cSimpleModule::initialize;
+		void initialize(int stage) override;
 		void finish() override;
 		void request(const vanetza::btp::DataRequestB&, std::unique_ptr<vanetza::DownPacket>, const NetworkInterface* = nullptr);
 		void indicate(const vanetza::btp::DataIndication&, std::unique_ptr<vanetza::UpPacket>, const NetworkInterface&) override;
