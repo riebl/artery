@@ -12,3 +12,6 @@ www/
 .oppbuildspec
 .project
 .settings
+
+# CMake default directories
+build/
