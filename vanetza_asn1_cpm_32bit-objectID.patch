@@ -1,0 +1,35 @@
+diff --git a/vanetza/asn1/its/PerceivedObject.c b/vanetza/asn1/its/PerceivedObject.c
+index e6fe8b4b..6b8c5ca6 100644
+--- a/vanetza/asn1/its/PerceivedObject.c
++++ b/vanetza/asn1/its/PerceivedObject.c
+@@ -55,7 +55,7 @@ asn_TYPE_member_t asn_MBR_PerceivedObject_1[] = {
+ 	{ ATF_NOFLAGS, 0, offsetof(struct PerceivedObject, objectID),
+ 		(ASN_TAG_CLASS_CONTEXT | (0 << 2)),
+ 		-1,	/* IMPLICIT tag at current level */
+-		&asn_DEF_Identifier,
++		&asn_DEF_StationID,
+ 		0,
+ 		{ 0, 0, 0 },
+ 		0, 0, /* No default value */
+diff --git a/vanetza/asn1/its/PerceivedObject.h b/vanetza/asn1/its/PerceivedObject.h
+index 25d7ec10..37800ea6 100644
+--- a/vanetza/asn1/its/PerceivedObject.h
++++ b/vanetza/asn1/its/PerceivedObject.h
+@@ -12,7 +12,7 @@
+ #include "asn_application.h"
+ 
+ /* Including external dependencies */
+-#include "Identifier.h"
++#include "StationID.h"
+ #include "TimeOfMeasurement.h"
+ #include "ObjectAge.h"
+ #include "ObjectConfidence.h"
+@@ -40,7 +40,7 @@ struct MatchedPosition;
+ 
+ /* PerceivedObject */
+ typedef struct PerceivedObject {
+-	Identifier_t	 objectID;
++	StationID_t	 objectID;
+ 	struct SensorIdList	*sensorIDList;	/* OPTIONAL */
+ 	TimeOfMeasurement_t	 timeOfMeasurement;
+ 	ObjectAge_t	*objectAge;	/* OPTIONAL */
