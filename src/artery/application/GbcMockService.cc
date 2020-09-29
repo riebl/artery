@@ -88,8 +88,13 @@ void GbcMockService::generatePacket()
     geonet::Circle circle;
     circle.r = mGnRadius;
     destination.shape = circle;
-    destination.position.latitude = mPositionProvider->getGeodeticPosition().latitude;
-    destination.position.longitude = mPositionProvider->getGeodeticPosition().longitude;
+    if (par("disseminateAroundStation")) {
+        destination.position.latitude = mPositionProvider->getGeodeticPosition().latitude;
+        destination.position.longitude = mPositionProvider->getGeodeticPosition().longitude;
+    } else {
+        destination.position.latitude = par("gnDestinationLatitude").doubleValue() * units::degree;
+        destination.position.longitude = par("gnDestinationLongitude").doubleValue() * units::degree;
+    }
     req.gn.destination = destination;
 
     auto packet = new GbcMockMessage();

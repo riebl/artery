@@ -21,4 +21,8 @@ simple GbcMockService like ItsG5Service
         double gnRepetitionMaximum @unit(s) = default(0s);
         int dccProfile = default(3);
         int packetLimit = default(-1);
+
+        bool disseminateAroundStation = default(true);
+        double gnDestinationLongitude @unit(deg) = default(0.0 deg);
+        double gnDestinationLatitude @unit(deg) = default(0.0 deg);
 }
