@@ -35,33 +35,39 @@ set(BUILD_SHARED_LIBS ON CACHE INTERNAL "Cached for propagation to sub-projects 
 
 check_git_submodule(PATH extern/vanetza REQUIRED_FILES CMakeLists.txt)
 
-# patch vanetza CPM definitions to support 32bit objectIDs
-execute_process(COMMAND patch --dry-run -p1 -s -i ${PROJECT_SOURCE_DIR}/vanetza_asn1_cpm_32bit-objectID.patch
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/extern/vanetza
-    OUTPUT_FILE /dev/null
-    RESULT_VARIABLE VANETZA_PATCH_TEST)
-if(VANETZA_PATCH_TEST EQUAL 0)
-    # actually patch vanetza
-    message(STATUS "patching vanetza CPM definitions")
-    execute_process(COMMAND patch -p1 -s -i ${PROJECT_SOURCE_DIR}/vanetza_asn1_cpm_32bit-objectID.patch
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/extern/vanetza
-        RESULT_VARIABLE VANETZA_PATCH_SUCCESS)
-    if(VANETZA_PATCH_SUCCESS EQUAL 0)
-        message(STATUS "vanetza CPM definitions successfully patched")
-    elseif()
-        message(STATUS "patching vanetza CPM definitions failed -- manual intervention necessary")
-    endif()
-else()
-    execute_process(COMMAND patch --dry-run -R -p1 -s -i ${PROJECT_SOURCE_DIR}/vanetza_asn1_cpm_32bit-objectID.patch
+option(PATCH_VANETZA_CPM "Patch vanetza CPM definitions" ON)
+
+if (PATCH_VANETZA_CPM)
+    # patch vanetza CPM definitions to support 32bit objectIDs
+    execute_process(COMMAND patch --dry-run -p1 -s -i ${PROJECT_SOURCE_DIR}/vanetza_asn1_cpm_32bit-objectID.patch
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/extern/vanetza
         OUTPUT_FILE /dev/null
-        RESULT_VARIABLE VANETZA_PATCH_TEST_REVERSE)
-    if(VANETZA_PATCH_TEST_REVERSE EQUAL 0)
-        # patch already applied
-        message(STATUS "vanetza CPM definitions patch already applied")
+        RESULT_VARIABLE VANETZA_PATCH_TEST)
+    if(VANETZA_PATCH_TEST EQUAL 0)
+        # actually patch vanetza
+        message(STATUS "patching vanetza CPM definitions")
+        execute_process(COMMAND patch -p1 -s -i ${PROJECT_SOURCE_DIR}/vanetza_asn1_cpm_32bit-objectID.patch
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/extern/vanetza
+            RESULT_VARIABLE VANETZA_PATCH_SUCCESS)
+        if(VANETZA_PATCH_SUCCESS EQUAL 0)
+            message(STATUS "vanetza CPM definitions successfully patched")
+        elseif()
+            message(STATUS "patching vanetza CPM definitions failed -- manual intervention necessary")
+        endif()
     else()
-        message(STATUS "testing patch integrity by applying vanetza CPM defintions patch in reverse failed -- manual intervention necessary")
+        execute_process(COMMAND patch --dry-run -R -p1 -s -i ${PROJECT_SOURCE_DIR}/vanetza_asn1_cpm_32bit-objectID.patch
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/extern/vanetza
+            OUTPUT_FILE /dev/null
+            RESULT_VARIABLE VANETZA_PATCH_TEST_REVERSE)
+        if(VANETZA_PATCH_TEST_REVERSE EQUAL 0)
+            # patch already applied
+            message(STATUS "vanetza CPM definitions patch already applied")
+        else()
+            message(STATUS "testing patch integrity by applying vanetza CPM defintions patch in reverse failed -- manual intervention necessary")
+        endif()
     endif()
+elseif()
+    message(STATUS "vanetza CPM patching disabled")
 endif()
 
 
