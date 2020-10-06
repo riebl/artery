@@ -171,6 +171,14 @@ const vanetza::geonet::LocationTable& Router::getLocationTable() const
     return mRouter->get_location_table();
 }
 
+const vanetza::geonet::LongPositionVector& Router::getEgoPositionVector() const
+{
+    if (!mRouter) {
+        error("Router::getEgoPositionVector called before initialization");
+    }
+    return mRouter->get_local_position_vector();
+}
+
 vanetza::geonet::Address Router::getAddress() const
 {
     if (!mRouter) {
