@@ -163,8 +163,8 @@ protected:
      */
     double computeAngleBetween(const Position& nadir, const Position& a, const Position& b) const;
 
-    const ObstacleIndex* mObstacleIndex;
     const VehicleIndex* mVehicleIndex;
+    const ObstacleIndex* mObstacleIndex;
 
 private:
     double maxRange;
