@@ -178,7 +178,7 @@ DiffractionPath NLOSv::computeMultipleKnifeEdge(const std::list<DiffractionObsta
 
     std::vector<SecondaryObstacle> secObs;
     std::vector<meter> mainObsDistances;
-    for (int i = 0, j = 1; j < mainObs.size(); ++i, ++j) {
+    for (std::size_t i = 0, j = 1; j < mainObs.size(); ++i, ++j) {
         const meter d = mainObs[j]->d - mainObs[i]->d;
         path.d += sqrt(squared(d) + squared(mainObs[j]->h - mainObs[i]->h));
         mainObsDistances.push_back(d);
@@ -194,7 +194,7 @@ DiffractionPath NLOSv::computeMultipleKnifeEdge(const std::list<DiffractionObsta
 
     // attenuation due to main obstacles
     double attMainObs = 0.0;
-    for (int i = 0; i < mainObs.size() - 2; ++i) {
+    for (std::size_t i = 0; i < mainObs.size() - 2; ++i) {
         const meter distTxObs = mainObsDistances[i];
         const meter distTxRx = distTxObs + mainObsDistances[i+1];
         attMainObs += computeSimpleKnifeEdge(mainObs[i]->h, mainObs[i+2]->h, mainObs[i+1]->h, distTxRx, distTxObs, lambda);
@@ -214,7 +214,7 @@ DiffractionPath NLOSv::computeMultipleKnifeEdge(const std::list<DiffractionObsta
         C *= d.get();
     }
     double pairwiseDistProduct = 1.0;
-    for (int i = 1; i < mainObsDistances.size(); ++i) {
+    for (std::size_t i = 1; i < mainObsDistances.size(); ++i) {
         pairwiseDistProduct *= (mainObsDistances[i-1] + mainObsDistances[i]).get();
     }
     C /= mainObsDistances.front().get() * mainObsDistances.back().get() * pairwiseDistProduct;
