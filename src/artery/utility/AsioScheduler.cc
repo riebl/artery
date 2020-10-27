@@ -73,7 +73,7 @@ cEvent* AsioScheduler::takeNextEvent()
 			if (event->isStale()) {
 				cEvent* tmp = sim->getFES()->removeFirst();
 				ASSERT(tmp == event);
-				delete event;
+				delete tmp;
 			} else {
 				m_run_until = m_reference + steady_clock_duration(event->getArrivalTime());
 				try {
@@ -84,7 +84,7 @@ cEvent* AsioScheduler::takeNextEvent()
 					}
 					m_timer.cancel();
 					m_service.poll();
-				} catch (boost::system::system_error e) {
+				} catch (boost::system::system_error& e) {
 					cRuntimeError("AsioScheduler IO error: %s", e.what());
 				}
 
