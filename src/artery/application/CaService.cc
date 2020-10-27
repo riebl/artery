@@ -123,7 +123,7 @@ void CaService::checkTriggeringConditions(const SimTime& T_now)
 	SimTime& T_GenCam = mGenCam;
 	const SimTime& T_GenCamMin = mGenCamMin;
 	const SimTime& T_GenCamMax = mGenCamMax;
-	const SimTime T_GenCamDcc = mDccRestriction ? genCamDcc() : mGenCamMin;
+	const SimTime T_GenCamDcc = mDccRestriction ? genCamDcc() : T_GenCamMin;
 	const SimTime T_elapsed = T_now - mLastCamTimestamp;
 
 	if (T_elapsed >= T_GenCamDcc) {
@@ -286,7 +286,7 @@ void addLowFrequencyContainer(vanetza::asn1::Cam& message, unsigned pathHistoryL
 	bvc.exteriorLights.size = 1;
 	bvc.exteriorLights.buf[0] |= 1 << (7 - ExteriorLights_daytimeRunningLightsOn);
 
-	for (int i = 0; i < pathHistoryLength; ++i) {
+	for (unsigned i = 0; i < pathHistoryLength; ++i) {
 		PathPoint* pathPoint = vanetza::asn1::allocate<PathPoint>();
 		pathPoint->pathDeltaTime = vanetza::asn1::allocate<PathDeltaTime_t>();
 		*(pathPoint->pathDeltaTime) = 0;
