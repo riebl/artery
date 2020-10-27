@@ -12,7 +12,7 @@
 #include "artery/utility/Geometry.h"
 #include "traci/Boundary.h"
 
-namespace pybind11 { class module; }
+namespace pybind11 { class module_; }
 
 namespace artery
 {
@@ -48,7 +48,7 @@ public:
     class PythonContext
     {
     public:
-        virtual pybind11::module& module() = 0;
+        virtual pybind11::module_& module() = 0;
         virtual ~PythonContext() = default;
     };
 

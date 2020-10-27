@@ -29,11 +29,11 @@ const auto traciStepSignal = omnetpp::cComponent::registerSignal("traci.step");
 class PythonContextImpl : public Storyboard::PythonContext
 {
 public:
-    pybind11::module& module() override { return m_module; }
+    py::module& module() override { return m_module; }
 
 private:
-    pybind11::scoped_interpreter m_interpreter;
-    pybind11::module m_module;
+    py::scoped_interpreter m_interpreter;
+    py::module m_module;
 };
 
 } // namespace
