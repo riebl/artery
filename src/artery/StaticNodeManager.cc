@@ -67,9 +67,10 @@ void StaticNodeManager::handleMessage(omnetpp::cMessage* msg)
     }
 }
 
-void StaticNodeManager::receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t signal, const omnetpp::SimTime&, omnetpp::cObject*)
+void StaticNodeManager::receiveSignal(omnetpp::cComponent* src, omnetpp::simsignal_t signal, const omnetpp::SimTime&, omnetpp::cObject*)
 {
     if (signal == initSignal) {
+        mInitSource = src;
         loadRoadSideUnits();
     }
 }
@@ -170,6 +171,17 @@ void StaticNodeManager::addRoadSideUnit(const std::string& id)
     rsuModule->scheduleStart(simTime());
     rsuModule->callInitialize();
     emit(addRoadSideUnitSignal, id.c_str(), rsuModule);
+
+    // fake traci.init signal for added RSU module if it has matching listeners
+    if (mInitSource) {
+        auto listeners = getSystemModule()->getLocalSignalListeners(initSignal);
+        for (omnetpp::cIListener* listener : listeners) {
+            auto mod = dynamic_cast<omnetpp::cModule*>(listener);
+            if (mod && rsuModule->containsModule(mod)) {
+                listener->receiveSignal(mInitSource, initSignal, simTime(), nullptr);
+            }
+        }
+    }
 }
 
 cModule* StaticNodeManager::createRoadSideUnitModule(const std::string& id)
