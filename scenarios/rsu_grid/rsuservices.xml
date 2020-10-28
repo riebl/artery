@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <services>
-	<!-- <service type="artery.application.CaService">
+	<service type="artery.application.RsuCaService">
 		<listener port="2001" />
-	</service> -->
-	<service type="artery.application.ExampleService">
-		<listener port="4711" />
 	</service>
 </services>
