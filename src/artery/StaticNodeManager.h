@@ -48,6 +48,7 @@ private:
     bool mDirectionalAntennas;
     std::string mRsuPrefix;
     std::map<std::string, RSU> mRsuMap;
+    omnetpp::cComponent* mInitSource = nullptr;
 };
 
 } // namespace artery
