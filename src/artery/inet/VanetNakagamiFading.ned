@@ -21,7 +21,7 @@ module VanetNakagamiFading extends FreeSpacePathLoss
         double sigma1 @unit(dB) = default(5.6 dB); // stdev of zero-mean normal noise in first slope
         double sigma2 @unit(dB) = default(8.1 dB); // stdev of zero-mean normal noise in second slope
         xml shapes = default(xml("<shapes default=\"0.32\"> \
-                <shape distance=\"4.7\" value=\"3.1\" /> \
+                <shape distance=\"4.7\" value=\"3.01\" /> \
                 <shape distance=\"11.7\" value=\"1.18\" /> \
                 <shape distance=\"28.9\" value=\"1.94\" /> \
                 <shape distance=\"71.6\" value=\"1.86\" /> \
