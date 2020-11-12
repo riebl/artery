@@ -8,6 +8,7 @@
 #include "artery/storyboard/StopEffectFactory.h"
 #include "artery/storyboard/Story.h"
 #include "artery/storyboard/Storyboard.h"
+#include "artery/storyboard/LikelihoodCondition.h"
 #include "artery/storyboard/LimitCondition.h"
 #include "artery/storyboard/OrCondition.h"
 #include "artery/storyboard/PolygonCondition.h"
@@ -47,6 +48,9 @@ PYBIND11_EMBEDDED_MODULE(storyboard, m) {
 
     py::class_<DeferringCondition, std::shared_ptr<DeferringCondition>, Condition>(m, "DeferringCondition")
         .def(py::init<omnetpp::cRNG*, omnetpp::SimTime, omnetpp::SimTime>());
+
+    py::class_<LikelihoodCondition, std::shared_ptr<LikelihoodCondition>, Condition>(m, "LikelihoodCondition")
+        .def(py::init<omnetpp::cRNG*, double>());
 
     py::class_<LimitCondition, std::shared_ptr<LimitCondition>, Condition>(m, "LimitCondition")
         .def(py::init<unsigned>());
