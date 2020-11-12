@@ -13,6 +13,8 @@ class GeoNetRequest : public omnetpp::cObject, public vanetza::access::DataReque
         GeoNetRequest(const vanetza::access::DataRequest& request) : vanetza::access::DataRequest(request)
         {
         }
+
+        GeoNetRequest* dup() const override { return new GeoNetRequest(*this); }
 };
 
 } // namespace artery
