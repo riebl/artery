@@ -19,6 +19,11 @@ simple DenService like ItsG5Service
 {
     parameters:
         @class(DenService);
+        @signal[DenmSent](type=artery::DenmObject);
         @signal[DenmReceived](type=artery::DenmObject);
+
+        @statistic[reception](source=DenmReceived; record=count,vector(denmActionId)?);
+        @statistic[transmission](source=DenmSent; record=count,vector(denmActionId)?);
+
         xml useCases;
 }

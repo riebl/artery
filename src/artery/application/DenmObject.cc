@@ -62,4 +62,25 @@ omnetpp::cObject* DenmObject::dup() const
     return new DenmObject { *this };
 }
 
+
+using namespace omnetpp;
+
+class DenmActionIdResultFilter : public cObjectResultFilter
+{
+protected:
+    void receiveSignal(cResultFilter* prev, simtime_t_cref t, cObject* object, cObject* details) override
+    {
+        if (auto denm = dynamic_cast<DenmObject*>(object)) {
+            // 16 bit sequence number + 32 bit station id
+            static_assert(sizeof(unsigned long) >= 6, "unsigned long cannot represent ActionID");
+            unsigned long action_id = denm->asn1()->denm.management.actionID.originatingStationID & 0xFFFFFFFFul;
+            action_id <<= 4;
+            action_id |= denm->asn1()->denm.management.actionID.sequenceNumber & 0xFFFFul;
+            fire(this, t, action_id, details);
+        }
+    }
+};
+
+Register_ResultFilter("denmActionId", DenmActionIdResultFilter)
+
 } // namespace artery
