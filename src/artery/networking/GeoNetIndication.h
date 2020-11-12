@@ -12,6 +12,8 @@ class GeoNetIndication : public omnetpp::cObject
     public:
         vanetza::MacAddress source;
         vanetza::MacAddress destination;
+
+        GeoNetIndication* dup() const override { return new GeoNetIndication(*this); }
 };
 
 } // namespace artery
