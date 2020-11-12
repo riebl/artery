@@ -30,6 +30,7 @@ PYBIND11_EMBEDDED_MODULE(storyboard, m) {
     py::class_<omnetpp::SimTime>(m, "SimTime")
         .def(py::init<double>());
 
+    py::class_<omnetpp::cRNG>(m, "RNG");
 
     py::class_<Condition, std::shared_ptr<Condition>>(m, "Condition");
 
@@ -93,7 +94,8 @@ PYBIND11_EMBEDDED_MODULE(storyboard, m) {
     py::class_<artery::Storyboard>(m, "Storyboard")
         .def("registerStory", &artery::Storyboard::registerStory)
         .def("getWarmupEndTime", [](artery::Storyboard& board) { return board.getSimulation()->getWarmupPeriod(); })
-        .def("convertTraciPosition", &artery::Storyboard::convertTraciPosition);
+        .def("convertTraciPosition", &artery::Storyboard::convertTraciPosition)
+        .def("getRandomNumberGenerator", &artery::Storyboard::getRNG, py::return_value_policy::reference);
 }
 
 /**
