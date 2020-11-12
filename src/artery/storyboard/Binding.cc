@@ -1,5 +1,6 @@
 #include "artery/storyboard/AndCondition.h"
 #include "artery/storyboard/CarSetCondition.h"
+#include "artery/storyboard/DeferringCondition.h"
 #include "artery/storyboard/SignalEffectFactory.h"
 #include "artery/storyboard/SpeedCondition.h"
 #include "artery/storyboard/SpeedDifferenceCondition.h"
@@ -43,6 +44,9 @@ PYBIND11_EMBEDDED_MODULE(storyboard, m) {
     py::class_<CarSetCondition, std::shared_ptr<CarSetCondition>, Condition>(m, "CarSetCondition")
         .def(py::init<std::string>())
         .def(py::init<std::set<std::string>>());
+
+    py::class_<DeferringCondition, std::shared_ptr<DeferringCondition>, Condition>(m, "DeferringCondition")
+        .def(py::init<omnetpp::cRNG*, omnetpp::SimTime, omnetpp::SimTime>());
 
     py::class_<LimitCondition, std::shared_ptr<LimitCondition>, Condition>(m, "LimitCondition")
         .def(py::init<unsigned>());
