@@ -33,6 +33,7 @@ add_library(core SHARED
     application/den/ImpactReductionUseCase.cc
     application/den/Memory.cc
     application/den/SuspendableUseCase.cc
+    application/den/TractionLoss.cc
     application/den/TrafficJamUseCase.cc
     application/den/UseCase.cc
     networking/AccessInterface.cc
