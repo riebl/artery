@@ -113,6 +113,12 @@ bool GlobalEnvironmentModel::addVehicle(traci::VehicleController* vehicle)
 bool GlobalEnvironmentModel::addObstacle(std::string id, std::vector<Position> outline)
 {
     boost::geometry::correct(outline);
+    std::string invalid;
+    if (!boost::geometry::is_valid(outline, invalid)) {
+        // skip self-intersecting geometry
+        EV_ERROR << "skip invalid obstacle polygon " << id << ": " << invalid << " \n";
+        return false;
+    }
     auto insertion = mObstacles.emplace(id, std::make_shared<EnvironmentModelObstacle>(id, outline));
 
     if (mDrawObstacles) {
@@ -361,7 +367,11 @@ void GlobalEnvironmentModel::fetchObstacles(traci::LiteAPI& traci)
         for (const traci::TraCIPosition& traci_point : polygons.getShape(id)) {
             shape.push_back(traci::position_cast(boundary, traci_point));
         }
-        addObstacle(id, shape);
+        if (shape.size() >= 3) {
+            addObstacle(id, shape);
+        } else {
+            EV_WARN << "skip obstacle polygon " << id << " because its shape is degraded\n";
+        }
     }
 
     buildObstacleRtree();
