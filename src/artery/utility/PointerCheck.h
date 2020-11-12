@@ -23,6 +23,12 @@ T* notNullPtr(const std::unique_ptr<T>& ptr)
     return notNullPtr(ptr.get());
 }
 
+template<typename T>
+T* notNullPtr(const std::shared_ptr<T>& ptr)
+{
+    return notNullPtr(ptr.get());
+}
+
 } // namespace artery
 
 #endif /* ARTERY_POINTERCHECK_H_U9GMXBHO */
