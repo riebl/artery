@@ -3,6 +3,7 @@ add_artery_feature(storyboard
     Binding.cc
     CarSetCondition.cc
     ConditionResult.cc
+    DeferringCondition.cc
     Effect.cc
     EffectStack.cc
     LimitCondition.cc
