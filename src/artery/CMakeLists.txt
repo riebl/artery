@@ -9,6 +9,7 @@ add_library(core SHARED
     application/GbcMockMessage.cc
     application/GbcMockService.cc
     application/InfrastructureMockMessage.cc
+    application/InfrastructureMockReceiver.cc
     application/InfrastructureMockService.cc
     application/ItsG5BaseService.cc
     application/ItsG5PromiscuousService.cc
