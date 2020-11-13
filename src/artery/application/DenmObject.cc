@@ -83,4 +83,22 @@ protected:
 
 Register_ResultFilter("denmActionId", DenmActionIdResultFilter)
 
+
+class DenmCauseCodeResultFilter : public cObjectResultFilter
+{
+protected:
+    void receiveSignal(cResultFilter* prev, simtime_t_cref t, cObject* object, cObject* details) override
+    {
+        if (auto denm = dynamic_cast<DenmObject*>(object)) {
+            const SituationContainer_t* situation = denm->asn1()->denm.situation;
+            if (situation) {
+                long causeCode = situation->eventType.causeCode;
+                fire(this, t, causeCode, details);
+            }
+        }
+    }
+};
+
+Register_ResultFilter("denmCauseCode", DenmCauseCodeResultFilter)
+
 } // namespace artery
