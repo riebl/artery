@@ -8,6 +8,7 @@ add_library(core SHARED
     application/ExampleService.cc
     application/GbcMockMessage.cc
     application/GbcMockService.cc
+    application/InfrastructureMockMessage.cc
     application/InfrastructureMockService.cc
     application/ItsG5BaseService.cc
     application/ItsG5PromiscuousService.cc
