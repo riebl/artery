@@ -5,6 +5,7 @@
 */
 
 #include "artery/application/InfrastructureMockService.h"
+#include "artery/application/InfrastructureMockMessage.h"
 #include <boost/format.hpp>
 #include <omnetpp/cmessage.h>
 #include <omnetpp/cpacket.h>
@@ -69,7 +70,7 @@ void InfrastructureMockService::generatePacket()
     destination.position.longitude = mPositionProvider->getGeodeticPosition().longitude;
     req.gn.destination = destination;
 
-    auto packet = new omnetpp::cPacket(mPacketName.c_str());
+    auto packet = new InfrastructureMockMessage();
     packet->setByteLength(mMessageLength);
     request(req, packet);
 }
