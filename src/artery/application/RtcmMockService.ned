@@ -3,6 +3,9 @@ package artery.application;
 simple RtcmMockService like ItsG5Service
 {
     parameters:
+        @signal[RtcmSent](type=RtcmMockMessage);
+        @statistic[transmission](source=RtcmSent;record=count,vector(rtcmSource)?);
+
         // generation interval
         double generationInterval @unit(s) = default(1s);
         double generationOffset @unit(s) = default(uniform(0.0s, 1.0s));

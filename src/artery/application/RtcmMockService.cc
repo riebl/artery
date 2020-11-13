@@ -14,6 +14,11 @@ namespace artery
 
 Define_Module(RtcmMockService)
 
+namespace {
+    using namespace omnetpp;
+    const simsignal_t rtcmSentSignal = cComponent::registerSignal("RtcmSent");
+} // namespace
+
 RtcmMockService::~RtcmMockService()
 {
     cancelAndDelete(mTrigger);
@@ -69,6 +74,7 @@ void RtcmMockService::generatePacket()
     packet->setSourceStation(mHostId);
     packet->setSourcePosition(mPositionProvider->getCartesianPosition());
     packet->setByteLength(mMessageLength);
+    emit(rtcmSentSignal, packet);
     request(req, packet);
 }
 
