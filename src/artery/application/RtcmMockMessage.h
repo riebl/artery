@@ -10,8 +10,7 @@ namespace artery
 class RtcmMockMessage : public omnetpp::cPacket
 {
 public:
-    RtcmMockMessage() :
-        omnetpp::cPacket("RTCM mock message"), mGenerated(omnetpp::simTime()) {}
+    RtcmMockMessage();
 
     void setSourceStation(int id) { mSourceStation = id; }
     int getSourceStation() const { return mSourceStation; }
@@ -21,13 +20,12 @@ public:
 
     omnetpp::SimTime getGenerationTimestamp() const { return mGenerated; }
 
-    omnetpp::cPacket* dup() const override {return new RtcmMockMessage(*this); }
+    omnetpp::cPacket* dup() const override;
 
 private:
     int mSourceStation = 0;
     Position mSourcePosition;
     omnetpp::SimTime mGenerated = omnetpp::SimTime::ZERO;
-
 };
 
 } // namespace artery
