@@ -26,6 +26,7 @@ void InfrastructureMockService::initialize()
     ItsG5Service::initialize();
     mTrigger = new omnetpp::cMessage("triggger infrastructure mock message");
     mPositionProvider = &getFacilities().get_const<PositionProvider>();
+    mHostId = getFacilities().get_const<Identity>().host->getId();
 
     mPacketName = (boost::format("%1% mock-up packet") % this->getName()).str();
     mMessageLength = par("messageLength");
@@ -71,6 +72,7 @@ void InfrastructureMockService::generatePacket()
     req.gn.destination = destination;
 
     auto packet = new InfrastructureMockMessage();
+    packet->setSourceStation(mHostId);
     packet->setByteLength(mMessageLength);
     request(req, packet);
 }

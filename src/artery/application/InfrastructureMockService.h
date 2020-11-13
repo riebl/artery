@@ -26,6 +26,7 @@ class InfrastructureMockService : public artery::ItsG5Service
         void generatePacket();
 
     private:
+        int mHostId = 0;
         const PositionProvider* mPositionProvider = nullptr;
         omnetpp::cMessage* mTrigger = nullptr;
         omnetpp::SimTime mInterval = omnetpp::SimTime::ZERO;
