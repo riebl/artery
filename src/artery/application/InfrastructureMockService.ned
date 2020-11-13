@@ -3,6 +3,9 @@ package artery.application;
 simple InfrastructureMockService like ItsG5Service
 {
     parameters:
+        @signal[ImmSent](type=InfrastructureMockMessage);
+        @statistic[transmission](source=ImmSent; record=count,vector(immSource)?);
+
         // generation interval
         double generationInterval @unit(s) = default(0.1s);
         double generationOffset @unit(s) = default(uniform(0.0s, 1.0s));

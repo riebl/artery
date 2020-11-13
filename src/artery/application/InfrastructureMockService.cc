@@ -16,6 +16,11 @@ namespace artery
 
 Define_Module(InfrastructureMockService)
 
+namespace {
+    using namespace omnetpp;
+    const simsignal_t immSentSignal = cComponent::registerSignal("ImmSent");
+} // namespace
+
 InfrastructureMockService::~InfrastructureMockService()
 {
     cancelAndDelete(mTrigger);
@@ -74,6 +79,7 @@ void InfrastructureMockService::generatePacket()
     auto packet = new InfrastructureMockMessage();
     packet->setSourceStation(mHostId);
     packet->setByteLength(mMessageLength);
+    emit(immSentSignal, packet);
     request(req, packet);
 }
 
