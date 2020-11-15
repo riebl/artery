@@ -60,7 +60,7 @@ protected:
         Length txHeight;
         Length rxHeight;
         ObstacleList obstacles;
-        VehicleList vehicles;
+        VehicleList vehicles; /*< except transmitter and receiver */
         inet::m lambda;
     };
     friend struct Environment;

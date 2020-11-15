@@ -196,9 +196,6 @@ std::vector<Position> NLOSb::computeReflectionRaysFromVehicles(const Environment
         const PositionRange& outline = vehicle->getOutline();
         if (outline.size() < 2) continue;
 
-        // ignore outlines of Tx and Rx vehicles
-        if (bg::within(env.tx, outline) || bg::within(env.rx, outline)) continue;
-
         PositionView view(outline);
         for (auto a = view.begin(), b = std::next(a); b != view.end(); ++a, ++b)
         {
@@ -228,20 +225,23 @@ std::vector<Position> NLOSb::computeReflectionRaysFromVehicles(const Environment
 
 bool NLOSb::isRayObstructed(const Position& point, const Environment& env) const
 {
-    using PositionLineString = bg::model::linestring<Position>;
-    const PositionLineString ls { env.tx, point, env.rx };
+    const PositionSegment seg_tx { env.tx, point };
+    const PositionSegment seg_rx { point, env.rx };
 
     for (const ObstacleIndex::Obstacle* obstacle : env.obstacles)
     {
-        if (bg::intersects(ls, obstacle->getOutline())) {
+        if (bg::intersects(seg_tx, obstacle->getOutline())) {
+            return true;
+        } else if (bg::intersects(seg_rx, obstacle->getOutline())) {
             return true;
         }
     }
 
     for (const VehicleIndex::Vehicle* vehicle : env.vehicles)
     {
-        static const bg::de9im::mask cutting("T**FF****");
-        if (bg::relate(ls, vehicle->getOutline(), cutting)) {
+        if (bg::intersects(seg_tx, vehicle->getOutline())) {
+            return true;
+        } else if (bg::intersects(seg_rx, vehicle->getOutline())) {
             return true;
         }
     }
@@ -461,7 +461,7 @@ NLOSb::Environment::Environment(const NLOSb* model, const inet::Coord& itx, cons
     tx(itx.x, itx.y), rx(irx.x, irx.y),
     txHeight(itx.z * boost::units::si::meter), rxHeight(irx.z * boost::units::si::meter),
     obstacles(model->mObstacleIndex->obstaclesEllipse(tx, rx, model->maxRange)),
-    vehicles(model->mVehicleIndex->vehiclesEllipse(tx, rx, model->maxRange)),
+    vehicles(model->mVehicleIndex->vehiclesEllipseOthers(tx, rx, model->maxRange)),
     lambda(lambda)
 {
 }

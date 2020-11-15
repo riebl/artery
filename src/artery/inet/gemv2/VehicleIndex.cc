@@ -184,10 +184,28 @@ void VehicleIndex::Vehicle::calculateWorldOutline()
 std::vector<const VehicleIndex::Vehicle*>
 VehicleIndex::vehiclesEllipse(const Position& a, const Position& b, double r) const
 {
+    std::vector<const Vehicle*> vehicles;
+    vehiclesEllipse(a, b, r, [&vehicles](const Vehicle& vehicle) { vehicles.push_back(&vehicle); });
+    return vehicles;
+}
+
+std::vector<const VehicleIndex::Vehicle*>
+VehicleIndex::vehiclesEllipseOthers(const Position& a, const Position& b, double r) const
+{
+    std::vector<const Vehicle*> vehicles;
+    vehiclesEllipse(a, b, r, [&](const Vehicle& vehicle) {
+        if (!bg::within(a, vehicle.getOutline()) && !bg::within(b, vehicle.getOutline())) {
+            vehicles.push_back(&vehicle);
+        }
+    });
+    return vehicles;
+}
+
+void VehicleIndex::vehiclesEllipse(const Position& a, const Position& b, double r, std::function<void(const Vehicle&)> fn) const
+{
     using boost::units::fmin;
     using boost::units::fmax;
 
-    std::vector<const Vehicle*> vehicles;
     const double d = bg::distance(a, b);
     const double k = 0.5 * (r - d);
 
@@ -206,12 +224,10 @@ VehicleIndex::vehiclesEllipse(const Position& a, const Position& b, double r) co
             const Position& c = vehicle.getMidpoint();
             if (bg::distance(a, c) + bg::distance(b, c) <= r) {
                 // vehicle's center is within ellipse
-                vehicles.push_back(&vehicle);
+                fn(vehicle);
             }
         }
     }
-
-    return vehicles;
 }
 
 } // namespace gemv2
