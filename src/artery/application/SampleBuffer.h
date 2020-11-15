@@ -50,6 +50,7 @@ public:
     void set_capacity(std::size_t n) { m_buffer.set_capacity(n); }
     std::size_t size() const { return m_buffer.size(); }
     bool empty() const { return m_buffer.empty(); }
+    bool full() const { return m_buffer.full(); }
     iterator begin() const { return iterator(m_buffer.begin()); }
     iterator end() const { return iterator(m_buffer.end()); }
 

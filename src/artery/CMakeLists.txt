@@ -34,6 +34,7 @@ add_library(core SHARED
     application/VehicleKinematics.cc
     application/VehicleMiddleware.cc
     application/XmlMultiChannelPolicy.cc
+    application/den/EmergencyBrakeLight.cc
     application/den/ImpactReductionUseCase.cc
     application/den/Memory.cc
     application/den/SuspendableUseCase.cc
