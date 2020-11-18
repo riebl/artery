@@ -12,4 +12,5 @@ moduleinterface Radar
         double fovRange @unit(m);
         double fovAngle; // opening angle in degree
         int numSegments;
+        bool doLineOfSightCheck;
 }
