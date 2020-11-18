@@ -22,4 +22,5 @@ simple GlobalEnvironmentModel
         string identityRegistryModule;
         bool drawObstacles = default(false);
         bool drawVehicles = default(false);
+        string obstacleTypes = default("");
 }
