@@ -300,6 +300,10 @@ void GlobalEnvironmentModel::initialize()
         mDrawVehicles = new omnetpp::cGroupFigure("vehicles");
         getCanvas()->addFigure(mDrawVehicles);
     }
+
+    mFilterTypes.clear();
+    const std::string filterTypes = par("filterTypes");
+    boost::split(mFilterTypes, filterTypes, boost::is_any_of(" "));
 }
 
 void GlobalEnvironmentModel::finish()
@@ -344,6 +348,16 @@ void GlobalEnvironmentModel::fetchObstacles(traci::LiteAPI& traci)
     auto& polygons = traci.polygon();
     const traci::Boundary boundary { traci.simulation().getNetBoundary() };
     for (const std::string& id : polygons.getIDList()) {
+        if (!mFilterTypes.empty()) {
+                std::string type = polygons.getType(id);
+                auto found = mFilterTypes.find(type);
+                if (found == mFilterTypes.end()) {
+                    EV_DEBUG << "ignore polygon " << id << " of type " << type << "\n";
+                    // skip polygon because its type is not in our filter set
+                    continue;
+                }
+            }
+
         std::vector<Position> shape;
         for (const traci::TraCIPosition& traci_point : polygons.getShape(id)) {
             shape.push_back(traci::position_cast(boundary, traci_point));
