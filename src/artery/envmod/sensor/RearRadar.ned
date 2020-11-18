@@ -12,4 +12,5 @@ simple RearRadar like Radar
         double fovRange @unit(m) = default(80.0 m);
         double fovAngle = default(60.0); // degree
         int numSegments = default(10);
+        bool doLineOfSightCheck = default(true);
 }
