@@ -39,6 +39,7 @@ void RadarSensor::initialize()
     mRadarConfig.fieldOfView.range = par("fovRange").doubleValue() * boost::units::si::meters;
     mRadarConfig.fieldOfView.angle = par("fovAngle").doubleValue() * boost::units::degree::degrees;
     mRadarConfig.numSegments = par("numSegments");
+    mRadarConfig.doLineOfSightCheck = par("doLineOfSightCheck");
 }
 
 void RadarSensor::measurement()
