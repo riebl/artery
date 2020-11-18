@@ -115,7 +115,11 @@ PYBIND11_EMBEDDED_MODULE(storyboard, m) {
  * \return SimTime, unit: seconds
  */
 omnetpp::SimTime timelineSeconds(double time) {
-    return omnetpp::SimTime(time, omnetpp::SimTimeUnit::SIMTIME_S);
+    return omnetpp::SimTime { time };
+}
+
+omnetpp::SimTime timelineSeconds(std::int64_t time) {
+    return omnetpp::SimTime { time, omnetpp::SIMTIME_S };
 }
 
 /**
@@ -124,12 +128,21 @@ omnetpp::SimTime timelineSeconds(double time) {
  * \return SimTime, unit: milliseconds
  */
 omnetpp::SimTime timelineMilliseconds(double time) {
-    return omnetpp::SimTime(time, omnetpp::SimTimeUnit::SIMTIME_MS);
+    return omnetpp::SimTime { time * 1e-3 };
 }
 
+omnetpp::SimTime timelineMilliseconds(std::int64_t time) {
+    return omnetpp::SimTime { time, omnetpp::SIMTIME_MS };
+}
+
+template<typename... Args>
+using overload_cast = pybind11::detail::overload_cast_impl<Args...>;
+
 PYBIND11_EMBEDDED_MODULE(timeline, m) {
-    m.def("seconds", timelineSeconds);
-    m.def("milliseconds", timelineMilliseconds);
+    m.def("seconds", overload_cast<std::int64_t>()(&timelineSeconds));
+    m.def("seconds", overload_cast<double>()(&timelineSeconds));
+    m.def("milliseconds", overload_cast<std::int64_t>()(&timelineMilliseconds));
+    m.def("milliseconds", overload_cast<double>()(&timelineMilliseconds));
 }
 
 } // namespace artery
