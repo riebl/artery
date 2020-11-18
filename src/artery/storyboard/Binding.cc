@@ -17,6 +17,7 @@
 #include "artery/utility/Geometry.h"
 #include <omnetpp/simtime.h>
 #include <pybind11/embed.h>
+#include <pybind11/operators.h>
 #include <pybind11/stl.h>
 
 namespace py = pybind11;
@@ -30,7 +31,9 @@ PYBIND11_EMBEDDED_MODULE(storyboard, m) {
         .def(py::init<double, double>());
 
     py::class_<omnetpp::SimTime>(m, "SimTime")
-        .def(py::init<double>());
+        .def(py::init<double>())
+        .def(py::self + py::self)
+        .def(py::self - py::self);
 
     py::class_<omnetpp::cRNG>(m, "RNG");
 
