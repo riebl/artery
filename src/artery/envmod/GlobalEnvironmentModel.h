@@ -142,6 +142,7 @@ private:
     bool mTainted;
     omnetpp::cGroupFigure* mDrawObstacles = nullptr;
     omnetpp::cGroupFigure* mDrawVehicles = nullptr;
+    std::set<std::string> mObstacleTypes;
 };
 
 } // namespace artery
