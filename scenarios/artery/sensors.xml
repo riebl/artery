@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sensors>
-	<sensor type="artery.envmod.sensor.FrontRadar">
+	<sensor name="FrontShortRangeRadar" type="artery.envmod.sensor.FrontRadar">
 		<visualization>
-			<showObjectsInSensorRange value="false" />
-			<showObstaclesInSensorRange value="false" />
+			<showObjectsInSensorRange value="true" />
+			<showObstaclesInSensorRange value="true" />
+			<showSensorCone value="true" />
+			<showLineOfSight value="true" />
+		</visualization>
+	</sensor>
+	<sensor name="FrontLongRangeRadar" type="artery.envmod.sensor.FrontRadar">
+		<visualization>
+			<showObjectsInSensorRange value="true" />
+			<showObstaclesInSensorRange value="true" />
+			<showSensorCone value="true" />
+			<showLineOfSight value="true" />
+		</visualization>
+	</sensor>
+	<sensor name="OmniscientRadar25" type="artery.envmod.sensor.OmniscientSensor">
+		<visualization>
+			<showObjectsInSensorRange value="true" />
+			<showObstaclesInSensorRange value="true" />
 			<showSensorCone value="true" />
 			<showLineOfSight value="true" />
 		</visualization>

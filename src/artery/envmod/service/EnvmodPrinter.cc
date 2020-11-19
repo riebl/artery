@@ -7,6 +7,7 @@
 #include "artery/envmod/service/EnvmodPrinter.h"
 #include "artery/envmod/EnvironmentModelObject.h"
 #include "artery/envmod/LocalEnvironmentModel.h"
+#include "artery/envmod/sensor/Sensor.h"
 #include "artery/traci/VehicleController.h"
 #include <boost/units/io.hpp>
 #include <omnetpp/clog.h>
@@ -27,8 +28,16 @@ void EnvmodPrinter::trigger()
 {
     Enter_Method("trigger");
     auto& allObjects = mLocalEnvironmentModel->allObjects();
+
+    EV_DETAIL << mEgoId << "--- By category ---" << std::endl;
     printSensorObjectList("Radar Sensor Object List", filterBySensorCategory(allObjects, "Radar"));
     printSensorObjectList("CAM Sensor Object List", filterBySensorCategory(allObjects, "CA"));
+
+    EV_DETAIL << mEgoId << "--- By name ---" << std::endl;
+    for (auto &sensor: mLocalEnvironmentModel->getSensors()) {
+        std::string sensorName = sensor->getSensorName();
+        printSensorObjectList(sensorName + " Object List", filterBySensorName(allObjects, sensorName));
+    }
 }
 
 void EnvmodPrinter::printSensorObjectList(const std::string& title, const TrackedObjectsFilterRange& objs)

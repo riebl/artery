@@ -100,6 +100,8 @@ public:
      */
     const TrackedObjects& allObjects() const { return mObjects; }
 
+    const std::vector<Sensor*>& getSensors() const { return mSensors; }
+
 private:
     void initializeSensors();
 
@@ -114,6 +116,7 @@ using TrackedObjectsFilterIterator = boost::filter_iterator<TrackedObjectsFilter
 using TrackedObjectsFilterRange = boost::iterator_range<TrackedObjectsFilterIterator>;
 
 TrackedObjectsFilterRange filterBySensorCategory(const LocalEnvironmentModel::TrackedObjects&, const std::string&);
+TrackedObjectsFilterRange filterBySensorName(const LocalEnvironmentModel::TrackedObjects&, const std::string&);
 
 } // namespace artery
 

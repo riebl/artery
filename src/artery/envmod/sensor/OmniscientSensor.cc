@@ -4,15 +4,16 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
-#include "artery/envmod/sensor/RadarSensor.h"
+#include "artery/envmod/sensor/OmniscientSensor.h"
 
 namespace artery
 {
-Define_Module(RadarSensor);
+Define_Module(OmniscientSensor);
 
-void RadarSensor::initialize()
+void OmniscientSensor::initialize()
 {
     FovSensor::initialize();
+    mRadarConfig.sensorPosition = SensorPosition::FRONT;
     mRadarConfig.egoID = getEgoId();
     mRadarConfig.sensorID = getId();
 }
