@@ -7,7 +7,9 @@ add_artery_feature(envmod
     PreselectionRtree.cc
     sensor/BaseSensor.cc
     sensor/CamSensor.cc
+    sensor/FovSensor.cc
     sensor/FrontRadar.cc
+    sensor/OmniscientSensor.cc
     sensor/RadarSensor.cc
     sensor/RearRadar.cc
     sensor/SensorConfiguration.cc

@@ -15,8 +15,6 @@ void FrontRadar::initialize()
 {
     RadarSensor::initialize();
     mRadarConfig.sensorPosition = SensorPosition::FRONT;
-    mRadarConfig.egoID = getEgoId();
-    mRadarConfig.sensorID = getId();
 }
 
 } // namespace artery

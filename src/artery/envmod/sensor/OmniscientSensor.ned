@@ -6,11 +6,11 @@
 
 package artery.envmod.sensor;
 
-moduleinterface Radar
+simple OmniscientSensor like FovSensor
 {
     parameters:
         double fovRange @unit(m);
-        double fovAngle; // opening angle in degree
-        int numSegments;
-        bool doLineOfSightCheck;
+        double fovAngle = default(360); // opening angle in degree
+        int numSegments = 12;
+        bool doLineOfSightCheck = false;
 }
