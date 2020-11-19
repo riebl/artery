@@ -9,7 +9,7 @@ simple CollectivePerceptionMockService like ItsG5Service
         @signal[CpmReceived](type=CollectivePerceptionMockMessage);
 
         @statistic[transmission](source=CpmSent; record=count,vector(cpmSource)?);
-        @statistic[reception](source=CpmReceived; record=count,vector(cpmSource)?);
+        @statistic[reception](source=CpmReceived; record=count,vector(cpmSource)?,vector(cpmGenerated)?);
 
         bool generateAfterCam = default(false);
         double cpmInterval @unit(s) = default(0.1s);
