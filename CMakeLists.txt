@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 enable_testing()
 
-find_package(OmnetPP 5.4 MODULE REQUIRED)
+find_package(OmnetPP 5.5.1 MODULE REQUIRED)
 include(AddOppRun)
 include(AddOppTarget)
 include(CheckGitSubmodule)
