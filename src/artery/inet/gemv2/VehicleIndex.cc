@@ -81,22 +81,27 @@ void VehicleIndex::receiveSignal(cComponent* source, simsignal_t signal, const c
         traci::LiteAPI* api = check_and_cast<traci::NodeManager*>(source)->getLiteAPI();
         ASSERT(api);
         Vehicle vehicle(*api, id, mVehicleMargin);
-        mVehicles.emplace(id, std::move(vehicle));
+        auto insertion = mVehicles.emplace(id, std::move(vehicle));
+        if (insertion.second) {
+            const Vehicle& vehicle = insertion.first->second;
+            RtreeValue value {
+                bg::return_envelope<RtreeValue::first_type>(vehicle.getOutline()),
+                insertion.first };
+            mVehicleRtree.insert(std::move(value));
+        }
     } else if (signal == traci::BasicNodeManager::updateVehicleSignal) {
         auto vehicle = check_and_cast<traci::BasicNodeManager::VehicleObject*>(obj);
         mVehicles.at(id).update(vehicle->getPosition(), vehicle->getHeading());
+        mRtreeTainted = true;
     } else if (signal == traci::BasicNodeManager::removeVehicleSignal) {
         mVehicles.erase(id);
-    } else {
-        return;
+        mRtreeTainted = true;
     }
-
-    bool mRtreeTainted = true;
 }
 
 bool VehicleIndex::anyBlockage(const Position& a, const Position& b) const
 {
-    ASSERT(!mRtreeTainted);
+    ASSERT(!mRtreeTainted && mVehicles.size() == mVehicleRtree.size());
     const LineOfSight los { a, b };
     auto rtree_intersect = bg::index::intersects(los);
     return std::any_of(mVehicleRtree.qbegin(rtree_intersect), mVehicleRtree.qend(),
@@ -123,6 +128,7 @@ bool VehicleIndex::anyBlockage(const Position& a, const Position& b, double heig
 std::vector<const VehicleIndex::Vehicle*>
 VehicleIndex::getObstructingVehicles(const Position& a, const Position& b) const
 {
+    ASSERT(!mRtreeTainted);
     std::vector<const Vehicle*> result;
     const LineOfSight los { a, b };
     auto rtree_intersect = bg::index::intersects(los);
@@ -203,6 +209,7 @@ VehicleIndex::vehiclesEllipseOthers(const Position& a, const Position& b, double
 
 void VehicleIndex::vehiclesEllipse(const Position& a, const Position& b, double r, std::function<void(const Vehicle&)> fn) const
 {
+    ASSERT(!mRtreeTainted);
     using boost::units::fmin;
     using boost::units::fmax;
 
