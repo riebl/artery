@@ -15,10 +15,14 @@ public:
     void setSourceStation(int id) { mSourceStation = id; }
     int getSourceStation() const { return mSourceStation; }
 
+    void setSequenceNumber(int n) { mSequenceNumber = n; }
+    int getSequenceNumber() const { return mSequenceNumber; }
+
     omnetpp::SimTime getGenerationTimestamp() const { return mGenerated; }
 
 private:
     int mSourceStation = 0;
+    int mSequenceNumber = 0;
     omnetpp::SimTime mGenerated = omnetpp::SimTime::ZERO;
 };
 

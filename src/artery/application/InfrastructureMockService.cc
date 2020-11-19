@@ -78,6 +78,7 @@ void InfrastructureMockService::generatePacket()
 
     auto packet = new InfrastructureMockMessage();
     packet->setSourceStation(mHostId);
+    packet->setSequenceNumber(mSequenceNumber++);
     packet->setByteLength(mMessageLength);
     emit(immSentSignal, packet);
     request(req, packet);
