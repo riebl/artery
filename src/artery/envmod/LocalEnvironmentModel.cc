@@ -116,6 +116,8 @@ void LocalEnvironmentModel::initializeSensors()
             cModule* module = module_type->createScheduleInit(sensor_name, this);
             auto sensor = dynamic_cast<artery::Sensor*>(module);
 
+            sensor->setSensorName(sensor_name);
+
             if (sensor != nullptr) {
                 cXMLElement* vis_cfg = sensor_cfg->getFirstChildWithTag("visualization");
                 sensor->setVisualization(SensorVisualizationConfig(vis_cfg));
@@ -191,6 +193,23 @@ TrackedObjectsFilterRange filterBySensorCategory(const LocalEnvironmentModel::Tr
 
     auto begin = boost::make_filter_iterator(seenByCategory, all.begin(), all.end());
     auto end = boost::make_filter_iterator(seenByCategory, all.end(), all.end());
+    return boost::make_iterator_range(begin, end);
+}
+
+TrackedObjectsFilterRange filterBySensorName(const LocalEnvironmentModel::TrackedObjects& all, const std::string& name)
+{
+    // capture `category` by value because lambda expression will be evaluated after this function's return
+    TrackedObjectsFilterPredicate seenByName = [name](const LocalEnvironmentModel::TrackedObject& obj) {
+        const auto& detections = obj.second.sensors();
+        return std::any_of(detections.begin(), detections.end(),
+                [&name](const LocalEnvironmentModel::Tracking::TrackingMap::value_type& tracking) {
+                    const Sensor* sensor = tracking.first;
+                    return sensor->getSensorName() == name;
+                });
+    };
+
+    auto begin = boost::make_filter_iterator(seenByName, all.begin(), all.end());
+    auto end = boost::make_filter_iterator(seenByName, all.end(), all.end());
     return boost::make_iterator_range(begin, end);
 }
 

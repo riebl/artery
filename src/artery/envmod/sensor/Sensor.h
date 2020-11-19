@@ -22,10 +22,11 @@ public:
     virtual ~Sensor() = default;
     virtual void measurement() = 0;
     virtual void setVisualization(const SensorVisualizationConfig&) = 0;
-    virtual const FieldOfView* getFieldOfView() const = 0;
     virtual SensorPosition position() const = 0;
     virtual omnetpp::SimTime getValidityPeriod() const = 0;
     virtual const std::string& getSensorCategory() const = 0;
+    virtual const std::string getSensorName() const = 0;
+    virtual void setSensorName(const std::string& name) = 0;
 };
 
 } // namespace artery

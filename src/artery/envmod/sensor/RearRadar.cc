@@ -15,8 +15,6 @@ void RearRadar::initialize()
 {
     RadarSensor::initialize();
     mRadarConfig.sensorPosition = SensorPosition::BACK;
-    mRadarConfig.egoID = getEgoId();
-    mRadarConfig.sensorID = getId();
 }
 
 } // namespace artery

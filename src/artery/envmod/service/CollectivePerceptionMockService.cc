@@ -4,7 +4,7 @@
 * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
 */
 
-#include "artery/envmod/sensor/Sensor.h"
+#include "artery/envmod/sensor/FovSensor.h"
 #include "artery/envmod/service/CollectivePerceptionMockMessage.h"
 #include "artery/envmod/service/CollectivePerceptionMockService.h"
 #include "artery/utility/InitStages.h"
@@ -61,12 +61,12 @@ void CollectivePerceptionMockService::initialize(int stage)
         mHostId = getFacilities().get_const<Identity>().host->getId();
     } else if (stage == InitStages::Propagate) {
         for (const Sensor* sensor : mEnvironmentModel->getSensors()) {
-            // skip any virtual sensors without field of view
-            if (auto fov = sensor->getFieldOfView()) {
+            // consider only sensors with a field of view
+            if (auto fovSensor = dynamic_cast<const FovSensor*>(sensor)) {
                 CollectivePerceptionMockMessage::FovContainer fovContainer;
                 fovContainer.sensorId = sensor->getId();
                 fovContainer.position = sensor->position();
-                fovContainer.fov = *fov;
+                fovContainer.fov = fovSensor->getFieldOfView();
                 mFovContainers.emplace_back(std::move(fovContainer));
                 mSensors.insert(sensor);
             }

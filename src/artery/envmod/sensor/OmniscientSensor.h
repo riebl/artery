@@ -4,26 +4,26 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
-#ifndef ENVMOD_RADARSENSOR_H_
-#define ENVMOD_RADARSENSOR_H_
+#ifndef ENVMOD_OMNISCIENTSENSOR_H_
+#define ENVMOD_OMNISCIENTSENSOR_H_
 
 #include "artery/envmod/sensor/FovSensor.h"
 
 namespace artery
 {
 
-class RadarSensor : public FovSensor
+class OmniscientSensor : public FovSensor
 {
 public:
     void initialize() override;
     const std::string& getSensorCategory() const { return category; }
 
 private:
-    const std::string category = "Radar";
+    const std::string category = "Omniscient";
 };
 
 
 
 } // namespace artery
 
-#endif /* ENVMOD_RADARSENSOR_H_ */
+#endif /* ENVMOD_OMNISCIENTSENSOR_H_ */
