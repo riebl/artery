@@ -33,4 +33,18 @@ protected:
 
 Register_ResultFilter("immSource", InfrastructureSourceResultFilter)
 
+
+class InfrastructureSequenceNumberResultFilter : public cObjectResultFilter
+{
+protected:
+    void receiveSignal(cResultFilter* prev, simtime_t_cref t, cObject* object, cObject* details) override
+    {
+        if (auto msg = dynamic_cast<InfrastructureMockMessage*>(object)) {
+            fire(this, t, static_cast<long>(msg->getSequenceNumber()), details);
+        }
+    }
+};
+
+Register_ResultFilter("immSequenceNumber", InfrastructureSequenceNumberResultFilter)
+
 } // namespace artery

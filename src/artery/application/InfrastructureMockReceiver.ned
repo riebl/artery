@@ -7,5 +7,5 @@ simple InfrastructureMockReceiver like ItsG5Service
 {
     parameters:
         @signal[ImmReceived](type=InfrastructureMockMessage);
-        @statistic[reception](source=ImmReceived;record=count,vector(immSource)?);
+        @statistic[reception](source=ImmReceived;record=count,vector(immSource)?,vector(immSequenceNumber)?);
 }

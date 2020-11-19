@@ -4,7 +4,7 @@ simple InfrastructureMockService like ItsG5Service
 {
     parameters:
         @signal[ImmSent](type=InfrastructureMockMessage);
-        @statistic[transmission](source=ImmSent; record=count,vector(immSource)?);
+        @statistic[transmission](source=ImmSent; record=count,vector(immSource)?,vector(immSequenceNumber)?);
 
         // generation interval
         double generationInterval @unit(s) = default(0.1s);
