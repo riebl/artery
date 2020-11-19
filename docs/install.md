@@ -51,10 +51,10 @@ Hence, make sure the following requirements are fulfilled:
 - C++ compiler with C++11 support (GNU GCC 4.9 or later or Clang)
 - [Boost](https://www.boost.org) (1.65.1 or later is recommended)
 - [CMake](http://www.cmake.org) 3.1 or later
-- [OMNeT++](https://omnetpp.org) 5.4 or later
+- [OMNeT++](https://omnetpp.org) 5.5.1 or later
 - [Python](https://www.python.org) 3
 
-We have tested Artery with OMNeT++ 5.4, GNU GCC 7.3 and Boost 1.65.1 successfully.
+We have tested Artery with OMNeT++ 5.5.1, GNU GCC 7.3 and Boost 1.65.1 successfully.
 Please note that these versions are just minimum requirements.
 You may benefit from bugfixes when using more recent versions.
 For example, OMNeT++ 5.6 is working great as well.
