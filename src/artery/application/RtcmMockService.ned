@@ -4,7 +4,7 @@ simple RtcmMockService like ItsG5Service
 {
     parameters:
         @signal[RtcmSent](type=RtcmMockMessage);
-        @statistic[transmission](source=RtcmSent;record=count,vector(rtcmSource)?);
+        @statistic[transmission](source=RtcmSent;record=count,vector(rtcmSource)?,vector(rtcmGenerated)?);
 
         // generation interval
         double generationInterval @unit(s) = default(1s);
