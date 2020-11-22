@@ -7,5 +7,5 @@ simple RtcmMockReceiver like ItsG5Service
 {
     parameters:
         @signal[RtcmReceived](type=RtcmMockMessage);
-        @statistic[reception](source=RtcmReceived;record=count,vector(rtcmSource)?);
+        @statistic[reception](source=RtcmReceived;record=count,vector(rtcmSource)?,vector(rtcmGenerated)?);
 }

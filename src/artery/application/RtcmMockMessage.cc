@@ -33,4 +33,18 @@ protected:
 
 Register_ResultFilter("rtcmSource", RtcmSourceResultFilter)
 
+
+class RtcmGeneratedResultFilter : public cObjectResultFilter
+{
+protected:
+    void receiveSignal(cResultFilter* prev, simtime_t_cref t, cObject* object, cObject* details) override
+    {
+        if (auto rtcm = dynamic_cast<RtcmMockMessage*>(object)) {
+            fire(this, t, rtcm->getCreationTime(), details);
+        }
+    }
+};
+
+Register_ResultFilter("rtcmGenerated", RtcmGeneratedResultFilter)
+
 } // namespace artery
