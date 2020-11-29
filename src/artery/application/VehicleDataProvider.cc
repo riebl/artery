@@ -188,4 +188,9 @@ auto VehicleDataProvider::getStationType() const -> StationType
 	return mStationType;
 }
 
+void VehicleDataProvider::setStationId(const uint32_t id)
+{
+	mStationId = id;
+}
+
 } // namespace artery
