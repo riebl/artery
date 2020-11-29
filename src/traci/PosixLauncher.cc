@@ -65,6 +65,7 @@ void PosixLauncher::initialize()
     m_executable = par("sumo").stringValue();
     m_command = par("command").stringValue();
     m_sumocfg = par("sumocfg").stringValue();
+    m_extra_options = par("extraOptions").stringValue();
     m_port = par("port");
     m_seed = par("seed");
 }
@@ -138,6 +139,11 @@ std::string PosixLauncher::command()
     command = std::regex_replace(command, port, std::to_string(m_port));
     command = std::regex_replace(command, seed, std::to_string(m_seed));
     command = std::regex_replace(command, run, run_number);
+
+    if (!m_extra_options.empty()) {
+      command.append(1, ' ').append(m_extra_options);
+    }
+
     return command;
 }
 
