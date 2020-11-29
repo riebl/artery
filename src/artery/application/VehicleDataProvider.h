@@ -50,7 +50,6 @@ class VehicleDataProvider
 		void update(const VehicleKinematics&);
 		omnetpp::SimTime updated() const { return mLastUpdate; }
 
-		uint32_t station_id() const { return mStationId; }
 		const Position& position() const { return mVehicleKinematics.position; }
 		vanetza::units::GeoAngle longitude() const { return mVehicleKinematics.geo_position.longitude; } // positive for east
 		vanetza::units::GeoAngle latitude() const { return mVehicleKinematics.geo_position.latitude; } // positive for north
@@ -63,6 +62,10 @@ class VehicleDataProvider
 
 		void setStationType(StationType);
 		StationType getStationType() const;
+
+		void setStationId(uint32_t id);
+		uint32_t getStationId() const { return mStationId; }
+		uint32_t station_id() const { return mStationId; } /*< deprecated, use getStationId */
 
 	private:
 		typedef boost::units::quantity<boost::units::si::angular_acceleration> AngularAcceleration;
