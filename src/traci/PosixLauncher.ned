@@ -9,4 +9,7 @@ simple PosixLauncher like Launcher
         string sumocfg;
         int port = default(0);
         int seed = default(23423);
+
+        // additional SUMO command line options
+        string extraOptions = default("");
 }

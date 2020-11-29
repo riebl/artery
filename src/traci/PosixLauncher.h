@@ -28,6 +28,7 @@ private:
     std::string m_executable;
     std::string m_command;
     std::string m_sumocfg;
+    std::string m_extra_options;
     int m_port;
     int m_seed;
     pid_t m_pid;
