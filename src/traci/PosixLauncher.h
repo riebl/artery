@@ -31,6 +31,8 @@ private:
     int m_port;
     int m_seed;
     pid_t m_pid;
+
+    std::string m_extra_options;
 };
 
 } // namespace traci
