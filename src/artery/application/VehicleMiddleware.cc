@@ -18,7 +18,7 @@ namespace artery
 Define_Module(VehicleMiddleware)
 
 VehicleMiddleware::VehicleMiddleware() :
-    mVehicleDataProvider(Identity::randomStationId(getRNG(0)))
+    mVehicleDataProvider(0) // OMNeT++ assigns RNG after construction: set final station ID later
 {
 }
 
@@ -33,7 +33,8 @@ void VehicleMiddleware::initialize(int stage)
 
         Identity identity;
         identity.traci = mVehicleController->getVehicleId();
-        identity.application = mVehicleDataProvider.station_id();
+        identity.application = Identity::randomStationId(getRNG(0));
+        mVehicleDataProvider.setStationId(identity.application);
         emit(Identity::changeSignal, Identity::ChangeTraCI | Identity::ChangeStationId, &identity);
     }
 
