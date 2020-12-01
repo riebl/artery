@@ -17,7 +17,7 @@ const simsignal_t gtuPositionChangedSignal = cComponent::registerSignal("gtuPosi
 } // namespace
 
 GtuMiddleware::GtuMiddleware() :
-    mVehicleDataProvider(Identity::randomStationId(getRNG(0)))
+    mVehicleDataProvider(0)
 {
 }
 
@@ -31,7 +31,8 @@ void GtuMiddleware::initialize(int stage)
         getFacilities().register_const(&mVehicleDataProvider);
 
         Identity identity;
-        identity.application = mVehicleDataProvider.station_id();
+        identity.application = Identity::randomStationId(getRNG(0));
+        mVehicleDataProvider.setStationId(identity.application);
         // TODO add GTU id to identity?
         emit(Identity::changeSignal, Identity::ChangeStationId, &identity);
     }
