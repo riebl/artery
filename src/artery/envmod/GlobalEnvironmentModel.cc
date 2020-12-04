@@ -301,7 +301,8 @@ void GlobalEnvironmentModel::initialize()
         getCanvas()->addFigure(mDrawVehicles);
     }
 
-    boost::split(mObstacleTypes, par("obstacleTypes").stdstringValue(), boost::is_any_of(" "));
+    std::string obstacleTypes = par("obstacleTypes");
+    boost::split(mObstacleTypes, obstacleTypes, boost::is_any_of(" "));
 }
 
 void GlobalEnvironmentModel::finish()
