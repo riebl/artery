@@ -1,6 +1,8 @@
 #include "artery/storyboard/AndCondition.h"
 #include "artery/storyboard/CarSetCondition.h"
 #include "artery/storyboard/DeferringCondition.h"
+#include "artery/storyboard/EmergencyStopEffect.h"
+#include "artery/storyboard/GenericEffectFactory.h"
 #include "artery/storyboard/SignalEffectFactory.h"
 #include "artery/storyboard/SpeedCondition.h"
 #include "artery/storyboard/SpeedDifferenceCondition.h"
@@ -88,6 +90,13 @@ PYBIND11_EMBEDDED_MODULE(storyboard, m) {
 
 
     py::class_<EffectFactory, std::shared_ptr<EffectFactory>>(m, "EffectFactory");
+
+    py::class_<GenericEffectFactory, std::shared_ptr<GenericEffectFactory>, EffectFactory>(m, "EmergencyStopEffect")
+        .def(py::init([]() -> GenericEffectFactory* {
+                return new GenericEffectFactory {
+                    [](Vehicle& v, Story& s, ConditionResult&) { return std::make_shared<EmergencyStopEffect>(s, v); }
+                };
+            }));
 
     py::class_<SpeedEffectFactory, std::shared_ptr<SpeedEffectFactory>, EffectFactory>(m, "SpeedEffect")
         .def(py::init<double>());
