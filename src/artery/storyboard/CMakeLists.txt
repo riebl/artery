@@ -6,6 +6,7 @@ add_artery_feature(storyboard
     DeferringCondition.cc
     Effect.cc
     EffectStack.cc
+    GenericEffectFactory.cc
     LikelihoodCondition.cc
     LimitCondition.cc
     OrCondition.cc
