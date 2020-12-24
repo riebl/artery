@@ -32,6 +32,16 @@ void ExtensibleNodeManager::VehicleLifecycle::updateVehicle(const std::string& i
     m_manager->updateVehicle(m_policy, id, m_manager->getVehicleSink(id));
 }
 
+void ExtensibleNodeManager::VehicleLifecycle::startVehicleParking(const std::string& id)
+{
+    m_manager->startVehicleParking(m_policy, id);
+}
+
+void ExtensibleNodeManager::VehicleLifecycle::endVehicleParking(const std::string& id)
+{
+    m_manager->endVehicleParking(m_policy, id);
+}
+
 
 void ExtensibleNodeManager::initialize()
 {
@@ -122,6 +132,38 @@ void ExtensibleNodeManager::updateVehicle(const VehiclePolicy* omit, const std::
     }
 
     BasicNodeManager::updateVehicle(id, sink);
+}
+
+void ExtensibleNodeManager::startVehicleParking(const std::string& id)
+{
+    startVehicleParking(nullptr, id);
+}
+
+void ExtensibleNodeManager::startVehicleParking(const VehiclePolicy* omit, const std::string& id)
+{
+    for (VehiclePolicy* policy : m_policies) {
+        if (policy != omit && policy->startVehicleParking(id) == VehiclePolicy::Decision::Discard) {
+            return;
+        }
+    }
+
+    BasicNodeManager::startVehicleParking(id);
+}
+
+void ExtensibleNodeManager::endVehicleParking(const std::string& id)
+{
+    endVehicleParking(nullptr, id);
+}
+
+void ExtensibleNodeManager::endVehicleParking(const VehiclePolicy* omit, const std::string& id)
+{
+    for (VehiclePolicy* policy : m_policies) {
+        if (policy != omit && policy->endVehicleParking(id) == VehiclePolicy::Decision::Discard) {
+            return;
+        }
+    }
+
+    BasicNodeManager::endVehicleParking(id);
 }
 
 } // namespace traci
