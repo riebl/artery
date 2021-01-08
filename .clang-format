@@ -1,0 +1,25 @@
+---
+BasedOnStyle: Google
+AccessModifierOffset: -4
+AlignAfterOpenBracket: AlwaysBreak
+AlignEscapedNewlines: DontAlign
+BreakBeforeBraces: Linux
+BreakInheritanceList: AfterColon
+BreakConstructorInitializers: AfterColon
+ColumnLimit: 120
+ContinuationIndentWidth: 4
+IncludeCategories:
+  - Regex:           '^".*\.h.?.?"'
+    Priority:        1
+    SortPriority:    1
+  - Regex:           '^<.*\.h.?.?>'
+    Priority:        2
+    SortPriority:    2
+  - Regex:           '^<.*'
+    Priority:        3
+    SortPriority:    3
+  - Regex:           '.*'
+    Priority:        4
+    SortPriority:    4
+IndentWidth: 4
+...
