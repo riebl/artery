@@ -1,6 +1,8 @@
 ansible/*.retry
 scenarios/**/*.pyc
 scenarios/*/results/*
+scenarios/*/.cmdenv-log
+scenarios/*/.qtenvrc
 scenarios/*/.tkenvrc
 src/artery/messages/*_m.cc
 src/artery/messages/*_m.h
