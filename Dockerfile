@@ -28,12 +28,12 @@ FROM base as artery-build
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
-    libboost-dev \
-    libboost-date-time-dev \
-    libboost-system-dev \
+    libboost1.74-dev \
+    libboost-date-time1.74-dev \
+    libboost-system1.74-dev \
     libcrypto++-dev \
     libgeographic-dev \
-    libpython3-dev \
+    libpython3.9-dev \
     libssl-dev \
     libzmq3-dev \
     pkg-config \
@@ -69,12 +69,12 @@ RUN cmake -S sumo-$VERSION -B build-sumo -DCMAKE_BUILD_TYPE=Release -DCMAKE_INST
 
 FROM base as run
 RUN apt-get update && apt-get install -y \
-    libboost-date-time1.71.0 \
-    libboost-system1.71.0 \
-    libcrypto++6 \
+    libboost-date-time1.74 \
+    libboost-system1.74 \
+    libcrypto++ \
     libgeographic19 \
     libproj19 \
-    libpython3.8 \
+    libpython3.9 \
     libssl1.1 \
     libxerces-c3.2 \
     libxml2 \
