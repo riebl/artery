@@ -3,11 +3,15 @@ BasedOnStyle: Google
 AccessModifierOffset: -4
 AlignAfterOpenBracket: AlwaysBreak
 AlignEscapedNewlines: DontAlign
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortIfStatementsOnASingleLine: Never
 BreakBeforeBraces: Linux
 BreakInheritanceList: AfterColon
 BreakConstructorInitializers: AfterColon
-ColumnLimit: 120
+ColumnLimit: 140
+ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
+IncludeBlocks: Regroup
 IncludeCategories:
   - Regex:           '^".*\.h.?.?"'
     Priority:        1
@@ -21,5 +25,7 @@ IncludeCategories:
   - Regex:           '.*'
     Priority:        4
     SortPriority:    4
+IndentPPDirectives: BeforeHash
 IndentWidth: 4
+KeepEmptyLinesAtTheStartOfBlocks: true
 ...
