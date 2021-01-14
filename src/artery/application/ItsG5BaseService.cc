@@ -84,7 +84,12 @@ int ItsG5BaseService::numInitStages() const
 void ItsG5BaseService::initialize(int stage)
 {
 	if (stage == InitStages::Prepare) {
-		Middleware* middleware = dynamic_cast<Middleware*>(getParentModule());
+		// If this service is part of a Compound Module the Middleware is its grand parent
+		auto* parent = getParentModule();
+		if (!parent->getModuleType()->isSimple()) {
+			parent = parent->getParentModule();
+		}
+		Middleware* middleware = dynamic_cast<Middleware*>(parent);
 		if (middleware == nullptr) {
 			throw cRuntimeError("Middleware not found");
 		}
