@@ -77,7 +77,12 @@ cModule* ItsG5BaseService::findHost()
 
 void ItsG5BaseService::initialize()
 {
-	Middleware* middleware = dynamic_cast<Middleware*>(getParentModule());
+	auto* parent = getParentModule();
+	// if this service is part of a compound module, the Middleware is its grand parent
+	if (!parent->getModuleType()->isSimple()) {
+		parent = parent->getParentModule();
+	}
+	Middleware* middleware = dynamic_cast<Middleware*>(parent);
 	if (middleware == nullptr) {
 		throw cRuntimeError("Middleware not found");
 	}
