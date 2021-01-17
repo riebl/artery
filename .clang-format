@@ -8,7 +8,7 @@ AllowShortIfStatementsOnASingleLine: Never
 BreakBeforeBraces: Linux
 BreakInheritanceList: AfterColon
 BreakConstructorInitializers: AfterColon
-ColumnLimit: 140
+ColumnLimit: 160
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
 IncludeBlocks: Regroup
@@ -28,4 +28,5 @@ IncludeCategories:
 IndentPPDirectives: BeforeHash
 IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: true
+MaxEmptyLinesToKeep: 2
 ...
