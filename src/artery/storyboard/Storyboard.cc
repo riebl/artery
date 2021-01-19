@@ -1,6 +1,7 @@
 #include "artery/storyboard/Storyboard.h"
 #include "artery/storyboard/Story.h"
 #include "artery/storyboard/Effect.h"
+#include "artery/traci/Cast.h"
 #include "artery/traci/VehicleController.h"
 #include "inet/common/ModuleAccess.h"
 #include "traci/Core.h"

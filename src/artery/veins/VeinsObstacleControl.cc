@@ -1,7 +1,9 @@
 #include "artery/veins/VeinsObstacleControl.h"
+#include "artery/traci/Cast.h"
 #include "traci/Core.h"
 #include "traci/LiteAPI.h"
 #include "traci/Position.h"
+#include <boost/units/systems/si/length.hpp>
 
 namespace artery
 {

@@ -1,4 +1,5 @@
 #include "artery/networking/StationaryPositionProvider.h"
+#include "artery/traci/Cast.h"
 #include "traci/Core.h"
 #include "traci/LiteAPI.h"
 #include "traci/Position.h"

@@ -1,4 +1,5 @@
 #include "artery/traci/VehicleController.h"
+#include "artery/traci/Cast.h"
 #include "traci/VariableCache.h"
 #include <boost/units/systems/angle/degrees.hpp>
 #include <boost/units/systems/si/acceleration.hpp>

@@ -12,6 +12,7 @@
 #include "artery/envmod/PreselectionPolygon.h"
 #include "artery/envmod/PreselectionRtree.h"
 #include "artery/envmod/sensor/SensorConfiguration.h"
+#include "artery/traci/Cast.h"
 #include "artery/traci/ControllableVehicle.h"
 #include "artery/utility/IdentityRegistry.h"
 #include "traci/Core.h"
