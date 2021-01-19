@@ -1,8 +1,6 @@
 #ifndef ANGLE_H_RTCIRJNH
 #define ANGLE_H_RTCIRJNH
 
-#include "artery/utility/Geometry.h"
-
 namespace traci
 {
 
@@ -18,9 +16,6 @@ struct TraCIAngle
     explicit TraCIAngle(double d) : degree(d) {}
     double degree;
 };
-
-artery::Angle angle_cast(TraCIAngle);
-TraCIAngle angle_cast(artery::Angle);
 
 } // namespace traci
 

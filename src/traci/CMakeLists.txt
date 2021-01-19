@@ -1,5 +1,4 @@
 set(SOURCES
-    Angle.cc
     API.cc
     BasicModuleMapper.cc
     BasicNodeManager.cc
@@ -12,7 +11,6 @@ set(SOURCES
     Listener.cc
     LiteAPI.cc
     MultiTypeModuleMapper.cc
-    Position.cc
     PosixLauncher.cc
     RegionsOfInterest.cc
     RegionOfInterestVehiclePolicy.cc

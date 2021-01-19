@@ -6,6 +6,7 @@
 
 #include "artery/inet/gemv2/ObstacleIndex.h"
 #include "artery/inet/gemv2/Visualizer.h"
+#include "artery/traci/Cast.h"
 #include "traci/Core.h"
 #include "traci/LiteAPI.h"
 #include <boost/algorithm/string.hpp>

@@ -5,9 +5,7 @@
  */
 
 #include "traci/RegionsOfInterest.h"
-#include <boost/geometry/algorithms/append.hpp>
-#include <boost/geometry/algorithms/correct.hpp>
-#include <boost/geometry/algorithms/within.hpp>
+#include <boost/geometry.hpp>
 #include <boost/geometry/geometries/register/point.hpp>
 #include <boost/lexical_cast.hpp>
 #include <omnetpp/clog.h>

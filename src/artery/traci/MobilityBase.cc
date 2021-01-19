@@ -1,3 +1,4 @@
+#include "artery/traci/Cast.h"
 #include "artery/traci/MobilityBase.h"
 #include <omnetpp/ccomponent.h>
 

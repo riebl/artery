@@ -1,6 +1,6 @@
 #include "artery/testbed/GpsdServer.h"
 #include "artery/testbed/OtaInterfaceLayer.h"
-#include "traci/Angle.h"
+#include "artery/traci/Cast.h"
 #include <vanetza/gnss/nmea.hpp>
 #include <vanetza/gnss/wgs84point.hpp>
 
