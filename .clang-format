@@ -3,6 +3,7 @@ BasedOnStyle: Google
 AccessModifierOffset: -4
 AlignAfterOpenBracket: AlwaysBreak
 AlignEscapedNewlines: DontAlign
+AllowShortBlocksOnASingleLine: Empty
 AllowShortFunctionsOnASingleLine: InlineOnly
 AllowShortIfStatementsOnASingleLine: Never
 BreakBeforeBraces: Linux
