@@ -4,7 +4,6 @@
 #include "artery/application/CaObject.h"
 #include <omnetpp/simtime.h>
 #include <vanetza/asn1/cam.hpp>
-#include <cstdint>
 #include <functional>
 #include <map>
 
@@ -16,7 +15,7 @@ class Timer;
 class LocalDynamicMap
 {
 public:
-    using StationID = uint32_t;
+    using StationID = StationID_t;
     using Cam = vanetza::asn1::Cam;
     using CamPredicate = std::function<bool(const Cam&)>;
 
