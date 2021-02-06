@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <functional>
 #include <map>
+#include <memory>
 
 namespace artery
 {
@@ -24,6 +25,7 @@ public:
     void updateAwareness(const CaObject&);
     void dropExpired();
     unsigned count(const CamPredicate&) const;
+    std::shared_ptr<const Cam> getCam(StationID stationId) const;
 
 private:
     struct AwarenessEntry

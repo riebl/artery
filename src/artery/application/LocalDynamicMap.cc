@@ -57,6 +57,16 @@ unsigned LocalDynamicMap::count(const CamPredicate& predicate) const
             });
 }
 
+std::shared_ptr<const LocalDynamicMap::Cam> LocalDynamicMap::getCam(StationID stationId) const
+{
+    auto cam = mCaMessages.find(stationId);
+    if (cam != mCaMessages.end()) {
+        return cam->second.object.shared_ptr();
+    }
+
+    return nullptr;
+}
+
 LocalDynamicMap::AwarenessEntry::AwarenessEntry(const CaObject& obj, omnetpp::SimTime t) :
     expiry(t), object(obj)
 {
