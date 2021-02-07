@@ -13,9 +13,9 @@ SensorVisualizationConfig::SensorVisualizationConfig() :
 {
 }
 
-SensorVisualizationConfig::SensorVisualizationConfig(const cXMLElement* vis)
+SensorVisualizationConfig::SensorVisualizationConfig(const cXMLElement* vis) :
+    SensorVisualizationConfig()
 {
-    SensorVisualizationConfig config;
     if (vis) {
         auto attr_enabler = [vis](const char* name, bool& field) {
             cXMLElement* elem = vis->getFirstChildWithTag(name);
