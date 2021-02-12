@@ -22,7 +22,6 @@ class VehicleMiddleware : public Middleware
         void finish() override;
 
     protected:
-        void initializeStationType(const std::string&);
         void initializeVehicleController(omnetpp::cPar&);
         void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject*) override;
 

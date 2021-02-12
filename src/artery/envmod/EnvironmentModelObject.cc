@@ -82,6 +82,8 @@ EnvironmentModelObject::EnvironmentModelObject(const traci::VehicleController* v
     const auto halfLength = mLength * 0.5;
     mRadius = sqrt(halfWidth * halfWidth + halfLength * halfLength);
 
+    initializeStationType(mVehicleController->getVehicleClass());
+
     update();
 }
 

@@ -50,6 +50,8 @@ class VehicleDataProvider
 		void update(const VehicleKinematics&);
 		omnetpp::SimTime updated() const { return mLastUpdate; }
 
+		void initializeStationType(const std::string& vclass);
+
 		const Position& position() const { return mVehicleKinematics.position; }
 		vanetza::units::GeoAngle longitude() const { return mVehicleKinematics.geo_position.longitude; } // positive for east
 		vanetza::units::GeoAngle latitude() const { return mVehicleKinematics.geo_position.latitude; } // positive for north
