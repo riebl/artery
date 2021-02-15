@@ -5,6 +5,7 @@
  */
 
 #include "artery/traci/VehicleController.h"
+#include "artery/application/StationType.h"
 #include "artery/envmod/EnvironmentModelObject.h"
 #include <boost/geometry/strategies/transform/matrix_transformers.hpp>
 #include <boost/math/constants/constants.hpp>
@@ -82,6 +83,7 @@ EnvironmentModelObject::EnvironmentModelObject(const traci::VehicleController* v
     const auto halfLength = mLength * 0.5;
     mRadius = sqrt(halfWidth * halfWidth + halfLength * halfLength);
 
+    setStationType(deriveStationTypeFromVehicleClass(mVehicleController->getVehicleClass()));
     update();
 }
 
