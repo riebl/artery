@@ -81,6 +81,9 @@ ServerEndpoint PosixLauncher::launch()
         m_port = lookupPort();
     }
 
+    // workaround: creates <resultdir> before executing SUMO (for logfile output)
+    recordScalar("port", m_port);
+
     ServerEndpoint endpoint;
     endpoint.hostname = "localhost";
     endpoint.port = m_port;
