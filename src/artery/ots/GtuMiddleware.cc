@@ -29,6 +29,7 @@ void GtuMiddleware::initialize(int stage)
         initializeStationType(mMobility->getLastGtuObject().getType());
         mVehicleDataProvider.update(getKinematics(*mMobility));
         getFacilities().register_const(&mVehicleDataProvider);
+        getFacilities().register_const(&mMobility->getLastGtuObject());
 
         Identity identity;
         identity.application = Identity::randomStationId(getRNG(0));

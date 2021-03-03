@@ -5,11 +5,16 @@
 #include <sim0mqpp/any.hpp>
 #include <sim0mqpp/message.hpp>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 namespace ots
 {
+
+// forward declarations
+class RadioEndpoint;
+class RadioMessage;
 
 class Core : public omnetpp::cSimpleModule
 {
@@ -19,6 +24,10 @@ public:
 
     void initialize() override;
     void handleMessage(omnetpp::cMessage*) override;
+
+    void notifyRadioReception(const RadioMessage&);
+    void registerRadio(const std::string&, RadioEndpoint*);
+    void unregisterRadio(const RadioEndpoint*);
 
 protected:
     void sendCommand(const sim0mqpp::Identifier& cmd);
@@ -37,6 +46,8 @@ protected:
     void processGtuMove(const sim0mqpp::Message&);
     void processGtuAdd(const sim0mqpp::Message&);
     void processGtuRemove(const sim0mqpp::Message&);
+    void processRadio(const sim0mqpp::Message&);
+    void processRadioTransmission(const sim0mqpp::Message&);
     void processSimulationStart(const sim0mqpp::Message&);
     void processSimulationTrigger(const sim0mqpp::Message&);
     void processSimulationChange(const sim0mqpp::Message&);
@@ -58,6 +69,7 @@ private:
     bool m_gtu_add_subscribed = false;
     bool m_gtu_remove_subscribed = false;
     bool m_sim_state_subscribed = false;
+    std::unordered_map<std::string, RadioEndpoint*> m_radios;
 };
 
 } // namespace ots

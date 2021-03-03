@@ -1,5 +1,7 @@
 #include "ots/Core.h"
 #include "ots/GtuObject.h"
+#include "ots/RadioEndpoint.h"
+#include "ots/RadioMessage.h"
 #include <boost/functional/hash.hpp> // for hashing sim0mq::Identifier's strings
 #include <omnetpp/cmessage.h>
 #include <sim0mqpp/buffer_serialization.hpp>
@@ -24,6 +26,9 @@ const sim0mqpp::Identifier gtu_network_msg = std::string("GTUs in network");
 const sim0mqpp::Identifier gtu_network_get_current_msg = std::string("GTUs in network|GET_CURRENT");
 const sim0mqpp::Identifier gtu_network_subscribe_add_msg = std::string("GTUs in network|SUBSCRIBE_TO_ADD");
 const sim0mqpp::Identifier gtu_network_subscribe_remove_msg = std::string("GTUs in network|SUBSCRIBE_TO_REMOVE");
+const sim0mqpp::Identifier radio_receive_msg = std::string("RADIORECEIVE");
+const sim0mqpp::Identifier radio_transmit_msg = std::string("RADIOTRANSMIT");
+const sim0mqpp::Identifier radio_subscribe_change_msg = std::string("RADIOTRANSMIT|SUBSCRIBE_TO_CHANGE");
 const sim0mqpp::Identifier sim_start_msg = std::string("NEWSIMULATION");
 const sim0mqpp::Identifier sim_stop_msg = std::string("DIE");
 const sim0mqpp::Identifier sim_until_msg = std::string("SIMULATEUNTIL");
@@ -34,6 +39,7 @@ const sim0mqpp::Identifier sim_subscribe_change_msg = std::string("Simulator run
 const std::int32_t gtu_add_subscription = 0x20201;
 const std::int32_t gtu_remove_subscription = 0x20202;
 const std::int32_t sim_change_subscription = 0x20301;
+const std::int32_t radio_transmit_subscription = 0x20401;
 
 using namespace omnetpp;
 const simsignal_t lifecycle_signal = cComponent::registerSignal("ots-lifecycle");
@@ -110,10 +116,17 @@ void Core::handleMessage(omnetpp::cMessage* msg)
 {
     if (msg == m_step_event) {
         if (!m_network_loaded) {
-            startSimulation(par("otsNetworkFile").stringValue());
+            // OTS may automatically start a simulation: do not specify a network file then
+            const char* net_file = par("otsNetworkFile").stringValue();
+            if (strlen(net_file) > 0) {
+                startSimulation(net_file);
+            } else {
+                EV_INFO << "assuming OTS has a network loaded at start\n";
+            }
             sendCommand(gtu_network_subscribe_add_msg, gtu_add_subscription);
             sendCommand(gtu_network_subscribe_remove_msg, gtu_remove_subscription);
             sendCommand(sim_subscribe_change_msg, sim_change_subscription);
+            sendCommand(radio_subscribe_change_msg, radio_transmit_subscription);
             m_network_loaded = true;
             emit(lifecycle_signal, true);
         }
@@ -128,6 +141,26 @@ void Core::handleMessage(omnetpp::cMessage* msg)
         } else {
             // end of OTS simulation reached
             emit(lifecycle_signal, false);
+        }
+    }
+}
+
+void Core::registerRadio(const std::string& gtu_id, RadioEndpoint* radio)
+{
+    auto insertion = m_radios.emplace(gtu_id, radio);
+    if (!insertion.second) {
+        throw omnetpp::cRuntimeError("Radio endpoint for GTU %s has already been registered", gtu_id.c_str());
+    }
+}
+
+void Core::unregisterRadio(const RadioEndpoint* radio)
+{
+    for (auto it = m_radios.begin(); it != m_radios.end();)
+    {
+        if (it->second == radio) {
+            it = m_radios.erase(it);
+        } else {
+            ++it;
         }
     }
 }
@@ -204,6 +237,8 @@ void Core::queryResponses(const sim0mqpp::Identifier& wait_for)
                 processSimulationChange(msg);
             } else if (msg.message_type_id == gtu_move_msg) {
                 processGtuMove(msg);
+            } else if (msg.message_type_id == radio_transmit_msg) {
+                processRadio(msg);
             } else if (msg.message_type_id == gtu_network_msg) {
                 processNetwork(msg);
             } else if (msg.message_type_id == sim_start_msg) {
@@ -293,6 +328,52 @@ void Core::processGtuMove(const sim0mqpp::Message& msg)
         EV_DETAIL << "GTU position update for ID " << *id << "\n";
     } else {
         EV_ERROR << "received broken GTU position\n";
+    }
+}
+
+void Core::processRadio(const sim0mqpp::Message& msg)
+{
+    const std::int32_t* msg_id = boost::get<const std::int32_t>(&msg.message_id);
+    if (!msg_id) {
+        EV_ERROR << "radio transmit message contains invalid ID\n";
+        return;
+    } else if (*msg_id != radio_transmit_subscription) {
+        EV_ERROR << "received radio transmit message without matching subscription\n";
+        return;
+    }
+
+    if (msg.payload.size() == 2) {
+        processSubscriptionReply(msg, "radio transmit");
+    } else if (msg.payload.size() > 3) {
+        processRadioTransmission(msg);
+    } else {
+        EV_ERROR << "payload of radio transmit message is broken\n";
+    }
+}
+
+void Core::processRadioTransmission(const sim0mqpp::Message& msg)
+{
+    auto sender = msg.get_payload<std::string>(0);
+    auto receiver = msg.get_payload<std::string>(1);
+
+    if (sender && receiver) {
+        auto radio = m_radios.find(*sender);
+        if (radio != m_radios.end()) {
+            std::unique_ptr<RadioMessage> radio_msg { new RadioMessage() };
+            radio_msg->setSender(*sender);
+            radio_msg->setReceiver(*receiver);
+            // skip first three elements (sender, receiver, signal strength)
+            for (std::size_t i = 3; i < msg.payload.size(); ++i)
+            {
+                radio_msg->appendPayload(msg.payload[i]);
+            }
+            radio_msg->setByteLength(radio_msg->getPayloadLength());
+            radio->second->onRadioTransmit(std::move(radio_msg));
+        } else {
+            EV_WARN << "no radio endpoint registered for GTU " << *sender << "\n";
+        }
+    } else {
+        EV_ERROR << "received broken radio transmission request\n";
     }
 }
 
@@ -397,6 +478,16 @@ void Core::requestGtuPosition(const sim0mqpp::Any& gtu_id)
     payload.push_back(gtu_id);
     sendCommand(gtu_move_get_current_msg, std::move(payload));
     queryResponses(gtu_move_msg);
+}
+
+void Core::notifyRadioReception(const RadioMessage& msg)
+{
+    std::vector<sim0mqpp::Any> payload;
+    payload.push_back(msg.getSender());
+    payload.push_back(msg.getReceiver());
+    payload.push_back(1.0);
+    payload.insert(payload.end(), msg.getPayload().begin(), msg.getPayload().end());
+    sendCommand(radio_receive_msg, std::move(payload));
 }
 
 } // namespace ots

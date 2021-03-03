@@ -2,6 +2,7 @@ set(SOURCES
     BasicGtuLifecycleController.cc
     Core.cc
     GtuObject.cc
+    RadioMessage.cc
     UniformGtuCreationPolicy.cc
 )
 
