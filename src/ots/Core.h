@@ -57,6 +57,7 @@ private:
     void* m_zmq_context = nullptr;
     void* m_zmq_socket = nullptr;
     bool m_network_loaded = false;
+    bool m_running = false;
     omnetpp::cMessage* m_step_event = nullptr;
     omnetpp::SimTime m_step_length;
     omnetpp::SimTime m_stop_time;

@@ -128,10 +128,11 @@ void Core::handleMessage(omnetpp::cMessage* msg)
             sendCommand(sim_subscribe_change_msg, sim_change_subscription);
             sendCommand(radio_subscribe_change_msg, radio_transmit_subscription);
             m_network_loaded = true;
+            m_running = true;
             emit(lifecycle_signal, true);
         }
 
-        if (omnetpp::simTime() < m_stop_time) {
+        if (omnetpp::simTime() < m_stop_time && m_running) {
             // trigger OTS to advance by step length
             simulateUntil(omnetpp::simTime());
             scheduleAt(omnetpp::simTime() + m_step_length, m_step_event);
@@ -400,6 +401,7 @@ void Core::processSimulationTrigger(const sim0mqpp::Message& msg)
     if (isGoodReply(msg)) {
         EV_DETAIL << "OTS will advance in time\n";
     } else {
+        m_running = false;
         EV_ERROR << "OTS reported a problem to advance in time: " << getReplyMessage(msg) << "\n";
     }
 }
@@ -461,7 +463,7 @@ void Core::simulateUntil(omnetpp::SimTime time)
     sendCommand(sim_until_msg, std::move(payload));
     queryResponses(sim_until_msg); // response only acknowledges intention to advance in time
 
-    while (m_ots_time < time) {
+    while (m_ots_time < time && m_running) {
         queryResponses(sim_state_msg); // actual time changes of simulator
     }
 }
