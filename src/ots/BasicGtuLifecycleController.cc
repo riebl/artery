@@ -1,5 +1,6 @@
 #include "ots/BasicGtuLifecycleController.h"
 #include <omnetpp/ccomponenttype.h>
+#include <omnetpp/cmessage.h>
 
 namespace ots
 {
@@ -14,6 +15,19 @@ const simsignal_t otsLifecycleSignal = cComponent::registerSignal("ots-lifecycle
 const simsignal_t otsGtuAddSignal = cComponent::registerSignal("ots-gtu-add");
 const simsignal_t otsGtuRemoveSignal = cComponent::registerSignal("ots-gtu-remove");
 const simsignal_t otsGtuPositionSignal = cComponent::registerSignal("ots-gtu-position");
+
+class InsertionMessage : public omnetpp::cMessage
+{
+public:
+    InsertionMessage(const std::string& gtu_id) :
+        omnetpp::cMessage("GTU insertion"), mGtuId(gtu_id) {}
+    const std::string& getGtuId() const { return mGtuId; }
+    const char* getDisplayString() const override { return mGtuId.c_str(); }
+    omnetpp::cMessage* dup() const override { return new InsertionMessage(*this); }
+
+private:
+    std::string mGtuId;
+};
 
 } // namespace
 
@@ -30,6 +44,19 @@ void BasicGtuLifecycleController::initialize()
     if (!m_creation_policy) {
         throw cRuntimeError("missing GtuCreationPolicy");
     }
+}
+
+void BasicGtuLifecycleController::handleMessage(omnetpp::cMessage* msg)
+{
+    if (auto insertion_msg = dynamic_cast<InsertionMessage*>(msg)) {
+        auto found = m_pending_gtus.find(insertion_msg->getGtuId());
+        if (found != m_pending_gtus.end()) {
+            ASSERT(found->second);
+            createSink(*found->second);
+            m_pending_gtus.erase(found);
+        }
+    }
+    delete msg;
 }
 
 void BasicGtuLifecycleController::receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t signal, bool flag, omnetpp::cObject*)
@@ -62,13 +89,13 @@ void BasicGtuLifecycleController::receiveSignal(omnetpp::cComponent*, omnetpp::s
             updateGtu(*gtu);
         }
     } else {
-        EV_WARN << "ignore unknown signal\n";
+        EV_WARN << "ignoring unknown signal\n";
     }
 }
 
 void BasicGtuLifecycleController::addGtu(const std::string& id)
 {
-    m_pending_gtus.insert(id);
+    m_pending_gtus.insert(std::make_pair(id, nullptr));
 }
 
 void BasicGtuLifecycleController::removeGtu(const std::string& id)
@@ -80,27 +107,31 @@ void BasicGtuLifecycleController::removeGtu(const std::string& id)
 
 void BasicGtuLifecycleController::updateGtu(const GtuObject& obj)
 {
+    Enter_Method_Silent();
     GtuSink* sink = getSink(obj.getId());
-    if (!sink && m_pending_gtus.find(obj.getId()) != m_pending_gtus.end()) {
-        const GtuCreationPolicy::Instruction& instruction = m_creation_policy->getInstruction(obj);
-        Initializer init = [&sink, &instruction, &obj](omnetpp::cModule* mod) {
-            sink = dynamic_cast<GtuSink*>(mod->getModuleByPath(instruction.getSinkPath()));
-            if (sink) {
-                sink->initialize(obj);
+    if (!sink) {
+        auto pending = m_pending_gtus.find(obj.getId());
+        if (pending != m_pending_gtus.end()) {
+            if (pending->second == nullptr) {
+                omnetpp::SimTime delay = par("insertionDelay");
+                if (delay > omnetpp::SimTime::ZERO) {
+                    // schedule insertion later on
+                    pending->second.reset(new GtuObject { obj });
+                    scheduleAt(simTime() + delay, new InsertionMessage(obj.getId()));
+                } else {
+                    // insert immediately
+                    m_pending_gtus.erase(obj.getId());
+                    createSink(obj);
+                }
+            } else {
+                // update GTU object used for later insertion
+                *pending->second = obj;
             }
-        };
-        omnetpp::cModule* mod = addModule(obj.getId(), instruction.getModuleType(), init);
-        m_pending_gtus.erase(obj.getId());
-
-        if (sink) {
-            m_gtu_sinks.insert({ obj.getId(), sink });
         } else {
-            EV_ERROR << "could not find GTU sink for module " << mod->getFullPath() << "\n";
+            EV_WARN << "no GTU sink found for id " << obj.getId() << "\n";
         }
-    } else if (sink) {
-        sink->update(obj);
     } else {
-        EV_WARN << "no GTU sink found for id " << obj.getId() << "\n";
+        sink->update(obj);
     }
 }
 
@@ -139,6 +170,28 @@ GtuSink* BasicGtuLifecycleController::getSink(const std::string& id)
 {
     auto found = m_gtu_sinks.find(id);
     return found != m_gtu_sinks.end() ? found->second : nullptr;
+}
+
+void BasicGtuLifecycleController::createSink(const GtuObject& obj)
+{
+    GtuSink* sink = nullptr;
+    const GtuCreationPolicy::Instruction& instruction = m_creation_policy->getInstruction(obj);
+    Initializer init = [&sink, &instruction, &obj](omnetpp::cModule* mod) {
+        sink = dynamic_cast<GtuSink*>(mod->getModuleByPath(instruction.getSinkPath()));
+        if (sink) {
+            sink->initialize(obj);
+        }
+    };
+    omnetpp::cModule* mod = addModule(obj.getId(), instruction.getModuleType(), init);
+
+    if (sink) {
+        auto insertion = m_gtu_sinks.insert({ obj.getId(), sink });
+        if (!insertion.second) {
+            throw omnetpp::cRuntimeError("insertion of GTU sink failed");
+        }
+    } else {
+        EV_ERROR << "could not find GTU sink for module " << mod->getFullPath() << "\n";
+    }
 }
 
 } // namespace ots

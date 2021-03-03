@@ -8,8 +8,9 @@
 #include <omnetpp/csimplemodule.h>
 #include <functional>
 #include <map>
+#include <memory>
 #include <string>
-#include <unordered_set>
+#include <unordered_map>
 
 namespace ots
 {
@@ -18,6 +19,7 @@ class BasicGtuLifecycleController : public omnetpp::cListener, public omnetpp::c
 {
 public:
     void initialize() override;
+    void handleMessage(omnetpp::cMessage*) override;
     void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, bool, omnetpp::cObject* = nullptr) override;
     void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, const char*, omnetpp::cObject* = nullptr) override;
     void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject* = nullptr) override;
@@ -33,12 +35,13 @@ protected:
     virtual void removeModule(const std::string&);
     virtual omnetpp::cModule* getModule(const std::string&);
     virtual GtuSink* getSink(const std::string&);
+    virtual void createSink(const GtuObject&);
 
 private:
     unsigned m_node_index = 0;
     std::map<std::string, omnetpp::cModule*> m_nodes;
     std::map<std::string, GtuSink*> m_gtu_sinks;
-    std::unordered_set<std::string> m_pending_gtus;
+    std::unordered_map<std::string, std::unique_ptr<GtuObject>> m_pending_gtus;
     GtuCreationPolicy* m_creation_policy = nullptr;
 };
 
