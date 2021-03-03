@@ -114,6 +114,7 @@ if(TARGET ots)
     set_property(TARGET core APPEND PROPERTY SOURCES
         ots/GtuMiddleware.cc
         ots/GtuPositionProvider.cc
+        ots/GtuProxyService.cc
         ots/GtuInetMobility.cc
     )
     target_link_libraries(core PUBLIC ots)
