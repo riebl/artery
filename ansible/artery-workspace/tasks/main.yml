@@ -8,6 +8,7 @@
           - cmake
           - cmake-curses-gui
           - g++
+          - git
           - libboost-dev
           - libboost-date-time-dev
           - libboost-system-dev
