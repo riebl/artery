@@ -8,4 +8,5 @@ package artery.envmod.sensor;
 
 simple FrontRadar extends RadarSensor
 {
+    attachmentPoint = "FRONT";
 }
