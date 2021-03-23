@@ -11,6 +11,7 @@ simple RadarSensor like FovSensor
     parameters:
         double fovRange @unit(m) = default(80.0 m);
         double fovAngle = default(60.0); // degree
-        int numSegments = default(10);
+        string attachmentPoint = default("FRONT");
+        int numSegments = default(1);
         bool doLineOfSightCheck = default(true);
 }

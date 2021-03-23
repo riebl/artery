@@ -7,6 +7,8 @@
 #ifndef ENVMOD_SENSORPOSITION_H_KCWHOGMB
 #define ENVMOD_SENSORPOSITION_H_KCWHOGMB
 
+#include <unordered_map>
+#include <string>
 #include <boost/units/quantity.hpp>
 #include <boost/units/systems/angle/degrees.hpp>
 
@@ -23,6 +25,14 @@ enum class SensorPosition
 };
 
 boost::units::quantity<boost::units::degree::plane_angle> relativeAngle(SensorPosition pos);
+
+static std::unordered_map<std::string, artery::SensorPosition> sensorPositionStrings = {
+    {"VIRTUAL", SensorPosition::VIRTUAL},
+    {"FRONT", SensorPosition::FRONT},
+    {"BACK", SensorPosition::BACK},
+    {"LEFT", SensorPosition::LEFT},
+    {"RIGHT", SensorPosition::RIGHT},
+};
 
 } // namespace artery
 
