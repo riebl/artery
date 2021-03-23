@@ -11,6 +11,7 @@ moduleinterface FovSensor
     parameters:
         double fovRange @unit(m);
         double fovAngle; // opening angle in degree
+        string attachmentPoint;
         int numSegments;
-        bool doLineOfSightCheck;
+        bool doLineOfSightCheck = default(true);
 }

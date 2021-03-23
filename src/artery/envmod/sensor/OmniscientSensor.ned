@@ -11,6 +11,7 @@ simple OmniscientSensor like FovSensor
     parameters:
         double fovRange @unit(m);
         double fovAngle = default(360); // opening angle in degree
+        string attachmentPoint = default("FRONT");
         int numSegments = 12;
         bool doLineOfSightCheck = false;
 }

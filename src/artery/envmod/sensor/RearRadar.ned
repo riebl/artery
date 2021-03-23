@@ -8,4 +8,5 @@ package artery.envmod.sensor;
 
 simple RearRadar extends RadarSensor
 {
+    attachmentPoint = "BACK";
 }
