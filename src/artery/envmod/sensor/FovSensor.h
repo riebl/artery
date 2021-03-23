@@ -50,7 +50,7 @@ protected:
     void initialize() override;
     void refreshDisplay() const override;
 
-    SensorConfigRadar mRadarConfig;
+    SensorConfigFov mFovConfig;
     Updatable<SensorDetection> mLastDetection;
 
 private:

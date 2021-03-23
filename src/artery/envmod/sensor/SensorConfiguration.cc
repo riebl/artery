@@ -8,7 +8,7 @@
 namespace artery
 {
 
-std::vector<Position> createSensorArc(const SensorConfigRadar& config, const Position& egoPos, const Angle& egoHeading)
+std::vector<Position> createSensorArc(const SensorConfigFov& config, const Position& egoPos, const Angle& egoHeading)
 {
     namespace gm = boost::geometry;
     using rotation = gm::strategy::transform::rotate_transformer<gm::degree, double, 2, 2>;
@@ -45,7 +45,7 @@ std::vector<Position> createSensorArc(const SensorConfigRadar& config, const Pos
     return points;
 }
 
-std::vector<Position> createSensorArc(const SensorConfigRadar& config, const EnvironmentModelObject& egoObj)
+std::vector<Position> createSensorArc(const SensorConfigFov& config, const EnvironmentModelObject& egoObj)
 {
     Position sensorPos = egoObj.getAttachmentPoint(config.sensorPosition);
     return createSensorArc(config, sensorPos, egoObj.getVehicleData().heading());

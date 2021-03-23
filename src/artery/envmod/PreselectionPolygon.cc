@@ -16,7 +16,7 @@ void PreselectionPolygon::update()
 {
 }
 
-std::vector<std::string> PreselectionPolygon::select(const EnvironmentModelObject& ego, const SensorConfigRadar& config)
+std::vector<std::string> PreselectionPolygon::select(const EnvironmentModelObject& ego, const SensorConfigFov& config)
 {
     const auto& sensorCone = createSensorArc(config, ego);
     if (!boost::geometry::is_valid(sensorCone)) {

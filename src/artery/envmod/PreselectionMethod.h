@@ -15,7 +15,7 @@ namespace artery
 {
 
 class EnvironmentModelObject;
-class SensorConfigRadar;
+class SensorConfigFov;
 
 class PreselectionMethod
 {
@@ -24,7 +24,7 @@ public:
 
     PreselectionMethod(const GlobalEnvironmentModel::ObjectDB& objs) : mObjects(objs) {}
     virtual void update() = 0;
-    virtual std::vector<std::string> select(const EnvironmentModelObject& ego, const SensorConfigRadar&) = 0;
+    virtual std::vector<std::string> select(const EnvironmentModelObject& ego, const SensorConfigFov&) = 0;
 
 protected:
     const Objects& mObjects;

@@ -68,7 +68,7 @@ void InterdistanceMatrix::update()
     }
 }
 
-std::vector<std::string> InterdistanceMatrix::select(const EnvironmentModelObject& ego, const SensorConfigRadar& config)
+std::vector<std::string> InterdistanceMatrix::select(const EnvironmentModelObject& ego, const SensorConfigFov& config)
 {
     assert(ego.getExternalId() == config.egoID);
     ItemSelector selector = buildItemSelector(config);
@@ -89,7 +89,7 @@ std::vector<std::string> InterdistanceMatrix::select(const EnvironmentModelObjec
     return objectsInVecinityID;
 }
 
-InterdistanceMatrix::ItemSelector InterdistanceMatrix::buildItemSelector(const SensorConfigRadar& config) const
+InterdistanceMatrix::ItemSelector InterdistanceMatrix::buildItemSelector(const SensorConfigFov& config) const
 {
     if (config.egoID.empty())
         throw std::runtime_error("Vehicle ID empty");

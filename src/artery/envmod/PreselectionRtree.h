@@ -19,7 +19,7 @@ public:
     using PreselectionMethod::PreselectionMethod;
 
     void update() override;
-    std::vector<std::string> select(const EnvironmentModelObject& ego, const SensorConfigRadar&) override;
+    std::vector<std::string> select(const EnvironmentModelObject& ego, const SensorConfigFov&) override;
 
 private:
     using rtree_value = std::pair<geometry::Box, std::string>;

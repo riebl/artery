@@ -36,10 +36,10 @@ void FovSensor::initialize()
     mGlobalEnvironmentModel->getCanvas()->addFigure(mGroupFigure);
     mColor = cFigure::GOOD_DARK_COLORS[getId() % cFigure::NUM_GOOD_DARK_COLORS];
 
-    mRadarConfig.fieldOfView.range = par("fovRange").doubleValue() * boost::units::si::meters;
-    mRadarConfig.fieldOfView.angle = par("fovAngle").doubleValue() * boost::units::degree::degrees;
-    mRadarConfig.numSegments = par("numSegments");
-    mRadarConfig.doLineOfSightCheck = par("doLineOfSightCheck");
+    mFovConfig.fieldOfView.range = par("fovRange").doubleValue() * boost::units::si::meters;
+    mFovConfig.fieldOfView.angle = par("fovAngle").doubleValue() * boost::units::degree::degrees;
+    mFovConfig.numSegments = par("numSegments");
+    mFovConfig.doLineOfSightCheck = par("doLineOfSightCheck");
 }
 
 void FovSensor::measurement()
