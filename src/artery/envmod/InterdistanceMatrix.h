@@ -28,7 +28,7 @@ public:
     using PreselectionMethod::PreselectionMethod;
 
     void update() override;
-    std::vector<std::string> select(const EnvironmentModelObject& ego, const SensorConfigRadar&) override;
+    std::vector<std::string> select(const EnvironmentModelObject& ego, const SensorConfigFov&) override;
 
 private:
     struct ItemSelector
@@ -50,7 +50,7 @@ private:
         std::string name;
     };
 
-    ItemSelector buildItemSelector(const SensorConfigRadar&) const;
+    ItemSelector buildItemSelector(const SensorConfigFov&) const;
     bool checkItemSelector(const ItemSelector&, const MatrixItem&) const;
 
     /**
