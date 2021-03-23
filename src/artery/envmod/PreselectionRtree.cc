@@ -23,7 +23,7 @@ void PreselectionRtree::update()
     }
 }
 
-std::vector<std::string> PreselectionRtree::select(const EnvironmentModelObject& ego, const SensorConfigRadar& config)
+std::vector<std::string> PreselectionRtree::select(const EnvironmentModelObject& ego, const SensorConfigFov& config)
 {
     auto cone = createSensorArc(config, ego);
     if (!boost::geometry::is_valid(cone)) {

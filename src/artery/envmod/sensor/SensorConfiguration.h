@@ -25,7 +25,7 @@ struct SensorConfig
         std::string sensorName;
 };
 
-struct SensorConfigRadar : public SensorConfig
+struct SensorConfigFov : public SensorConfig
 {
         FieldOfView fieldOfView;
         SensorPosition sensorPosition = SensorPosition::FRONT;
@@ -43,8 +43,8 @@ struct SensorConfigRadar : public SensorConfig
  * @param config radar sensor configuration describing the cone geometry
  * @return polygon approximating cone
  */
-std::vector<Position> createSensorArc(const SensorConfigRadar&, const Position&, const Angle&);
-std::vector<Position> createSensorArc(const SensorConfigRadar&, const EnvironmentModelObject&);
+std::vector<Position> createSensorArc(const SensorConfigFov&, const Position&, const Angle&);
+std::vector<Position> createSensorArc(const SensorConfigFov&, const EnvironmentModelObject&);
 
 } // namespace artery
 
