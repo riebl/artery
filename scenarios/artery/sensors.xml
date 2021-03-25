@@ -16,7 +16,26 @@
 			<showLineOfSight value="true" />
 		</visualization>
 	</sensor>
-	<sensor name="OmniscientRadar25" type="artery.envmod.sensor.OmniscientSensor">
+
+	<sensor name="RearLongRangeRadar" type="artery.envmod.sensor.RearRadar">
+		<visualization>
+			<showObjectsInSensorRange value="true" />
+			<showObstaclesInSensorRange value="true" />
+			<showSensorCone value="true" />
+			<showLineOfSight value="true" />
+		</visualization>
+	</sensor>
+
+	<sensor name="RearShortRangeRadar" type="artery.envmod.sensor.RearRadar">
+		<visualization>
+			<showObjectsInSensorRange value="true" />
+			<showObstaclesInSensorRange value="true" />
+			<showSensorCone value="true" />
+			<showLineOfSight value="true" />
+		</visualization>
+	</sensor>
+
+	<sensor name="OmniscientRadar50" type="artery.envmod.sensor.OmniscientSensor">
 		<visualization>
 			<showObjectsInSensorRange value="true" />
 			<showObstaclesInSensorRange value="true" />
