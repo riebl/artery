@@ -22,7 +22,11 @@ std::vector<Position> createSensorArc(const SensorConfigFov& config, const Posit
     const double sensorPositionDeg = relativeAngle(config.sensorPosition) / boost::units::degree::degrees;
 
     std::vector<Position> points;
-    points.push_back(Position {0.0, 0.0});
+
+    // if sensor cone is 360 deg omit center point
+    if (config.fieldOfView.angle != 360.0 * boost::units::degree::degrees) {
+        points.push_back(Position {0.0, 0.0});
+    }
 
     Position sensorBoundary(config.fieldOfView.range / boost::units::si::meters, 0.0);
     rotation rotateSensorBoundary(sensorPositionDeg - 0.5 * openingAngleDeg + egoHeadingDeg);
