@@ -9,6 +9,7 @@ simple Core
         @signal[ots-gtu-position](type=GtuObject);
 
         double stepLength @unit(second) = default(0.1s);
+        bool syncTimeOnNotification = default(true);
         string otsEndpoint = default("tcp://localhost:8888");
         string otsNetworkFile;
         int otsSeed = default(1);
