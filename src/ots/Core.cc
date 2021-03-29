@@ -110,6 +110,7 @@ void Core::initialize()
     scheduleAt(omnetpp::simTime(), m_step_event);
 
     m_stop_time = par("otsRunDuration");
+    m_sync_time_notification = par("syncTimeOnNotification");
 }
 
 void Core::handleMessage(omnetpp::cMessage* msg)
@@ -484,6 +485,11 @@ void Core::requestGtuPosition(const sim0mqpp::Any& gtu_id)
 
 void Core::notifyRadioReception(const RadioMessage& msg)
 {
+    Enter_Method_Silent();
+    if (m_sync_time_notification) {
+        simulateUntil(omnetpp::simTime());
+    }
+
     std::vector<sim0mqpp::Any> payload;
     payload.push_back(msg.getSender());
     payload.push_back(msg.getReceiver());

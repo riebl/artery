@@ -71,6 +71,7 @@ private:
     bool m_gtu_remove_subscribed = false;
     bool m_sim_state_subscribed = false;
     std::unordered_map<std::string, RadioEndpoint*> m_radios;
+    bool m_sync_time_notification = false; /* sync OTS time before sending a notification to it */
 };
 
 } // namespace ots
