@@ -97,9 +97,10 @@ void Core::checkVersion()
 
 void Core::syncTime()
 {
+    SimTime offset { m_traci->simulation.getCurrentTime(), SIMTIME_MS };
     const SimTime now = simTime();
     if (!now.isZero()) {
-        m_traci->simulationStep(now.dbl());
+        m_traci->simulationStep((now + offset).dbl());
     }
 }
 
