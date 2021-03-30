@@ -76,6 +76,10 @@ void BasicNodeManager::traciInit()
     for (const std::string& id : m_api->vehicle().getIDList()) {
         addVehicle(id);
     }
+
+    // treat SUMO start time as constant offset
+    m_offset = omnetpp::SimTime { m_api->simulation().getCurrentTime(), omnetpp::SIMTIME_MS };
+    m_offset -= omnetpp::simTime();
 }
 
 void BasicNodeManager::traciStep()
@@ -94,7 +98,7 @@ void BasicNodeManager::traciClose()
 void BasicNodeManager::processVehicles()
 {
     auto sim_cache = m_subscriptions->getSimulationCache();
-    ASSERT(checkTimeSync(*sim_cache, omnetpp::simTime()));
+    ASSERT(checkTimeSync(*sim_cache, omnetpp::simTime() + m_offset));
 
     const auto& departed = sim_cache->get<libsumo::VAR_DEPARTED_VEHICLES_IDS>();
     EV_DETAIL << "TraCI: " << departed.size() << " vehicles departed" << endl;

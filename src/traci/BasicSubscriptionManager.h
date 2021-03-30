@@ -56,6 +56,7 @@ private:
     std::vector<int> m_sim_vars;
     std::unordered_map<std::string, std::shared_ptr<VehicleCache>> m_vehicle_caches;
     std::shared_ptr<SimulationCache> m_sim_cache;
+    omnetpp::SimTime m_offset = omnetpp::SimTime::ZERO;
 };
 
 } // namespace traci

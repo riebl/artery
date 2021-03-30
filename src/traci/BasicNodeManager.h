@@ -81,6 +81,7 @@ private:
     std::map<std::string, VehicleSink*> m_vehicles;
     std::string m_vehicle_sink_module;
     bool m_destroy_vehicles_on_crash;
+    omnetpp::SimTime m_offset = omnetpp::SimTime::ZERO;
 };
 
 } // namespace traci

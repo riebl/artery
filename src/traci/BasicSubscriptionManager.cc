@@ -54,6 +54,10 @@ void BasicSubscriptionManager::traciInit()
     for (const std::string& id : m_api->vehicle().getIDList()) {
         subscribeVehicle(id);
     }
+
+    // read SUMO start time and store it as offset
+    m_offset = omnetpp::SimTime { m_api->simulation().getCurrentTime(), omnetpp::SIMTIME_MS };
+    m_offset -= omnetpp::simTime();
 }
 
 void BasicSubscriptionManager::traciStep()
@@ -116,7 +120,7 @@ void BasicSubscriptionManager::step()
 {
     const auto& simvars = m_api->simulation().getSubscriptionResults("");
     m_sim_cache->reset(simvars);
-    ASSERT(checkTimeSync(*m_sim_cache, omnetpp::simTime()));
+    ASSERT(checkTimeSync(*m_sim_cache, omnetpp::simTime() + m_offset));
 
     const auto& arrivedVehicles = m_sim_cache->get<libsumo::VAR_ARRIVED_VEHICLES_IDS>();
     for (const auto& id : arrivedVehicles) {
