@@ -16,7 +16,7 @@
 namespace traci
 {
 
-class VariableCache
+class VariableCache : private TraCIAPI::TraCIScopeWrapper
 {
 public:
     const std::string& getId() const { return m_id; }
@@ -75,7 +75,6 @@ protected:
 private:
     std::shared_ptr<API> m_api;
     const std::string m_id;
-    const int m_command;
     libsumo::TraCIResults m_values;
 };
 

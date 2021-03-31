@@ -364,7 +364,7 @@ void GlobalEnvironmentModel::fetchObstacles(const traci::API& traci)
         }
 
         std::vector<Position> shape;
-        for (const traci::TraCIPosition& traci_point : polygons.getShape(id)) {
+        for (const traci::TraCIPosition& traci_point : polygons.getShape(id).value) {
             shape.push_back(traci::position_cast(boundary, traci_point));
         }
         if (shape.size() >= 3) {

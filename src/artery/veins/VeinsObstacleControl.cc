@@ -38,7 +38,7 @@ void VeinsObstacleControl::fetchObstacles(std::shared_ptr<traci::API> traci)
         std::string type = polygons.getType(id);
         if (this->isTypeSupported(type)) {
             std::vector<veins::Coord> shape;
-            for (const traci::TraCIPosition& traci_point : polygons.getShape(id)) {
+            for (const traci::TraCIPosition& traci_point : polygons.getShape(id).value) {
                 using boost::units::si::meter;
                 Position point = traci::position_cast(boundary, traci_point);
                 shape.push_back(veins::Coord { point.x / meter, point.y / meter});
