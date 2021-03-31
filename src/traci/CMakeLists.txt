@@ -9,7 +9,6 @@ set(SOURCES
     ExtensibleNodeManager.cc
     InsertionDelayVehiclePolicy.cc
     Listener.cc
-    LiteAPI.cc
     MultiTypeModuleMapper.cc
     PosixLauncher.cc
     RegionsOfInterest.cc

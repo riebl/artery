@@ -7,8 +7,8 @@
 #include "artery/inet/gemv2/ObstacleIndex.h"
 #include "artery/inet/gemv2/Visualizer.h"
 #include "artery/traci/Cast.h"
+#include "traci/API.h"
 #include "traci/Core.h"
-#include "traci/LiteAPI.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/register/linestring.hpp>
@@ -62,17 +62,17 @@ void ObstacleIndex::receiveSignal(cComponent* source, simsignal_t signal, const 
     Enter_Method_Silent();
     if (signal == traciInitSignal) {
         auto core = check_and_cast<traci::Core*>(source);
-        fetchObstacles(core->getLiteAPI());
+        fetchObstacles(*core->getAPI());
         if (mVisualizer) {
             mVisualizer->drawObstacles(this);
         }
     }
 }
 
-void ObstacleIndex::fetchObstacles(traci::LiteAPI& traci)
+void ObstacleIndex::fetchObstacles(const traci::API& traci)
 {
-    const auto& polygons = traci.polygon();
-    const traci::Boundary boundary { traci.simulation().getNetBoundary() };
+    const auto& polygons = traci.polygon;
+    const traci::Boundary boundary { traci.simulation.getNetBoundary() };
     const bool require_filled = par("requireFilled");
     unsigned ignored = 0;
     std::string shape_msg;

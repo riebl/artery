@@ -17,7 +17,7 @@
 namespace traci
 {
 
-class LiteAPI;
+class API;
 class ModuleMapper;
 class VehicleCache;
 class VehicleSink;
@@ -32,7 +32,7 @@ public:
     static const omnetpp::simsignal_t updateVehicleSignal;
     static const omnetpp::simsignal_t removeVehicleSignal;
 
-    LiteAPI* getLiteAPI() override { return m_api; }
+    std::shared_ptr<API> getAPI() override { return m_api; }
     SubscriptionManager* getSubscriptions() { return m_subscriptions; }
     std::size_t getNumberOfNodes() const override;
 
@@ -72,7 +72,7 @@ protected:
     void traciClose() override;
 
 private:
-    LiteAPI* m_api;
+    std::shared_ptr<API> m_api;
     ModuleMapper* m_mapper;
     Boundary m_boundary;
     SubscriptionManager* m_subscriptions;

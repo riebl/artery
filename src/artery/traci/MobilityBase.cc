@@ -9,16 +9,14 @@ namespace artery
 
 omnetpp::simsignal_t MobilityBase::stateChangedSignal = omnetpp::cComponent::registerSignal("mobilityStateChanged");
 
-void MobilityBase::initializeSink(LiteAPI* api, const std::string& id, const Boundary& boundary, std::shared_ptr<VehicleCache> cache)
+void MobilityBase::initializeSink(std::shared_ptr<API> api, std::shared_ptr<VehicleCache> cache, const Boundary& boundary)
 {
     ASSERT(api);
     ASSERT(cache);
-    ASSERT(cache->getVehicleId() == id);
-    ASSERT(&cache->getLiteAPI() == api);
     mTraci = api;
-    mVehicleId= id;
+    mVehicleId = cache->getId();
     mNetBoundary = boundary;
-    mController.reset(new VehicleController(cache));
+    mController.reset(new VehicleController(api, cache));
 }
 
 void MobilityBase::initializeVehicle(const TraCIPosition& traci_pos, TraCIAngle traci_heading, double traci_speed)

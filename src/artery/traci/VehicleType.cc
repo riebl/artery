@@ -8,8 +8,8 @@ namespace si = boost::units::si;
 namespace traci
 {
 
-VehicleType::VehicleType(const std::string& type_id, traci::LiteAPI& api) :
-    m_id(type_id), m_api(api.vehicletype())
+VehicleType::VehicleType(const traci::API::VehicleTypeScope& api, const std::string& id) :
+    m_id(id), m_api(api)
 {
 }
 

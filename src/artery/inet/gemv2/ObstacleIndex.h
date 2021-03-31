@@ -17,7 +17,7 @@
 #include <vector>
 
 // forward declaration
-namespace traci { class LiteAPI; }
+namespace traci { class API; }
 
 namespace artery
 {
@@ -82,7 +82,7 @@ public:
     omnetpp::cFigure::Color getColor() const { return mColor; }
 
 private:
-    void fetchObstacles(traci::LiteAPI&);
+    void fetchObstacles(const traci::API&);
 
     using RtreeValue = std::pair<geometry::Box, std::size_t>;
     using Rtree = boost::geometry::index::rtree<RtreeValue, boost::geometry::index::rstar<16>>;

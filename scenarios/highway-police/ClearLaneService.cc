@@ -19,7 +19,7 @@ void ClearLaneService::indicate(const vanetza::btp::DataIndication& ind, omnetpp
     auto clearLaneMessage = check_and_cast<const PoliceClearLane*>(packet);
 
     const std::string id = mVehicleController->getVehicleId();
-    auto& vehicle_api = mVehicleController->getLiteAPI().vehicle();
+    auto& vehicle_api = mVehicleController->getTraCI()->vehicle;
     if (vehicle_api.getRoadID(id) == clearLaneMessage->getEdgeName()) {
         if (vehicle_api.getLaneIndex(id) != clearLaneMessage->getLaneIndex()) {
             slowDown();

@@ -1,7 +1,7 @@
+#include "traci/API.h"
 #include "traci/BasicNodeManager.h"
 #include "traci/CheckTimeSync.h"
 #include "traci/Core.h"
-#include "traci/LiteAPI.h"
 #include "traci/ModuleMapper.h"
 #include "traci/VariableCache.h"
 #include "traci/VehicleSink.h"
@@ -51,7 +51,7 @@ void BasicNodeManager::initialize()
 {
     Core* core = inet::getModuleFromPar<Core>(par("coreModule"), this);
     subscribeTraCI(core);
-    m_api = &core->getLiteAPI();
+    m_api = core->getAPI();
     m_mapper = inet::getModuleFromPar<ModuleMapper>(par("mapperModule"), this);
     m_nodeIndex = 0;
     m_vehicle_sink_module = par("vehicleSinkModule").stringValue();
@@ -61,24 +61,23 @@ void BasicNodeManager::initialize()
 
 void BasicNodeManager::finish()
 {
-    m_api = nullptr;
     unsubscribeTraCI();
     cSimpleModule::finish();
 }
 
 void BasicNodeManager::traciInit()
 {
-    m_boundary = Boundary { m_api->simulation().getNetBoundary() };
+    m_boundary = Boundary { m_api->simulation.getNetBoundary() };
     m_subscriptions->subscribeSimulationVariables(sSimulationVariables);
     m_subscriptions->subscribeVehicleVariables(sVehicleVariables);
 
     // insert already running vehicles
-    for (const std::string& id : m_api->vehicle().getIDList()) {
+    for (const std::string& id : m_api->vehicle.getIDList()) {
         addVehicle(id);
     }
 
     // treat SUMO start time as constant offset
-    m_offset = omnetpp::SimTime { m_api->simulation().getCurrentTime(), omnetpp::SIMTIME_MS };
+    m_offset = omnetpp::SimTime { m_api->simulation.getCurrentTime(), omnetpp::SIMTIME_MS };
     m_offset -= omnetpp::simTime();
 }
 
@@ -131,8 +130,8 @@ void BasicNodeManager::addVehicle(const std::string& id)
 {
     NodeInitializer init = [this, &id](cModule* module) {
         VehicleSink* vehicle = getVehicleSink(module);
-        auto& traci = m_api->vehicle();
-        vehicle->initializeSink(m_api, id, m_boundary, m_subscriptions->getVehicleCache(id));
+        auto& traci = m_api->vehicle;
+        vehicle->initializeSink(m_api, m_subscriptions->getVehicleCache(id), m_boundary);
         vehicle->initializeVehicle(traci.getPosition(id), TraCIAngle { traci.getAngle(id) }, traci.getSpeed(id));
         m_vehicles[id] = vehicle;
     };

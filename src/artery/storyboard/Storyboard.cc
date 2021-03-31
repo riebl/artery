@@ -121,7 +121,7 @@ void Storyboard::receiveSignal(cComponent* source, simsignal_t signalId, const s
     }
     else if (signalId == traciInitSignal) {
         traci::Core* core = check_and_cast<traci::Core*>(source);
-        const libsumo::TraCIPositionVector& boundary = core->getLiteAPI().simulation().getNetBoundary();
+        const libsumo::TraCIPositionVector& boundary = core->getAPI()->simulation.getNetBoundary();
         mNetworkBoundary = traci::Boundary { boundary };
 
         try {

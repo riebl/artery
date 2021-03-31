@@ -1,7 +1,7 @@
 #include "artery/networking/StationaryPositionProvider.h"
 #include "artery/traci/Cast.h"
+#include "traci/API.h"
 #include "traci/Core.h"
-#include "traci/LiteAPI.h"
 #include "traci/Position.h"
 #include <inet/mobility/contract/IMobility.h>
 #include <inet/common/ModuleAccess.h>
@@ -47,9 +47,9 @@ void StationaryPositionProvider::initializePosition(const Position& pos)
 {
     // TODO inet::IGeographicCoordinateSystem provided by TraCI module would be nice
     auto traci = inet::getModuleFromPar<traci::Core>(par("traciCoreModule"), this);
-    traci::LiteAPI& api = traci->getLiteAPI();
-    const traci::Boundary boundary { api.simulation().getNetBoundary() };
-    traci::TraCIGeoPosition geopos = api.convertGeo(traci::position_cast(boundary, Position { pos.x, pos.y }));
+    auto api = traci->getAPI();
+    const traci::Boundary boundary { api->simulation.getNetBoundary() };
+    traci::TraCIGeoPosition geopos = api->convertGeo(traci::position_cast(boundary, Position { pos.x, pos.y }));
     mGeodeticPosition.latitude = geopos.latitude * boost::units::degree::degree;
     mGeodeticPosition.longitude = geopos.longitude * boost::units::degree::degree;
 

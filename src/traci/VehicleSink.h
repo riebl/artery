@@ -7,13 +7,13 @@
 namespace traci
 {
 
-class LiteAPI;
+class API;
 class VehicleCache;
 
 class VehicleSink
 {
 public:
-    virtual void initializeSink(LiteAPI*, const std::string& id, const Boundary&, std::shared_ptr<VehicleCache>) = 0;
+    virtual void initializeSink(std::shared_ptr<API>, std::shared_ptr<VehicleCache>, const Boundary&) = 0;
     virtual void initializeVehicle(const TraCIPosition&, TraCIAngle, double speed) = 0;
     virtual void updateVehicle(const TraCIPosition&, TraCIAngle, double speed) = 0;
     virtual ~VehicleSink() = default;

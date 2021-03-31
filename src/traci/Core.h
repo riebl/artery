@@ -23,7 +23,7 @@ public:
     void initialize() override;
     void finish() override;
     void handleMessage(omnetpp::cMessage*) override;
-    LiteAPI& getLiteAPI();
+    std::shared_ptr<API> getAPI();
 
 protected:
     virtual void checkVersion();
@@ -35,8 +35,7 @@ private:
     omnetpp::SimTime m_updateInterval;
 
     Launcher* m_launcher;
-    std::unique_ptr<API> m_traci;
-    std::unique_ptr<LiteAPI> m_lite;
+    std::shared_ptr<API> m_traci;
     bool m_stopping;
     SubscriptionManager* m_subscriptions;
 };
