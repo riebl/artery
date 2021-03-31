@@ -1,6 +1,5 @@
 #include "traci/Core.h"
 #include "traci/Launcher.h"
-#include "traci/LiteAPI.h"
 #include "traci/API.h"
 #include "traci/SubscriptionManager.h"
 #include <inet/common/ModuleAccess.h>
@@ -21,7 +20,7 @@ const simsignal_t closeSignal = cComponent::registerSignal("traci.close");
 namespace traci
 {
 
-Core::Core() : m_traci(new API()), m_lite(new LiteAPI(*m_traci)), m_subscriptions(nullptr)
+Core::Core() : m_traci(new API()), m_subscriptions(nullptr)
 {
 }
 
@@ -104,9 +103,9 @@ void Core::syncTime()
     }
 }
 
-LiteAPI& Core::getLiteAPI()
+std::shared_ptr<API> Core::getAPI()
 {
-    return *m_lite;
+    return m_traci;
 }
 
 } // namespace traci

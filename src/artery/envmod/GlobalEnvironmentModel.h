@@ -25,7 +25,7 @@
 
 
 namespace traci {
-    class LiteAPI;
+    class API;
     class VehicleController;
 }
 
@@ -122,7 +122,7 @@ private:
      * Fetch static obstacles (polygons) from TraCI
      * @param api TraCI API object
      */
-    void fetchObstacles(traci::LiteAPI& api);
+    void fetchObstacles(const traci::API& api);
 
     /**
      * Try to get vehicle controller corresponding to given module

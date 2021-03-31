@@ -4,7 +4,7 @@
 #include "traci/Listener.h"
 #include <veins/modules/obstacle/ObstacleControl.h>
 
-namespace traci { class LiteAPI; }
+namespace traci { class API; }
 
 namespace artery
 {
@@ -16,7 +16,7 @@ public:
 
 private:
     void traciInit() override;
-    void fetchObstacles(traci::LiteAPI&);
+    void fetchObstacles(std::shared_ptr<traci::API>);
 };
 
 } // namespace artery

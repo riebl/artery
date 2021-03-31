@@ -9,7 +9,7 @@
 #include "artery/traci/Cast.h"
 #include "traci/Core.h"
 #include "traci/BasicNodeManager.h"
-#include "traci/LiteAPI.h"
+#include "traci/API.h"
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/register/linestring.hpp>
 #include <boost/geometry/strategies/transform/matrix_transformers.hpp>
@@ -78,7 +78,7 @@ void VehicleIndex::receiveSignal(cComponent* source, simsignal_t signal, const c
 {
     Enter_Method_Silent();
     if (signal == traci::BasicNodeManager::addVehicleSignal) {
-        traci::LiteAPI* api = check_and_cast<traci::NodeManager*>(source)->getLiteAPI();
+        auto api = check_and_cast<traci::NodeManager*>(source)->getAPI();
         ASSERT(api);
         Vehicle vehicle(*api, id, mVehicleMargin);
         auto insertion = mVehicles.emplace(id, std::move(vehicle));
@@ -141,13 +141,13 @@ VehicleIndex::getObstructingVehicles(const Position& a, const Position& b) const
     return result;
 }
 
-VehicleIndex::Vehicle::Vehicle(traci::LiteAPI& api, const std::string& id, double margin) :
-    mBoundary(api.simulation().getNetBoundary()), mHeight(0.0)
+VehicleIndex::Vehicle::Vehicle(const traci::API& api, const std::string& id, double margin) :
+    mBoundary(api.simulation.getNetBoundary()), mHeight(0.0)
 {
-    auto vtype = api.vehicle().getTypeID(id);
-    mHeight = api.vehicletype().getHeight(vtype);
-    createLocalOutline(api.vehicletype().getWidth(vtype), api.vehicletype().getLength(vtype), margin);
-    update(api.vehicle().getPosition(id), traci::TraCIAngle { api.vehicle().getAngle(id) });
+    auto vtype = api.vehicle.getTypeID(id);
+    mHeight = api.vehicletype.getHeight(vtype);
+    createLocalOutline(api.vehicletype.getWidth(vtype), api.vehicletype.getLength(vtype), margin);
+    update(api.vehicle.getPosition(id), traci::TraCIAngle { api.vehicle.getAngle(id) });
 }
 
 void VehicleIndex::Vehicle::update(const traci::TraCIPosition& pos, traci::TraCIAngle heading)

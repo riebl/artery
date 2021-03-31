@@ -11,31 +11,25 @@ namespace si = boost::units::si;
 namespace traci
 {
 
-VehicleController::VehicleController(const std::string& id, traci::LiteAPI& api) :
-    VehicleController(id, api, std::make_shared<VehicleCache>(api, id))
+VehicleController::VehicleController(std::shared_ptr<traci::API> api, const std::string& id) :
+    VehicleController(api, std::make_shared<VehicleCache>(api, id))
 {
 }
 
-VehicleController::VehicleController(std::shared_ptr<VehicleCache> cache) :
-    VehicleController(cache->getVehicleId(), cache->getLiteAPI(), cache)
-{
-}
-
-VehicleController::VehicleController(const std::string& id, traci::LiteAPI& api, std::shared_ptr<VehicleCache> cache) :
-    m_id(id), m_api(api), m_boundary(api.simulation().getNetBoundary()),
-    m_type(api.vehicle().getTypeID(id), api), m_cache(cache)
+VehicleController::VehicleController(std::shared_ptr<traci::API> api, std::shared_ptr<VehicleCache> cache) :
+    m_traci(api), m_boundary(api->simulation.getNetBoundary()),
+    m_type(api->vehicletype, api->vehicle.getTypeID(cache->getId())), m_cache(cache)
 {
 }
 
 const std::string& VehicleController::getVehicleId() const
 {
-    return m_id;
+    return m_cache->getId();
 }
 
 std::string VehicleController::getTypeId() const
 {
     return m_cache->get<libsumo::VAR_TYPE>();
-
 }
 
 const VehicleType& VehicleController::getVehicleType() const
@@ -57,7 +51,7 @@ auto VehicleController::getGeoPosition() const -> artery::GeoPosition
 {
     TraCIPosition traci_pos = m_cache->get<libsumo::VAR_POSITION>();
 
-    TraCIGeoPosition traci_geo = m_api.convertGeo(traci_pos);
+    TraCIGeoPosition traci_geo = m_traci->convertGeo(traci_pos);
     artery::GeoPosition geo;
     geo.latitude = traci_geo.latitude * boost::units::degree::degree;
     geo.longitude = traci_geo.longitude * boost::units::degree::degree;
@@ -82,17 +76,17 @@ auto VehicleController::getMaxSpeed() const -> Velocity
 
 void VehicleController::setMaxSpeed(Velocity v)
 {
-    m_api.vehicle().setMaxSpeed(m_id, v / si::meter_per_second);
+    m_traci->vehicle.setMaxSpeed(m_cache->getId(), v / si::meter_per_second);
 }
 
 void VehicleController::setSpeed(Velocity v)
 {
-    m_api.vehicle().setSpeed(m_id, v / si::meter_per_second);
+    m_traci->vehicle.setSpeed(m_cache->getId(), v / si::meter_per_second);
 }
 
 void VehicleController::setSpeedFactor(double f)
 {
-    m_api.vehicle().setSpeedFactor(m_id, f);
+    m_traci->vehicle.setSpeedFactor(m_cache->getId(), f);
 }
 
 auto VehicleController::getLength() const -> Length
@@ -107,7 +101,7 @@ auto VehicleController::getWidth() const -> Length
 
 void VehicleController::changeTarget(const std::string& edge)
 {
-    m_api.vehicle().changeTarget(m_id, edge);
+    m_traci->vehicle.changeTarget(m_cache->getId(), edge);
 }
 
 } // namespace traci

@@ -1,6 +1,6 @@
 #include "traci/RegionOfInterestVehiclePolicy.h"
 #include "traci/BasicNodeManager.h"
-#include "traci/LiteAPI.h"
+#include "traci/API.h"
 #include "traci/VariableCache.h"
 #include "traci/VehicleLifecycle.h"
 #include <omnetpp/cxmlelement.h>
@@ -23,7 +23,7 @@ void RegionOfInterestVehiclePolicy::initialize(VehicleLifecycle* lifecycle)
     /* validate regions */
     cXMLElement* regions = par("regionsOfInterest").xmlValue();
     if (regions) {
-        Boundary boundary { manager->getLiteAPI()->simulation().getNetBoundary() };
+        Boundary boundary { manager->getAPI()->simulation.getNetBoundary() };
         m_regions.initialize(*regions, boundary);
         EV_INFO << "Added " << m_regions.size() << " Regions of Interest to simulation" << endl;
     }

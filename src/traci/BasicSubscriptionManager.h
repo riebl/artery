@@ -7,7 +7,6 @@
 #ifndef BASICSUBSCRIPTIONMANAGER_H_BCDX4IU2
 #define BASICSUBSCRIPTIONMANAGER_H_BCDX4IU2
 
-#include "traci/LiteAPI.h"
 #include "traci/Listener.h"
 #include "traci/SubscriptionManager.h"
 #include <omnetpp/csimplemodule.h>
@@ -18,7 +17,7 @@
 namespace traci
 {
 
-class LiteAPI;
+class API;
 
 class BasicSubscriptionManager : public Listener, public SubscriptionManager, public omnetpp::cSimpleModule
 {
@@ -50,7 +49,7 @@ private:
     void unsubscribeVehicle(const std::string& id, bool vehicle_exists);
     void updateVehicleSubscription(const std::string& id, const std::vector<int>& vars);
 
-    LiteAPI* m_api;
+    std::shared_ptr<API> m_api;
     std::unordered_set<std::string> m_subscribed_vehicles;
     std::vector<int> m_vehicle_vars;
     std::vector<int> m_sim_vars;

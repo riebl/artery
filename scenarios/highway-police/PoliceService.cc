@@ -26,7 +26,7 @@ void PoliceService::trigger()
     req.gn.communication_profile = geonet::CommunicationProfile::ITS_G5;
 
     const std::string id = mVehicleController->getVehicleId();
-    auto& vehicle_api = mVehicleController->getLiteAPI().vehicle();
+    auto& vehicle_api = mVehicleController->getTraCI()->vehicle;
 
     auto packet = new PoliceClearLane();
     packet->setEdgeName(vehicle_api.getRoadID(id).c_str());

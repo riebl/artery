@@ -2,7 +2,7 @@
 #define ARTERY_MOBILITYBASE_H_1SQMAVHF
 
 #include "artery/traci/ControllableVehicle.h"
-#include "traci/LiteAPI.h"
+#include "traci/API.h"
 #include "traci/VehicleSink.h"
 #include "traci/VariableCache.h"
 #include <omnetpp/clistener.h>
@@ -18,7 +18,7 @@ class MobilityBase :
 {
 public:
     // traci::VehicleSink interface
-    void initializeSink(traci::LiteAPI*, const std::string& id, const traci::Boundary&, std::shared_ptr<traci::VehicleCache>) override;
+    void initializeSink(std::shared_ptr<traci::API>, std::shared_ptr<traci::VehicleCache>, const traci::Boundary&) override;
     void initializeVehicle(const traci::TraCIPosition&, traci::TraCIAngle, double speed) override;
     void updateVehicle(const traci::TraCIPosition&, traci::TraCIAngle, double speed) override;
 
@@ -30,7 +30,7 @@ public:
 
 protected:
     std::string mVehicleId;
-    traci::LiteAPI* mTraci = nullptr;
+    std::shared_ptr<traci::API> mTraci;
     traci::Boundary mNetBoundary;
 
 private:

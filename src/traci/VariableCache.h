@@ -7,9 +7,10 @@
 #ifndef VARIABLECACHE_H_GJG2APIF
 #define VARIABLECACHE_H_GJG2APIF
 
-#include "traci/LiteAPI.h"
+#include "traci/API.h"
 #include "traci/ValueUtils.h"
 #include "traci/VariableTraits.h"
+#include <memory>
 #include <string>
 
 namespace traci
@@ -18,7 +19,6 @@ namespace traci
 class VariableCache
 {
 public:
-    LiteAPI& getLiteAPI() { return m_api; }
     const std::string& getId() const { return m_id; }
 
     /**
@@ -67,13 +67,13 @@ public:
     void reset(const libsumo::TraCIResults& values);
 
 protected:
-    VariableCache(LiteAPI& api, int command, const std::string& id);
+    VariableCache(std::shared_ptr<API> api, int command, const std::string& id);
 
     template<typename T>
     T retrieve(int var);
 
 private:
-    LiteAPI& m_api;
+    std::shared_ptr<API> m_api;
     const std::string m_id;
     const int m_command;
     libsumo::TraCIResults m_values;
@@ -82,14 +82,14 @@ private:
 class VehicleCache : public VariableCache
 {
 public:
-    VehicleCache(LiteAPI& api, const std::string& vehicleID);
+    VehicleCache(std::shared_ptr<API> api, const std::string& vehicleID);
     const std::string& getVehicleId() const { return getId(); }
 };
 
 class SimulationCache : public VariableCache
 {
 public:
-    SimulationCache(LiteAPI& api);
+    SimulationCache(std::shared_ptr<API> api);
 };
 
 template<>

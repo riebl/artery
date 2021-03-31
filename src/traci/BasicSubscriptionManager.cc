@@ -4,9 +4,9 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
+#include "traci/API.h"
 #include "traci/BasicSubscriptionManager.h"
 #include "traci/CheckTimeSync.h"
-#include "traci/LiteAPI.h"
 #include "traci/Core.h"
 #include "traci/VariableCache.h"
 #include <inet/common/ModuleAccess.h>
@@ -27,8 +27,8 @@ void BasicSubscriptionManager::initialize()
 {
     Core* core = inet::getModuleFromPar<Core>(par("coreModule"), this);
     subscribeTraCI(core);
-    m_api = &core->getLiteAPI();
-    m_sim_cache = std::make_shared<SimulationCache>(*m_api);
+    m_api = core->getAPI();
+    m_sim_cache = std::make_shared<SimulationCache>(m_api);
 }
 
 void BasicSubscriptionManager::finish()
@@ -51,12 +51,12 @@ void BasicSubscriptionManager::traciInit()
     subscribeSimulationVariables(vars);
 
     // subscribe already running vehicles
-    for (const std::string& id : m_api->vehicle().getIDList()) {
+    for (const std::string& id : m_api->vehicle.getIDList()) {
         subscribeVehicle(id);
     }
 
     // read SUMO start time and store it as offset
-    m_offset = omnetpp::SimTime { m_api->simulation().getCurrentTime(), omnetpp::SIMTIME_MS };
+    m_offset = omnetpp::SimTime { m_api->simulation.getCurrentTime(), omnetpp::SIMTIME_MS };
     m_offset -= omnetpp::simTime();
 }
 
@@ -87,7 +87,7 @@ void BasicSubscriptionManager::unsubscribeVehicle(const std::string& id, bool ve
 
 void BasicSubscriptionManager::updateVehicleSubscription(const std::string& id, const std::vector<int>& vars)
 {
-    m_api->vehicle().subscribe(id, vars, libsumo::INVALID_DOUBLE_VALUE, libsumo::INVALID_DOUBLE_VALUE);
+    m_api->vehicle.subscribe(id, vars, libsumo::INVALID_DOUBLE_VALUE, libsumo::INVALID_DOUBLE_VALUE);
 }
 
 void BasicSubscriptionManager::subscribeVehicleVariables(const std::set<int>& add_vars)
@@ -112,13 +112,13 @@ void BasicSubscriptionManager::subscribeSimulationVariables(const std::set<int>&
     ASSERT(m_sim_vars.size() >= tmp_vars.size());
 
     if (m_sim_vars.size() != tmp_vars.size()) {
-        m_api->simulation().subscribe("", m_sim_vars, libsumo::INVALID_DOUBLE_VALUE, libsumo::INVALID_DOUBLE_VALUE);
+        m_api->simulation.subscribe("", m_sim_vars, libsumo::INVALID_DOUBLE_VALUE, libsumo::INVALID_DOUBLE_VALUE);
     }
 }
 
 void BasicSubscriptionManager::step()
 {
-    const auto& simvars = m_api->simulation().getSubscriptionResults("");
+    const auto& simvars = m_api->simulation.getSubscriptionResults("");
     m_sim_cache->reset(simvars);
     ASSERT(checkTimeSync(*m_sim_cache, omnetpp::simTime() + m_offset));
 
@@ -132,7 +132,7 @@ void BasicSubscriptionManager::step()
         subscribeVehicle(id);
     }
 
-    const auto& vehicles = m_api->vehicle();
+    const auto& vehicles = m_api->vehicle;
     for (const std::string& vehicle : m_subscribed_vehicles) {
         const auto& vars = vehicles.getSubscriptionResults(vehicle);
         getVehicleCache(vehicle)->reset(vars);
@@ -143,7 +143,7 @@ std::shared_ptr<VehicleCache> BasicSubscriptionManager::getVehicleCache(const st
 {
     auto found = m_vehicle_caches.find(id);
     if (found == m_vehicle_caches.end()) {
-        std::tie(found, std::ignore) = m_vehicle_caches.emplace(id, std::make_shared<VehicleCache>(*m_api, id));
+        std::tie(found, std::ignore) = m_vehicle_caches.emplace(id, std::make_shared<VehicleCache>(m_api, id));
     }
     return found->second;
 }

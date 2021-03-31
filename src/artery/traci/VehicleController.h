@@ -3,7 +3,7 @@
 
 #include "artery/traci/VehicleType.h"
 #include "artery/utility/Geometry.h"
-#include "traci/LiteAPI.h"
+#include "traci/API.h"
 #include "traci/VariableCache.h"
 #include <vanetza/units/acceleration.hpp>
 #include <vanetza/units/angle.hpp>
@@ -23,8 +23,8 @@ public:
     using Length = vanetza::units::Length;
     using Velocity = vanetza::units::Velocity;
 
-    VehicleController(const std::string& id, traci::LiteAPI&);
-    VehicleController(std::shared_ptr<VehicleCache> cache);
+    VehicleController(std::shared_ptr<traci::API>, const std::string& id);
+    VehicleController(std::shared_ptr<traci::API>, std::shared_ptr<VehicleCache> cache);
 
     const std::string& getVehicleId() const;
     std::string getTypeId() const;
@@ -45,14 +45,11 @@ public:
 
     void changeTarget(const std::string& edge);
 
-    traci::LiteAPI& getLiteAPI() { return m_api; }
-    const traci::LiteAPI& getLiteAPI() const { return m_api; }
+    std::shared_ptr<traci::API> getTraCI() { return m_traci; }
+    std::shared_ptr<const traci::API> getTraCI() const { return m_traci; }
 
 private:
-    VehicleController(const std::string& id, traci::LiteAPI& api, std::shared_ptr<VehicleCache> cache);
-
-    std::string m_id;
-    traci::LiteAPI& m_api;
+    std::shared_ptr<traci::API> m_traci;
     traci::Boundary m_boundary;
     VehicleType m_type;
     std::shared_ptr<VehicleCache> m_cache;

@@ -19,9 +19,7 @@
 #include <vector>
 
 // forward declaration
-namespace traci {
-    class LiteAPI;
-}
+namespace traci { class API; }
 
 namespace artery
 {
@@ -36,7 +34,7 @@ public:
     class Vehicle
     {
     public:
-        Vehicle(traci::LiteAPI&, const std::string& id, double margin = 0.0);
+        Vehicle(const traci::API&, const std::string& id, double margin = 0.0);
         void update(const traci::TraCIPosition& pos, traci::TraCIAngle heading);
         const std::vector<Position>& getOutline() const { return mWorldOutline; }
         const double getHeight() const { return mHeight; }
