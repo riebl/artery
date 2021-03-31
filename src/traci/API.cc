@@ -5,28 +5,6 @@
 namespace traci
 {
 
-API::Version API::getVersion() const
-{
-    using libsumo::CMD_GETVERSION;
-
-    tcpip::Storage outMsg;
-    outMsg.writeUnsignedByte(1 + 1);
-    outMsg.writeUnsignedByte(CMD_GETVERSION);
-    mySocket->sendExact(outMsg);
-
-    tcpip::Storage inMsg;
-    check_resultState(inMsg, CMD_GETVERSION);
-    int cmdId = check_commandGetResult(inMsg, 0, -1, true);
-    if (cmdId != CMD_GETVERSION) {
-        throw tcpip::SocketException("#Error: rceived status response to command: " + toString(cmdId) + " but expected: " + toString(CMD_GETVERSION));
-    }
-
-    Version v;
-    v.first = inMsg.readInt();
-    v.second = inMsg.readString();
-    return v;
-}
-
 TraCIGeoPosition API::convertGeo(const TraCIPosition& pos) const
 {
     libsumo::TraCIPosition result = simulation.convertGeo(pos.x, pos.y, false);
