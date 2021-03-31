@@ -12,6 +12,9 @@
 #include "artery/envmod/sensor/SensorPosition.h"
 #include "artery/traci/VehicleType.h"
 #include "artery/utility/Geometry.h"
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/mem_fun.hpp>
 #include <boost/optional/optional.hpp>
 #include <cstdint>
 #include <memory>
@@ -85,6 +88,12 @@ private:
     std::vector<Position> mAttachmentPoints;
     Position mCentrePoint;
 };
+
+using ObjectDB = boost::multi_index_container<
+    std::shared_ptr<EnvironmentModelObject>,
+    boost::multi_index::indexed_by<
+        boost::multi_index::ordered_unique<
+            boost::multi_index::const_mem_fun<EnvironmentModelObject, std::string, &EnvironmentModelObject::getExternalId>>>>;
 
 } // namespace artery
 

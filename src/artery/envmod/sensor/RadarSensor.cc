@@ -13,9 +13,6 @@ Define_Module(RadarSensor);
 void RadarSensor::initialize()
 {
     FovSensor::initialize();
-    mFovConfig.egoID = getEgoId();
-    mFovConfig.sensorID = getId();
-    mFovConfig.sensorPosition = sensorPositionStrings.find(par("attachmentPoint"))->second;
 }
 
 } // namespace artery
