@@ -17,6 +17,7 @@ namespace traci
 {
 
 // forward declaration
+class PersonCache;
 class SimulationCache;
 class VehicleCache;
 
@@ -25,10 +26,13 @@ class SubscriptionManager
 public:
     virtual ~SubscriptionManager() = default;
     virtual void step() = 0;
+    virtual void subscribePersonVariables(const std::set<int>& personVariables) = 0;
     virtual void subscribeVehicleVariables(const std::set<int>& vehicleVariables) = 0;
     virtual void subscribeSimulationVariables(const std::set<int>& simulationVariables) = 0;
+    virtual const std::unordered_set<std::string>& getSubscribedPersons() const = 0;
     virtual const std::unordered_set<std::string>& getSubscribedVehicles() const = 0;
     virtual const std::unordered_map<std::string, std::shared_ptr<VehicleCache>>& getAllVehicleCaches() const = 0;
+    virtual std::shared_ptr<PersonCache> getPersonCache(const std::string& id) = 0;
     virtual std::shared_ptr<VehicleCache> getVehicleCache(const std::string& id) = 0;
     virtual std::shared_ptr<SimulationCache> getSimulationCache() = 0;
 };

@@ -14,7 +14,8 @@
 namespace artery
 {
 
-Define_Module(InetMobility)
+Define_Module(InetPersonMobility)
+Define_Module(InetVehicleMobility)
 
 
 int InetMobility::numInitStages() const
@@ -27,7 +28,6 @@ void InetMobility::initialize(int stage)
     if (stage == inet::INITSTAGE_LOCAL) {
         mVisualRepresentation = inet::getModuleFromPar<cModule>(par("visualRepresentation"), this, false);
         mAntennaHeight = par("antennaHeight");
-        WATCH(mVehicleId);
         WATCH(mPosition);
         WATCH(mSpeed);
         WATCH(mOrientation);
@@ -114,6 +114,24 @@ void InetMobility::updateVisualRepresentation()
         mVisualRepresentation->getDisplayString().setTagArg("p", 1, buf);
 #endif
     }
+}
+
+void InetPersonMobility::initialize(int stage)
+{
+    if (stage == 0) {
+        WATCH(mPersonId);
+    }
+
+    InetMobility::initialize(stage);
+}
+
+void InetVehicleMobility::initialize(int stage)
+{
+    if (stage == 0) {
+        WATCH(mVehicleId);
+    }
+
+    InetMobility::initialize(stage);
 }
 
 } // namespace artery

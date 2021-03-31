@@ -78,6 +78,13 @@ private:
     libsumo::TraCIResults m_values;
 };
 
+class PersonCache : public VariableCache
+{
+public:
+    PersonCache(std::shared_ptr<API> api, const std::string& personID);
+    const std::string& getPersonId() const { return getId(); }
+};
+
 class VehicleCache : public VariableCache
 {
 public:

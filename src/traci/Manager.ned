@@ -9,6 +9,9 @@ module Manager
         nodes.subscriptionsModule = "^.subscriptions";
         subscriptions.coreModule = "^.core";
 
+        bool ignorePersons = default(true);
+        *.ignorePersons = ignorePersons;
+
     submodules:
         core : Core {
         }
