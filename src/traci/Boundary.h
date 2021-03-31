@@ -10,21 +10,24 @@ namespace traci
 class Boundary
 {
 public:
-    Boundary() : boundary(2) {}
+    Boundary()
+    {
+        boundary.value.resize(2);
+    }
 
     Boundary(const Boundary&) = default;
     Boundary& operator=(const Boundary&) = default;
 
     explicit Boundary(const libsumo::TraCIPositionVector& pv) : boundary(pv)
     {
-        if (pv.size() != 2)
+        if (pv.value.size() != 2)
             throw std::runtime_error("TraCI boundary has to consist of exactly two positions");
     }
 
     operator const libsumo::TraCIPositionVector& () { return boundary; }
 
-    const libsumo::TraCIPosition& lowerLeftPosition() const { return boundary[0]; }
-    const libsumo::TraCIPosition& upperRightPosition() const { return boundary[1]; }
+    const libsumo::TraCIPosition& lowerLeftPosition() const { return boundary.value[0]; }
+    const libsumo::TraCIPosition& upperRightPosition() const { return boundary.value[1]; }
 
 private:
     libsumo::TraCIPositionVector boundary;

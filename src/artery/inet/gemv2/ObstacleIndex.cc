@@ -97,7 +97,7 @@ void ObstacleIndex::fetchObstacles(const traci::API& traci)
         }
 
         std::vector<Position> shape;
-        for (const traci::TraCIPosition& point : polygons.getShape(id)) {
+        for (const traci::TraCIPosition& point : polygons.getShape(id).value) {
             bg::append(shape, traci::position_cast(boundary, point));
         }
 

@@ -10,7 +10,7 @@ namespace traci
 {
 
 VariableCache::VariableCache(std::shared_ptr<API> api, int command, const std::string& id) :
-    m_api(api), m_id(id), m_command(command)
+    TraCIScopeWrapper(*api, command, 0, 0, 0), m_api(api), m_id(id)
 {
 }
 
@@ -32,31 +32,31 @@ VehicleCache::VehicleCache(std::shared_ptr<API> api, const std::string& vehicleI
 template<>
 double VariableCache::retrieve<double>(int var)
 {
-    return m_api->getDouble(m_command, var, m_id);
+    return TraCIScopeWrapper::getDouble(var, m_id);
 }
 
 template<>
 libsumo::TraCIPosition VariableCache::retrieve<libsumo::TraCIPosition>(int var)
 {
-    return m_api->getPosition(m_command, var, m_id);
+    return TraCIScopeWrapper::getPos(var, m_id);
 }
 
 template<>
 std::string VariableCache::retrieve<std::string>(int var)
 {
-    return m_api->getString(m_command, var, m_id);
+    return TraCIScopeWrapper::getString(var, m_id);
 }
 
 template<>
 std::vector<std::string> VariableCache::retrieve<std::vector<std::string>>(int var)
 {
-    return m_api->getStringVector(m_command, var, m_id);
+    return TraCIScopeWrapper::getStringVector(var, m_id);
 }
 
 template<>
 int VariableCache::retrieve<int>(int var)
 {
-    return m_api->getInt(m_command, var, m_id);
+    return TraCIScopeWrapper::getInt(var, m_id);
 }
 
 } // namespace traci
