@@ -7,9 +7,12 @@
 #ifndef ENVMOD_SENSOR_H_
 #define ENVMOD_SENSOR_H_
 
+#include "artery/envmod/EnvironmentModelObstacle.h"
+#include "artery/envmod/PreselectionMethod.h"
 #include "artery/envmod/sensor/FieldOfView.h"
 #include "artery/envmod/sensor/SensorVisualizationConfig.h"
 #include "artery/envmod/sensor/SensorPosition.h"
+#include "artery/envmod/sensor/SensorDetection.h"
 #include <omnetpp/csimplemodule.h>
 #include <string>
 
@@ -27,6 +30,7 @@ public:
     virtual const std::string& getSensorCategory() const = 0;
     virtual const std::string getSensorName() const = 0;
     virtual void setSensorName(const std::string& name) = 0;
+    virtual SensorDetection detectObjects(ObstacleRtree &obstacleRtree, std::unique_ptr<artery::PreselectionMethod> &preselector) const = 0;
 };
 
 } // namespace artery

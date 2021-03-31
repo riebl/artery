@@ -7,7 +7,9 @@
 #ifndef ENVIRONMENTMODELOBSTACLE_H_
 #define ENVIRONMENTMODELOBSTACLE_H_
 
+#include "artery/envmod/EnvironmentModelObject.h"
 #include "artery/utility/Geometry.h"
+#include <boost/geometry/index/rtree.hpp>
 #include <string>
 #include <vector>
 
@@ -39,6 +41,10 @@ private:
     std::string mId; //!< Unique obstacle id
     std::vector<Position> mPolygon; //!< Obstacle outline
 };
+
+using ObstacleDB = std::map<std::string, std::shared_ptr<EnvironmentModelObstacle>>;
+using ObstacleRtreeValue = std::pair<geometry::Box, std::string>;
+using ObstacleRtree = boost::geometry::index::rtree<ObstacleRtreeValue, boost::geometry::index::rstar<16>>;
 
 } // namespace artery
 

@@ -13,5 +13,5 @@ moduleinterface FovSensor
         double fovAngle; // opening angle in degree
         string attachmentPoint;
         int numSegments;
-        bool doLineOfSightCheck = default(true);
+        bool doLineOfSightCheck;
 }

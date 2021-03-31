@@ -5,7 +5,6 @@
  */
 
 #include "artery/envmod/EnvironmentModelObject.h"
-#include "artery/envmod/EnvironmentModelObstacle.h"
 #include "artery/envmod/GlobalEnvironmentModel.h"
 #include "artery/envmod/Geometry.h"
 #include "artery/envmod/InterdistanceMatrix.h"
@@ -23,8 +22,6 @@
 
 using namespace omnetpp;
 
-using LineOfSight = std::array<artery::Position, 2>;
-BOOST_GEOMETRY_REGISTER_LINESTRING(LineOfSight)
 
 namespace artery
 {
@@ -177,86 +174,11 @@ void GlobalEnvironmentModel::clear()
     mObstacleRtree.clear();
 }
 
-SensorDetection GlobalEnvironmentModel::detectObjects(const SensorConfigRadar& config)
+SensorDetection GlobalEnvironmentModel::detectObjects(std::function<SensorDetection(ObstacleRtree &, std::unique_ptr<PreselectionMethod> &)> detect)
 {
     ASSERT(!mTainted); /*< object database and preselector are in sync */
 
-    namespace bg = boost::geometry;
-    if (config.fieldOfView.range <= 0.0 * boost::units::si::meter) {
-        throw std::runtime_error("sensor range is 0 meter or less");
-    } else if (config.fieldOfView.angle > 360.0 * boost::units::degree::degrees) {
-        throw std::runtime_error("sensor opening angle exceeds 360 degree");
-    }
-
-    SensorDetection detection;
-
-    // create sensor cone
-    const auto& egoObj = getObject(config.egoID);
-    if (!egoObj) {
-        throw std::runtime_error("no object found for ID " + config.egoID);
-    }
-    detection.sensorCone = createSensorArc(config, *egoObj);
-
-    assert(mPreselector);
-    std::vector<std::string> preselObjectsInSensorRange = mPreselector->select(*egoObj, config);
-
-    // get obstacles intersecting with sensor cone
-    std::vector<ObstacleRtreeValue> obstacleIntersections;
-    geometry::Polygon tmp; /*< Boost 1.61 fails when detection.sensorCone is used directly in R-Tree query */
-    bg::convert(detection.sensorCone, tmp);
-    mObstacleRtree.query(bg::index::intersects(tmp), std::back_inserter(obstacleIntersections));
-
-    const auto& egoPointPosition = getObject(config.egoID)->getAttachmentPoint(config.sensorPosition);
-
-    if (config.doLineOfSightCheck)
-    {
-        // check if objects in sensor cone are hidden by another object or an obstacle
-        for (const auto& objectId : preselObjectsInSensorRange)
-        {
-            const auto& object = getObject(objectId);
-            for (const auto& objectPoint : object->getOutline())
-            {
-                // skip objects points outside of sensor cone
-                if (!bg::covered_by(objectPoint, detection.sensorCone)) {
-                    continue;
-                }
-
-                LineOfSight lineOfSight;
-                lineOfSight[0] = egoPointPosition;
-                lineOfSight[1] = objectPoint;
-
-                bool noVehicleOccultation = std::none_of(preselObjectsInSensorRange.begin(), preselObjectsInSensorRange.end(),
-                        [&](const std::string& objectId) {
-                            const std::vector<Position>& objectOutline = getObject(objectId)->getOutline();
-                            return bg::crosses(lineOfSight, objectOutline);
-                        });
-                bool noObstacleOccultation = std::none_of(obstacleIntersections.begin(), obstacleIntersections.end(),
-                        [&](const ObstacleRtreeValue& obstacleIntersection) {
-                            const auto& obstacle = mObstacles.at(obstacleIntersection.second);
-                            return bg::intersects(lineOfSight, obstacle->getOutline());
-                        });
-
-                if (noVehicleOccultation && noObstacleOccultation) {
-                    if (detection.objects.empty() || detection.objects.back() != object) {
-                        detection.objects.push_back(object);
-                    }
-
-                    if (config.visualizationConfig.linesOfSight) {
-                        detection.visiblePoints.push_back(objectPoint);
-                    } else {
-                        // no need to check other object points in detail except for visualization
-                        break;
-                    }
-                }
-            } // for each (corner) point of object polygon
-        } // for each object
-    } else {
-        for (const auto& objectId : preselObjectsInSensorRange) {
-            detection.objects.push_back(getObject(objectId));
-        }
-    }
-
-    return detection;
+    return detect(mObstacleRtree, mPreselector);
 }
 
 void GlobalEnvironmentModel::initialize()
