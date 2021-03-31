@@ -24,6 +24,7 @@ class BaseSensor : public Sensor
 public:
     BaseSensor();
     void setVisualization(const SensorVisualizationConfig& cfg) override { mVisualizationConfig = cfg; }
+    SensorDetection detectObjects(ObstacleRtree &obstacleRtree, std::unique_ptr<artery::PreselectionMethod> &preselector) const override;
 
 protected:
     void initialize() override;

@@ -12,6 +12,7 @@
 #include "artery/envmod/sensor/BaseSensor.h"
 #include <omnetpp/ccanvas.h>
 #include <memory>
+#include <functional>
 
 namespace artery
 {
@@ -30,7 +31,7 @@ public:
     const std::string& getSensorCategory() const override;
     const std::string getSensorName() const override;
     void setSensorName(const std::string& name) override;
-
+    SensorDetection detectObjects(ObstacleRtree &obstacleRtree, std::unique_ptr<PreselectionMethod> &preselector) const override;
 
 protected:
     template<typename T>

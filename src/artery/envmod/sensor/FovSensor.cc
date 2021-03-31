@@ -4,13 +4,17 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
+#include "artery/envmod/GlobalEnvironmentModel.h"
 #include "artery/envmod/sensor/FovSensor.h"
 #include "artery/envmod/sensor/SensorDetection.h"
-#include "artery/envmod/GlobalEnvironmentModel.h"
 #include "artery/envmod/LocalEnvironmentModel.h"
 #include "artery/envmod/EnvironmentModelObstacle.h"
+#include <boost/geometry/geometries/register/linestring.hpp>
 
 using namespace omnetpp;
+
+using LineOfSight = std::array<artery::Position, 2>;
+BOOST_GEOMETRY_REGISTER_LINESTRING(LineOfSight)
 
 namespace artery
 {
@@ -36,6 +40,10 @@ void FovSensor::initialize()
     mGlobalEnvironmentModel->getCanvas()->addFigure(mGroupFigure);
     mColor = cFigure::GOOD_DARK_COLORS[getId() % cFigure::NUM_GOOD_DARK_COLORS];
 
+    mFovConfig.egoID = getEgoId();
+    mFovConfig.sensorID = getId();
+    mFovConfig.sensorPosition = sensorPositionStrings.find(par("attachmentPoint"))->second;
+
     mFovConfig.fieldOfView.range = par("fovRange").doubleValue() * boost::units::si::meters;
     mFovConfig.fieldOfView.angle = par("fovAngle").doubleValue() * boost::units::degree::degrees;
     mFovConfig.numSegments = par("numSegments");
@@ -45,15 +53,96 @@ void FovSensor::initialize()
 void FovSensor::measurement()
 {
     Enter_Method("measurement");
-    auto objects = mGlobalEnvironmentModel->detectObjects(mRadarConfig);
+    auto objects = mGlobalEnvironmentModel->detectObjects(std::bind(&Sensor::detectObjects, this, std::placeholders::_1, std::placeholders::_2));
     mLocalEnvironmentModel->complementObjects(objects, *this);
     mLastDetection = std::move(objects);
+}
+
+SensorDetection FovSensor::detectObjects(ObstacleRtree &obstacleRtree, std::unique_ptr<PreselectionMethod> &preselector) const {
+
+    namespace bg = boost::geometry;
+    if (mFovConfig.fieldOfView.range <= 0.0 * boost::units::si::meter) {
+        throw std::runtime_error("sensor range is 0 meter or less");
+    } else if (mFovConfig.fieldOfView.angle > 360.0 * boost::units::degree::degrees) {
+        throw std::runtime_error("sensor opening angle exceeds 360 degree");
+    }
+
+    SensorDetection detection;
+
+    // create sensor cone
+    const auto& egoObj = mGlobalEnvironmentModel->getObject(mFovConfig.egoID);
+    if (!egoObj) {
+        throw std::runtime_error("no object found for ID " + mFovConfig.egoID);
+    }
+    detection.sensorCone = createSensorArc(mFovConfig, *egoObj);
+
+    assert(preselector);
+    std::vector<std::string> preselObjectsInSensorRange = preselector->select(*egoObj, mFovConfig);
+
+    // get obstacles intersecting with sensor cone
+    std::vector<ObstacleRtreeValue> obstacleIntersections;
+    geometry::Polygon tmp; /*< Boost 1.61 fails when detection.sensorCone is used directly in R-Tree query */
+    bg::convert(detection.sensorCone, tmp);
+    obstacleRtree.query(bg::index::intersects(tmp), std::back_inserter(obstacleIntersections));
+
+    const auto& egoPointPosition =  mGlobalEnvironmentModel->getObject(mFovConfig.egoID)->getAttachmentPoint(mFovConfig.sensorPosition);
+
+    if (mFovConfig.doLineOfSightCheck)
+    {
+        // check if objects in sensor cone are hidden by another object or an obstacle
+        for (const auto& objectId : preselObjectsInSensorRange)
+        {
+            const auto& object =  mGlobalEnvironmentModel->getObject(objectId);
+            for (const auto& objectPoint : object->getOutline())
+            {
+                // skip objects points outside of sensor cone
+                if (!bg::covered_by(objectPoint, detection.sensorCone)) {
+                    continue;
+                }
+
+                LineOfSight lineOfSight;
+                lineOfSight[0] = egoPointPosition;
+                lineOfSight[1] = objectPoint;
+
+                bool noVehicleOccultation = std::none_of(preselObjectsInSensorRange.begin(), preselObjectsInSensorRange.end(),
+                        [&](const std::string& objectId) {
+                            const std::vector<Position>& objectOutline =  mGlobalEnvironmentModel->getObject(objectId)->getOutline();
+                            return bg::crosses(lineOfSight, objectOutline);
+                        });
+                bool noObstacleOccultation = std::none_of(obstacleIntersections.begin(), obstacleIntersections.end(),
+                        [&](const ObstacleRtreeValue& obstacleIntersection) {
+                            const auto& obstacle = mGlobalEnvironmentModel->getObstacles()->at(obstacleIntersection.second);
+                            return bg::intersects(lineOfSight, obstacle->getOutline());
+                        });
+
+                if (noVehicleOccultation && noObstacleOccultation) {
+                    if (detection.objects.empty() || detection.objects.back() != object) {
+                        detection.objects.push_back(object);
+                    }
+
+                    if (mFovConfig.visualizationConfig.linesOfSight) {
+                        detection.visiblePoints.push_back(objectPoint);
+                    } else {
+                        // no need to check other object points in detail except for visualization
+                        break;
+                    }
+                }
+            } // for each (corner) point of object polygon
+        } // for each object
+    } else {
+        for (const auto& objectId : preselObjectsInSensorRange) {
+            detection.objects.push_back(mGlobalEnvironmentModel->getObject(objectId));
+        }
+    }
+
+    return detection;
+
 }
 
 void FovSensor::setVisualization(const SensorVisualizationConfig& config)
 {
     assert(mGroupFigure);
-    mRadarConfig.visualizationConfig = config;
+    mFovConfig.visualizationConfig = config;
 
     if(config.sensorCone && !mSensorConeFigure) {
         mSensorConeFigure = new cPolygonFigure("sensor cone");
@@ -91,7 +180,7 @@ void FovSensor::setVisualization(const SensorVisualizationConfig& config)
 
 const FieldOfView* FovSensor::getFieldOfView() const
 {
-    return &mRadarConfig.fieldOfView;
+    return &mFovConfig.fieldOfView;
 }
 
 omnetpp::SimTime FovSensor::getValidityPeriod() const
@@ -102,7 +191,7 @@ omnetpp::SimTime FovSensor::getValidityPeriod() const
 
 SensorPosition FovSensor::position() const
 {
-    return mRadarConfig.sensorPosition;
+    return mFovConfig.sensorPosition;
 }
 
 const std::string& FovSensor::getSensorCategory() const
@@ -113,12 +202,12 @@ const std::string& FovSensor::getSensorCategory() const
 
 const std::string FovSensor::getSensorName() const
 {
-    return mRadarConfig.sensorName;
+    return mFovConfig.sensorName;
 }
 
 void FovSensor::setSensorName(const std::string& name)
 {
-    mRadarConfig.sensorName = name;
+    mFovConfig.sensorName = name;
 }
 
 void FovSensor::refreshDisplay() const
