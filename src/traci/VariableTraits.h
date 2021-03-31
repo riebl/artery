@@ -52,6 +52,8 @@ VAR_TRAIT(libsumo::VAR_TELEPORT_STARTING_VEHICLES_IDS, std::vector<std::string>)
 VAR_TRAIT(libsumo::VAR_TIME, double)
 VAR_TRAIT(libsumo::VAR_TIME_STEP, int)
 VAR_TRAIT(libsumo::VAR_SIGNALS, int)
+VAR_TRAIT(libsumo::VAR_ARRIVED_PERSONS_IDS, std::vector<std::string>)
+VAR_TRAIT(libsumo::VAR_DEPARTED_PERSONS_IDS, std::vector<std::string>)
 #undef VAR_TRAIT
 
 } // namespace traci

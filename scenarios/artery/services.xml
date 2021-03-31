@@ -2,6 +2,9 @@
 <services>
 	<service type="artery.application.CaService">
 		<listener port="2001" />
+		<filters>
+			<type pattern="artery.inet.Person" match="inverse" />
+		</filters>
 	</service>
 	<service type="artery.application.ExampleService">
 		<listener port="4711" />

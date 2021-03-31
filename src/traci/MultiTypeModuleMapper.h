@@ -24,14 +24,19 @@ class MultiTypeModuleMapper : public ModuleMapper, public omnetpp::cSimpleModule
 {
 public:
 	void initialize() override;
+	omnetpp::cModuleType* person(NodeManager&, const std::string&) override;
 	omnetpp::cModuleType* vehicle(NodeManager&, const std::string&) override;
 
 private:
+	using PersonType = std::tuple<omnetpp::cModuleType*, double>;
 	using VehicleType = std::tuple<omnetpp::cModuleType*, double>;
 
+	void parsePersonTypes(const omnetpp::cXMLElement*);
 	void parseVehicleTypes(const omnetpp::cXMLElement*);
 
-	double mCdfValue;
+	double mPersonCdfValue;
+	double mVehicleCdfValue;
+	std::vector<PersonType> mPersonTypes;
 	std::vector<VehicleType> mVehicleTypes;
 };
 

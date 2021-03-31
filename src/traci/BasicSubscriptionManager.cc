@@ -29,6 +29,7 @@ void BasicSubscriptionManager::initialize()
     subscribeTraCI(core);
     m_api = core->getAPI();
     m_sim_cache = std::make_shared<SimulationCache>(m_api);
+    m_ignore_persons = par("ignorePersons");
 }
 
 void BasicSubscriptionManager::finish()
@@ -55,6 +56,11 @@ void BasicSubscriptionManager::traciInit()
         subscribeVehicle(id);
     }
 
+    // subscribe already running persons
+    for (const std::string& id : m_api->person.getIDList()) {
+        subscribePerson(id);
+    }
+
     // read SUMO start time and store it as offset
     m_offset = omnetpp::SimTime { m_api->simulation.getCurrentTime(), omnetpp::SIMTIME_MS };
     m_offset -= omnetpp::simTime();
@@ -66,6 +72,42 @@ void BasicSubscriptionManager::traciStep()
 
 void BasicSubscriptionManager::traciClose()
 {
+}
+
+void BasicSubscriptionManager::subscribePerson(const std::string& id)
+{
+    if (!m_person_vars.empty()) {
+        updatePersonSubscription(id, m_person_vars);
+    }
+    m_subscribed_persons.insert(id);
+}
+
+void BasicSubscriptionManager::unsubscribePerson(const std::string& id, bool person_exists)
+{
+    if (person_exists && !m_person_vars.empty()) {
+        static const std::vector<int> empty;
+        updatePersonSubscription(id, empty);
+    }
+    m_subscribed_persons.insert(id);
+}
+
+void BasicSubscriptionManager::updatePersonSubscription(const std::string& id, const std::vector<int>& vars)
+{
+    m_api->person.subscribe(id, vars, libsumo::INVALID_DOUBLE_VALUE, libsumo::INVALID_DOUBLE_VALUE);
+}
+
+void BasicSubscriptionManager::subscribePersonVariables(const std::set<int>& add_vars)
+{
+    std::vector<int> tmp_vars;
+    std::set_union(m_person_vars.begin(), m_person_vars.end(), add_vars.begin(), add_vars.end(), std::back_inserter(tmp_vars));
+    std::swap(m_person_vars, tmp_vars);
+    ASSERT(m_person_vars.size() >= tmp_vars.size());
+
+    if (m_person_vars.size() != tmp_vars.size()) {
+        for (const std::string& vehicle : m_subscribed_persons) {
+            updatePersonSubscription(vehicle, m_person_vars);
+        }
+    }
 }
 
 void BasicSubscriptionManager::subscribeVehicle(const std::string& id)
@@ -137,6 +179,33 @@ void BasicSubscriptionManager::step()
         const auto& vars = vehicles.getSubscriptionResults(vehicle);
         getVehicleCache(vehicle)->reset(vars);
     }
+
+    if (!m_ignore_persons) {
+        const auto& arrivedPersons = m_sim_cache->get<libsumo::VAR_ARRIVED_PERSONS_IDS>();
+        for (const auto& id : arrivedPersons) {
+            unsubscribePerson(id, false);
+        }
+
+        const auto& departedPersons = m_sim_cache->get<libsumo::VAR_DEPARTED_PERSONS_IDS>();
+        for (const auto& id : departedPersons) {
+            subscribePerson(id);
+        }
+
+        const auto& persons = m_api->person;
+        for (const std::string& person : m_subscribed_persons) {
+            const auto& vars = persons.getSubscriptionResults(person);
+            getPersonCache(person)->reset(vars);
+        }
+    }
+}
+
+std::shared_ptr<PersonCache> BasicSubscriptionManager::getPersonCache(const std::string& id)
+{
+    auto found = m_person_caches.find(id);
+    if (found == m_person_caches.end()) {
+        std::tie(found, std::ignore) = m_person_caches.emplace(id, std::make_shared<PersonCache>(m_api, id));
+    }
+    return found->second;
 }
 
 std::shared_ptr<VehicleCache> BasicSubscriptionManager::getVehicleCache(const std::string& id)
@@ -152,6 +221,11 @@ std::shared_ptr<SimulationCache> BasicSubscriptionManager::getSimulationCache()
 {
     ASSERT(m_sim_cache);
     return m_sim_cache;
+}
+
+const std::unordered_set<std::string>& BasicSubscriptionManager::getSubscribedPersons() const
+{
+    return m_subscribed_persons;
 }
 
 const std::unordered_set<std::string>& BasicSubscriptionManager::getSubscribedVehicles() const

@@ -26,10 +26,13 @@ public:
 
     // implement traci::SubscriptionManager
     void step() override;
+    void subscribePersonVariables(const std::set<int>& personVariables) override;
     void subscribeVehicleVariables(const std::set<int>& vehicleVariables) override;
     void subscribeSimulationVariables(const std::set<int>& simulationVariables) override;
+    const std::unordered_set<std::string>& getSubscribedPersons() const override;
     const std::unordered_set<std::string>& getSubscribedVehicles() const override;
     const std::unordered_map<std::string, std::shared_ptr<VehicleCache>>& getAllVehicleCaches() const override;
+    std::shared_ptr<PersonCache> getPersonCache(const std::string& id) override;
     std::shared_ptr<VehicleCache> getVehicleCache(const std::string& id) override;
     std::shared_ptr<SimulationCache> getSimulationCache() override;
 
@@ -45,17 +48,25 @@ private:
     void traciStep() override;
     void traciClose() override;
 
+    void subscribePerson(const std::string& id);
+    void unsubscribePerson(const std::string& id, bool person_exists);
+    void updatePersonSubscription(const std::string& id, const std::vector<int>& vars);
+
     void subscribeVehicle(const std::string& id);
     void unsubscribeVehicle(const std::string& id, bool vehicle_exists);
     void updateVehicleSubscription(const std::string& id, const std::vector<int>& vars);
 
     std::shared_ptr<API> m_api;
+    std::unordered_set<std::string> m_subscribed_persons;
     std::unordered_set<std::string> m_subscribed_vehicles;
+    std::vector<int> m_person_vars;
     std::vector<int> m_vehicle_vars;
     std::vector<int> m_sim_vars;
+    std::unordered_map<std::string, std::shared_ptr<PersonCache>> m_person_caches;
     std::unordered_map<std::string, std::shared_ptr<VehicleCache>> m_vehicle_caches;
     std::shared_ptr<SimulationCache> m_sim_cache;
     omnetpp::SimTime m_offset = omnetpp::SimTime::ZERO;
+    bool m_ignore_persons;
 };
 
 } // namespace traci

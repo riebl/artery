@@ -2,6 +2,8 @@
 #define ARTERY_INETMOBILITY_H_SKZPGILS
 
 #include "artery/traci/MobilityBase.h"
+#include "artery/traci/PersonMobility.h"
+#include "artery/traci/VehicleMobility.h"
 #include <inet/mobility/contract/IMobility.h>
 #include <omnetpp/csimplemodule.h>
 
@@ -10,7 +12,7 @@ namespace inet { class CanvasProjection; }
 namespace artery
 {
 
-class InetMobility : public inet::IMobility, public MobilityBase, public omnetpp::cSimpleModule
+class InetMobility : public inet::IMobility, public virtual MobilityBase, public omnetpp::cSimpleModule
 {
 public:
     // inet::IMobility interface
@@ -29,16 +31,28 @@ public:
 protected:
     virtual void updateVisualRepresentation();
 
-private:
     void initialize(const Position& pos, Angle heading, double speed) override;
     void update(const Position& pos, Angle heading, double speed) override;
 
+private:
     inet::Coord mPosition;
     inet::Coord mSpeed;
     inet::EulerAngles mOrientation;
     double mAntennaHeight = 0.0;
     omnetpp::cModule* mVisualRepresentation = nullptr;
     const inet::CanvasProjection* mCanvasProjection = nullptr;
+};
+
+class InetVehicleMobility : public InetMobility, public VehicleMobility
+{
+public:
+    void initialize(int stage) override;
+};
+
+class InetPersonMobility : public InetMobility, public PersonMobility
+{
+public:
+    void initialize(int stage) override;
 };
 
 } // namespace artery

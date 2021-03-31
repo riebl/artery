@@ -24,6 +24,11 @@ SimulationCache::SimulationCache(std::shared_ptr<API> api) :
 {
 }
 
+PersonCache::PersonCache(std::shared_ptr<API> api, const std::string& personID) :
+    VariableCache(api, libsumo::CMD_GET_PERSON_VARIABLE, personID)
+{
+}
+
 VehicleCache::VehicleCache(std::shared_ptr<API> api, const std::string& vehicleID) :
     VariableCache(api, libsumo::CMD_GET_VEHICLE_VARIABLE, vehicleID)
 {
