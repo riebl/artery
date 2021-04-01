@@ -13,9 +13,6 @@ Define_Module(OmniscientSensor);
 void OmniscientSensor::initialize()
 {
     FovSensor::initialize();
-    mFovConfig.sensorPosition = SensorPosition::FRONT;
-    mFovConfig.egoID = getEgoId();
-    mFovConfig.sensorID = getId();
 }
 
 } // namespace artery
