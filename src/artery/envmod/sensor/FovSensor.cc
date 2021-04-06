@@ -117,7 +117,8 @@ SensorDetection FovSensor::detectObjects(ObstacleRtree& obstacleRtree, Preselect
 
                 bool noObstacleOccultation = std::none_of(obstacleIntersections.begin(), obstacleIntersections.end(),
                         [&](const ObstacleRtreeValue& obstacleIntersection) {
-                            const auto& obstacle = mGlobalEnvironmentModel->getObstacles()->at(obstacleIntersection.second);
+                            const auto& obstacle = mGlobalEnvironmentModel->getObstacle(obstacleIntersection.second);
+                            ASSERT(obstacle);
                             if (bg::intersects(lineOfSight, obstacle->getOutline())) {
                                 blockingObstacles.insert(obstacle);
                                 return true;
