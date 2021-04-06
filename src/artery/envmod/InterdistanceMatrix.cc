@@ -103,17 +103,10 @@ InterdistanceMatrix::ItemSelector InterdistanceMatrix::buildItemSelector(const S
     ItemSelector selector;
     selector.range = config.fieldOfView.range / boost::units::si::meters;
 
-    double sensorDirection = 0.0;
-    auto sensorPositionDeg = relativeAngle(config.sensorPosition) / degrees;
-    if (sensorPositionDeg > 180.0) {
-        sensorDirection = -360.0 + sensorPositionDeg;
-    } else {
-        sensorDirection = sensorPositionDeg;
-    }
-
+    const double sensorDirection = relativeAngle(config.sensorPosition).degree();
     const double halfOpeningAngleDegree = 0.5 * config.fieldOfView.angle / degrees;
-    selector.left = sensorDirection - halfOpeningAngleDegree;
-    selector.right = sensorDirection + halfOpeningAngleDegree;
+    selector.left = sensorDirection + halfOpeningAngleDegree;
+    selector.right = sensorDirection - halfOpeningAngleDegree;
 
     if (selector.left > 180.0) {
         selector.left -= 360.0;

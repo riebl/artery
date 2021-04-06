@@ -12,27 +12,25 @@
 namespace artery
 {
 
-boost::units::quantity<boost::units::degree::plane_angle> relativeAngle(SensorPosition pos)
+Angle relativeAngle(SensorPosition pos)
 {
-    using boost::units::degree::degree;
-    using quantity = boost::units::quantity<boost::units::degree::plane_angle>;
+    Angle angle;
 
-    quantity angle;
     switch (pos) {
         case SensorPosition::FRONT:
-            angle = 0.0 * degree;
+            angle = Angle::from_degree(0.0);
             break;
         case SensorPosition::BACK:
-            angle = 180.0 * degree;
+            angle = Angle::from_degree(180.0);
             break;
         case SensorPosition::LEFT:
-            angle = 90.0 * degree;
+            angle = Angle::from_degree(270.0);
             break;
         case SensorPosition::RIGHT:
-            angle = 270.0 * degree;
+            angle = Angle::from_degree(90.0);
             break;
         default:
-            angle = quantity::from_value(std::numeric_limits<double>::quiet_NaN());
+            angle = Angle::from_degree(std::numeric_limits<double>::quiet_NaN());
     }
 
     return angle;

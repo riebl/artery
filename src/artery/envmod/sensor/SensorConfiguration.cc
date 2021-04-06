@@ -19,7 +19,7 @@ std::vector<Position> createSensorArc(const SensorConfigFov& config, const Posit
     const double egoHeadingDeg = -1.0 * (egoHeading.degree() - 90.0);
     const unsigned segments = std::max(config.numSegments, 1u);
     const double segmentAngle = openingAngleDeg / segments;
-    const double sensorPositionDeg = relativeAngle(config.sensorPosition) / boost::units::degree::degrees;
+    const double sensorPositionDeg = relativeAngle(config.sensorPosition).degree();
 
     std::vector<Position> points;
 
@@ -29,7 +29,7 @@ std::vector<Position> createSensorArc(const SensorConfigFov& config, const Posit
     }
 
     Position sensorBoundary(config.fieldOfView.range / boost::units::si::meters, 0.0);
-    rotation rotateSensorBoundary(sensorPositionDeg - 0.5 * openingAngleDeg + egoHeadingDeg);
+    rotation rotateSensorBoundary(egoHeadingDeg - sensorPositionDeg - 0.5 * openingAngleDeg);
     gm::transform(sensorBoundary, sensorBoundary, rotateSensorBoundary);
     points.push_back(sensorBoundary);
 
