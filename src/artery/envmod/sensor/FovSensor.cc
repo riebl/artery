@@ -36,7 +36,8 @@ void FovSensor::initialize()
 {
     BaseSensor::initialize();
 
-    mGroupFigure = new cGroupFigure(getEgoId().c_str());
+    std::string groupName = getEgoId() + "-" + getSensorName();
+    mGroupFigure = new cGroupFigure(groupName.c_str());
     mGlobalEnvironmentModel->getCanvas()->addFigure(mGroupFigure);
     mColor = cFigure::GOOD_DARK_COLORS[getId() % cFigure::NUM_GOOD_DARK_COLORS];
 
