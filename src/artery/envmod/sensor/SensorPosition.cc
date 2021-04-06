@@ -5,6 +5,7 @@
  */
 
 #include "artery/envmod/sensor/SensorPosition.h"
+#include <boost/algorithm/string/case_conv.hpp>
 #include <omnetpp/cexception.h>
 #include <limits>
 
@@ -47,7 +48,7 @@ SensorPosition determineSensorPosition(const std::string& id)
         {"RIGHT", SensorPosition::RIGHT},
     };
 
-    auto found = sensorPositionStrings.find(id);
+    auto found = sensorPositionStrings.find(boost::algorithm::to_upper_copy(id));
     if (found == sensorPositionStrings.end()) {
         throw omnetpp::cRuntimeError("Cannot map %s to a valid sensor position", id.c_str());
     }
