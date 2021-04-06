@@ -7,6 +7,17 @@
 namespace artery
 {
 
+Angle Angle::from_radian(double rad)
+{
+    return Angle { rad };
+}
+
+Angle Angle::from_degree(double deg)
+{
+    boost::units::quantity<boost::units::degree::plane_angle> tmp = deg * boost::units::degree::degree;
+    return Angle::value_type { tmp };
+}
+
 double Angle::radian() const
 {
     return value / boost::units::si::radian;
