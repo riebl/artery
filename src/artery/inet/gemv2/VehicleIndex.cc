@@ -91,7 +91,7 @@ void VehicleIndex::receiveSignal(cComponent* source, simsignal_t signal, const c
         return;
     }
 
-    bool mRtreeTainted = true;
+    mRtreeTainted = true;
 }
 
 bool VehicleIndex::anyBlockage(const Position& a, const Position& b) const
