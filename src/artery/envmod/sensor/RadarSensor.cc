@@ -8,11 +8,13 @@
 
 namespace artery
 {
+
 Define_Module(RadarSensor);
 
-void RadarSensor::initialize()
+const std::string& RadarSensor::getSensorCategory() const
 {
-    FovSensor::initialize();
+    static const std::string category = "Radar";
+    return category;
 }
 
 } // namespace artery
