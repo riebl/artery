@@ -7,10 +7,9 @@
 #ifndef ENVMOD_SENSORPOSITION_H_KCWHOGMB
 #define ENVMOD_SENSORPOSITION_H_KCWHOGMB
 
+#include "artery/utility/Geometry.h"
 #include <unordered_map>
 #include <string>
-#include <boost/units/quantity.hpp>
-#include <boost/units/systems/angle/degrees.hpp>
 
 namespace artery
 {
@@ -24,7 +23,12 @@ enum class SensorPosition
     RIGHT
 };
 
-boost::units::quantity<boost::units::degree::plane_angle> relativeAngle(SensorPosition pos);
+/**
+ * Get sensor angle relative to hosting vehicle's orientation
+ * \param pos sensor position
+ * \return sensor orientation relative to host's orientation
+ */
+Angle relativeAngle(SensorPosition pos);
 
 /**
  * Determine sensor position by a given string identfiier
