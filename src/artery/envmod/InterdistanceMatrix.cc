@@ -35,7 +35,7 @@ Angle createAngle(geometry::Point p1, geometry::Point p2, geometry::Point centre
 
     using namespace boost::math::double_constants;
     double radAngle { angle2 - angle1 }; // range [-2pi; 2pi]
-    if (radAngle >  pi) {
+    if (radAngle > pi) {
         radAngle -= 2.0 * pi;
     } else if (radAngle < -pi) {
         radAngle += 2.0 * pi;
@@ -55,8 +55,7 @@ void InterdistanceMatrix::update()
             if (objEgo->getExternalId() != objX->getExternalId()) {
                 const double distance = geom::distance(objEgo->getCentrePoint(), objX->getCentrePoint());
                 double angle = calcAngleEgoToX(*objEgo, *objX);
-                if (angle < -180.0) angle += 360.0;
-                if (angle > 180.0) angle -= 360.0;
+                assert(angle <= 180.0 && angle >= -180.0);
 
                 xs.emplace_back(distance, angle);
                 xs.back().name = objX->getExternalId();
@@ -97,6 +96,9 @@ InterdistanceMatrix::ItemSelector InterdistanceMatrix::buildItemSelector(const S
     if (config.fieldOfView.range.value() == 0.0)
         throw std::runtime_error("Sensor range is 0");
 
+    if (config.fieldOfView.angle <= 0.0 * degrees)
+        throw std::runtime_error("Sensor opening angle is equal or less than 0 degree");
+
     if (config.fieldOfView.angle > 360.0 * degrees)
         throw std::runtime_error("Sensor opening angle greater than 360 degree");
 
@@ -110,15 +112,13 @@ InterdistanceMatrix::ItemSelector InterdistanceMatrix::buildItemSelector(const S
 
     if (selector.left > 180.0) {
         selector.left -= 360.0;
-
-    } else if (selector.left < -180.0) {
+    } else if (selector.left <= -180.0) {
         selector.left += 360.0;
     }
 
     if (selector.right > 180.0) {
         selector.right -= 360.0;
-
-    } else if (selector.right < -180.0) {
+    } else if (selector.right <= -180.0) {
         selector.right += 360.0;
     }
 
@@ -129,7 +129,14 @@ bool InterdistanceMatrix::checkItemSelector(const ItemSelector& selector, const 
 {
     // add radius because the center of the vehicle could be out of sensor range but parts of vehicle body still be within
     if (item.distanceToY <= selector.range + item.radius) {
-        return item.angleToY < selector.right && item.angleToY > selector.left;
+        if (selector.left == selector.right) {
+            // full 360 degree sweep
+            return true;
+        } else if (selector.left > selector.right) {
+            return item.angleToY < selector.left && item.angleToY > selector.right;
+        } else {
+            return item.angleToY < selector.left || item.angleToY > selector.right;
+        }
     }
 
     return false;
