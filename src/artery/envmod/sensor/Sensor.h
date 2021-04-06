@@ -10,7 +10,6 @@
 #include "artery/envmod/EnvironmentModelObstacle.h"
 #include "artery/envmod/PreselectionMethod.h"
 #include "artery/envmod/sensor/FieldOfView.h"
-#include "artery/envmod/sensor/SensorVisualizationConfig.h"
 #include "artery/envmod/sensor/SensorPosition.h"
 #include "artery/envmod/sensor/SensorDetection.h"
 #include <omnetpp/csimplemodule.h>
@@ -24,7 +23,6 @@ class Sensor : public omnetpp::cSimpleModule
 public:
     virtual ~Sensor() = default;
     virtual void measurement() = 0;
-    virtual void setVisualization(const SensorVisualizationConfig&) = 0;
     virtual SensorPosition position() const = 0;
     virtual omnetpp::SimTime getValidityPeriod() const = 0;
     virtual const std::string& getSensorCategory() const = 0;

@@ -127,11 +127,6 @@ void LocalEnvironmentModel::initializeSensors()
 
             module->scheduleStart(simTime());
             module->callInitialize();
-
-            // sensor module is initialized by now, configure its visualization
-            cXMLElement* vis_cfg = sensor_cfg->getFirstChildWithTag("visualization");
-            sensor->setVisualization(SensorVisualizationConfig(vis_cfg));
-
             mSensors.push_back(sensor);
         }
     }

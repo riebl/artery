@@ -10,6 +10,7 @@
 #include "artery/envmod/LocalEnvironmentModel.h"
 #include "artery/envmod/EnvironmentModelObstacle.h"
 #include <boost/geometry/geometries/register/linestring.hpp>
+#include <unordered_set>
 
 using namespace omnetpp;
 
@@ -49,6 +50,8 @@ void FovSensor::initialize()
     mFovConfig.fieldOfView.angle = par("fovAngle").doubleValue() * boost::units::degree::degrees;
     mFovConfig.numSegments = par("numSegments");
     mFovConfig.doLineOfSightCheck = par("doLineOfSightCheck");
+
+    initializeVisualization();
 }
 
 void FovSensor::measurement()
@@ -89,6 +92,8 @@ SensorDetection FovSensor::detectObjects(ObstacleRtree& obstacleRtree, Preselect
 
     if (mFovConfig.doLineOfSightCheck)
     {
+        std::unordered_set<std::shared_ptr<EnvironmentModelObstacle>> blockingObstacles;
+
         // check if objects in sensor cone are hidden by another object or an obstacle
         for (const auto& objectId : preselObjectsInSensorRange)
         {
@@ -109,10 +114,16 @@ SensorDetection FovSensor::detectObjects(ObstacleRtree& obstacleRtree, Preselect
                             const std::vector<Position>& objectOutline =  mGlobalEnvironmentModel->getObject(objectId)->getOutline();
                             return bg::crosses(lineOfSight, objectOutline);
                         });
+
                 bool noObstacleOccultation = std::none_of(obstacleIntersections.begin(), obstacleIntersections.end(),
                         [&](const ObstacleRtreeValue& obstacleIntersection) {
                             const auto& obstacle = mGlobalEnvironmentModel->getObstacles()->at(obstacleIntersection.second);
-                            return bg::intersects(lineOfSight, obstacle->getOutline());
+                            if (bg::intersects(lineOfSight, obstacle->getOutline())) {
+                                blockingObstacles.insert(obstacle);
+                                return true;
+                            } else {
+                                return false;
+                            }
                         });
 
                 if (noVehicleOccultation && noObstacleOccultation) {
@@ -120,7 +131,7 @@ SensorDetection FovSensor::detectObjects(ObstacleRtree& obstacleRtree, Preselect
                         detection.objects.push_back(object);
                     }
 
-                    if (mFovConfig.visualizationConfig.linesOfSight) {
+                    if (mDrawLinesOfSight) {
                         detection.visiblePoints.push_back(objectPoint);
                     } else {
                         // no need to check other object points in detail except for visualization
@@ -129,6 +140,8 @@ SensorDetection FovSensor::detectObjects(ObstacleRtree& obstacleRtree, Preselect
                 }
             } // for each (corner) point of object polygon
         } // for each object
+
+        detection.obstacles.assign(blockingObstacles.begin(), blockingObstacles.end());
     } else {
         for (const auto& objectId : preselObjectsInSensorRange) {
             detection.objects.push_back(mGlobalEnvironmentModel->getObject(objectId));
@@ -139,40 +152,43 @@ SensorDetection FovSensor::detectObjects(ObstacleRtree& obstacleRtree, Preselect
 
 }
 
-void FovSensor::setVisualization(const SensorVisualizationConfig& config)
+void FovSensor::initializeVisualization()
 {
     assert(mGroupFigure);
-    mFovConfig.visualizationConfig = config;
+    mDrawLinesOfSight = par("drawLinesOfSight");
+    bool drawSensorCone = par("drawSensorCone");
+    bool drawObjects = par("drawDetectedObjects");
+    bool drawObstacles = par("drawBlockingObstacles");
 
-    if(config.sensorCone && !mSensorConeFigure) {
+    if (drawSensorCone && !mSensorConeFigure) {
         mSensorConeFigure = new cPolygonFigure("sensor cone");
         mSensorConeFigure->setLineColor(mColor);
         mGroupFigure->addFigure(mSensorConeFigure);
-    } else if (!config.sensorCone && mSensorConeFigure) {
+    } else if (!drawSensorCone && mSensorConeFigure) {
         delete mSensorConeFigure->removeFromParent();
         mSensorConeFigure = nullptr;
     }
 
-    if(config.linesOfSight && !mLinesOfSightFigure) {
+    if(mDrawLinesOfSight && !mLinesOfSightFigure) {
         mLinesOfSightFigure = new cGroupFigure("lines of sight");
         mGroupFigure->addFigure(mLinesOfSightFigure);
-    } else if (!config.linesOfSight && mLinesOfSightFigure) {
+    } else if (!mDrawLinesOfSight && mLinesOfSightFigure) {
         delete mLinesOfSightFigure->removeFromParent();
         mLinesOfSightFigure = nullptr;
     }
 
-    if (config.obstaclesInSensorRange && !mObstaclesFigure) {
+    if (drawObstacles && !mObstaclesFigure) {
         mObstaclesFigure = new cGroupFigure("obstacles");
         mGroupFigure->addFigure(mObstaclesFigure);
-    } else if (!config.obstaclesInSensorRange && mObstaclesFigure) {
+    } else if (!drawObstacles && mObstaclesFigure) {
         delete mObstaclesFigure->removeFromParent();
         mObstaclesFigure = nullptr;
     }
 
-    if (config.objectsInSensorRange && !mObjectsFigure) {
+    if (drawObjects && !mObjectsFigure) {
         mObjectsFigure = new cGroupFigure("objects");
         mGroupFigure->addFigure(mObjectsFigure);
-    } else if (!config.objectsInSensorRange && mObjectsFigure) {
+    } else if (!drawObjects && mObjectsFigure) {
         delete mObjectsFigure->removeFromParent();
         mObjectsFigure = nullptr;
     }

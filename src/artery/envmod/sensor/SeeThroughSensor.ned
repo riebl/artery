@@ -15,4 +15,9 @@ simple SeeThroughSensor like FovSensor
         string attachmentPoint = default("FRONT");
         int numSegments = default(12);
         bool doLineOfSightCheck = false;
+        bool drawLinesOfSight = false;
+
+        bool drawSensorCone = default(false);
+        bool drawBlockingObstacles = default(false);
+        bool drawDetectedObjects = default(false);
 }

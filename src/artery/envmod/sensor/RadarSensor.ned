@@ -14,4 +14,9 @@ simple RadarSensor like FovSensor
         string attachmentPoint = default("FRONT");
         int numSegments = default(1);
         bool doLineOfSightCheck = default(true);
+
+        bool drawSensorCone = default(false);
+        bool drawDetectedObjects = default(false);
+        bool drawBlockingObstacles = default(false);
+        bool drawLinesOfSight = default(false);
 }

@@ -24,7 +24,6 @@ public:
     ~FovSensor();
 
     void measurement() override;
-    void setVisualization(const SensorVisualizationConfig&) override;
     const FieldOfView& getFieldOfView() const;
     SensorPosition position() const override;
     omnetpp::SimTime getValidityPeriod() const override;
@@ -49,10 +48,12 @@ protected:
     };
 
     void initialize() override;
+    void initializeVisualization();
     void refreshDisplay() const override;
 
     SensorConfigFov mFovConfig;
     Updatable<SensorDetection> mLastDetection;
+    bool mDrawLinesOfSight;
 
 private:
     omnetpp::cFigure::Color mColor;

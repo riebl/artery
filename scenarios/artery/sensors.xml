@@ -1,47 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sensors>
-	<sensor name="FrontShortRangeRadar" type="artery.envmod.sensor.FrontRadar">
-		<visualization>
-			<showObjectsInSensorRange value="true" />
-			<showObstaclesInSensorRange value="true" />
-			<showSensorCone value="true" />
-			<showLineOfSight value="true" />
-		</visualization>
-	</sensor>
-	<sensor name="FrontLongRangeRadar" type="artery.envmod.sensor.FrontRadar">
-		<visualization>
-			<showObjectsInSensorRange value="true" />
-			<showObstaclesInSensorRange value="true" />
-			<showSensorCone value="true" />
-			<showLineOfSight value="true" />
-		</visualization>
-	</sensor>
-
-	<sensor name="RearLongRangeRadar" type="artery.envmod.sensor.RearRadar">
-		<visualization>
-			<showObjectsInSensorRange value="true" />
-			<showObstaclesInSensorRange value="true" />
-			<showSensorCone value="true" />
-			<showLineOfSight value="true" />
-		</visualization>
-	</sensor>
-
-	<sensor name="RearShortRangeRadar" type="artery.envmod.sensor.RearRadar">
-		<visualization>
-			<showObjectsInSensorRange value="true" />
-			<showObstaclesInSensorRange value="true" />
-			<showSensorCone value="true" />
-			<showLineOfSight value="true" />
-		</visualization>
-	</sensor>
-
-	<sensor name="SeeThrough" type="artery.envmod.sensor.SeeThroughSensor">
-		<visualization>
-			<showObjectsInSensorRange value="true" />
-			<showObstaclesInSensorRange value="true" />
-			<showSensorCone value="true" />
-			<showLineOfSight value="true" />
-		</visualization>
-	</sensor>
+	<sensor name="FrontShortRangeRadar" type="artery.envmod.sensor.FrontRadar" />
+	<sensor name="FrontLongRangeRadar" type="artery.envmod.sensor.FrontRadar" />
+	<sensor name="RearLongRangeRadar" type="artery.envmod.sensor.RearRadar" />
+	<sensor name="RearShortRangeRadar" type="artery.envmod.sensor.RearRadar" />
+	<sensor name="SeeThrough" type="artery.envmod.sensor.SeeThroughSensor" />
 	<sensor type="artery.envmod.sensor.CamSensor" />
 </sensors>

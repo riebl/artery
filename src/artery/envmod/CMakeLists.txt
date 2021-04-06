@@ -12,7 +12,6 @@ add_artery_feature(envmod
     sensor/SeeThroughSensor.cc
     sensor/SensorConfiguration.cc
     sensor/SensorPosition.cc
-    sensor/SensorVisualizationConfig.cc
     service/CollectivePerceptionMockMessage.cc
     service/CollectivePerceptionMockService.cc
     service/EnvmodPrinter.cc
