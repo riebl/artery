@@ -26,13 +26,14 @@ enum class SensorPosition
 
 boost::units::quantity<boost::units::degree::plane_angle> relativeAngle(SensorPosition pos);
 
-static std::unordered_map<std::string, artery::SensorPosition> sensorPositionStrings = {
-    {"VIRTUAL", SensorPosition::VIRTUAL},
-    {"FRONT", SensorPosition::FRONT},
-    {"BACK", SensorPosition::BACK},
-    {"LEFT", SensorPosition::LEFT},
-    {"RIGHT", SensorPosition::RIGHT},
-};
+/**
+ * Determine sensor position by a given string identfiier
+ *
+ * \throws runtime exception if string matches no valid sensor position
+ * \param id position identification string
+ * \return sensor position
+ */
+SensorPosition determineSensorPosition(const std::string& id);
 
 } // namespace artery
 

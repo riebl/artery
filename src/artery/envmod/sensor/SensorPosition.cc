@@ -5,6 +5,7 @@
  */
 
 #include "artery/envmod/sensor/SensorPosition.h"
+#include <omnetpp/cexception.h>
 #include <limits>
 
 namespace artery
@@ -34,6 +35,23 @@ boost::units::quantity<boost::units::degree::plane_angle> relativeAngle(SensorPo
     }
 
     return angle;
+}
+
+SensorPosition determineSensorPosition(const std::string& id)
+{
+    static const std::unordered_map<std::string, SensorPosition> sensorPositionStrings = {
+        {"VIRTUAL", SensorPosition::VIRTUAL},
+        {"FRONT", SensorPosition::FRONT},
+        {"BACK", SensorPosition::BACK},
+        {"LEFT", SensorPosition::LEFT},
+        {"RIGHT", SensorPosition::RIGHT},
+    };
+
+    auto found = sensorPositionStrings.find(id);
+    if (found == sensorPositionStrings.end()) {
+        throw omnetpp::cRuntimeError("Cannot map %s to a valid sensor position", id.c_str());
+    }
+    return found->second;
 }
 
 } // namespace artery

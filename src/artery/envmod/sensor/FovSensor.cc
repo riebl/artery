@@ -42,7 +42,7 @@ void FovSensor::initialize()
 
     mFovConfig.egoID = getEgoId();
     mFovConfig.sensorID = getId();
-    mFovConfig.sensorPosition = sensorPositionStrings.find(par("attachmentPoint"))->second;
+    mFovConfig.sensorPosition = determineSensorPosition(par("attachmentPoint"));
 
     mFovConfig.fieldOfView.range = par("fovRange").doubleValue() * boost::units::si::meters;
     mFovConfig.fieldOfView.angle = par("fovAngle").doubleValue() * boost::units::degree::degrees;
