@@ -10,4 +10,5 @@ simple CamSensor
 {
     parameters:
         string identityRegistryModule;
+        double validityPeriod @unit(s) = default(1.1s);
 }
