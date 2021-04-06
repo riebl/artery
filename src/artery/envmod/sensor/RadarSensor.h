@@ -15,14 +15,8 @@ namespace artery
 class RadarSensor : public FovSensor
 {
 public:
-    void initialize() override;
-    const std::string& getSensorCategory() const override { return category; }
-
-private:
-    const std::string category = "Radar";
+    const std::string& getSensorCategory() const override;
 };
-
-
 
 } // namespace artery
 
