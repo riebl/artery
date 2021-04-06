@@ -7,7 +7,6 @@
 #ifndef SENSORCONFIGURATION_H_
 #define SENSORCONFIGURATION_H_
 
-#include "artery/envmod/sensor/SensorVisualizationConfig.h"
 #include "artery/envmod/sensor/FieldOfView.h"
 #include "artery/envmod/sensor/SensorPosition.h"
 #include "artery/utility/Geometry.h"
@@ -31,7 +30,6 @@ struct SensorConfigFov : public SensorConfig
         SensorPosition sensorPosition = SensorPosition::FRONT;
         unsigned numSegments = 0; /*< number of sensor cone segments (0 build a triangle) */
         bool doLineOfSightCheck = true; /*< false for simple "object in sensor cone" tests */
-        SensorVisualizationConfig visualizationConfig;
 };
 
 

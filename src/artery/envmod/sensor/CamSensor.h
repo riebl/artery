@@ -21,7 +21,6 @@ class CamSensor : public BaseSensor, public omnetpp::cListener
 public:
     void measurement() override;
     void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject* = nullptr) override;
-    void setVisualization(const SensorVisualizationConfig&) override {}
     omnetpp::SimTime getValidityPeriod() const override;
     SensorPosition position() const override { return SensorPosition::VIRTUAL; }
     const std::string& getSensorCategory() const override;

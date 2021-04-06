@@ -8,7 +8,6 @@
 #define ENVMOD_BASESENSOR_H_
 
 #include "artery/envmod/sensor/Sensor.h"
-#include "artery/envmod/sensor/SensorVisualizationConfig.h"
 
 namespace artery
 {
@@ -23,7 +22,6 @@ class BaseSensor : public Sensor
 {
 public:
     BaseSensor();
-    void setVisualization(const SensorVisualizationConfig& cfg) override { mVisualizationConfig = cfg; }
 
 protected:
     void initialize() override;
@@ -34,7 +32,6 @@ protected:
 
     LocalEnvironmentModel* mLocalEnvironmentModel;
     GlobalEnvironmentModel* mGlobalEnvironmentModel;
-    SensorVisualizationConfig mVisualizationConfig;
 
 private:
     Middleware* mMiddleware;
