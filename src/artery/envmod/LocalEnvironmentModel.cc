@@ -113,17 +113,24 @@ void LocalEnvironmentModel::initializeSensors()
                 sensor_name = module_type->getName();
             }
 
-            cModule* module = module_type->createScheduleInit(sensor_name, this);
+            cModule* module = module_type->create(sensor_name, this);
+            module->finalizeParameters();
+            module->buildInside();
             auto sensor = dynamic_cast<artery::Sensor*>(module);
 
-            sensor->setSensorName(sensor_name);
-
             if (sensor != nullptr) {
-                cXMLElement* vis_cfg = sensor_cfg->getFirstChildWithTag("visualization");
-                sensor->setVisualization(SensorVisualizationConfig(vis_cfg));
+                // set sensor name at very early stage so it is available during sensor initialization
+                sensor->setSensorName(sensor_name);
             } else {
                 throw cRuntimeError("%s is not of type Sensor", module_type->getFullName());
             }
+
+            module->scheduleStart(simTime());
+            module->callInitialize();
+
+            // sensor module is initialized by now, configure its visualization
+            cXMLElement* vis_cfg = sensor_cfg->getFirstChildWithTag("visualization");
+            sensor->setVisualization(SensorVisualizationConfig(vis_cfg));
 
             mSensors.push_back(sensor);
         }
