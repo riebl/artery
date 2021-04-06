@@ -58,7 +58,7 @@ void FovSensor::measurement()
     mLastDetection = std::move(objects);
 }
 
-SensorDetection FovSensor::detectObjects(ObstacleRtree &obstacleRtree, std::unique_ptr<PreselectionMethod> &preselector) const {
+SensorDetection FovSensor::detectObjects(ObstacleRtree& obstacleRtree, PreselectionMethod& preselector) const {
 
     namespace bg = boost::geometry;
     if (mFovConfig.fieldOfView.range <= 0.0 * boost::units::si::meter) {
@@ -76,8 +76,7 @@ SensorDetection FovSensor::detectObjects(ObstacleRtree &obstacleRtree, std::uniq
     }
     detection.sensorCone = createSensorArc(mFovConfig, *egoObj);
 
-    assert(preselector);
-    std::vector<std::string> preselObjectsInSensorRange = preselector->select(*egoObj, mFovConfig);
+    std::vector<std::string> preselObjectsInSensorRange = preselector.select(*egoObj, mFovConfig);
 
     // get obstacles intersecting with sensor cone
     std::vector<ObstacleRtreeValue> obstacleIntersections;
