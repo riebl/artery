@@ -23,6 +23,7 @@ Define_Module(CamSensor)
 
 void CamSensor::initialize()
 {
+    mValidityPeriod = par("validityPeriod");
     BaseSensor::initialize();
     mIdentityRegistry = inet::getModuleFromPar<IdentityRegistry>(par("identityRegistryModule"), this);
     getMiddleware().subscribe(CamReceivedSignal, this);
@@ -62,7 +63,7 @@ void CamSensor::receiveSignal(cComponent*, simsignal_t signal, cObject *obj, cOb
 
 omnetpp::SimTime CamSensor::getValidityPeriod() const
 {
-    return omnetpp::SimTime { 1100, SIMTIME_MS };
+    return mValidityPeriod;
 }
 
 const std::string& CamSensor::getSensorCategory() const
