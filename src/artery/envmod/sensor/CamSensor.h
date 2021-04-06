@@ -25,14 +25,15 @@ public:
     omnetpp::SimTime getValidityPeriod() const override;
     SensorPosition position() const override { return SensorPosition::VIRTUAL; }
     const std::string& getSensorCategory() const override;
-    const std::string getSensorName() const override {  return std::string("CamSensor"); };
-    void setSensorName(const std::string& name) override {};
+    const std::string getSensorName() const override {  return mSensorName; }
+    void setSensorName(const std::string& name) override { mSensorName = name; }
 protected:
     void initialize() override;
     void finish() override;
 
 private:
     IdentityRegistry* mIdentityRegistry;
+    std::string mSensorName;
 };
 
 } // namespace artery
