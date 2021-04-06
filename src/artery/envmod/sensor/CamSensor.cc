@@ -72,4 +72,11 @@ const std::string& CamSensor::getSensorCategory() const
     return category;
 }
 
+SensorDetection CamSensor::detectObjects(ObstacleRtree&, PreselectionMethod&) const
+{
+    // return empty sensor detection because CAM objects are added upon CAM reception signal
+    SensorDetection detection;
+    return detection;
+}
+
 } // namespace artery

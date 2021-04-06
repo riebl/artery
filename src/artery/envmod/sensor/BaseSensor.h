@@ -24,7 +24,6 @@ class BaseSensor : public Sensor
 public:
     BaseSensor();
     void setVisualization(const SensorVisualizationConfig& cfg) override { mVisualizationConfig = cfg; }
-    SensorDetection detectObjects(ObstacleRtree& obstacleRtree, PreselectionMethod& preselector) const override;
 
 protected:
     void initialize() override;
