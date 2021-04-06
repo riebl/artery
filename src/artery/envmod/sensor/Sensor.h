@@ -30,7 +30,7 @@ public:
     virtual const std::string& getSensorCategory() const = 0;
     virtual const std::string getSensorName() const = 0;
     virtual void setSensorName(const std::string& name) = 0;
-    virtual SensorDetection detectObjects(ObstacleRtree &obstacleRtree, std::unique_ptr<artery::PreselectionMethod> &preselector) const = 0;
+    virtual SensorDetection detectObjects(ObstacleRtree& obstacleRtree, PreselectionMethod& preselector) const = 0;
 };
 
 } // namespace artery

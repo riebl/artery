@@ -55,7 +55,8 @@ std::string BaseSensor::getEgoId()
     return getFacilities().get_const<traci::VehicleController>().getVehicleId();
 }
 
-SensorDetection BaseSensor::detectObjects(ObstacleRtree &obstacleRtree, std::unique_ptr<artery::PreselectionMethod> &preselector) const {
+SensorDetection BaseSensor::detectObjects(ObstacleRtree &obstacleRtree, PreselectionMethod& preselector) const
+{
     SensorDetection detection;
     return detection;
 }

@@ -174,11 +174,10 @@ void GlobalEnvironmentModel::clear()
     mObstacleRtree.clear();
 }
 
-SensorDetection GlobalEnvironmentModel::detectObjects(std::function<SensorDetection(ObstacleRtree &, std::unique_ptr<PreselectionMethod> &)> detect)
+SensorDetection GlobalEnvironmentModel::detectObjects(std::function<SensorDetection(ObstacleRtree&, PreselectionMethod&)> detect)
 {
     ASSERT(!mTainted); /*< object database and preselector are in sync */
-
-    return detect(mObstacleRtree, mPreselector);
+    return detect(mObstacleRtree, *mPreselector);
 }
 
 void GlobalEnvironmentModel::initialize()
