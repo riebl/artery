@@ -311,4 +311,10 @@ std::shared_ptr<EnvironmentModelObject> GlobalEnvironmentModel::getObject(const 
     return found != mObjects.end() ? *found : nullptr;
 }
 
+std::shared_ptr<EnvironmentModelObstacle> GlobalEnvironmentModel::getObstacle(const std::string& obsId)
+{
+    auto found = mObstacles.find(obsId);
+    return found != mObstacles.end() ? found->second : nullptr;
+}
+
 } // namespace artery

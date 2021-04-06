@@ -64,14 +64,18 @@ public:
     std::shared_ptr<EnvironmentModelObject> getObject(const std::string& objId);
 
     /**
+     * Get an obstacle by its id
+     * @param obsId obstacle id
+     * @return obstacle model matching the id or nullptr
+     */
+    std::shared_ptr<EnvironmentModelObstacle> getObstacle(const std::string& obsId);
+
+    /**
      * Returns GSDE of all objects in based on the detection logic of the sensor
      * @param detect
      * @return
      */
     SensorDetection detectObjects(std::function<SensorDetection(ObstacleRtree&, PreselectionMethod&)> detect);
-
-
-    std::shared_ptr<ObstacleDB> getObstacles() { return std::make_shared<ObstacleDB>(mObstacles); };
 
 private:
     /**
