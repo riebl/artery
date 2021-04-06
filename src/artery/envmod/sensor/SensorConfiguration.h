@@ -21,7 +21,7 @@ class EnvironmentModelObject;
 struct SensorConfig
 {
         std::string egoID; /*< ego ID of the vehicle carrying this sensor */
-        unsigned int sensorID = 0; /*< uniqu sensor ID */
+        unsigned int sensorID = 0; /*< unique sensor ID */
         std::string sensorName;
 };
 
