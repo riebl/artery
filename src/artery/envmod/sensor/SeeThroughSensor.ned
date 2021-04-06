@@ -6,12 +6,13 @@
 
 package artery.envmod.sensor;
 
-simple OmniscientSensor like FovSensor
+// SeeThroughSensor has a field-of-view but is not affected by line-of-sight obstructions
+simple SeeThroughSensor like FovSensor
 {
     parameters:
         double fovRange @unit(m);
         double fovAngle = default(360); // opening angle in degree
         string attachmentPoint = default("FRONT");
-        int numSegments = 12;
+        int numSegments = default(12);
         bool doLineOfSightCheck = false;
 }

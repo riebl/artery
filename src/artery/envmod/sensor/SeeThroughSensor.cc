@@ -4,15 +4,17 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
-#include "artery/envmod/sensor/OmniscientSensor.h"
+#include "artery/envmod/sensor/SeeThroughSensor.h"
 
 namespace artery
 {
-Define_Module(OmniscientSensor);
 
-void OmniscientSensor::initialize()
+Define_Module(SeeThroughSensor);
+
+const std::string& SeeThroughSensor::getSensorCategory() const
 {
-    FovSensor::initialize();
+    static const std::string category = "see-through";
+    return category;
 }
 
 } // namespace artery

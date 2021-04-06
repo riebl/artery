@@ -35,7 +35,7 @@
 		</visualization>
 	</sensor>
 
-	<sensor name="OmniscientRadar50" type="artery.envmod.sensor.OmniscientSensor">
+	<sensor name="SeeThrough" type="artery.envmod.sensor.SeeThroughSensor">
 		<visualization>
 			<showObjectsInSensorRange value="true" />
 			<showObstaclesInSensorRange value="true" />
