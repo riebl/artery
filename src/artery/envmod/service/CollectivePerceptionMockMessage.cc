@@ -1,4 +1,5 @@
 #include "artery/envmod/service/CollectivePerceptionMockMessage.h"
+#include <omnetpp.h>
 
 namespace artery
 {
@@ -36,5 +37,21 @@ omnetpp::cPacket* CollectivePerceptionMockMessage::dup() const
 {
     return new CollectivePerceptionMockMessage(*this);
 }
+
+
+using namespace omnetpp;
+
+class CpmSourceResultFilter : public cObjectResultFilter
+{
+protected:
+    void receiveSignal(cResultFilter* prev, simtime_t_cref t, cObject* object, cObject* details) override
+    {
+        if (auto cpm = dynamic_cast<CollectivePerceptionMockMessage*>(object)) {
+            fire(this, t, static_cast<long>(cpm->getSourceStation()), details);
+        }
+    }
+};
+
+Register_ResultFilter("cpmSource", CpmSourceResultFilter)
 
 } // namespace artery

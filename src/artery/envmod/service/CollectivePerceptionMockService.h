@@ -28,8 +28,10 @@ class CollectivePerceptionMockService : public ItsG5Service
         void handleMessage(omnetpp::cMessage*) override;
         void receiveSignal(omnetpp::cComponent*, omnetpp::simsignal_t, omnetpp::cObject*, omnetpp::cObject*) override;
         void generatePacket();
+        void indicate(const vanetza::btp::DataIndication&, omnetpp::cPacket*) override;
 
     private:
+        int mHostId = 0;
         const PositionProvider* mPositionProvider = nullptr;
         const LocalEnvironmentModel* mEnvironmentModel = nullptr;
         omnetpp::cMessage* mTrigger = nullptr;

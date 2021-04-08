@@ -8,6 +8,8 @@
 #include "artery/envmod/service/CollectivePerceptionMockMessage.h"
 #include "artery/envmod/service/CollectivePerceptionMockService.h"
 #include "artery/utility/InitStages.h"
+#include "artery/utility/PointerCheck.h"
+#include <omnetpp/checkandcast.h>
 #include <omnetpp/cmessage.h>
 #include <omnetpp/cpacket.h>
 
@@ -20,6 +22,8 @@ namespace
 {
 
 omnetpp::simsignal_t camSentSignal = omnetpp::cComponent::registerSignal("CamSent");
+omnetpp::simsignal_t cpmSentSignal = omnetpp::cComponent::registerSignal("CpmSent");
+omnetpp::simsignal_t cpmReceivedSignal = omnetpp::cComponent::registerSignal("CpmReceived");
 
 } // namespace
 
@@ -54,6 +58,7 @@ void CollectivePerceptionMockService::initialize(int stage)
         if (mGenerateAfterCam) {
             subscribe(camSentSignal);
         }
+        mHostId = getFacilities().get_const<Identity>().host->getId();
     } else if (stage == InitStages::Propagate) {
         for (const Sensor* sensor : mEnvironmentModel->getSensors()) {
             // skip any virtual sensors without field of view
@@ -101,6 +106,13 @@ void CollectivePerceptionMockService::trigger()
     }
 }
 
+void CollectivePerceptionMockService::indicate(const vanetza::btp::DataIndication&, omnetpp::cPacket* packet)
+{
+    auto cpm = omnetpp::check_and_cast<CollectivePerceptionMockMessage*>(packet);
+    emit(cpmReceivedSignal, cpm);
+    delete packet;
+}
+
 void CollectivePerceptionMockService::generatePacket()
 {
     using namespace vanetza;
@@ -141,7 +153,9 @@ void CollectivePerceptionMockService::generatePacket()
     }
     packet->addByteLength(mLengthObjectContainer * objectContainers.size());
     packet->setObjectContainers(std::move(objectContainers));
+    packet->setSourceStation(mHostId);
 
+    emit(cpmSentSignal, packet);
     request(req, packet);
 }
 

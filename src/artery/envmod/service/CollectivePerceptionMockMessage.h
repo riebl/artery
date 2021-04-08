@@ -41,9 +41,13 @@ public:
     void setObjectContainers(std::vector<ObjectContainer>&& objs);
     void setObjectContainers(const std::vector<ObjectContainer>& objs);
 
+    void setSourceStation(int id) { mSourceStation = id; }
+    int getSourceStation() const { return mSourceStation; }
+
     omnetpp::cPacket* dup() const override;
 
 private:
+    int mSourceStation = 0;
     std::shared_ptr<const std::vector<FovContainer>> mFovContainers;
     std::shared_ptr<const std::vector<ObjectContainer>> mObjectContainers;
 };
