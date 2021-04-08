@@ -19,7 +19,7 @@ using namespace omnetpp;
 namespace artery
 {
 
-Define_Module(LocalEnvironmentModel);
+Define_Module(LocalEnvironmentModel)
 
 static const simsignal_t EnvironmentModelRefreshSignal = cComponent::registerSignal("EnvironmentModel.refresh");
 

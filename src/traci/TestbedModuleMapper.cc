@@ -4,7 +4,7 @@
 namespace traci
 {
 
-Define_Module(TestbedModuleMapper);
+Define_Module(TestbedModuleMapper)
 
 void TestbedModuleMapper::initialize()
 {

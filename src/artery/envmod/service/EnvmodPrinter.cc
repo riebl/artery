@@ -14,7 +14,7 @@
 namespace artery
 {
 
-Define_Module(EnvmodPrinter);
+Define_Module(EnvmodPrinter)
 
 void EnvmodPrinter::initialize()
 {

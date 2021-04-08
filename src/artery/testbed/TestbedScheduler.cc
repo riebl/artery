@@ -8,9 +8,9 @@
 namespace artery
 {
 
-Register_Class(TestbedScheduler);
+Register_Class(TestbedScheduler)
 Register_GlobalConfigOption(CFG_SIMULATION_TOO_SLOW, "simulation-too-slow", CFG_INT , "100",
-        "Threshold for a simulation to lag behind wall-clock (milliseconds).");
+        "Threshold for a simulation to lag behind wall-clock (milliseconds).")
 Register_GlobalConfigOption(CFG_STARTUP_TIME, "simulation-startup-time", CFG_DOUBLE, "4",
         "Time span at the beginning of a simulation in which simulation-too-slow is not checked (seconds).")
 

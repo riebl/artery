@@ -11,7 +11,7 @@
 #include "artery/application/VehicleDataProvider.h"
 #include <omnetpp/cexception.h>
 
-Define_Module(artery::den::ImpactReductionContainerExchange);
+Define_Module(artery::den::ImpactReductionContainerExchange)
 
 namespace artery
 {

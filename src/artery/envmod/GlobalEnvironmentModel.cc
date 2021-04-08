@@ -38,7 +38,7 @@ const simsignal_t traciNodeRemoveSignal = cComponent::registerSignal("traci.node
 const simsignal_t traciNodeUpdateSignal = cComponent::registerSignal("traci.node.update");
 }
 
-Define_Module(GlobalEnvironmentModel);
+Define_Module(GlobalEnvironmentModel)
 
 
 GlobalEnvironmentModel::GlobalEnvironmentModel()

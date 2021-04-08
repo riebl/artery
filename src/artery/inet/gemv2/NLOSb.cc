@@ -66,7 +66,7 @@ inet::m getWaveLength(const inet::physicallayer::ITransmission* transmission)
 } // namespace
 
 
-Define_Module(NLOSb);
+Define_Module(NLOSb)
 
 void NLOSb::initialize()
 {

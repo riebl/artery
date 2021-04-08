@@ -27,8 +27,8 @@ static const auto km_per_hour = boost::units::si::kilo * boost::units::si::meter
 using omnetpp::SIMTIME_S;
 using omnetpp::SIMTIME_MS;
 
-Define_Module(artery::den::TrafficJamEndOfQueue);
-Define_Module(artery::den::TrafficJamAhead);
+Define_Module(artery::den::TrafficJamEndOfQueue)
+Define_Module(artery::den::TrafficJamAhead)
 
 namespace artery
 {
