@@ -2,6 +2,11 @@ package artery.envmod.service;
 
 import artery.application.ItsG5Service;
 
+//
+// CollectivePerceptionMockService generates mock CPMs, i.e. without ASN.1 encoding.
+// These mock CPMs include the list of detected objects and field-of-view containers
+// of the equipped sensors.
+//
 simple CollectivePerceptionMockService like ItsG5Service
 {
     parameters:
