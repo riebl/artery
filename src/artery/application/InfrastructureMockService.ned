@@ -1,5 +1,12 @@
 package artery.application;
 
+//
+// InfrastructureMockService mimicks a service typically operated by a RSU.
+// Its messages are disseminated as GeoBroadcast packets centred around the RSU's location.
+// If the actual content of an RSU message is not relevant in your simulation, e.g. you are
+// only interested in the impact on the channel congestion, you can employ this service to
+// produce load similar to SPATEM and MAPEM messages.
+//
 simple InfrastructureMockService like ItsG5Service
 {
     parameters:
