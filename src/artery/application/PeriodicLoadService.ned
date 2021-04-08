@@ -1,5 +1,9 @@
 package artery.application;
 
+//
+// PeriodicLoadService generates Single-Hop-Broadcast packets periodically.
+// This service can be helpful to make the radio channel more crowded.
+//
 simple PeriodicLoadService like ItsG5Service
 {
     parameters:
