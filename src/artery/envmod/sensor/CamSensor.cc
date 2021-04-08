@@ -19,7 +19,7 @@ namespace artery
 
 static const simsignal_t CamReceivedSignal = cComponent::registerSignal("CamReceived");
 
-Define_Module(CamSensor);
+Define_Module(CamSensor)
 
 void CamSensor::initialize()
 {

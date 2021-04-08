@@ -19,7 +19,7 @@ namespace artery
 namespace gemv2
 {
 
-Define_Module(NLOSv);
+Define_Module(NLOSv)
 
 using namespace inet;
 namespace phy = inet::physicallayer;

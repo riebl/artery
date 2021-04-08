@@ -8,7 +8,8 @@
 
 namespace artery
 {
-Define_Module(RearRadar);
+
+Define_Module(RearRadar)
 
 void RearRadar::initialize()
 {

@@ -6,7 +6,7 @@ using namespace omnetpp;
 namespace traci
 {
 
-Define_Module(TestbedNodeManager);
+Define_Module(TestbedNodeManager)
 
 void TestbedNodeManager::initialize()
 {

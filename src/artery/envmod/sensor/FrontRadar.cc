@@ -9,7 +9,7 @@
 namespace artery
 {
 
-Define_Module(FrontRadar);
+Define_Module(FrontRadar)
 
 void FrontRadar::initialize()
 {
