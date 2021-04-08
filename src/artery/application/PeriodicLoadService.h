@@ -30,6 +30,7 @@ class PeriodicLoadService : public ItsG5Service
 
     private:
         omnetpp::cMessage* mTrigger;
+        std::uint32_t mAppId;
 };
 
 } // namespace artery
