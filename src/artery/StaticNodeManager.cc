@@ -153,7 +153,7 @@ void StaticNodeManager::addRoadSideUnit(const std::string& id)
     }
 
     if (mDirectionalAntennas) {
-        for (int i = 0; i < antennaDirections.size(); ++i) {
+        for (std::size_t i = 0; i < antennaDirections.size(); ++i) {
             auto* antennaMobilityModule = rsuModule->getSubmodule("antennaMobility", i);
             if (!antennaMobilityModule) {
                 error("missing antenna mobility submodule in RSU node at index %i", i);
