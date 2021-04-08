@@ -146,7 +146,7 @@ void TransfusionService::tapPacket(const vanetza::btp::DataIndication& indicatio
     {
         google::protobuf::io::OstreamOutputStream os(&strstream);
         google::protobuf::io::CodedOutputStream cos(&os);
-        cos.WriteVarint32(msg.ByteSize());
+        cos.WriteVarint32(msg.ByteSizeLong());
         if(!msg.SerializeToCodedStream(&cos)) {
             throw cRuntimeError("Encoding of Transfusion message failed");
         }
