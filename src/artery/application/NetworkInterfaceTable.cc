@@ -14,7 +14,7 @@ std::shared_ptr<NetworkInterface> NetworkInterfaceTable::select(ChannelNumber ch
     }
 
     return network;
-};
+}
 
 const NetworkInterfaceTable::TableContainer& NetworkInterfaceTable::all() const
 {
