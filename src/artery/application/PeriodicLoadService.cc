@@ -36,6 +36,7 @@ void PeriodicLoadService::indicate(const btp::DataIndication& ind, cPacket* pack
 void PeriodicLoadService::initialize()
 {
     ItsG5Service::initialize();
+    mAppId = par("aid");
     mTrigger = new cMessage("PeriodicLoadService generate message");
     mTrigger->setSchedulingPriority(1); // this trigger is then after radio setup
     if (!par("waitForFirstTrigger")) {
@@ -67,13 +68,10 @@ void PeriodicLoadService::scheduleTransmission()
 
 void PeriodicLoadService::generateTransmissionRequest()
 {
-    // use an ITS-AID reserved for testing purposes
-    static const vanetza::ItsAid example_its_aid = 16480;
-
     auto& mco = getFacilities().get_const<MultiChannelPolicy>();
     auto& networks = getFacilities().get_const<NetworkInterfaceTable>();
 
-    for (auto channel : mco.allChannels(example_its_aid)) {
+    for (auto channel : mco.allChannels(mAppId)) {
         auto network = networks.select(channel);
         if (network) {
             btp::DataRequestB req;
@@ -82,7 +80,7 @@ void PeriodicLoadService::generateTransmissionRequest()
             req.gn.transport_type = geonet::TransportType::SHB;
             req.gn.traffic_class.tc_id(static_cast<unsigned>(dcc::Profile::DP2));
             req.gn.communication_profile = geonet::CommunicationProfile::ITS_G5;
-            req.gn.its_aid = example_its_aid;
+            req.gn.its_aid = mAppId;
 
             cPacket* packet = new cPacket("PeriodicLoadService packet");
             packet->setByteLength(par("payloadLength"));
