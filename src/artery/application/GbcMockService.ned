@@ -1,5 +1,15 @@
 package artery.application;
 
+//
+// GbcMockService produces generic GeoBroadcast packets.
+//
+// Many GeoNetworking options can be adjusted to evaluate their impact on the network.
+// The packets are generated periodically according to the specified interval and offset.
+// Optionally, packet generation can be triggered by a storyboard signal.
+// If the packet limit is set to zero, no packets are generated periodically but only by explict signals.
+// By default, the destination area is centred at the station's current position.
+// This behaviour can be overriden by defining the destination area's centre point explicitly.
+//
 simple GbcMockService like ItsG5Service
 {
     parameters:
@@ -20,7 +30,7 @@ simple GbcMockService like ItsG5Service
         double gnRepetitionInterval @unit(s) = default(0s);
         double gnRepetitionMaximum @unit(s) = default(0s);
         int dccProfile = default(3);
-        int packetLimit = default(-1);
+        int packetLimit = default(-1); // -1 means unlimited
 
         bool disseminateAroundStation = default(true);
         double gnDestinationLongitude @unit(deg) = default(0.0 deg);
