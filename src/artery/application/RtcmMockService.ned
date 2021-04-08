@@ -1,5 +1,12 @@
 package artery.application;
 
+//
+// RtcmMockService is intended for evaluating the dissemination of Cooperative Positioning messages.
+//
+// An earlier variant of this service has been employed in
+//    "VANET Coverage Analysis for GPS Augmentation Data in Rural Area"
+//    https://doi.org/10.1016/j.ifacol.2016.11.112
+//
 simple RtcmMockService like ItsG5Service
 {
     parameters:
