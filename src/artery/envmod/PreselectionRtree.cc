@@ -26,8 +26,10 @@ void PreselectionRtree::update()
 std::vector<std::string> PreselectionRtree::select(const EnvironmentModelObject& ego, const SensorConfigFov& config)
 {
     auto cone = createSensorArc(config, ego);
-    if (!boost::geometry::is_valid(cone)) {
-        throw omnetpp::cRuntimeError("polygon of sensor cone is invalid");
+    boost::geometry::validity_failure_type failure;
+    if (!boost::geometry::is_valid(cone, failure)) {
+        std::string error_msg =  boost::geometry::validity_failure_type_message(failure);
+        throw omnetpp::cRuntimeError("polygon of sensor cone is invalid: %s", error_msg.c_str());
     }
 
     // Boost 1.58 accepted "cone" for intersection query. Fails for obscure reasons with 1.60+
