@@ -22,7 +22,9 @@ std::vector<Position> createSensorArc(const SensorConfigRadar& config, const Pos
     const double sensorPositionDeg = relativeAngle(config.sensorPosition) / boost::units::degree::degrees;
 
     std::vector<Position> points;
-    points.push_back(Position {0.0, 0.0});
+    if (openingAngleDeg != 360) {
+        points.push_back(Position{0.0, 0.0});
+    }
 
     Position sensorBoundary(config.fieldOfView.range / boost::units::si::meters, 0.0);
     rotation rotateSensorBoundary(sensorPositionDeg - 0.5 * openingAngleDeg + egoHeadingDeg);
