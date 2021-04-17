@@ -103,7 +103,7 @@ public:
     const TrackedObjects& allObjects() const { return mObjects; }
 
     /**
-     * Get local sensors
+     * Get list of all sensors attached to this local entity
      *
      * Sensor pointers are only valid as long as this LocalEnvironmentModel exists!
      */
