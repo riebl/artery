@@ -10,6 +10,7 @@ set(SOURCES
     InsertionDelayVehiclePolicy.cc
     Listener.cc
     MultiTypeModuleMapper.cc
+    MultiVClassMultiTypeModuleMapper.cc
     OverlappingVehiclesPolicy.cc
     PosixLauncher.cc
     RegionsOfInterest.cc
