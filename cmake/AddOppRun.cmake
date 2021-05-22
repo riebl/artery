@@ -214,6 +214,7 @@ function(generate_run_script)
     else()
         set(opp_run_executable ${OMNETPP_RUN})
     endif()
+    set(opp_runall_script ${OMNETPP_RUNALL})
 
     # substitute variables first, then generator expressions
     configure_file(${PROJECT_SOURCE_DIR}/cmake/run_artery.sh.in ${args_FILE} @ONLY)
