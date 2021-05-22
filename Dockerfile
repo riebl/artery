@@ -79,6 +79,8 @@ RUN apt-get update && apt-get install -y \
     libxerces-c3.2 \
     libxml2 \
     libzmq5 \
+    python3 \
+    make \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=omnetpp-build /omnetpp/bin /omnetpp/bin
 COPY --from=omnetpp-build /omnetpp/lib /omnetpp/lib
@@ -89,6 +91,7 @@ COPY --from=artery-build /artery/lib /artery/lib
 COPY --from=artery-build /artery/share/ned /artery/share/ned
 ENV SUMO_HOME /sumo/share/sumo
 ENV PATH /sumo/bin:/omnetpp/bin:$PATH
+RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN useradd -m artery
 RUN mkdir -p /scenario /results && chown -R artery:users /scenario /results
 USER artery
