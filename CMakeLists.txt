@@ -12,16 +12,21 @@ if(POLICY CMP0079)
     endif()
 endif()
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/extern/omnetpp-cmake)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 enable_testing()
 
+include(CheckGitSubmodule)
+check_git_submodule(PATH extern/omnetpp-cmake REQUIRED FILES FindOmnetPP.cmake)
 find_package(OmnetPP 5.5.1 MODULE REQUIRED)
+
+# helpers related to OMNeT++
 include(AddOppRun)
 include(AddOppTarget)
-include(CheckGitSubmodule)
 include(GenerateOppMessage)
+
+# system dependencies
 include(GNUInstallDirs)
 
 find_package(Boost 1.59 COMPONENTS date_time system REQUIRED)
@@ -42,7 +47,7 @@ mark_as_advanced(VANETZA_ASN1_WITH_ASN1C VANETZA_EXPORT_PACKAGE VANETZA_NET_WITH
 check_git_submodule(PATH extern/veins REQUIRED_FILES src/veins/package.ned)
 find_path(Veins_DIR NAMES src/veins/package.ned PATHS extern/veins DOC "Veins root directory")
 mark_as_advanced(Veins_DIR)
-add_opp_target(TARGET veins ROOT_DIR ${Veins_DIR})
+add_opp_target(TARGET veins ROOT_DIR ${Veins_DIR} MSG4)
 
 
 check_git_submodule(PATH extern/inet REQUIRED_FILES src/inet/package.ned)
@@ -72,7 +77,7 @@ add_custom_command(OUTPUT ${INET_GEN_DIR}/inet/opp_defines.h
     COMMAND ${CMAKE_COMMAND} -E touch ${INET_GEN_DIR}/inet/opp_defines.h
     COMMENT "Generate INET opp_defines.h")
 
-add_opp_target(TARGET INET ROOT_DIR ${INET_DIR}
+add_opp_target(TARGET INET ROOT_DIR ${INET_DIR} MSG4
     DEPENDS ${INET_GEN_DIR}/inet/features.h ${INET_GEN_DIR}/inet/opp_defines.h
     OPP_MAKEMAKE ${INET_OPP_MAKEMAKE})
 
@@ -82,7 +87,7 @@ find_path(SimuLTE_DIR NAMES src/package.ned PATHS extern/simulte DOC "SimuLTE ro
 mark_as_advanced(SimuLTE_DIR)
 option(WITH_SIMULTE "Build Artery with SimuLTE integration" OFF)
 if(WITH_SIMULTE)
-    add_opp_target(TARGET lte ROOT_DIR ${SimuLTE_DIR})
+    add_opp_target(TARGET lte ROOT_DIR ${SimuLTE_DIR} MSG4)
     target_link_libraries(lte PUBLIC INET)
 else()
     message(STATUS "SimuLTE integration disabled")

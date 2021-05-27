@@ -21,3 +21,7 @@
 [submodule "extern/sim0mqpp"]
 	path = extern/sim0mqpp
 	url = https://github.com/riebl/sim0mqpp.git
+[submodule "extern/omnetpp-cmake"]
+	path = extern/omnetpp-cmake
+	url = https://github.com/omnetpp/cmake
+	branch = develop
