@@ -37,6 +37,13 @@ private:
     omnetpp::cGroupFigure* mRaysGroup;
     std::unordered_map<std::string, omnetpp::cPolygonFigure*> mVehiclePolygons;
     std::unordered_map<int, omnetpp::cGroupFigure*> mObstacleGroups;
+
+    omnetpp::cFigure::Color mBackgroundColor;
+    omnetpp::cFigure::Color mDiffractionColor;
+    omnetpp::cFigure::Color mFoliageColorInside;
+    omnetpp::cFigure::Color mFoliageColorOutside;
+    omnetpp::cFigure::Color mReflectionColorObstacle;
+    omnetpp::cFigure::Color mReflectionColorVehicle;
 };
 
 } // namespace gemv2

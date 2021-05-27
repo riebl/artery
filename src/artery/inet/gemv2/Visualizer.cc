@@ -15,10 +15,17 @@ void Visualizer::initialize(int stage)
         mVehicleGroup = new omnetpp::cGroupFigure("vehicles");
         mRaysGroup = new omnetpp::cGroupFigure("rays");
 
+        mBackgroundColor = omnetpp::cFigure::Color(par("backgroundColor"));
+        mDiffractionColor = omnetpp::cFigure::Color(par("diffractionColor"));
+        mFoliageColorInside = omnetpp::cFigure::Color(par("foliageColorInside"));
+        mFoliageColorOutside = omnetpp::cFigure::Color(par("foliageColorOutside"));
+        mReflectionColorObstacle = omnetpp::cFigure::Color(par("reflectionColorObstacle"));
+        mReflectionColorVehicle = omnetpp::cFigure::Color(par("reflectionColorVehicle"));
+
         auto canvas = this->getCanvas();
         canvas->addFigure(mVehicleGroup);
         canvas->addFigure(mRaysGroup);
-        canvas->setBackgroundColor(omnetpp::cFigure::GREY);
+        canvas->setBackgroundColor(mBackgroundColor);
     }
 }
 
@@ -108,22 +115,17 @@ void Visualizer::drawVehicles(const VehicleIndex* index)
 void Visualizer::drawReflectionRays(const Position& tx, const Position& rx,
         const std::vector<Position>& obstacles, const std::vector<Position>& vehicles)
 {
-    static const omnetpp::cFigure::Color colorObs("VioletRed");
-    static const omnetpp::cFigure::Color colorVehs("Violet");
-    drawRays(tx, rx, obstacles, colorObs);
-    drawRays(tx, rx, vehicles, colorVehs);
+    drawRays(tx, rx, obstacles, mReflectionColorObstacle);
+    drawRays(tx, rx, vehicles, mReflectionColorVehicle);
 }
 
 void Visualizer::drawDiffractionRays(const Position& tx, const Position& rx, const std::vector<Position>& corners)
 {
-    static const omnetpp::cFigure::Color color("Tomato");
-    drawRays(tx, rx, corners, color);
+    drawRays(tx, rx, corners, mDiffractionColor);
 }
 
 void Visualizer::drawFoliageRay(const Position& tx, const Position& rx, const std::vector<Position>& foliage)
 {
-    static const omnetpp::cFigure::Color outside("LawnGreen");
-    static const omnetpp::cFigure::Color inside("ForestGreen");
     bool isOutside = true;
 
     const Position* start = &tx;
@@ -131,7 +133,7 @@ void Visualizer::drawFoliageRay(const Position& tx, const Position& rx, const st
     {
         auto figure = new omnetpp::cLineFigure();
         mRaysGroup->addFigure(figure);
-        figure->setLineColor(isOutside ? outside : inside);
+        figure->setLineColor(isOutside ? mFoliageColorOutside : mFoliageColorInside);
         figure->setStart(omnetpp::cFigure::Point { start->x.value(), start->y.value() });
         figure->setEnd(omnetpp::cFigure::Point { point.x.value(), point.y.value() });
         start = &point;
@@ -140,7 +142,7 @@ void Visualizer::drawFoliageRay(const Position& tx, const Position& rx, const st
 
     auto figure = new omnetpp::cLineFigure();
     mRaysGroup->addFigure(figure);
-    figure->setLineColor(outside);
+    figure->setLineColor(mFoliageColorOutside);
     figure->setStart(omnetpp::cFigure::Point { start->x.value(), start->y.value() });
     figure->setEnd(omnetpp::cFigure::Point { rx.x.value(), rx.y.value() });
 }
