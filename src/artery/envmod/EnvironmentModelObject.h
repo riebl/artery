@@ -17,7 +17,11 @@
 #include <memory>
 #include <vector>
 
-namespace traci { class VehicleController; }
+namespace traci {
+    class Controller;
+    class PersonController;
+    class VehicleController;
+}
 
 namespace artery
 {
@@ -34,7 +38,7 @@ public:
      * @param ctrl associated VehicleController to this object
      * @param id station ID used by this object for application messages (e.g. CAM)
      */
-    EnvironmentModelObject(const traci::VehicleController*, uint32_t id);
+    EnvironmentModelObject(const traci::Controller*, uint32_t id);
 
     /**
      * Updates the internal object data.
@@ -76,8 +80,15 @@ public:
      */
     Length getRadius() const { return mRadius; }
 
+    /**
+     * Returns whether the object should be visible
+     * 
+     * Vehicles should always be visible. Persons might be driving a vehicle and should not be visibile while doing so
+     */
+    bool isVisible();
+
 private:
-    const traci::VehicleController* mVehicleController;
+    const traci::Controller* mController;
     traci::VehicleType::Length mLength;
     traci::VehicleType::Length mWidth;
     traci::VehicleType::Length mRadius;

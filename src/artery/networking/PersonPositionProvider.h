@@ -7,10 +7,11 @@
 #include <omnetpp/csimplemodule.h>
 #include <vanetza/common/position_provider.hpp>
 
+namespace traci { class PersonController; }
+
 namespace artery
 {
 
-class PersonMobility;
 class Runtime;
 
 class PersonPositionProvider :
@@ -37,7 +38,7 @@ class PersonPositionProvider :
 
         PositionFixObject mPositionFix;
         Runtime* mRuntime = nullptr;
-        PersonMobility* mMobility = nullptr;
+        traci::PersonController* mPersonController = nullptr;
 };
 
 } // namespace artery

@@ -7,6 +7,8 @@
 #ifndef GLOBALENVIRONMENTMODEL_H_
 #define GLOBALENVIRONMENTMODEL_H_
 
+
+// #include "artery/envmod/sensor/Sensor.h"
 #include "artery/envmod/sensor/SensorDetection.h"
 #include "artery/envmod/Geometry.h"
 #include "artery/envmod/EnvironmentModelObject.h"
@@ -88,23 +90,23 @@ private:
     void refresh();
 
     /**
-     * Add vehicle to the environment database
+     * Add object to the environment database
      * @param vehicle TraCI mobility corresponding to vehicle
      * @return true if successful
      */
-    bool addVehicle(traci::VehicleController* vehicle);
+    bool addObject(traci::Controller* object);
 
     /**
      * Remove vehicle from the database
      * @param nodeId TraCI id of vehicle to be removed
      * @return true if the vehicle is successfully removed
      */
-    bool removeVehicle(const std::string& nodeId);
+    bool removeObject(const std::string& id);
 
     /**
      * Remove all known vehicles from internal database
      */
-    void removeVehicles();
+    void removeObjects();
 
     /**
      * Add (static) obstacles to the obstacle database
@@ -137,11 +139,11 @@ private:
     void fetchObstacles(const traci::API& api);
 
     /**
-     * Try to get vehicle controller corresponding to given module
-     * @param mod vehicle host module
-     * @return nullptr if no vehicle controller is available
+     * Try to get controller corresponding to given module
+     * @param mod host module
+     * @return nullptr if no controller is available
      */
-    virtual traci::VehicleController* getVehicleController(omnetpp::cModule* mod);
+    virtual traci::Controller* getController(omnetpp::cModule* mod);
 
     using ObjectDB = std::unordered_map<std::string, std::shared_ptr<EnvironmentModelObject>>;
     using ObjectRtreeValue = std::pair<geometry::Box, std::shared_ptr<EnvironmentModelObject>>;
