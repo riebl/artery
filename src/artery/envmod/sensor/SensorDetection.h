@@ -19,6 +19,7 @@ namespace artery
 
 struct SensorDetection
 {
+    Position sensorOrigin;
     std::vector<Position> sensorCone;
     std::list<std::shared_ptr<EnvironmentModelObject>> objects;
     std::list<std::shared_ptr<EnvironmentModelObstacle>> obstacles;

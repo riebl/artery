@@ -26,7 +26,9 @@ public:
 protected:
     void initialize() override;
     Facilities& getFacilities();
+    const Facilities& getFacilities() const;
     Middleware& getMiddleware();
+    const Middleware& getMiddleware() const;
     std::string getEgoId();
     cModule* findHost();
 

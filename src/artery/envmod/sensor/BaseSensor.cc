@@ -9,7 +9,7 @@
 #include "artery/envmod/sensor/BaseSensor.h"
 #include "artery/application/Middleware.h"
 #include "artery/application/Facilities.h"
-#include "artery/traci/VehicleController.h"
+#include "artery/utility/Identity.h"
 #include <inet/common/ModuleAccess.h>
 #include <cassert>
 
@@ -26,7 +26,18 @@ Facilities& BaseSensor::getFacilities()
     return getMiddleware().getFacilities();
 }
 
+const Facilities& BaseSensor::getFacilities() const
+{
+    return getMiddleware().getFacilities();
+}
+
 Middleware& BaseSensor::getMiddleware()
+{
+    assert(mMiddleware);
+    return *mMiddleware;
+}
+
+const Middleware& BaseSensor::getMiddleware() const
 {
     assert(mMiddleware);
     return *mMiddleware;
@@ -52,7 +63,7 @@ void BaseSensor::initialize()
 
 std::string BaseSensor::getEgoId()
 {
-    return getFacilities().get_const<traci::VehicleController>().getVehicleId();
+    return getFacilities().get_const<Identity>().traci;
 }
 
 } // namespace artery

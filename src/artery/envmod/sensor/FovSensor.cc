@@ -4,6 +4,7 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
+#include "artery/application/Middleware.h"
 #include "artery/envmod/GlobalEnvironmentModel.h"
 #include "artery/envmod/sensor/FovSensor.h"
 #include "artery/envmod/sensor/SensorDetection.h"
@@ -39,7 +40,13 @@ void FovSensor::initialize()
 {
     BaseSensor::initialize();
 
-    std::string groupName = getEgoId() + "-" + getSensorName();
+    std::string groupName = getEgoId();
+    if (groupName.empty()) {
+        const cModule* host = getMiddleware().getIdentity().host;
+        assert(host);
+        groupName += host->getName();
+    }
+    groupName += "-" + getSensorName();
     mGroupFigure = new cGroupFigure(groupName.c_str());
     mGlobalEnvironmentModel->getCanvas()->addFigure(mGroupFigure);
     mColor = cFigure::GOOD_DARK_COLORS[getId() % cFigure::NUM_GOOD_DARK_COLORS];
@@ -73,20 +80,11 @@ SensorDetection FovSensor::detectObjects() const
         throw std::runtime_error("sensor opening angle exceeds 360 degree");
     }
 
-    SensorDetection detection;
-
-    // create sensor cone
-    const auto& egoObj = mGlobalEnvironmentModel->getObject(mFovConfig.egoID);
-    if (!egoObj) {
-        throw std::runtime_error("no object found for ID " + mFovConfig.egoID);
-    }
-    detection.sensorCone = createSensorArc(mFovConfig, *egoObj);
+    SensorDetection detection = createSensorCone();
     auto preselObjectsInSensorRange = mGlobalEnvironmentModel->preselectObjects(mFovConfig.egoID, detection.sensorCone);
 
     // get obstacles intersecting with sensor cone
     auto obstacleIntersections = mGlobalEnvironmentModel->preselectObstacles(detection.sensorCone);
-
-    const auto& egoPointPosition =  mGlobalEnvironmentModel->getObject(mFovConfig.egoID)->getAttachmentPoint(mFovConfig.sensorPosition);
 
     if (mFovConfig.doLineOfSightCheck)
     {
@@ -103,7 +101,7 @@ SensorDetection FovSensor::detectObjects() const
                 }
 
                 LineOfSight lineOfSight;
-                lineOfSight[0] = egoPointPosition;
+                lineOfSight[0] = detection.sensorOrigin;
                 lineOfSight[1] = objectPoint;
 
                 bool noVehicleOccultation = std::none_of(preselObjectsInSensorRange.begin(), preselObjectsInSensorRange.end(),
@@ -149,7 +147,19 @@ SensorDetection FovSensor::detectObjects() const
     }
 
     return detection;
+}
 
+SensorDetection FovSensor::createSensorCone() const
+{
+    SensorDetection detection;
+    const auto& egoObj = mGlobalEnvironmentModel->getObject(mFovConfig.egoID);
+    if (egoObj) {
+        detection.sensorOrigin = egoObj->getAttachmentPoint(mFovConfig.sensorPosition);
+        detection.sensorCone = createSensorArc(mFovConfig, *egoObj);
+    } else {
+        throw std::runtime_error("no object found for ID " + mFovConfig.egoID);
+    }
+    return detection;
 }
 
 void FovSensor::initializeVisualization()

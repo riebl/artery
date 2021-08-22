@@ -50,6 +50,7 @@ protected:
     void finish() override;
     void initializeVisualization();
     void refreshDisplay() const override;
+    virtual SensorDetection createSensorCone() const;
 
     SensorConfigFov mFovConfig;
     Updatable<SensorDetection> mLastDetection;
