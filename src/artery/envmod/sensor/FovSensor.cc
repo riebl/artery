@@ -26,11 +26,13 @@ FovSensor::FovSensor() :
 {
 }
 
-FovSensor::~FovSensor()
+void FovSensor::finish()
 {
     if (mGroupFigure) {
         delete mGroupFigure->removeFromParent();
+        mGroupFigure = nullptr;
     }
+    BaseSensor::finish();
 }
 
 void FovSensor::initialize()
