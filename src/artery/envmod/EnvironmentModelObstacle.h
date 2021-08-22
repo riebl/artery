@@ -9,7 +9,6 @@
 
 #include "artery/envmod/EnvironmentModelObject.h"
 #include "artery/utility/Geometry.h"
-#include <boost/geometry/index/rtree.hpp>
 #include <string>
 #include <vector>
 
@@ -42,9 +41,6 @@ private:
     std::vector<Position> mPolygon; //!< Obstacle outline
 };
 
-using ObstacleDB = std::map<std::string, std::shared_ptr<EnvironmentModelObstacle>>;
-using ObstacleRtreeValue = std::pair<geometry::Box, std::string>;
-using ObstacleRtree = boost::geometry::index::rtree<ObstacleRtreeValue, boost::geometry::index::rstar<16>>;
 
 } // namespace artery
 

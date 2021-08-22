@@ -26,7 +26,7 @@ public:
     const std::string& getSensorCategory() const override;
     const std::string getSensorName() const override {  return mSensorName; }
     void setSensorName(const std::string& name) override { mSensorName = name; }
-    SensorDetection detectObjects(ObstacleRtree&, PreselectionMethod&) const override;
+    SensorDetection detectObjects() const override;
 
 protected:
     void initialize() override;

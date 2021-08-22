@@ -7,8 +7,6 @@
 #ifndef GLOBALENVIRONMENTMODEL_H_
 #define GLOBALENVIRONMENTMODEL_H_
 
-
-// #include "artery/envmod/sensor/Sensor.h"
 #include "artery/envmod/sensor/SensorDetection.h"
 #include "artery/envmod/Geometry.h"
 #include "artery/envmod/EnvironmentModelObject.h"
@@ -18,10 +16,7 @@
 #include <omnetpp/clistener.h>
 #include <omnetpp/csimplemodule.h>
 #include <boost/geometry/index/rtree.hpp>
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/ordered_index.hpp>
-#include <boost/multi_index/mem_fun.hpp>
-#include <map>
+#include <unordered_map>
 #include <memory>
 #include <string>
 
@@ -71,11 +66,21 @@ public:
     std::shared_ptr<EnvironmentModelObstacle> getObstacle(const std::string& obsId);
 
     /**
-     * Returns GSDE of all objects in based on the detection logic of the sensor
-     * @param detect
-     * @return
+     * Preselect all objects close to the given area
+     * @param ego identifier of the ego object, which is filtered out of the result
+     * @param area search polygon
+     * @return preselected objects, i.e. candidates for precise sensor checks
      */
-    SensorDetection detectObjects(std::function<SensorDetection(ObstacleRtree&, PreselectionMethod&)> detect);
+    std::vector<std::shared_ptr<EnvironmentModelObject>>
+    preselectObjects(const std::string& ego, const std::vector<Position>& area);
+
+    /**
+     * Preselect all obstacles close to the given area
+     * @param area search polygon
+     * @return preselected obstacles
+     */
+    std::vector<std::shared_ptr<EnvironmentModelObstacle>>
+    preselectObstacles(const std::vector<Position>& area);
 
 private:
     /**
@@ -95,7 +100,7 @@ private:
      * @param nodeId TraCI id of vehicle to be removed
      * @return true if the vehicle is successfully removed
      */
-    bool removeVehicle(std::string nodeId);
+    bool removeVehicle(const std::string& nodeId);
 
     /**
      * Remove all known vehicles from internal database
@@ -108,13 +113,18 @@ private:
      * @param outline Obstacle's outline
      * @return true if it could be added
      */
-    bool addObstacle(std::string id, std::vector<Position> outline);
+    bool addObstacle(const std::string& id, std::vector<Position> outline);
 
     /**
      * Create the obstacle rtree.
      * This method should be called after all static obstacles have been added.
      */
     void buildObstacleRtree();
+
+    /**
+     * Create the object rtree.
+     */
+    void buildObjectRtree();
 
     /**
      * Clears the internal database completely
@@ -134,12 +144,19 @@ private:
      */
     virtual traci::VehicleController* getVehicleController(omnetpp::cModule* mod);
 
+    using ObjectDB = std::unordered_map<std::string, std::shared_ptr<EnvironmentModelObject>>;
+    using ObjectRtreeValue = std::pair<geometry::Box, std::shared_ptr<EnvironmentModelObject>>;
+    using ObjectRtree = boost::geometry::index::rtree<ObjectRtreeValue, boost::geometry::index::quadratic<16>>;
+    using ObstacleDB = std::unordered_map<std::string, std::shared_ptr<EnvironmentModelObstacle>>;
+    using ObstacleRtreeValue = std::pair<geometry::Box, std::shared_ptr<EnvironmentModelObstacle>>;
+    using ObstacleRtree = boost::geometry::index::rtree<ObstacleRtreeValue, boost::geometry::index::rstar<16>>;
+
     ObjectDB mObjects;
+    ObjectRtree mObjectRtree;
     ObstacleDB mObstacles;
     ObstacleRtree mObstacleRtree;
-    std::unique_ptr<PreselectionMethod> mPreselector;
     IdentityRegistry* mIdentityRegistry;
-    bool mTainted;
+    bool mTainted = false;
     omnetpp::cGroupFigure* mDrawObstacles = nullptr;
     omnetpp::cGroupFigure* mDrawVehicles = nullptr;
     std::set<std::string> mObstacleTypes;

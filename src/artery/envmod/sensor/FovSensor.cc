@@ -59,13 +59,13 @@ void FovSensor::initialize()
 void FovSensor::measurement()
 {
     Enter_Method("measurement");
-    auto objects = mGlobalEnvironmentModel->detectObjects(std::bind(&Sensor::detectObjects, this, std::placeholders::_1, std::placeholders::_2));
-    mLocalEnvironmentModel->complementObjects(objects, *this);
-    mLastDetection = std::move(objects);
+    auto detection = detectObjects();
+    mLocalEnvironmentModel->complementObjects(detection, *this);
+    mLastDetection = std::move(detection);
 }
 
-SensorDetection FovSensor::detectObjects(ObstacleRtree& obstacleRtree, PreselectionMethod& preselector) const {
-
+SensorDetection FovSensor::detectObjects() const
+{
     namespace bg = boost::geometry;
     if (mFovConfig.fieldOfView.range <= 0.0 * boost::units::si::meter) {
         throw std::runtime_error("sensor range is 0 meter or less");
@@ -81,14 +81,10 @@ SensorDetection FovSensor::detectObjects(ObstacleRtree& obstacleRtree, Preselect
         throw std::runtime_error("no object found for ID " + mFovConfig.egoID);
     }
     detection.sensorCone = createSensorArc(mFovConfig, *egoObj);
-
-    std::vector<std::string> preselObjectsInSensorRange = preselector.select(*egoObj, mFovConfig);
+    auto preselObjectsInSensorRange = mGlobalEnvironmentModel->preselectObjects(mFovConfig.egoID, detection.sensorCone);
 
     // get obstacles intersecting with sensor cone
-    std::vector<ObstacleRtreeValue> obstacleIntersections;
-    geometry::Polygon tmp; /*< Boost 1.61 fails when detection.sensorCone is used directly in R-Tree query */
-    bg::convert(detection.sensorCone, tmp);
-    obstacleRtree.query(bg::index::intersects(tmp), std::back_inserter(obstacleIntersections));
+    auto obstacleIntersections = mGlobalEnvironmentModel->preselectObstacles(detection.sensorCone);
 
     const auto& egoPointPosition =  mGlobalEnvironmentModel->getObject(mFovConfig.egoID)->getAttachmentPoint(mFovConfig.sensorPosition);
 
@@ -97,9 +93,8 @@ SensorDetection FovSensor::detectObjects(ObstacleRtree& obstacleRtree, Preselect
         std::unordered_set<std::shared_ptr<EnvironmentModelObstacle>> blockingObstacles;
 
         // check if objects in sensor cone are hidden by another object or an obstacle
-        for (const auto& objectId : preselObjectsInSensorRange)
+        for (const auto& object : preselObjectsInSensorRange)
         {
-            const auto& object =  mGlobalEnvironmentModel->getObject(objectId);
             for (const auto& objectPoint : object->getOutline())
             {
                 // skip objects points outside of sensor cone
@@ -112,14 +107,12 @@ SensorDetection FovSensor::detectObjects(ObstacleRtree& obstacleRtree, Preselect
                 lineOfSight[1] = objectPoint;
 
                 bool noVehicleOccultation = std::none_of(preselObjectsInSensorRange.begin(), preselObjectsInSensorRange.end(),
-                        [&](const std::string& objectId) {
-                            const std::vector<Position>& objectOutline =  mGlobalEnvironmentModel->getObject(objectId)->getOutline();
-                            return bg::crosses(lineOfSight, objectOutline);
+                        [&](const std::shared_ptr<EnvironmentModelObject>& object) {
+                            return bg::crosses(lineOfSight, object->getOutline());
                         });
 
                 bool noObstacleOccultation = std::none_of(obstacleIntersections.begin(), obstacleIntersections.end(),
-                        [&](const ObstacleRtreeValue& obstacleIntersection) {
-                            const auto& obstacle = mGlobalEnvironmentModel->getObstacle(obstacleIntersection.second);
+                        [&](const std::shared_ptr<EnvironmentModelObstacle>& obstacle) {
                             ASSERT(obstacle);
                             if (bg::intersects(lineOfSight, obstacle->getOutline())) {
                                 blockingObstacles.insert(obstacle);
@@ -146,8 +139,12 @@ SensorDetection FovSensor::detectObjects(ObstacleRtree& obstacleRtree, Preselect
 
         detection.obstacles.assign(blockingObstacles.begin(), blockingObstacles.end());
     } else {
-        for (const auto& objectId : preselObjectsInSensorRange) {
-            detection.objects.push_back(mGlobalEnvironmentModel->getObject(objectId));
+        for (const auto& object : preselObjectsInSensorRange) {
+            // preselection: object's bounding box and sensor cone's bounding box intersect
+            // now: check if their actual geometries intersect somewhere
+            if (bg::intersects(object->getOutline(), detection.sensorCone)) {
+                detection.objects.push_back(object);
+            }
         }
     }
 
