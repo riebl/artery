@@ -21,7 +21,6 @@ class FovSensor : public BaseSensor
 {
 public:
     FovSensor();
-    ~FovSensor();
 
     void measurement() override;
     const FieldOfView& getFieldOfView() const;
@@ -48,6 +47,7 @@ protected:
     };
 
     void initialize() override;
+    void finish() override;
     void initializeVisualization();
     void refreshDisplay() const override;
 
