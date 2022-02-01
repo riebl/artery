@@ -54,7 +54,7 @@ std::vector<Position> createSensorArc(const SensorConfigFov& config, const Envir
     static const auto pi = boost::math::constants::pi<double>();
     // heading from vehicle data is headed north (clockwise),
     // OMNeT++ angles are headed east (counter-clockwise)
-    const Angle heading = -1.0 * egoObj.getVehicleData().heading() - 0.5 * pi * radians;
+    const Angle heading = 0.5 * pi * radians - egoObj.getVehicleData().heading();
     Position sensorPos = egoObj.getAttachmentPoint(config.sensorPosition);
     return createSensorArc(config, sensorPos, heading);
 }
