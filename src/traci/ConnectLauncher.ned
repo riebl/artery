@@ -6,4 +6,5 @@ simple ConnectLauncher like Launcher
         @class(traci::ConnectLauncher);
         string hostname = default("localhost");
         int port;
+		int clientID=default(1);
 }

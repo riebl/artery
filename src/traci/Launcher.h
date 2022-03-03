@@ -10,6 +10,7 @@ struct ServerEndpoint
 {
     std::string hostname;
     int port;
+    int clientID = 1;
     bool retry = false;
 };
 
