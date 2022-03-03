@@ -28,6 +28,7 @@ void API::connect(const ServerEndpoint& endpoint)
     while (true) {
         try {
             TraCIAPI::connect(endpoint.hostname, endpoint.port);
+            TraCIAPI::setOrder(endpoint.clientId);
             return;
         } catch (tcpip::SocketException&) {
             if (++tries < max_tries) {
