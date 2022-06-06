@@ -1,6 +1,6 @@
 #include "artery/envmod/CarIdentityRegistrant.h"
 #include "artery/utility/IdentityRegistry.h"
-#include "artery/traci/MobilityBase.h"
+#include "artery/traci/VehicleMobility.h"
 #include "inet/common/ModuleAccess.h"
 
 
@@ -18,7 +18,7 @@ void CarIdentityRegistrant::initialize()
 void CarIdentityRegistrant::initializeIdentity()
 {
 	auto parent = this->getParentModule();
-	auto mobility = dynamic_cast<MobilityBase*>(parent->getSubmodule("mobility", -1));
+	auto mobility = dynamic_cast<VehicleMobility*>(parent->getSubmodule("mobility", -1));
 	if (!mobility) {
 		throw omnetpp::cRuntimeError("no suitable mobility module found");
 	}
