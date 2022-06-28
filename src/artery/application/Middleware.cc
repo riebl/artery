@@ -110,7 +110,20 @@ void Middleware::initializeServices(int stage)
             module->scheduleStart(simTime());
             // defer final module initialisation until service is attached to middleware
 
-            ItsG5BaseService* service = dynamic_cast<ItsG5BaseService*>(module);
+            // Like the Simple Module case uses the C++ class to determine if the module does
+            // implement a service search for the first matching Submodule that implements a service
+            // in the Compound Module case
+            ItsG5BaseService* service = nullptr;
+            if (!module_type->isSimple()) {
+                for (cModule::SubmoduleIterator it(module); !it.end(); ++it) {
+                    service = dynamic_cast<ItsG5BaseService*>(*it);
+                    if (service) {
+                        break;
+                    }
+                }
+            } else {
+                service = dynamic_cast<ItsG5BaseService*>(module);
+            }
             if (service) {
                 unsigned ports = 0;
                 unsigned channels = 0;

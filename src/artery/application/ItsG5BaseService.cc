@@ -18,6 +18,7 @@
 
 #include "artery/application/ItsG5Service.h"
 #include "artery/application/Middleware.h"
+#include "artery/utility/InitStages.h"
 #include <inet/common/ModuleAccess.h>
 #include <omnetpp/clog.h>
 #include <cassert>
@@ -75,14 +76,35 @@ cModule* ItsG5BaseService::findHost()
 	return inet::findContainingNode(m_middleware);
 }
 
-void ItsG5BaseService::initialize()
+int ItsG5BaseService::numInitStages() const
 {
-	Middleware* middleware = dynamic_cast<Middleware*>(getParentModule());
-	if (middleware == nullptr) {
-		throw cRuntimeError("Middleware not found");
+	return (InitStages::Prepare + 1);
+}
+
+void ItsG5BaseService::initialize(int stage)
+{
+	if (stage == InitStages::Prepare) {
+		// If this service is part of a Compound Module the Middleware is its grand parent
+		auto* parent = getParentModule();
+		if (!parent->getModuleType()->isSimple()) {
+			parent = parent->getParentModule();
+		}
+		Middleware* middleware = dynamic_cast<Middleware*>(parent);
+		if (middleware == nullptr) {
+			throw cRuntimeError("Middleware not found");
+		}
+
+		m_middleware = middleware;
 	}
 
-	m_middleware = middleware;
+	// To prevent that derived classes need to be aware of the multi-stage initialization of this base class
+	// call the plain initialize() method at stage 0. This way for these derived classes it is sufficient
+	// to just override this method if they don't perform multi-stage initialization themself, however if
+	// they also perform multi-stage initialization they need to take into account the required stages
+	// of this base class.
+	if (stage == 0) {
+		initialize();
+	}
 }
 
 void ItsG5BaseService::finish()

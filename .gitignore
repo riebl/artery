@@ -1,8 +1,19 @@
 ansible/*.retry
 scenarios/**/*.pyc
 scenarios/*/results/*
+scenarios/*/.cmdenv-log
+scenarios/*/.qtenvrc
 scenarios/*/.tkenvrc
 src/artery/messages/*_m.cc
 src/artery/messages/*_m.h
 www/
 .vagrant/
+
+# OMNeT++ IDE / Eclipse CDT auto-generated files
+.cproject
+.oppbuildspec
+.project
+.settings
+
+# CMake default directories
+build/

@@ -1,0 +1,33 @@
+---
+BasedOnStyle: Google
+AccessModifierOffset: -4
+AlignAfterOpenBracket: AlwaysBreak
+AlignEscapedNewlines: DontAlign
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortIfStatementsOnASingleLine: Never
+BreakBeforeBraces: Linux
+BreakInheritanceList: AfterColon
+BreakConstructorInitializers: AfterColon
+ColumnLimit: 160
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:           '^".*\.h.?.?"'
+    Priority:        1
+    SortPriority:    1
+  - Regex:           '^<.*\.h.?.?>'
+    Priority:        2
+    SortPriority:    2
+  - Regex:           '^<.*'
+    Priority:        3
+    SortPriority:    3
+  - Regex:           '.*'
+    Priority:        4
+    SortPriority:    4
+IndentPPDirectives: BeforeHash
+IndentWidth: 4
+KeepEmptyLinesAtTheStartOfBlocks: true
+MaxEmptyLinesToKeep: 2
+...

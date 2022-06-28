@@ -29,12 +29,19 @@ void VehicleMiddleware::initialize(int stage)
         findHost()->subscribe(MobilityBase::stateChangedSignal, this);
         initializeVehicleController(par("mobilityModule"));
         initializeStationType(mVehicleController->getVehicleClass());
+
+        auto path = findHost()->getFullPath();
+        auto i0 = path.find("[");
+        auto i1 = path.find("]");
+        auto stationId = std::stoul(path.substr(i0+1, i1-i0-1));
+        mVehicleDataProvider.setStationId(stationId);
+
         getFacilities().register_const(&mVehicleDataProvider);
         mVehicleDataProvider.update(getKinematics(*mVehicleController));
 
         Identity identity;
         identity.traci = mVehicleController->getVehicleId();
-        identity.application = Identity::randomStationId(getRNG(0));
+        identity.application = mVehicleDataProvider.getStationId();
         mVehicleDataProvider.setStationId(identity.application);
         emit(Identity::changeSignal, Identity::ChangeTraCI | Identity::ChangeStationId, &identity);
     }
