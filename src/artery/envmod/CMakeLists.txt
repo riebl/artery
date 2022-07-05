@@ -16,3 +16,8 @@ add_artery_feature(envmod
     service/CollectivePerceptionMockService.cc
     service/EnvmodPrinter.cc
 )
+
+if(WITH_CPSERVICE)
+    target_sources(envmod PRIVATE sensor/CpmSensor.cc)
+    target_link_libraries(envmod PUBLIC cpm)
+endif()
