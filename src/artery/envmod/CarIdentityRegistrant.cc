@@ -18,22 +18,14 @@ void CarIdentityRegistrant::initialize()
 void CarIdentityRegistrant::initializeIdentity()
 {
 	auto parent = this->getParentModule();
-	auto mobility = dynamic_cast<VehicleMobility*>(parent->getSubmodule("mobility", -1));
+	auto mobility = dynamic_cast<VehicleMobility*>(parent->getSubmodule("mobility"));
 	if (!mobility) {
 		throw omnetpp::cRuntimeError("no suitable mobility module found");
 	}
-	auto controller = mobility->getVehicleController();
-
-	auto traciId = controller->getVehicleId();
-
-	auto path = parent->getFullPath();
-	auto i0 = path.find("[");
-	auto i1 = path.find("]");
-	auto stationId = std::stoul(path.substr(i0+1, i1-i0-1));
 
 	mIdentity.host = parent;
-	mIdentity.application = stationId;
-	mIdentity.traci = traciId;
+	mIdentity.application = Identity::deriveStationId(parent, par("stationIdDerivation").stringValue());
+	mIdentity.traci = mobility->getVehicleController()->getVehicleId();
 }
 
 void CarIdentityRegistrant::registerIdentity()
