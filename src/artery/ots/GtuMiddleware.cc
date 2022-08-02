@@ -32,7 +32,7 @@ void GtuMiddleware::initialize(int stage)
         getFacilities().register_const(&mMobility->getLastGtuObject());
 
         Identity identity;
-        identity.application = Identity::randomStationId(getRNG(0));
+        identity.application = Identity::deriveStationId(findHost(), par("stationIdDerivation").stringValue());
         mVehicleDataProvider.setStationId(identity.application);
         // TODO add GTU id to identity?
         emit(Identity::changeSignal, Identity::ChangeStationId, &identity);

@@ -40,6 +40,7 @@ public:
     std::map<std::shared_ptr<const NetworkInterface>, vanetza::geonet::Address> geonet;
 
     static uint32_t randomStationId(omnetpp::cRNG*);
+    static uint32_t deriveStationId(omnetpp::cModule*, const std::string& basis);
 };
 
 } // namespace artery
