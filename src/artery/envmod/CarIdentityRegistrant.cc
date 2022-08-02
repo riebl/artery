@@ -3,7 +3,6 @@
 #include "artery/traci/VehicleMobility.h"
 #include "inet/common/ModuleAccess.h"
 
-
 namespace artery
 {
 
@@ -18,10 +17,7 @@ void CarIdentityRegistrant::initialize()
 void CarIdentityRegistrant::initializeIdentity()
 {
 	auto parent = this->getParentModule();
-	auto mobility = dynamic_cast<VehicleMobility*>(parent->getSubmodule("mobility"));
-	if (!mobility) {
-		throw omnetpp::cRuntimeError("no suitable mobility module found");
-	}
+	auto mobility = inet::getModuleFromPar<VehicleMobility>(par("mobilityModule"), this);
 
 	mIdentity.host = parent;
 	mIdentity.application = Identity::deriveStationId(parent, par("stationIdDerivation").stringValue());
