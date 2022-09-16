@@ -32,4 +32,18 @@ IndentPPDirectives: None
 IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: true
 MaxEmptyLinesToKeep: 2
+StatementMacros: [
+  'Register_ResultFilter', 'Register_ResultFilter2',
+  'Register_ResultRecorder', 'Register_ResultRecorder2',
+  'Define_NED_Math_Function', 'Define_NED_Math_Function2', 'Define_NED_Math_Function3', 'Define_NED_Math_Function4',
+  'Define_NED_Function', 'Define_NED_Function2',
+  'Register_Class', 'Register_Abstract_Class',
+  'Define_Module', 'Define_Channel',
+  'Register_GlobalConfigOption', 'Register_PerRunConfigOption',
+  'Register_GlobalConfigOptionU', 'Register_PerRunConfigOptionU',
+  'Register_PerObjectConfigOption', 'Register_PerObjectConfigOptionU',
+  'Register_MessagePrinter',
+  'Register_Enum', 'Register_Enum2',
+  'Register_Figure'
+]
 ...
