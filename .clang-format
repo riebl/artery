@@ -6,12 +6,14 @@ AlignEscapedNewlines: DontAlign
 AllowShortBlocksOnASingleLine: Empty
 AllowShortFunctionsOnASingleLine: InlineOnly
 AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
 BreakBeforeBraces: Linux
 BreakInheritanceList: AfterColon
 BreakConstructorInitializers: AfterColon
 ColumnLimit: 160
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
+DerivePointerAlignment: false
 IncludeBlocks: Regroup
 IncludeCategories:
   - Regex:           '^".*\.h.?.?"'
@@ -26,7 +28,7 @@ IncludeCategories:
   - Regex:           '.*'
     Priority:        4
     SortPriority:    4
-IndentPPDirectives: BeforeHash
+IndentPPDirectives: None
 IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: true
 MaxEmptyLinesToKeep: 2
