@@ -1,0 +1,49 @@
+---
+BasedOnStyle: Google
+AccessModifierOffset: -4
+AlignAfterOpenBracket: AlwaysBreak
+AlignEscapedNewlines: DontAlign
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+BreakBeforeBraces: Linux
+BreakInheritanceList: AfterColon
+BreakConstructorInitializers: AfterColon
+ColumnLimit: 160
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
+DerivePointerAlignment: false
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:           '^".*\.h.?.?"'
+    Priority:        1
+    SortPriority:    1
+  - Regex:           '^<.*\.h.?.?>'
+    Priority:        2
+    SortPriority:    2
+  - Regex:           '^<.*'
+    Priority:        3
+    SortPriority:    3
+  - Regex:           '.*'
+    Priority:        4
+    SortPriority:    4
+IndentPPDirectives: None
+IndentWidth: 4
+KeepEmptyLinesAtTheStartOfBlocks: true
+MaxEmptyLinesToKeep: 2
+StatementMacros: [
+  'Register_ResultFilter', 'Register_ResultFilter2',
+  'Register_ResultRecorder', 'Register_ResultRecorder2',
+  'Define_NED_Math_Function', 'Define_NED_Math_Function2', 'Define_NED_Math_Function3', 'Define_NED_Math_Function4',
+  'Define_NED_Function', 'Define_NED_Function2',
+  'Register_Class', 'Register_Abstract_Class',
+  'Define_Module', 'Define_Channel',
+  'Register_GlobalConfigOption', 'Register_PerRunConfigOption',
+  'Register_GlobalConfigOptionU', 'Register_PerRunConfigOptionU',
+  'Register_PerObjectConfigOption', 'Register_PerObjectConfigOptionU',
+  'Register_MessagePrinter',
+  'Register_Enum', 'Register_Enum2',
+  'Register_Figure'
+]
+...
