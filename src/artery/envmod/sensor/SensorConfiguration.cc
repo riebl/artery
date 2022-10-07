@@ -16,14 +16,18 @@ std::vector<Position> createSensorArc(const SensorConfigFov& config, const Posit
     using translation = gm::strategy::transform::translate_transformer<double, 2, 2>;
 
     const double openingAngleDeg = config.fieldOfView.angle / boost::units::degree::degrees;
-    const unsigned segments = std::max(config.numSegments, 1u);
+    unsigned segments = std::max(config.numSegments, 1u);
     const double segmentAngle = openingAngleDeg / segments;
     const double sensorPositionDeg = relativeAngle(config.sensorPosition).degree();
 
     std::vector<Position> points;
 
-    // if sensor cone is 360 deg omit center point
-    if (config.fieldOfView.angle != 360.0 * boost::units::degree::degrees) {
+    const bool full_circle = config.fieldOfView.angle == 360.0 * boost::units::degree::degree;
+    if (full_circle) {
+        // full circle: omit last segment point to prevent nearly-overlapping geometry points
+        --segments;
+    } else {
+        // actual cone: add center point
         points.push_back(Position {0.0, 0.0});
     }
 
