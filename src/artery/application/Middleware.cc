@@ -110,40 +110,56 @@ void Middleware::initializeServices(int stage)
             module->scheduleStart(simTime());
             // defer final module initialisation until service is attached to middleware
 
-            ItsG5BaseService* service = dynamic_cast<ItsG5BaseService*>(module);
-            if (service) {
-                unsigned ports = 0;
-                unsigned channels = 0;
-                auto promiscuous = dynamic_cast<ItsG5PromiscuousService*>(service);
+            ItsG5BaseService* service = nullptr;
+            if (module_type->isSimple()) {
+                service = dynamic_cast<ItsG5BaseService*>(module);
 
-                for (const cXMLElement* listener : service_cfg->getChildrenByTagName("listener")) {
-                    if (listener->getAttribute("port")) {
-                        auto port = boost::lexical_cast<PortNumber>(listener->getAttribute("port"));
-                        TransportDescriptor td = std::forward_as_tuple(getChannel(listener), port);
-                        mTransportDispatcher.addListener(service, td);
-                        service->addTransportDescriptor(td);
-                        ++ports;
-                    } else if (promiscuous && listener->getAttribute("channel")) {
-                        ChannelNumber channel = getChannel(listener);
-                        mTransportDispatcher.addPromiscuousListener(promiscuous, channel);
-                        ++channels;
+                if (!service) {
+                    error("%s is not of type ItsG5BaseService", module_type->getFullName());
+                }
+            } else {
+                // search for first ItsG5BaseService submodule in case of a compound module
+                for (cModule::SubmoduleIterator it(module); !it.end(); ++it) {
+                    service = dynamic_cast<ItsG5BaseService*>(*it);
+                    if (service) {
+                        break;
                     }
                 }
 
-                // ensure that ordinary ITS-G5 services are listening to at least port
-                if (ports == 0 && !promiscuous && service->requiresListener()) {
-                    error("Listening ports are required for %s but none have been specified", module_type->getFullName());
+                if (!service) {
+                    error("compound module %s has no ItsG5BaseService submodule", module_type->getFullName());
                 }
-
-                // promiscuous ITS-G5 services grab packets from CCH by default if not specified otherwise
-                if (promiscuous && channels == 0) {
-                    mTransportDispatcher.addPromiscuousListener(promiscuous, channel::CCH);
-                }
-
-                mServices.emplace(service);
-            } else {
-                error("%s is not of type ItsG5BaseService", module_type->getFullName());
             }
+
+            unsigned ports = 0;
+            unsigned channels = 0;
+            auto promiscuous = dynamic_cast<ItsG5PromiscuousService*>(service);
+
+            for (const cXMLElement* listener : service_cfg->getChildrenByTagName("listener")) {
+                if (listener->getAttribute("port")) {
+                    auto port = boost::lexical_cast<PortNumber>(listener->getAttribute("port"));
+                    TransportDescriptor td = std::forward_as_tuple(getChannel(listener), port);
+                    mTransportDispatcher.addListener(service, td);
+                    service->addTransportDescriptor(td);
+                    ++ports;
+                } else if (promiscuous && listener->getAttribute("channel")) {
+                    ChannelNumber channel = getChannel(listener);
+                    mTransportDispatcher.addPromiscuousListener(promiscuous, channel);
+                    ++channels;
+                }
+            }
+
+            // ensure that ordinary ITS-G5 services are listening to at least port
+            if (ports == 0 && !promiscuous && service->requiresListener()) {
+                error("Listening ports are required for %s but none have been specified", module_type->getFullName());
+            }
+
+            // promiscuous ITS-G5 services grab packets from CCH by default if not specified otherwise
+            if (promiscuous && channels == 0) {
+                mTransportDispatcher.addPromiscuousListener(promiscuous, channel::CCH);
+            }
+
+            mServices.emplace(service);
 
             // finalize module initialization now
             for (int i = 0; i < stage; ++i) {

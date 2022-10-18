@@ -15,4 +15,5 @@ simple PersonMiddleware extends Middleware
 		string localEnvironmentModule = default("");
 		string globalEnvironmentModule = default("");
 		string mobilityModule;
+		string stationIdDerivation = default("component");
 }
