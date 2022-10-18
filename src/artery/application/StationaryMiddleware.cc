@@ -24,7 +24,7 @@ void StationaryMiddleware::initialize(int stage)
         setStationType(vanetza::geonet::StationType::RSU);
 
         Identity identity;
-        identity.application = Identity::randomStationId(getRNG(0));
+        identity.application = Identity::deriveStationId(findHost(), par("stationIdDerivation").stringValue());
         emit(Identity::changeSignal, Identity::ChangeStationId, &identity);
 
         if (cModule* host = findHost()) {

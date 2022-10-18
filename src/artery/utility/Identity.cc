@@ -45,4 +45,18 @@ uint32_t Identity::randomStationId(omnetpp::cRNG* rng)
     return intuniform(rng, 0, std::numeric_limits<uint32_t>::max());
 }
 
+uint32_t Identity::deriveStationId(omnetpp::cModule* mod, const std::string& basis)
+{
+    if (basis == "random") {
+        return randomStationId(mod->getRNG(0));
+    } else if (basis == "component") {
+        return mod->getId();
+    } else if (basis == "module-index") {
+        return mod->isVector() ? mod->getIndex() : -1;
+    } else {
+        throw omnetpp::cRuntimeError("unknown basis %s to derive station id from", basis);
+        return 0;
+    }
+}
+
 } // namespace artery

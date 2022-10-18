@@ -29,14 +29,15 @@ void VehicleMiddleware::initialize(int stage)
         findHost()->subscribe(MobilityBase::stateChangedSignal, this);
         initializeVehicleController(par("mobilityModule"));
         initializeStationType(mVehicleController->getVehicleClass());
-        getFacilities().register_const(&mVehicleDataProvider);
-        mVehicleDataProvider.update(getKinematics(*mVehicleController));
 
         Identity identity;
         identity.traci = mVehicleController->getVehicleId();
-        identity.application = Identity::randomStationId(getRNG(0));
-        mVehicleDataProvider.setStationId(identity.application);
+        identity.application = Identity::deriveStationId(findHost(), par("stationIdDerivation").stringValue());
         emit(Identity::changeSignal, Identity::ChangeTraCI | Identity::ChangeStationId, &identity);
+
+        mVehicleDataProvider.setStationId(identity.application);
+        mVehicleDataProvider.update(getKinematics(*mVehicleController));
+        getFacilities().register_const(&mVehicleDataProvider);
     }
 
     Middleware::initialize(stage);
