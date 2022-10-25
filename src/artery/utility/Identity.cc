@@ -54,7 +54,7 @@ uint32_t Identity::deriveStationId(omnetpp::cModule* mod, const std::string& bas
     } else if (basis == "module-index") {
         return mod->isVector() ? mod->getIndex() : -1;
     } else {
-        throw omnetpp::cRuntimeError("unknown basis %s to derive station id from", basis);
+        throw omnetpp::cRuntimeError("unknown basis %s to derive station id from", basis.c_str());
         return 0;
     }
 }
