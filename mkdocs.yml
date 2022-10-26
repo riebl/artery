@@ -40,5 +40,6 @@ nav:
         - Storyboard: features/storyboard.md
     - Install Instructions: install.md
     - Architecture: architecture.md
+    - Work with VS Code: vscode.md
     - Questions & Answers: questions-n-answers.md
     - Legal Notice: legal.md
