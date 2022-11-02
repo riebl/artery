@@ -31,7 +31,6 @@ namespace artery
 
 class EnvironmentModelObstacle;
 class IdentityRegistry;
-class PreselectionMethod;
 
 /**
  * Implementation of the environment model.
