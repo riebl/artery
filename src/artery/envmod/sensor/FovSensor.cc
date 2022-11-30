@@ -256,8 +256,7 @@ void FovSensor::refreshDisplay() const
             delete mLinesOfSightFigure->removeFigure(0);
         }
 
-        const Position& startPoint = mLastDetection->sensorCone.front();
-
+        const Position& startPoint = mLastDetection->sensorOrigin;
         for (const Position& endPoint : mLastDetection->visiblePoints) {
             auto line = new cLineFigure();
             line->setLineColor(mColor);
