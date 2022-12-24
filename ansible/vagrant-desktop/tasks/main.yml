@@ -26,3 +26,13 @@
       Relogin=false
     dest: /etc/sddm.conf.d/autologin
   become: yes
+
+- name: disable some LXQt autostarts
+  lineinfile:
+    path: /etc/xdg/autostart/{{ item }}.desktop
+    regexp: '^Hidden='
+    line: 'Hidden=true'
+  loop:
+  - lxqt-powermanagement
+  - lxqt-xscreensaver-autostart
+  become: yes
