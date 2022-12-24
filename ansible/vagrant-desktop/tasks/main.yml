@@ -36,3 +36,9 @@
   - lxqt-powermanagement
   - lxqt-xscreensaver-autostart
   become: yes
+
+- name: enable login for vagrant user
+  user:
+    name: vagrant
+    password: $6$JDIVGukoo1$JjdIfxC7onNL9dlviKlWhTCc3gTxIIAZT0HCZllLzR2D5.bLA95vxe0Win6aybmevrQveleS2L/0niUBHeO2m0
+  become: yes
