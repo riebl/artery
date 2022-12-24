@@ -1,13 +1,9 @@
 ---
 - hosts: all
   roles:
-    - vagrant-mount
     - omnetpp
     - artery-workspace
     - vagrant-desktop
   vars:
     artery_source_dir: "{{ ansible_user_dir}}/artery"
     artery_build_dir: "{{ ansible_user_dir }}/artery-build"
-  environment:
-    PATH: /opt/omnetpp/bin:{{ ansible_env.PATH }}
-
