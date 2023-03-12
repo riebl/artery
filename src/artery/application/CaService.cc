@@ -289,7 +289,7 @@ void addLowFrequencyContainer(vanetza::asn1::Cam& message, unsigned pathHistoryL
 	for (unsigned i = 0; i < pathHistoryLength; ++i) {
 		PathPoint* pathPoint = vanetza::asn1::allocate<PathPoint>();
 		pathPoint->pathDeltaTime = vanetza::asn1::allocate<PathDeltaTime_t>();
-		*(pathPoint->pathDeltaTime) = 0;
+		*(pathPoint->pathDeltaTime) = (i + 1) * PathDeltaTime_tenMilliSecondsInPast * 10;
 		pathPoint->pathPosition.deltaLatitude = DeltaLatitude_unavailable;
 		pathPoint->pathPosition.deltaLongitude = DeltaLongitude_unavailable;
 		pathPoint->pathPosition.deltaAltitude = DeltaAltitude_unavailable;
