@@ -117,6 +117,7 @@ function(add_opp_run name)
         add_custom_target(debug_${name}
             COMMAND ${GDB_COMMAND} --args ${exec} ${config} ${run_flags}
             WORKING_DIRECTORY ${working_directory}
+            USES_TERMINAL
             VERBATIM)
     endif()
 
