@@ -152,3 +152,9 @@ You can, however, specify which SUMO executable shall be used explicitly.
 If you want Artery to start SUMO with a graphical user interface, you can put the following line in *omnetpp.ini*:
 
     *.traci.launcher.sumo = "sumo-gui"
+
+
+## Next: Create your own simulation
+
+You are now ready to create your first own simulation scenario.
+Have a look at [our how-to guide](custom-simulation.md) for details.
