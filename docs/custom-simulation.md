@@ -8,7 +8,7 @@ This guide takes you step-by-step through creating a new [scenario](#create-a-ne
 1. Create new scenario folder in *scenario/* such as *scenario/your_scenario*
 2. Create and edit necessary files for SUMO (cf. [SUMO documentation](https://sumo.dlr.de/docs/Other/File_Extensions.html))
     - SUMO config: *your_scenario.sumocfg*
-    - road network file: *your_ccenario.net.xml*
+    - road network file: *your_scenario.net.xml*
     - routes file: *your_scenario.rou.xml*
 3. Create and edit necessary files for Artery/OMNeT++
     - add run target for your scenario to *scenario/your_scenario/CMakeLists.txt*  
