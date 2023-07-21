@@ -10,7 +10,7 @@ namespace artery
  * EmergencyStopEffect stops vehicle with emergency deceleration.
  * Once stopped vehicle remains stopped.
  */
-class EmergencyStopEffect : public Effect
+class STORYBOARD_API EmergencyStopEffect : public Effect
 {
 public:
     using Effect::Effect;

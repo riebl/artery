@@ -10,7 +10,7 @@
 namespace artery
 {
 
-class TtcCondition : public Condition {
+class STORYBOARD_API TtcCondition : public Condition {
 public:
 
     /**
@@ -49,7 +49,6 @@ public:
     ConditionResult testCondition(const Vehicle& car);
 
 private:
-
     /**
      * Calculates the shape of a car
      *
@@ -59,7 +58,7 @@ private:
      * \param width width of the car
      * \return shape of the car
      */
-    CarShape getShape(Position, double heading, double length, double width) const;
+    CarShape STORYBOARD_LOCAL getShape(Position, double heading, double length, double width) const;
 
     /**
      * Calculates the predicted route of a car
@@ -69,7 +68,7 @@ private:
      * \param dt time between shapes
      * \return Vector containing the shapes of the calculated steps
      */
-    Route calculateRoute(const Vehicle&, int steps, double dt) const;
+    Route STORYBOARD_LOCAL calculateRoute(const Vehicle&, int steps, double dt) const;
 
     /**
      * Calculates the Time between two car shapes
@@ -78,7 +77,7 @@ private:
      * \param car2 second Vehicle
      * \return double time between two car shapes
      */
-    double calculateTimeDelta (const Vehicle& first, const Vehicle& second) const;
+    double STORYBOARD_LOCAL calculateTimeDelta (const Vehicle& first, const Vehicle& second) const;
 
     /**
      * Calculates if two car shapes may intersect
@@ -87,7 +86,7 @@ private:
      * \param shape2 Vector containing frontRight, rearRight, rearLeft, frontLeft Coordinates of car2
      * \return true if shapes intersect
      */
-    bool calculateIntersect(const CarShape& first, const CarShape& second) const;
+    bool STORYBOARD_LOCAL calculateIntersect(const CarShape& first, const CarShape& second) const;
 
     /**
      * Calculates if two cars may collide on their predicted route
@@ -96,19 +95,16 @@ private:
      * \param car2 second Vehicle
      * \return true if the cars may collide
      */
-    bool intersect(const Vehicle& first, const Vehicle& second);
+    bool STORYBOARD_LOCAL intersect(const Vehicle& first, const Vehicle& second);
+
+    void STORYBOARD_LOCAL drawCondition(omnetpp::cCanvas*) override;
+    void STORYBOARD_LOCAL drawPath(const Route& route, omnetpp::cCanvas* canvas);
 
     double m_ttc;
     double m_ttcDistanceThreshold;
-
-private:
     Route mEgoRoute;
     std::vector<Route> mOthersRoute;
-
     std::list<omnetpp::cFigure*> mFigures;
-
-    void drawCondition(omnetpp::cCanvas*) override;
-    void drawPath(const Route& route, omnetpp::cCanvas* canvas);
 };
 
 } // namespace artery

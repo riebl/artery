@@ -11,7 +11,7 @@ namespace artery
  * Condition: Time
  * Checks if the current SimTime is in the specified time interval
  */
-class TimeCondition : public Condition
+class STORYBOARD_API TimeCondition : public Condition
 {
 public:
     /**

@@ -20,7 +20,7 @@ namespace artery
  * If this condition evaluates to true for a particular vehicle is only determined once.
  * The likelihood has to be given in the range [0.0; 1.0].
  */
-class LikelihoodCondition : public Condition
+class STORYBOARD_API LikelihoodCondition : public Condition
 {
 public:
     LikelihoodCondition(omnetpp::cRNG*, double likelihood);

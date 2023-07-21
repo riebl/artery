@@ -11,7 +11,7 @@ namespace artery
 /**
  * SignalEffectFactory creates SignalEffects
  */
-class SignalEffectFactory : public EffectFactory
+class STORYBOARD_API SignalEffectFactory : public EffectFactory
 {
 public:
     SignalEffectFactory(std::string cause) :

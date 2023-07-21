@@ -2,6 +2,7 @@
 #define ARTERY_VEHICLE_H_
 
 #include "artery/application/Middleware.h"
+#include "artery/storyboard/Macros.h"
 #include "artery/traci/VehicleController.h"
 #include "artery/application/VehicleDataProvider.h"
 #include <map>
@@ -16,7 +17,7 @@ class VehicleDataProvider;
 /**
  * Struct containing all necessary vehicle data
  */
-class Vehicle
+class STORYBOARD_API Vehicle
 {
 public:
     Vehicle(artery::Middleware&, std::map<std::string, Vehicle>&);

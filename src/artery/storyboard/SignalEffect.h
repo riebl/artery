@@ -12,7 +12,7 @@ namespace artery
  * Triggers an OMNeT Signal which can be received by any submodule of car
  * Signal is triggered only if the effect is applied the first time
  */
-class SignalEffect : public Effect
+class STORYBOARD_API SignalEffect : public Effect
 {
 public:
     SignalEffect(Vehicle& car, std::string cause, Story& story, ConditionResult& result) :

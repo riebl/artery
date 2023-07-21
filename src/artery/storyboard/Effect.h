@@ -1,6 +1,8 @@
 #ifndef ARTERY_EFFECT_H_
 #define ARTERY_EFFECT_H_
 
+#include "artery/storyboard/Macros.h"
+
 namespace artery
 {
 
@@ -10,7 +12,7 @@ class Vehicle;
 /**
  * Effect Interface
  */
-class Effect
+class STORYBOARD_API Effect
 {
 public:
     Effect(Story& story, Vehicle& car);

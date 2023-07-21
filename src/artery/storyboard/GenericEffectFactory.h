@@ -7,7 +7,7 @@
 namespace artery
 {
 
-class GenericEffectFactory : public EffectFactory
+class STORYBOARD_API GenericEffectFactory : public EffectFactory
 {
 public:
     using FactoryFunction = std::function<std::shared_ptr<Effect>(Vehicle&, Story&, ConditionResult&)>;

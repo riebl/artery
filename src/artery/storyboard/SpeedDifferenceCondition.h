@@ -8,7 +8,7 @@
 namespace artery
 {
 
-class SpeedDifferenceCondition : public Condition
+class STORYBOARD_API SpeedDifferenceCondition : public Condition
 {
 public:
     SpeedDifferenceCondition(double difference) :
@@ -23,7 +23,7 @@ protected:
 };
 
 
-class SpeedDifferenceConditionFaster : public SpeedDifferenceCondition
+class STORYBOARD_API SpeedDifferenceConditionFaster : public SpeedDifferenceCondition
 {
 public:
     SpeedDifferenceConditionFaster(double difference) : SpeedDifferenceCondition(difference)
@@ -33,7 +33,7 @@ public:
     virtual ConditionResult testCondition(const Vehicle& car) override;
 };
 
-class SpeedDifferenceConditionSlower : public SpeedDifferenceCondition
+class STORYBOARD_API SpeedDifferenceConditionSlower : public SpeedDifferenceCondition
 {
 public:
     SpeedDifferenceConditionSlower(double difference) : SpeedDifferenceCondition(difference)
