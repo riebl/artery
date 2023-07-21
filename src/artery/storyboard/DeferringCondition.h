@@ -21,7 +21,7 @@ namespace artery
  * The delay is drawn uniformly from the given [min; max) range once per vehicle.
  * The condition evaluates to true after the delay expired relative to the first evaluation's time point.
  */
-class DeferringCondition : public Condition
+class STORYBOARD_API DeferringCondition : public Condition
 {
 public:
     DeferringCondition(omnetpp::cRNG*, omnetpp::SimTime min, omnetpp::SimTime max);

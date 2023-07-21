@@ -12,7 +12,7 @@ namespace artery
  * Condition: CarSet
  * allows to specify the affected cars of a Story
  */
-class CarSetCondition : public Condition {
+class STORYBOARD_API CarSetCondition : public Condition {
 public:
 
     /**

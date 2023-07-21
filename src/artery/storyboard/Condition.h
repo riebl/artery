@@ -2,6 +2,7 @@
 #define ARTERY_CONDITION_H_
 
 #include "artery/storyboard/ConditionResult.h"
+#include "artery/storyboard/Macros.h"
 #include "artery/storyboard/Vehicle.h"
 
 namespace omnetpp { class cCanvas; }
@@ -12,7 +13,7 @@ namespace artery
 /**
  * Condition Interface
  */
-class Condition
+class STORYBOARD_API Condition
 {
 public:
     virtual ~Condition() = default;

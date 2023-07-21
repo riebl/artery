@@ -3,6 +3,7 @@
 
 #include "artery/storyboard/Condition.h"
 #include "artery/storyboard/EffectFactory.h"
+#include "artery/storyboard/Macros.h"
 #include "artery/storyboard/Vehicle.h"
 #include <memory>
 #include <vector>
@@ -17,7 +18,7 @@ class EffectFactory;
  * Class providing a basic set of member functions for creating a story
  * Can be used to create stories with any trigger conditions and any effect
  */
-class Story
+class STORYBOARD_API Story
 {
 public:
     using EffectFactories = std::vector<std::shared_ptr<EffectFactory>>;

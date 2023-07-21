@@ -12,7 +12,7 @@ namespace artery
  * This causes the car to slow down to zero (and starting the waiting timer in SUMO)
  * Speed is reset to previous speed after removing the effect
  */
-class StopEffect : public Effect
+class STORYBOARD_API StopEffect : public Effect
 {
 public:
     StopEffect(Vehicle& car, Story& story) :

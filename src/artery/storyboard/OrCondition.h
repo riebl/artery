@@ -10,7 +10,7 @@ namespace artery
 /**
  * Class to create a Tree of OrConditions
  */
-class OrCondition : public Condition
+class STORYBOARD_API OrCondition : public Condition
 {
 public:
     using ConditionPtr = std::shared_ptr<Condition>;

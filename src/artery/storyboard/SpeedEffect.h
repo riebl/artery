@@ -11,7 +11,7 @@ namespace artery
  * Changes the cars speed according to m_speed
  * Resets the speed to the previous with removing the Effect
  */
-class SpeedEffect : public Effect
+class STORYBOARD_API SpeedEffect : public Effect
 {
 public:
     /**
