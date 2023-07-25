@@ -12,3 +12,7 @@ We have started to extend the available documentation about Artery and created a
 Please visit [artery.v2x-research.eu](http://artery.v2x-research.eu).
 The [install instructions](http://artery.v2x-research.eu/install/) previously found in this README have also been moved to this website.
 We welcome your contribution to this documentation effort just as to Artery itself.
+
+## Recommended Literature
+- [Recent Advances in Network Simulation: The OMNeT++ Environment and its Ecosystem](https://doi.org/10.1007/978-3-030-12842-5)
+    - Section 12 describes the [highway-police scenario](scenarios/highway-police) which is provided by default
