@@ -130,7 +130,9 @@ You can run the example from the *artery-build* directory located in the box's h
 invoking `make run_example`.
 Please note that the *artery* directory mirrors the cloned repository on your host machine.
 
-![Starting Artery in virtual machine supplied by Vagrant](../assets/vagrant.webm){:autoplay loop}
+<video autoplay loop>
+    <source src="/assets/vagrant.webm" type="video/webm">
+</video>
 
 
 ## Running Artery for the first time

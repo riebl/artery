@@ -1,3 +1,4 @@
+# This file manages Artery's website, for more information see https://www.mkdocs.org 
 site_name: Artery V2X Simulation Framework
 site_dir: www
 repo_name: 'Artery on GitHub'
@@ -25,7 +26,6 @@ markdown_extensions:
     - meta
     - toc:
         permalink: true
-    - vidify
 
 plugins:
     - search
