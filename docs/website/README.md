@@ -1,3 +1,9 @@
+- [Artery's Website using mkdocs](#arterys-website-using-mkdocs)
+    - [Getting Started](#getting-started)
+        - [Installing Dependencies](#installing-dependencies)
+        - [Build or Serve](#build-or-serve)
+        - [VS Code Extension Recommendations](#vs-code-extension-recommendations)
+
 # Artery's Website using mkdocs
 The website is located at [artery.v2x-research.eu](http://artery.v2x-research.eu).
 
@@ -45,3 +51,10 @@ Use to serve:
 ```console
 website/venv/bin/mkdocs serve
 ```
+
+### VS Code Extension Recommendations
+- In order to get YAML schema validation for `mkdocs.yml`.
+    - Install [ReadHat/YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) for VS Code
+    - Note: The schema is preinstalled in [../.vscode/settings.json](../.vscode/settings.json)
+    - Source: [Creating your site - Material for MkDocs](https://squidfunk.github.io/mkdocs-material/creating-your-site/#minimal-configuration)
+- To keep editing markdown efficient you might want to add the VS Code Extension [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
