@@ -77,11 +77,12 @@ Services may register their own objects as well, though, if they shall be shared
 
 Typical code lines found in service classes retrieving objects from facilities look like this:
 
-    :::cpp
-    // will throw an exception if now Timer has been registered before
-    const Timer& timer = getFacilities().get_const<Timer>();
-    // will return nullptr if no (mutable) LocalDynamicMap has been registered before
-    LocalDynamicMap* ldm = getFacilities().get_mutable_ptr<LocalDynamicMap>();
+```cpp
+// will throw an exception if now Timer has been registered before
+const Timer& timer = getFacilities().get_const<Timer>();
+// will return nullptr if no (mutable) LocalDynamicMap has been registered before
+LocalDynamicMap* ldm = getFacilities().get_mutable_ptr<LocalDynamicMap>();
+```
 
 
 ### Date and Time

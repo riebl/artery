@@ -18,15 +18,16 @@ file system.
 Your local clone of the repository will be in the *artery* directory at the location you have invoked the clone command.
 We refer to the location of your local clone as **$ARTERY_PATH** in the following.
 
-    :::shell
-    git clone --recurse-submodule https://github.com/riebl/artery.git
+```shell
+git clone --recurse-submodule https://github.com/riebl/artery.git
+```
 
 Alternatively, you can also initialise and fetch these submodules after cloning.
 This command needs to be invoked from **$ARTERY_PATH**.
 
-    :::shell
-    git submodule update --init --recursive
-
+```shell
+git submodule update --init --recursive
+```
 !!! tip
     Check if the directories in *$ARTERY_PATH/extern* are empty.
     If they are empty, e.g. no *extern/inet/Makefile* exists, then your working copy is incomplete.
@@ -94,11 +95,12 @@ Artery's build process integrates those dependencies seamlessly without manual i
 Are you still with us? Congratulations, you are almost done!
 Invoke following commands from **$ARTERY_PATH** to create a *build* directory for Artery, configure the build directory with CMake and finally build Artery there.
 
-    :::shell
-    mkdir build
-    cd build
-    cmake ..
-    cmake --build .
+```shell
+mkdir build
+cd build
+cmake ..
+cmake --build .
+```
 
 !!! note
     It is not a strict requirement that Artery's build directory is located at *$ARTERY_PATH/build*.
@@ -142,9 +144,9 @@ With current Artery versions, there is no need to start Veins' *sumo-launchd* sc
 Instead, Artery will start a SUMO instance on its own with appropriate parameters.
 You can start the example scenario of Artery (located in *scenarios/artery*) simply by invoking the **run_example** target from Artery's root directory:
 
-    :::shell
-    cmake --build build --target run_example
-
+```shell
+cmake --build build --target run_example
+```
 !!! note
     Substitute *build* with the name of your build directory.
     If CMake has generated Makefiles in your build directory (it does so by default), you can also invoke `make run_example` from there.
@@ -153,7 +155,9 @@ Please make sure that *sumo* can be launched in your environment because this is
 You can, however, specify which SUMO executable shall be used explicitly.
 If you want Artery to start SUMO with a graphical user interface, you can put the following line in *omnetpp.ini*:
 
-    *.traci.launcher.sumo = "sumo-gui"
+```
+*.traci.launcher.sumo = "sumo-gui"
+```
 
 
 ## Next: Create your own simulation
