@@ -6,8 +6,11 @@ scenarios/*/.qtenvrc
 scenarios/*/.tkenvrc
 src/artery/messages/*_m.cc
 src/artery/messages/*_m.h
-www/
 .vagrant/
+
+# Building website with mkdocs
+www/
+venv/
 
 # OMNeT++ IDE / Eclipse CDT auto-generated files
 .cproject
