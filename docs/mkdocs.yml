@@ -7,18 +7,28 @@ repo_url: https://github.com/riebl/artery
 docs_dir: website
 
 theme:
-    name: 'material'
+    name: material
     features:
         - tabs
-        - content.code.copy    # Adds "copy to clipboard" button to code blocks 
+        - content.code.copy    # Adds "copy to clipboard" button to code blocks
     icon:
         logo: fontawesome/solid/wifi
     palette:
+      # Palette toggle for light mode
+      - media: "(prefers-color-scheme: light)"
         primary: 'teal'
         accent: 'deep orange'
-    font:
-        text: 'Lato'
-        code: 'Oxygen Mono'
+        toggle:
+          icon: material/weather-night
+          name: Switch to dark mode
+      # Palette toggle for dark mode
+      - media: "(prefers-color-scheme: dark)"
+        scheme: slate
+        primary: 'teal'
+        accent: 'deep orange'
+        toggle:
+          icon: material/weather-sunny
+          name: Switch to light mode
 
 markdown_extensions:
     - admonition
