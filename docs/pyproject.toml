@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Arterys-Website"
+readme = "./README.md"
+version = "0.0.1"
+dependencies = [
+    "mkdocs >=1.4.3",
+    "mkdocs-material >=9.1.19",
+    "mkdocs-git-revision-date-localized-plugin >=1.2.0",
+]
+
+[tool.setuptools]
+py-modules = []
