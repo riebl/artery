@@ -182,4 +182,8 @@ if(NOT is_multi_config)
     install(
         PROGRAMS ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/run_artery.sh.install
         DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME run_artery.sh)
+
+    if(NOT CMAKE_BUILD_TYPE OR "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+        generate_vscode(TARGET artery FILE ${PROJECT_SOURCE_DIR}/.vscode/launch.json)
+    endif()
 endif()
