@@ -15,7 +15,7 @@ First, open Artery's folder with VS Code. Press `Ctrl+Shfit+P` to execute the fo
 
 ## Debugging Simulations
 1. Add `launch.json` to `.vscode/`. Adjust paths and arguments to your system/needs:
-```
+```json
 {
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
@@ -85,7 +85,7 @@ First, open Artery's folder with VS Code. Press `Ctrl+Shfit+P` to execute the fo
 }
 ```
 2. Add `tasks.json` to `.vscode/`
-```
+```json
 {
     "tasks": [
         {

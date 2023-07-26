@@ -6,7 +6,7 @@ The website is located at [artery.v2x-research.eu](http://artery.v2x-research.eu
 As [PEP 668](https://peps.python.org/pep-0668/) the recommended way to install dependencies is to use a local virtual Python Environment.
 To create a virtual Python Environment:
 ```console
-cd docs
+cd docs/website
 python3 -m venv venv
 ```
 Then install Artery's Website's dependencies.
@@ -28,12 +28,20 @@ venv/bin/pip install mkdocs-git-revision-date-localized-plugin
 ```
 
 ### Build or Serve
+Change the directory to the parent directory:
+```
+cd ..
+```
+You should be now in `artery/docs`.
+
+Then do one of the following either
+
 Use to build:
 ```console
-venv/bin/mkdocs build
+website/venv/bin/mkdocs build
 ```
 
 Use to serve:
 ```console
-venv/bin/mkdocs serve
+website/venv/bin/mkdocs serve
 ```
