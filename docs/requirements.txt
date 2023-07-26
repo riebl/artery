@@ -1,0 +1,4 @@
+mkdocs >=1.4.3
+mkdocs-material >=9.1.19
+mkdocs-git-revision-date-localized-plugin >=1.2.0
+markdown-vidify >= 0.1.2
