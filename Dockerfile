@@ -1,3 +1,6 @@
+# Artery's Docker container does not include any GUI.
+# The idea of having Artery in a container is to run multiple instances with different parameter sets, e.g. running a large parameter study on a cluster.
+
 FROM debian:bullseye-slim as base
 
 FROM base as omnetpp-build
@@ -97,4 +100,5 @@ RUN mkdir -p /scenario /results && chown -R artery:users /scenario /results
 USER artery
 VOLUME /scenario /results
 WORKDIR /scenario
+RUN mv /scenario/omnetpp.ini /omnetpp/
 ENTRYPOINT ["/artery/bin/run_artery.sh", "--result-dir=/results"]
