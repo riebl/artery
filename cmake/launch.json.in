@@ -5,7 +5,8 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Launch Artery in Debugger",
+			"name": "Launch Artery in Debugger (generated)",
+			"description": "Generic debug configuration for Artey. It is (re-)generated with every CMake build generation and any modifications are overwritten!",
 			"type": "cppdbg",
 			"request": "launch",
 
@@ -20,7 +21,7 @@
 				@opp_run_ned_folders@,
 
 				// Libraries used for Artery
-				@opp_run_libraries@
+				@opp_run_libraries@,
 
 				// .ini file to of the scenario
 				"omnetpp.ini",
