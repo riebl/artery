@@ -41,7 +41,7 @@ function(generate_vscode)
         file(READ ${args_FILE} current_launch_json)
 
         string(JSON num_configs LENGTH ${current_launch_json} "configurations")
-        message("-- Found ${num_configs} VS Code Config(s) in .vscode/launch.json")
+        message(STATUS "Found ${num_configs} VS Code Config(s) in .vscode/launch.json")
         math(EXPR last_config "${num_configs} - 1")
 
         # read recent build configuration from temporary launch configuraiton
@@ -62,7 +62,7 @@ function(generate_vscode)
 
             # found Arterys default debug configuration
             if (${config_name} STREQUAL ${default_launch_configuration_name})
-                message("-- Updating Artery default config in .vscode/launch.json")
+                message(STATUS "Updating Artery default config in .vscode/launch.json")
                 set(default_config_found true)
 
                 # replace old config with newly generated one and save
@@ -73,7 +73,7 @@ function(generate_vscode)
 
         # launch.json is present but no default configuration was found
         if (NOT ${default_config_found})
-            message("-- Append Artery default config to .vscode/launch.json")
+            message(STATUS "Append Artery default config to .vscode/launch.json")
 
             # append default configuration
             string(JSON current_launch_configuration SET ${current_launch_json} "configurations" ${num_configs} ${default_launch_configuration})
@@ -92,7 +92,7 @@ function(generate_vscode)
             file(WRITE ${args_FILE} ${current_launch_configuration})
         endif()
     else()
-        message("-- Generating default debug config for VS Code")
+        message(STATUS "Generating default debug config for VS Code")
         # substitute variables first, then generator expressions
         file(GENERATE OUTPUT ${args_FILE} INPUT ${PROJECT_BINARY_DIR}/launch.json.default)
     endif()

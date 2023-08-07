@@ -182,8 +182,12 @@ if(NOT is_multi_config)
     install(
         PROGRAMS ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/run_artery.sh.install
         DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME run_artery.sh)
+endif()
 
-    if(NOT CMAKE_BUILD_TYPE OR "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+if(VSCODE_LAUNCH_INTEGRATION)
+    if (NOT CMAKE_BUILD_TYPE OR "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
         generate_vscode(TARGET artery FILE ${PROJECT_SOURCE_DIR}/.vscode/launch.json)
+    else()
+        message(STATUS "VS Code integration is enabled, but built type is Release")
     endif()
 endif()
