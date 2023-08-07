@@ -103,6 +103,8 @@ add_subdirectory(src/traci)
 
 add_subdirectory(src/artery)
 
+option(VSCODE_LAUNCH_INTEGRATION "Generate VS Code configuration for debugging Artery (requires debug build)" OFF)
+
 # scenarios directory is part of repository but omitted for Docker build context
 if(EXISTS ${PROJECT_SOURCE_DIR}/scenarios)
     add_subdirectory(scenarios)
