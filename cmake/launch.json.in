@@ -1,0 +1,77 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Launch Artery in Debugger (generated)",
+			"description": "Generic debug configuration for Artey. It is (re-)generated with every CMake build generation and any modifications are overwritten!",
+			"type": "cppdbg",
+			"request": "launch",
+
+			// Set path to OMNet++ debug runner
+			"program": "@opp_run_executable@",
+
+			// Set working directory to scenario
+			"cwd": "${workspaceFolder}/scenarios/${input:scenario}",
+
+			"args": [
+				// Paths to NED files
+				@opp_run_ned_folders@,
+
+				// Libraries used for Artery
+				@opp_run_libraries@,
+
+				// .ini file to of the scenario
+				"omnetpp.ini",
+
+				// OMNet++ config to run
+				"-c${input:config}",
+				// Run number
+				"-r${input:runId}",
+
+				// OMNet++ interface can either be Qtenv or Cmdenv
+				// "-uQtenv",
+				"-uCmdenv"
+			],
+			"stopAtEntry": false,
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"setupCommands": [
+				{
+					"description": "Enable pretty-printing for gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				},
+				{
+					"description": "Enable all-exceptions",
+					"text": "catch throw",
+					"ignoreFailures": true
+				}
+			],
+			// "preLaunchTask": "C/C++: clang++ build active file",
+			"miDebuggerPath": "/usr/bin/gdb"
+		}
+	],
+	"inputs": [
+		{
+			"id": "scenario",
+			"type": "promptString",
+			"default": "artery",
+			"description": "Scenario folder to launch (provide the folder in ./scenarios/)"
+		},
+		{
+			"id": "config",
+			"type": "promptString",
+			"default": "inet",
+			"description": "OMNeT++ config to launch"
+		},
+		{
+			"id": "runId",
+			"type": "promptString",
+			"default": "0",
+			"description": "Run ID of the config to launch"
+		}
+	]
+}
