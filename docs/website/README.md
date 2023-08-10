@@ -31,6 +31,7 @@ venv/bin/pip install .
 venv/bin/pip install mkdocs
 venv/bin/pip install mkdocs-material
 venv/bin/pip install mkdocs-git-revision-date-localized-plugin
+venv/bin/pip install markdown-vidify
 ```
 
 ### Build or Serve
