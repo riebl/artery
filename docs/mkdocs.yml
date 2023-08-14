@@ -1,7 +1,7 @@
 # This file manages Artery's website, for more information see https://www.mkdocs.org 
 
 site_name: Artery V2X Simulation Framework
-site_dir: ../www
+site_dir: ./www
 repo_name: 'Artery on GitHub'
 repo_url: https://github.com/riebl/artery
 docs_dir: website
