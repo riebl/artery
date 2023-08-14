@@ -29,6 +29,9 @@ theme:
         toggle:
           icon: material/weather-sunny
           name: Switch to light mode
+    font:
+        text: 'Lato'
+        code: 'Oxygen Mono'
 
 markdown_extensions:
     - admonition
