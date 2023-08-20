@@ -1,3 +1,6 @@
+# This file configures how Artery's website is built using mkdocs.
+# For more information see https://www.mkdocs.org
+
 site_name: Artery V2X Simulation Framework
 site_dir: www
 repo_name: 'Artery on GitHub'
