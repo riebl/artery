@@ -10,6 +10,7 @@ theme:
     name: 'material'
     features:
         - tabs
+        - content.code.copy    # Adds "copy to clipboard" button to code blocks 
     icon:
         logo: fontawesome/solid/wifi
     palette:
@@ -22,8 +23,13 @@ theme:
 markdown_extensions:
     - admonition
     - attr_list
-    - codehilite:
-        guess_lang: false
+    - pymdownx.highlight:
+        anchor_linenums: true
+        line_spans: __span
+        pygments_lang_class: true
+    - pymdownx.inlinehilite
+    - pymdownx.snippets
+    - pymdownx.superfences
     - footnotes
     - meta
     - toc:
