@@ -1,13 +1,15 @@
 # Work with VS Code
 
-Visual Studio Code (VS Code) is a popular code editor which can be customized by extensions (plug-ins).
+[Visual Studio Code](https://code.visualstudio.com/) (VS Code) is a popular code editor which can be customized by extensions (plug-ins).
 Since Artery is mostly a plain C++ project using CMake as its build tool, one can use VS Code instead of the Eclipse-based OMNeT++ IDE for development.
 
 ## Requirements
 Install [VS Code](https://code.visualstudio.com/docs/setup/setup-overview) along with its [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) and [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools) Extensions.
 
 ## Building and Running Simulations
-First, open Artery's folder with VS Code. Press `Ctrl+Shfit+P` to execute the following commands:
+First, open Artery's folder with VS Code. 
+Press <kbd>Ctrl</kbd> + <kbd>Shfit</kbd> + <kbd>P</kbd> to open VS Code's Command Palette and execute the following commands:
+
 1. `CMake: Scan for Kits`
 2. `CMake: Select a Kit` to select a compiler kit (GCC/Clang)
 3. `CMake: Set Build Target` and choose your scenario (in doubt: `run_example`)
@@ -15,7 +17,7 @@ First, open Artery's folder with VS Code. Press `Ctrl+Shfit+P` to execute the fo
 
 ## Debugging Simulations
 1. Add `launch.json` to `.vscode/`. Adjust paths and arguments to your system/needs:
-```
+```json linenums="1"
 {
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
@@ -34,7 +36,7 @@ First, open Artery's folder with VS Code. Press `Ctrl+Shfit+P` to execute the fo
             "cwd": "${workspaceFolder}/scenarios/artery",
 
             "environment": [
-                { "name": "ARTERY_HOME", "value": "<path>" },
+                { "name": "ARTERY_HOME", "value": "<path>" }, // TODO: Add paths
                 { "name": "OMNETPP_HOME", "value": "<path>" },
                 { "name": "OMNETPP_ROOT", "value": "<path>" },
                 { "name": "SUMO_HOME", "value": "<path>" }
@@ -85,7 +87,7 @@ First, open Artery's folder with VS Code. Press `Ctrl+Shfit+P` to execute the fo
 }
 ```
 2. Add `tasks.json` to `.vscode/`
-```
+```json linenums="1"
 {
     "tasks": [
         {
@@ -95,7 +97,7 @@ First, open Artery's folder with VS Code. Press `Ctrl+Shfit+P` to execute the fo
             "args": [
                 "--build",
                 ".",
-                "--parallel 6"
+                "--parallel 6" // TODO: Enter number of threads to use 
             ],
             "options": {
                 "cwd": "${workspaceFolder}/build"
@@ -115,8 +117,8 @@ First, open Artery's folder with VS Code. Press `Ctrl+Shfit+P` to execute the fo
 ```
 3. Execute `CMake: Select Variant` and select `Debug`
 4. In case of doubt: execute `CMake: Clean Rebuild`
-5. Switch to debug view with `Ctrl+Shift+D`
-6. Start debugging by pressing `F5`
+5. Switch to debug view with <kbd>Ctrl</kbd> + <kbd>Shfit</kbd> + <kbd>D</kbd>
+6. Start debugging by pressing <kbd>F5</kbd>
 
 !!! note "Credits"
     Thanks to [Alexander Willecke](https://github.com/awillecke) for contributing this page.
