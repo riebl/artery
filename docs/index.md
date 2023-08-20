@@ -1,4 +1,5 @@
-![Logo of Artery V2X Simulation Framework](assets/logo.png)
+![Logo of Artery V2X Simulation Framework](assets/logo.png#only-light)
+![Logo of Artery V2X Simulation Framework](assets/logo-dark.png#only-dark)
 
 Artery enables V2X simulations based on ETSI ITS-G5 protocols like GeoNetworking and BTP.
 Single vehicles can be equipped with multiple ITS-G5 services through Artery's middleware, which also provides common Facilities for these services.
