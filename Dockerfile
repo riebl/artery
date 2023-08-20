@@ -1,5 +1,6 @@
 # Artery's Docker container does not include any GUI.
 # The idea of having Artery in a container is to run multiple instances with different parameter sets, e.g. running a large parameter study on a cluster.
+# You may want to use Vagrant for a setup with GUI instead.
 
 FROM debian:bullseye-slim as base
 
