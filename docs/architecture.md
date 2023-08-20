@@ -35,9 +35,9 @@ It is possible to equip vehicles with different sets of applications by configur
 
 You can read more detailed introductions to Artery features at their respective pages:
 
-- [Middleware](../features/middleware)
-- [Storyboard](../features/storyboard)
-- [Environment Model](../features/envmod)
+- [Middleware](features/middleware.md)
+- [Storyboard](features/storyboard.md)
+- [Environment Model](features/envmod.md)
 
 ## Repository layout
 
