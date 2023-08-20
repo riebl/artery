@@ -7,63 +7,63 @@ repo_name: 'Artery on GitHub'
 repo_url: https://github.com/riebl/artery
 
 theme:
-    name: material
-    features:
-        - tabs
-        - content.code.copy    # Adds "copy to clipboard" button to code blocks
-    icon:
-        logo: fontawesome/solid/wifi
-    palette:
-      # Palette toggle for light mode
-      - media: "(prefers-color-scheme: light)"
-        scheme: default
-        primary: 'teal'
-        accent: 'deep orange'
-        toggle:
-          icon: material/weather-night
-          name: Switch to dark mode
-      # Palette toggle for dark mode
-      - media: "(prefers-color-scheme: dark)"
-        scheme: slate
-        primary: 'teal'
-        accent: 'deep orange'
-        toggle:
-          icon: material/weather-sunny
-          name: Switch to light mode
-    font:
-        text: 'Lato'
-        code: 'Oxygen Mono'
+  name: material
+  features:
+    - tabs
+    - content.code.copy # Adds "copy to clipboard" button to code blocks
+  icon:
+    logo: fontawesome/solid/wifi
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: 'teal'
+      accent: 'deep orange'
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: 'teal'
+      accent: 'deep orange'
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  font:
+    text: 'Lato'
+    code: 'Oxygen Mono'
 
 markdown_extensions:
-    - admonition
-    - attr_list
-    - pymdownx.highlight:
-        anchor_linenums: true
-        line_spans: __span
-        pygments_lang_class: true
-    - pymdownx.inlinehilite
-    - pymdownx.snippets
-    - pymdownx.superfences
-    - footnotes
-    - meta
-    - toc:
-        permalink: true
-    - vidify
+  - admonition
+  - attr_list
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - footnotes
+  - meta
+  - toc:
+      permalink: true
+  - vidify
 
 plugins:
-    - search
-    - git-revision-date-localized
+  - search
+  - git-revision-date-localized
 
 nav:
-    - Artery: index.md
-    - Features:
-        - Middleware: features/middleware.md
-        - Environment Model: features/envmod.md
-        - GEMV²: features/gemv2.md
-        - Storyboard: features/storyboard.md
-    - Install Instructions: install.md
-    - Architecture: architecture.md
-    - Literature: literature.md
-    - Work with VS Code: vscode.md
-    - Questions & Answers: questions-n-answers.md
-    - Legal Notice: legal.md
+  - Artery: index.md
+  - Features:
+      - Middleware: features/middleware.md
+      - Environment Model: features/envmod.md
+      - GEMV²: features/gemv2.md
+      - Storyboard: features/storyboard.md
+  - Install Instructions: install.md
+  - Architecture: architecture.md
+  - Literature: literature.md
+  - Work with VS Code: vscode.md
+  - Questions & Answers: questions-n-answers.md
+  - Legal Notice: legal.md
