@@ -12,3 +12,4 @@ We have started to extend the available documentation about Artery and created a
 Please visit [artery.v2x-research.eu](http://artery.v2x-research.eu).
 The [install instructions](http://artery.v2x-research.eu/install/) previously found in this README have also been moved to this website.
 We welcome your contribution to this documentation effort just as to Artery itself.
+If you want to build the website yourself see also [our mkdocs guide](http://artery.v2x-research.eu/mkdocs).
