@@ -102,7 +102,7 @@ cmake ..
 cmake --build . --parallel X
 ```
 where `--parallel X` is a optional flag and `X` is the amount of threads the build-process should use.
-Ommiting the flag leads to a singlethreaded build process. 
+Ommiting the flag leads to a singlethreaded build-process. 
 
 !!! note
     It is not a strict requirement that Artery's build directory is located at *$ARTERY_PATH/build*.
