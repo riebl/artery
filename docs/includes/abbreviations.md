@@ -28,7 +28,7 @@
 *[RSU]: Road Side Unit
 
 *[SPaT]: Signal Phase and Time
-*[SUMO]: https://eclipse.dev/sumo/ "Simulation of Urban MObility"
+*[SUMO]: Simulation of Urban MObility
 
 *[TOPO]: Topology Specification
 *[TraCI]: Traffic Control Interface
