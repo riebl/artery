@@ -21,7 +21,7 @@
 *[OMNeT++]: Objective Modular Network Testbed in C++
 
 *[PDU]: Protocol Data Unit
-*[PKI]: Public Key Infrastracture
+*[PKI]: Public Key Infrastructure
 
 *[RHW]: Road Hazard Warning
 *[RSU]: Road Side Unit
