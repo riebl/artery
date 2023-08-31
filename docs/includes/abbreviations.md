@@ -11,7 +11,6 @@
 
 *[DENM]: Decentralized Environmental Notification Message
 
-*[ESP]: Elektronisches Stabilitätsprogramm
 *[ETSI]: European Telecommunications Standards Institute
 
 *[F2MD]: Framework For Misbehavior Detection
