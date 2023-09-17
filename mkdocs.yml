@@ -36,13 +36,16 @@ theme:
 
 markdown_extensions:
   - admonition
+  - abbr
   - attr_list
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
-  - pymdownx.snippets
+  - pymdownx.snippets:
+      auto_append: 
+        - docs/includes/abbreviations.md
   - pymdownx.superfences
   - footnotes
   - meta
