@@ -97,11 +97,9 @@ Invoke following commands from **$ARTERY_PATH** to create a *build* directory fo
 
 ```shell
 mkdir build
-cd build
-cmake ..
-cmake --build . --parallel X
+cmake --build build -j X
 ```
-where `--parallel X` is a optional flag and `X` is the amount of threads the build-process should use.
+where `-j X` is a optional flag and `X` is the amount of threads the build-process should use.
 Ommiting the flag leads to a singlethreaded build-process. 
 
 !!! note
