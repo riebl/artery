@@ -21,6 +21,13 @@ namespace artery
 // forward declaration
 class Identity;
 
+/**
+ * @class FilterRules
+ * @brief A class responsible for applying filter configurations based on rules.
+ *
+ * This class provides methods to apply various filter configurations based on rules defined
+ * in XML format.
+ */
 class FilterRules
 {
 public:
