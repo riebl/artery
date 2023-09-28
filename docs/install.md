@@ -96,8 +96,8 @@ Are you still with us? Congratulations, you are almost done!
 Invoke following commands from **$ARTERY_PATH** to create a *build* directory for Artery, configure the build directory with CMake and finally build Artery there.
 
 ```shell
-mkdir build    # Create directory "build"
-cmake -B build    # Generate the project's buildsystem in directory "build"
+mkdir build                 # Create directory "build"
+cmake -B build              # Generate the project's buildsystem in directory "build"
 cmake --build build -j X    # Build the project in directory "build"
 ```
 where `-j X` is a optional flag and `X` is the amount of threads the build-process should use.
