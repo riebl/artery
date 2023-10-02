@@ -1,0 +1,1 @@
+DEN stands for _Decentralized Environmental Notification_

@@ -1,0 +1,1 @@
+Partial taken from [eclipse-sumo/sumo/src/libsumo](https://github.com/eclipse-sumo/sumo/tree/2f1d394a21aa4fc99f14dab1ea76c07fbb49ddf1/src/libsumo)
