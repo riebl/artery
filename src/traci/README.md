@@ -1,4 +1,4 @@
-Traffic Control Interface ([TraCi](https://sumo.dlr.de/docs/TraCI.html)) ermöglicht den Zugriff auf eine laufende Straßenverkehrssimulation in SUMO und erlaubt es, Werte von simulierten Objekten abzurufen und deren Verhalten online zu manipulieren.
+Traffic Control Interface ([TraCi](https://sumo.dlr.de/docs/TraCI.html)) provides access to a running road traffic simulation in SUMO and allows to retrieve values of simulated objects and manipulate their behaviour online.
 
 ## Points of interest
 - The `./Manager`-Module is used in `src/artery/veins/World.ned`
