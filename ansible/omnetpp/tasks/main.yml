@@ -54,8 +54,9 @@
           - --strip-components=1
 
 - name: configure OMNeT++
-  command: ./configure
+  shell: source setenv && ./configure
   args:
+      executable: /bin/bash
       chdir: "{{ omnetpp_dir }}"
       creates: "{{ omnetpp_dir }}/Makefile.inc"
 
