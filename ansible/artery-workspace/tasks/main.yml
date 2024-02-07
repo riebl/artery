@@ -48,8 +48,9 @@
       state: directory
 
 - name: configure Artery build directory
-  command: cmake {{ artery_source_dir }}
+  shell: cmake {{ artery_source_dir }}
   args:
+      executable: /bin/bash
       chdir: "{{ artery_build_dir }}"
       creates: "{{ artery_build_dir }}/Makefile"
 
