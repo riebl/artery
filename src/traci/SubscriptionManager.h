@@ -25,6 +25,11 @@ class SubscriptionManager
 {
 public:
     virtual ~SubscriptionManager() = default;
+
+    /**
+     * Is called on every SUMO-Simulation Step. Should be used to update the Manager's State according to the new
+     * simulation-state.
+     */
     virtual void step() = 0;
     virtual void subscribePersonVariables(const std::set<int>& personVariables) = 0;
     virtual void subscribeVehicleVariables(const std::set<int>& vehicleVariables) = 0;

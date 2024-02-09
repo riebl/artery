@@ -1,0 +1,1 @@
+GTU is a Generic Traffic Unit, a term used by [OpenTrafficSim](https://github.com/averbraeck/opentrafficsim)
