@@ -7,8 +7,6 @@
 #ifndef GLOBALENVIRONMENTMODEL_H_
 #define GLOBALENVIRONMENTMODEL_H_
 
-
-// #include "artery/envmod/sensor/Sensor.h"
 #include "artery/envmod/sensor/SensorDetection.h"
 #include "artery/envmod/Geometry.h"
 #include "artery/envmod/EnvironmentModelObject.h"
