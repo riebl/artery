@@ -353,10 +353,8 @@ GlobalEnvironmentModel::preselectObjects(const std::string& ego, const std::vect
     std::vector<std::shared_ptr<EnvironmentModelObject>> objectsInSearchArea;
     ObjectRtree::const_query_iterator it = query_intersections(mObjectRtree, area);
     for (; it != mObjectRtree.qend(); ++it) {
-        if (it->second->getExternalId() != ego) {
-            if (it->second->isVisible()) {
-                objectsInSearchArea.push_back(it->second);
-            }
+        if (it->second->getExternalId() != ego && it->second->isVisible()) {
+            objectsInSearchArea.push_back(it->second);
         }
     }
     return objectsInSearchArea;
