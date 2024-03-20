@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2022-09-12 15:11:36 by Eclipse SUMO GUI Version v1_9_2+0714-6f4aab01f9d
+-->
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+    <input>
+        <net-file value="intersection.net.xml"/>
+        <route-files value="intersection.rou.xml"/>
+    </input>
+    
+    <time>
+        <begin value="0"/>
+        <step-length value="0.1"/>
+    </time>
+</configuration>

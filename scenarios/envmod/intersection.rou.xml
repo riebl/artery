@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-03-06 22:58:26 by Eclipse SUMO netedit Version 1.16.0
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <!-- Vehicles, persons and containers (sorted by depart) -->
+    <person id="p_0" depart="0.00">
+        <walk from="E3" to="E4"/>
+    </person>
+    <person id="p_1" depart="0.00">
+        <walk from="-E4" to="E5"/>
+    </person>
+    <person id="p_2" depart="0.00">
+        <walk from="-E3" to="-E5"/>
+    </person>
+    <person id="p_3" depart="0.00">
+        <walk from="E5" to="-E4"/>
+    </person>
+    <person id="p_4" depart="0.00">
+        <walk from="-E5" to="-E3"/>
+    </person>
+    <person id="p_5" depart="0.00">
+        <walk from="E4" to="E3"/>
+    </person>
+
+    <vType id="car" maxSpeed="10.00" vClass="passenger" carFollowModel="Krauss" color="0,171,0" speedFactor="1.0" sigma="1.0"/>
+    <vType id="overtaking" maxSpeed="13.00" vClass="passenger" carFollowModel="Krauss" color="0,171,0" speedFactor="1.0" sigma="1.0" maxSpeedLat="1.0"/>
+
+    <vehicle id="object0" type="car" depart="0.00" departLane="1" departSpeed="speedLimit">
+        <route edges="E3 E4"/>
+    </vehicle>
+    <vehicle id="object1" type="car" depart="0.20" departLane="2" departSpeed="speedLimit">
+        <route edges="E3 E4"/>
+    </vehicle>
+
+    <vehicle id="object2" type="car" depart="2.00" departLane="1" departSpeed="speedLimit">
+        <route edges="E3 E5"/>
+    </vehicle>
+    <vehicle id="object3" type="car" depart="2.00" departLane="2" departSpeed="speedLimit">
+        <route edges="E3 E4"/>
+    </vehicle>
+
+    <vehicle id="object5" type="car" depart="6.00" departLane="1" departSpeed="0">
+        <route edges="E3 E4"/>
+    </vehicle>
+
+
+    <vehicle id="object4" type="car" depart="10.00" departLane="1" departSpeed="speedLimit">
+        <route edges="-E5 -E3"/>
+    </vehicle>
+
+    <vehicle id="object6" type="car" depart="11.00" departLane="1" departSpeed="speedLimit">
+        <route edges="-E4 E5"/>
+    </vehicle>
+    <vehicle id="object7_overtaking" type="overtaking" depart="12.0" departLane="2" departSpeed="speedLimit">
+        <route edges="-E4 -E3"/>
+    </vehicle>
+</routes>

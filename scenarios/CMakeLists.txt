@@ -1,7 +1,9 @@
 add_subdirectory(artery)
+
 add_subdirectory(gemv2)
 add_subdirectory(highway-police)
 if(WITH_ENVMOD)
+    add_subdirectory(envmod)
     add_subdirectory(rsu_grid)
 endif()
 if(WITH_STORYBOARD)

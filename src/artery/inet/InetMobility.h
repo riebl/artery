@@ -47,12 +47,14 @@ class InetVehicleMobility : public InetMobility, public VehicleMobility
 {
 public:
     void initialize(int stage) override;
+    const std::string& getId() override  { return mVehicleId; };
 };
 
 class InetPersonMobility : public InetMobility, public PersonMobility
 {
 public:
     void initialize(int stage) override;
+    const std::string& getId() override { return mPersonId; };
 };
 
 } // namespace artery

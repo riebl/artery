@@ -21,6 +21,8 @@ public:
     void initializeVehicle(const traci::TraCIPosition&, traci::TraCIAngle, double speed) override;
     void updateVehicle(const traci::TraCIPosition&, traci::TraCIAngle, double speed) override;
 
+    const std::string& getId() const { return mVehicleId; };
+
     // ControllableVehicle
     traci::VehicleController* getVehicleController() override;
 

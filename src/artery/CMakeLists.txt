@@ -57,7 +57,9 @@ add_library(core SHARED
     nic/ChannelLoadSampler.cc
     nic/RadioDriverBase.cc
     traci/Cast.cc
+    traci/Controller.cc
     traci/MobilityBase.cc
+    traci/PersonController.cc
     traci/PersonMobility.cc
     traci/VehicleController.cc
     traci/VehicleMobility.cc

@@ -61,6 +61,7 @@ public:
         virtual const TraCIPosition& getPosition() const = 0;
         virtual TraCIAngle getHeading() const = 0;
         virtual double getSpeed() const = 0;
+        virtual std::string getVehicle() const = 0;
     };
 
 protected:

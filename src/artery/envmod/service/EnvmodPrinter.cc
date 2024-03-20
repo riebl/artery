@@ -8,7 +8,7 @@
 #include "artery/envmod/EnvironmentModelObject.h"
 #include "artery/envmod/LocalEnvironmentModel.h"
 #include "artery/envmod/sensor/Sensor.h"
-#include "artery/traci/VehicleController.h"
+#include "artery/traci/Controller.h"
 #include <boost/units/io.hpp>
 #include <omnetpp/clog.h>
 
@@ -21,7 +21,7 @@ void EnvmodPrinter::initialize()
 {
     ItsG5Service::initialize();
     mLocalEnvironmentModel = getFacilities().get_mutable_ptr<LocalEnvironmentModel>();
-    mEgoId = getFacilities().get_const<traci::VehicleController>().getVehicleId();
+    mEgoId = getFacilities().get_const<VehicleDataProvider>().getStationId();
 }
 
 void EnvmodPrinter::trigger()

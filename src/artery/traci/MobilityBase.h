@@ -14,6 +14,7 @@ class MobilityBase
 public:
     // generic signal for mobility state changes
     static omnetpp::simsignal_t stateChangedSignal;
+    virtual const std::string& getId() = 0;
 
 protected:
     virtual void initialize(const Position&, Angle, double speed) = 0;

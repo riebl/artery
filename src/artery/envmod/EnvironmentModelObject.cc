@@ -4,6 +4,7 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
+#include "artery/traci/PersonController.h"
 #include "artery/traci/VehicleController.h"
 #include "artery/application/StationType.h"
 #include "artery/envmod/EnvironmentModelObject.h"
@@ -37,7 +38,7 @@ const Position squareCentrePoint(-0.5, 0.0);
 
 #if BOOST_VERSION < 106400
 boost::geometry::strategy::transform::ublas_transformer<double, 2, 2>
-transformVehicle(double length, double width, const Position& pos, Angle alpha)
+transformObject(double length, double width, const Position& pos, Angle alpha)
 {
     using namespace boost::geometry::strategy::transform;
     using result_type = ublas_transformer<double, 2, 2>;
@@ -56,7 +57,7 @@ transformVehicle(double length, double width, const Position& pos, Angle alpha)
 }
 #else
 boost::geometry::strategy::transform::matrix_transformer<double, 2, 2>
-transformVehicle(double length, double width, const Position& pos, Angle alpha)
+transformObject(double length, double width, const Position& pos, Angle alpha)
 {
     using namespace boost::geometry::strategy::transform;
 
@@ -73,29 +74,35 @@ transformVehicle(double length, double width, const Position& pos, Angle alpha)
 
 }
 
-EnvironmentModelObject::EnvironmentModelObject(const traci::VehicleController* vehicle, uint32_t id) :
+EnvironmentModelObject::EnvironmentModelObject(const traci::Controller* controller, uint32_t id) :
     VehicleDataProvider(id),
-    mVehicleController(vehicle),
-    mLength(vehicle->getVehicleType().getLength()),
-    mWidth(vehicle->getVehicleType().getWidth())
+    mController(controller),
+    mLength(controller->getLength()),
+    mWidth(controller->getWidth())
 {
     const auto halfWidth = mWidth * 0.5;
     const auto halfLength = mLength * 0.5;
     mRadius = sqrt(halfWidth * halfWidth + halfLength * halfLength);
 
-    setStationType(deriveStationTypeFromVehicleClass(mVehicleController->getVehicleClass()));
+    auto vehicle = dynamic_cast<const traci::VehicleController*>(controller);
+    if  (vehicle) {
+        setStationType(deriveStationTypeFromVehicleClass(vehicle->getVehicleClass()));
+    }
+    else {
+        setStationType(StationType::Pedestrian);
+    }
     update();
 }
 
 void EnvironmentModelObject::update()
 {
     // Update the internal vdp
-    VehicleDataProvider::update(getKinematics(*mVehicleController));
+    VehicleDataProvider::update(getKinematics(*mController));
 
     // Recalculate all time and position dependent attributes
     using namespace boost::math::double_constants;
     Angle heading = -1.0 * (getVehicleData().heading() - 0.5 * pi * boost::units::si::radian);
-    auto affine = transformVehicle(mLength.value(), mWidth.value(), getVehicleData().position(), heading);
+    auto affine = transformObject(mLength.value(), mWidth.value(), getVehicleData().position(), heading);
 
     boost::geometry::transform(squareCentrePoint, mCentrePoint, affine);
     mOutline.clear();
@@ -106,7 +113,7 @@ void EnvironmentModelObject::update()
 
 std::string EnvironmentModelObject::getExternalId() const
 {
-    return mVehicleController->getVehicleId();
+    return mController->getId();
 }
 
 const Position& EnvironmentModelObject::getAttachmentPoint(const SensorPosition& pos) const
@@ -132,6 +139,15 @@ const Position& EnvironmentModelObject::getAttachmentPoint(const SensorPosition&
     }
 
     return *point;
+}
+
+bool EnvironmentModelObject::isVisible() {
+    if (getStationType() == StationType::Pedestrian) {
+        return !dynamic_cast<const traci::PersonController *>(mController)->isDriving();
+    }
+    else {
+        return true;
+    }
 }
 
 const VehicleDataProvider& EnvironmentModelObject::getVehicleData() const
