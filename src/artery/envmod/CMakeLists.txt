@@ -1,5 +1,5 @@
 add_artery_feature(envmod
-    CarIdentityRegistrant.cc
+    IdentityRegistrant.cc
     EnvironmentModelObject.cc
     GlobalEnvironmentModel.cc
     LocalEnvironmentModel.cc

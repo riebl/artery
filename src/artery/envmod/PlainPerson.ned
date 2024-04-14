@@ -1,13 +1,14 @@
 package artery.envmod;
 
-import artery.inet.PlainVehicle;
+import artery.inet.PlainPerson;
 import artery.envmod.IdentityRegistrant;
 
-module PlainVehicle extends artery.inet.PlainVehicle
+module PlainPerson extends artery.inet.PlainPerson
 {
     submodules:
-        carIdentityRegistrant: IdentityRegistrant {
+        personIdentityRegistrant: IdentityRegistrant {
             parameters:
                 @display("p=53,300");
         }
+
 }

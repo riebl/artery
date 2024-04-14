@@ -1,9 +1,9 @@
 package artery.envmod;
 
-simple CarIdentityRegistrant
+simple IdentityRegistrant
 {
     parameters:
-        @class(CarIdentityRegistrant);
+        @class(IdentityRegistrant);
         @signal[IdentityUpdated](type=artery::Identity);
         @signal[IdentityRemoved](type=artery::Identity);
 

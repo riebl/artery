@@ -5,7 +5,7 @@
 namespace artery
 {
 
-class CarIdentityRegistrant : public omnetpp::cSimpleModule
+class IdentityRegistrant : public omnetpp::cSimpleModule
 {
 	protected:
 		void initialize() override;
