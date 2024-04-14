@@ -4,9 +4,9 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
-#include "artery/envmod/EnvironmentModelObject.h"
 #include "artery/envmod/GlobalEnvironmentModel.h"
 #include "artery/envmod/Geometry.h"
+#include "artery/envmod/TraCIEnvironmentModelObject.h"
 #include "artery/envmod/sensor/SensorConfiguration.h"
 #include "artery/traci/Cast.h"
 #include "artery/traci/ControllableVehicle.h"
@@ -115,9 +115,7 @@ bool GlobalEnvironmentModel::addObject(traci::Controller* controller)
         }
     }
 
-
-
-    auto object = std::make_shared<EnvironmentModelObject>(controller, id);
+    auto object = std::make_shared<TraCIEnvironmentModelObject>(controller, id);
     auto insertion = mObjects.emplace(object->getExternalId(), object);
     if (insertion.second) {
         auto box = boost::geometry::return_envelope<geometry::Box>(object->getOutline());

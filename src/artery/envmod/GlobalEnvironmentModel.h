@@ -20,11 +20,13 @@
 #include <memory>
 #include <string>
 
-
+// forward declarations
 namespace traci
 {
     class API;
+    class Controller;
 } // namespace traci
+
 
 namespace artery
 {

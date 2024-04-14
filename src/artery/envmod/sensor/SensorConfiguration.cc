@@ -4,7 +4,6 @@
 #include <boost/geometry/strategies/transform/matrix_transformers.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/units/cmath.hpp>
-#include <boost/units/systems/angle/degrees.hpp>
 
 namespace artery
 {
@@ -54,13 +53,8 @@ std::vector<Position> createSensorArc(const SensorConfigFov& config, const Posit
 
 std::vector<Position> createSensorArc(const SensorConfigFov& config, const EnvironmentModelObject& egoObj)
 {
-    using boost::units::si::radians;
-    static const auto pi = boost::math::constants::pi<double>();
-    // heading from vehicle data is headed north (clockwise),
-    // OMNeT++ angles are headed east (counter-clockwise)
-    const Angle heading = 0.5 * pi * radians - egoObj.getVehicleData().heading();
     Position sensorPos = egoObj.getAttachmentPoint(config.sensorPosition);
-    return createSensorArc(config, sensorPos, heading);
+    return createSensorArc(config, sensorPos, egoObj.getHeading());
 }
 
 } // namespace artery
