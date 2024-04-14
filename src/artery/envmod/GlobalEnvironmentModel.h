@@ -21,10 +21,10 @@
 #include <string>
 
 
-namespace traci {
+namespace traci
+{
     class API;
-    class VehicleController;
-}
+} // namespace traci
 
 namespace artery
 {
@@ -33,7 +33,15 @@ class EnvironmentModelObstacle;
 class IdentityRegistry;
 
 /**
- * Implementation of the environment model.
+ * The GlobalEnvironmentModel has the global view of all objects and obstacles
+ * relevant for object detection by sensors.
+ * 
+ * Obstacles are static by nature, e.g. buildings and trees.
+ * Users can configure via the obstacleTypes module parameters which polygon types
+ * are loaded from SUMO during initialization as obstacles into the environment model.
+ * 
+ * Objects are dynamic and updated for each SUMO simulation step.
+ * Such dynamic objects are vehicles and pedestrians.
  */
 class GlobalEnvironmentModel : public omnetpp::cSimpleModule, public omnetpp::cListener
 {
@@ -95,14 +103,14 @@ private:
     bool addObject(traci::Controller* object);
 
     /**
-     * Remove vehicle from the database
-     * @param nodeId TraCI id of vehicle to be removed
-     * @return true if the vehicle is successfully removed
+     * Remove objects from the database
+     * @param nodeId TraCI id of object to be removed
+     * @return true if the object is successfully removed
      */
     bool removeObject(const std::string& id);
 
     /**
-     * Remove all known vehicles from internal database
+     * Remove all known objects from internal database
      */
     void removeObjects();
 
