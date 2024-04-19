@@ -19,9 +19,9 @@ namespace artery
 class BaseEnvironmentModelObject : public EnvironmentModelObject
 {
 public:
-    const std::vector<Position>& getOutline() const { return mOutline; }
-    const Position& getAttachmentPoint(const SensorPosition& pos) const;
-    const Position& getCentrePoint() const { return mCentrePoint; }
+    const std::vector<Position>& getOutline() const override { return mOutline; }
+    const Position& getAttachmentPoint(const SensorPosition& pos) const override;
+    const Position& getCentrePoint() const override { return mCentrePoint; }
     Length getLength() const override { return mLength; }
     Length getWidth() const override { return mWidth; }
     Length getRadius() const override { return mRadius; }
