@@ -13,7 +13,7 @@
           - libboost-date-time-dev
           - libboost-system-dev
           - libcrypto++-dev
-          - libgeographic-dev
+          - libgeographiclib-dev
           - libpython3-dev
           - libssl-dev
           - python3-distutils
@@ -48,7 +48,7 @@
       state: directory
 
 - name: configure Artery build directory
-  shell: cmake {{ artery_source_dir }}
+  shell: source /etc/profile && cmake {{ artery_source_dir }}
   args:
       executable: /bin/bash
       chdir: "{{ artery_build_dir }}"
@@ -63,5 +63,6 @@
 - name: build Artery
   make:
       chdir: "{{ artery_build_dir }}"
+      jobs: "{{ ansible_processor_vcpus }}"
   register: artery_make
   changed_when: "'Linking CXX shared library' in artery_make.stdout"

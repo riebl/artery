@@ -12,8 +12,8 @@
           - flex
           - perl
           - python3
-          - qt5-default
-          - libosgearth-dev
+          - qtbase5-dev
+          - libopenscenegraph-dev
           - libqt5opengl5-dev
           - libxml2-dev
           - zlib1g-dev
@@ -42,7 +42,7 @@
   file:
       path: "{{ omnetpp_dir }}"
       state: directory
-      owner: "{{ ansible_user }}"
+      owner: "{{ ansible_env.USER }}"
   become: yes
 
 - name: extract OMNeT++ archive
@@ -52,6 +52,12 @@
       creates: "{{ omnetpp_dir }}/configure"
       extra_opts:
           - --strip-components=1
+
+- name: disable osgEarth
+  lineinfile:
+      path: "{{ omnetpp_dir }}/configure.user"
+      regexp: '^WITH_OSGEARTH='
+      line: WITH_OSGEARTH=no
 
 - name: configure OMNeT++
   shell: source setenv && ./configure
@@ -63,6 +69,7 @@
 - name: build OMNeT++
   make:
       chdir: "{{ omnetpp_dir }}"
+      jobs: "{{ ansible_processor_vcpus }}"
   environment:
       PATH: "{{ omnetpp_dir }}/bin:{{ ansible_env.PATH }}"
   register: omnetpp_make
