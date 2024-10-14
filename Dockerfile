@@ -1,104 +1,67 @@
-# Artery's Docker container does not include any GUI.
-# The idea of having Artery in a container is to run multiple instances with different parameter sets, e.g. running a large parameter study on a cluster.
-# You may want to use Vagrant for a setup with GUI instead.
+FROM archlinux:base-devel-20240804.0.251467
 
-FROM debian:bullseye-slim as base
+SHELL [ "/bin/bash", "-c"]
 
-FROM base as omnetpp-build
-ARG VERSION=5.6.2
-WORKDIR /root
-RUN apt-get update && apt-get install -y \
-    bison \
-    build-essential \
-    flex \
-    libxml2-dev \
-    wget \
-    zlib1g-dev \
-    && rm -rf /var/lib/apt/lists/*
-RUN wget https://github.com/omnetpp/omnetpp/releases/download/omnetpp-$VERSION/omnetpp-$VERSION-src-core.tgz \
-    --progress=bar:force:noscroll -O omnetpp-src-core.tgz && \
-    tar xf omnetpp-src-core.tgz && \
-    rm omnetpp-src-core.tgz && \
-    mv omnetpp-$VERSION /omnetpp
-WORKDIR /omnetpp
-ENV PATH /omnetpp/bin:$PATH
-RUN ./configure WITH_QTENV=no WITH_OSG=no WITH_OSGEARTH=no && \
-    make -j $(nproc) base MODE=release
+# add sumo to deps
+ARG SUMO=true
+# OMNeT release tag
+ARG OMNET_TAG=omnet-5.6.2
+# SUMO tag
+ARG SUMO_TAG=v1_20_0
+# use remote (to be used in pipelines)
+ARG REMOTE=false
+# repo for remote
+ARG REPOSITORY='https://github.com/CAVISE/artery.git'
+# branch to build from
+ARG BRANCH='master'
 
-FROM omnetpp-build as omnetpp-debug
-RUN make -j $(nproc) base MODE=debug
+WORKDIR /cavise
 
-FROM base as artery-build
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    cmake \
-    libboost1.74-dev \
-    libboost-date-time1.74-dev \
-    libboost-system1.74-dev \
-    libcrypto++-dev \
-    libgeographic-dev \
-    libpython3.9-dev \
-    libssl-dev \
-    libzmq3-dev \
-    pkg-config \
-    python3-distutils \
-    && rm -rf /var/lib/apt/lists/*
-COPY --from=omnetpp-build /omnetpp/bin /omnetpp/bin
-COPY --from=omnetpp-build /omnetpp/include /omnetpp/include
-COPY --from=omnetpp-build /omnetpp/lib /omnetpp/lib
-COPY --from=omnetpp-build /omnetpp/Makefile.inc /omnetpp/Version /omnetpp/
-COPY . /artery/source
-ENV PATH /omnetpp/bin:$PATH
-RUN cmake -S /artery/source -B /artery/build -DCMAKE_BUILD_TYPE=Release -DWITH_OTS=ON -DWITH_SIMULTE=ON \
-    -DCMAKE_INSTALL_PREFIX=/artery -DCMAKE_INSTALL_RPATH=/artery/lib -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON \
-    && cmake --build /artery/build --parallel $(nproc) --target install
+RUN pacman -Syu --noconfirm pacman-contrib
+RUN pacman -S --noconfirm cmake python3 python-pip pyenv wget bison git gcc
+RUN pacman -S --noconfirm xorg nvidia-utils mesa sdl2 libsm openmp qt5-base openscenegraph
 
-FROM base as sumo-build
-ARG VERSION=1_6_0
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    cmake \
-    libproj-dev \
-    libxerces-c-dev \
-    python3 \
-    python3-setuptools \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
-RUN wget https://github.com/eclipse/sumo/archive/v$VERSION.tar.gz \
-    --progress=bar:force:noscroll -O sumo-src.tar.gz && \
-    tar xfz sumo-src.tar.gz && \
-    rm sumo-src.tar.gz
-RUN cmake -S sumo-$VERSION -B build-sumo -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/sumo && \
-    cmake --build build-sumo --parallel $(nproc) --target install
+RUN pip install --break-system-packages conan
 
-FROM base as run
-RUN apt-get update && apt-get install -y \
-    libboost-date-time1.74 \
-    libboost-system1.74 \
-    libcrypto++ \
-    libgeographic19 \
-    libproj19 \
-    libpython3.9 \
-    libssl1.1 \
-    libxerces-c3.2 \
-    libxml2 \
-    libzmq5 \
-    python3 \
-    make \
-    && rm -rf /var/lib/apt/lists/*
-COPY --from=omnetpp-build /omnetpp/bin /omnetpp/bin
-COPY --from=omnetpp-build /omnetpp/lib /omnetpp/lib
-COPY --from=sumo-build /sumo/bin/sumo /sumo/bin/sumo
-COPY --from=sumo-build /sumo/share/sumo/data /sumo/share/sumo/data
-COPY --from=artery-build /artery/bin /artery/bin
-COPY --from=artery-build /artery/lib /artery/lib
-COPY --from=artery-build /artery/share/ned /artery/share/ned
-ENV SUMO_HOME /sumo/share/sumo
-ENV PATH /sumo/bin:/omnetpp/bin:$PATH
-RUN ln -s /usr/bin/python3 /usr/bin/python
-RUN useradd -m artery
-RUN mkdir -p /scenario /results && chown -R artery:users /scenario /results
-USER artery
-VOLUME /scenario /results
-WORKDIR /scenario
-ENTRYPOINT ["/artery/bin/run_artery.sh", "--result-dir=/results"]
+RUN ls -s /bin/python3 /usr/bin/python
+
+########################################################
+# Install SUMO
+########################################################
+RUN if [ "${SUMO}" = "true" ]; then                                                         \
+        # reference https://sumo.dlr.de/docs/Installing/Linux_Build.html
+        pacman -S --noconfirm xerces-c fox gdal proj gl2ps jre17-openjdk                    \
+            swig maven eigen &&                                                             \
+        git clone --recurse --depth 1 https://github.com/eclipse-sumo/sumo &&               \
+        cd sumo && cmake -B build . && cmake --build build -j$(nproc --all) &&              \
+        cmake --install build                                                               \ 
+    ; else                                                                                  \
+        echo "Installation without SUMO"                                                    \
+    ; fi
+ENV SUMO_HOME="/usr/local/share/sumo"
+
+RUN paccache -r -k 0
+RUN if [ "${REMOTE}" = "true" ]; then                                                   \
+        git clone --recurse-submodules $REPOSITORY --branch $BRANCH --single-branch     \
+    ; fi
+
+# BUILD STEP
+ENV PROTO_PATH=/cavise/protos
+
+ENV CONTAINER_ROOT_DIR=/cavise/artery
+ENV CONTAINER_BUILD_DIR=container_build
+ENV BUILD_CONFIG=Debug
+
+ENV CONAN_HOME=${CONTAINER_ROOT_DIR}/${CONTAINER_BUILD_DIR}/${BUILD_CONFIG}/conan2
+ENV CONAN_ARGS="-pr:a=container"
+ENV PATH=${CONTAINER_ROOT_DIR}/${CONTAINER_BUILD_DIR}/${BUILD_CONFIG}/omnetpp-5.6.2/bin:$PATH
+
+ADD . /cavise
+
+# should do something like this:
+# TODO: Make conmpatible with Release
+WORKDIR /cavise/artery
+RUN ./tools/setup/configure.sh --build-dir ${CONTAINER_ROOT_DIR}/${CONTAINER_BUILD_DIR}/${BUILD_CONFIG}
+RUN ./tools/setup/build.py -c -b --config ${BUILD_CONFIG} --dir ${CONTAINER_BUILD_DIR}
+
+CMD ["echo", "'run this interactively'"]

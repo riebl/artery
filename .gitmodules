@@ -1,4 +1,4 @@
-[submodule "scenario_mt-its2017"]
+[submodule "extern/scenario_mt-its2017"]
 	path = scenarios/mt-its2017
 	url = https://github.com/riebl/artery_scenario_mt-its2017.git
 [submodule "extern/inet"]

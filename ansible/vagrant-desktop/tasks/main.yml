@@ -40,5 +40,5 @@
 - name: enable login for vagrant user
   user:
     name: vagrant
-    password: $6$JDIVGukoo1$JjdIfxC7onNL9dlviKlWhTCc3gTxIIAZT0HCZllLzR2D5.bLA95vxe0Win6aybmevrQveleS2L/0niUBHeO2m0
+    password: $6$SEC8uRcudj/vUPNJ$tAm07NjUGvBvnTX9UQ2nKYWH/FQVT2OQPUaLAW7jm9JqoWXJVE6vy5F2L76gG0yuN1AdJhDzSJtJuWo9BGJHb.
   become: yes

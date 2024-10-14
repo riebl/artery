@@ -13,14 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package artery.transfusion;
+package artery.application;
 
-import artery.application.ItsG5Service;
-
-simple TransfusionService like ItsG5Service
+simple ArteryManager like ItsG5Service
 {
-    parameters:
-        string remote_ip = default("127.0.0.1");
-        int remote_port = default(40000);
-        bool tcp_no_delay = default(false);
 }
