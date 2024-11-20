@@ -1,22 +1,19 @@
-[submodule "extern/scenario_mt-its2017"]
-	path = scenarios/mt-its2017
-	url = https://github.com/riebl/artery_scenario_mt-its2017.git
 [submodule "extern/inet"]
-	path = extern/inet
-	url = https://github.com/riebl/inet.git
+  path = extern/inet
+  url = ../inet.git
 [submodule "extern/pybind11"]
-	path = extern/pybind11
-	url = https://github.com/pybind/pybind11.git
-	branch = stable
+  path = extern/pybind11
+  url = ../pybind11.git
+  branch = stable
 [submodule "extern/simulte"]
-	path = extern/simulte
-	url = https://github.com/riebl/simulte.git
+  path = extern/simulte
+  url = ../simulte.git
 [submodule "extern/vanetza"]
-	path = extern/vanetza
-	url = https://github.com/riebl/vanetza.git
+  path = extern/vanetza
+  url = ../vanetza.git
 [submodule "extern/veins"]
-	path = extern/veins
-	url = https://github.com/sommer/veins.git
+  path = extern/veins
+  url = ../veins.git
 [submodule "extern/sim0mqpp"]
-	path = extern/sim0mqpp
-	url = https://github.com/riebl/sim0mqpp.git
+  path = extern/sim0mqpp
+  url = ../sim0mqpp.git
