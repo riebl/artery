@@ -1,19 +1,24 @@
 [submodule "extern/inet"]
   path = extern/inet
   url = ../inet.git
+  branch = main
 [submodule "extern/pybind11"]
   path = extern/pybind11
   url = ../pybind11.git
-  branch = stable
+  branch = main
 [submodule "extern/simulte"]
   path = extern/simulte
   url = ../simulte.git
+  branch = main
 [submodule "extern/vanetza"]
   path = extern/vanetza
   url = ../vanetza.git
+  branch = main
 [submodule "extern/veins"]
   path = extern/veins
   url = ../veins.git
+  branch = main
 [submodule "extern/sim0mqpp"]
   path = extern/sim0mqpp
   url = ../sim0mqpp.git
+  branch = main
