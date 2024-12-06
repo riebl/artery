@@ -1,7 +1,4 @@
-cmake_minimum_required(VERSION 3.4)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+cmake_minimum_required(VERSION 3.15)
 
 # Найдите и укажите необходимые библиотеки и пакеты
 find_package(Protobuf REQUIRED VERSION 3.18.1 CONFIG)
@@ -33,7 +30,7 @@ protobuf_generate(
 
 target_compile_options(protos PUBLIC -fPIC)
 
-# generate for python seperately
+# generate for python separately
 protobuf_generate(
     TARGET protos 
     IMPORT_DIRS ${PROTO_SOURCE_DIR} 

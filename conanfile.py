@@ -11,7 +11,7 @@ class Artery(ConanFile):
 
     def requirements(self):
         for req in [
-            'boost/1.71.0',
+            'boost/1.86.0',
             'cryptopp/8.2.0',
             'protobuf/3.18.1',
             'geographiclib/2.3',
