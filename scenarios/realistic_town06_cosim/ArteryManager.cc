@@ -1,14 +1,13 @@
 // STD
-#include <fstream>
 #include <string>
 #include <memory>
 
 // Artery
-#include <artery/traci/VehicleController.h>
 #include <omnetpp/cpacket.h>
-#include <vanetza/btp/data_request.hpp>
 #include <vanetza/dcc/profile.hpp>
+#include <vanetza/btp/data_request.hpp>
 #include <vanetza/geonet/interface.hpp>
+#include <artery/traci/VehicleController.h>
 
 // plog
 #include <plog/Log.h>
@@ -20,11 +19,12 @@
 #include <cavise/opencda.pb.h>
 #include <google/protobuf/util/json_util.h>
 
+// communication
+#include <cavise/comms/SingletonHolder.h>
+#include <cavise/comms/CommunicationManager.h>
+
 // local
 #include "ArteryManager.h"
-#include "artery/application/NetworkInterface.h"
-#include "comms/CommunicationManager.h"
-#include "comms/SingletonHolder.h"
 
 using namespace omnetpp;
 using namespace vanetza;
@@ -173,8 +173,8 @@ void ArteryManager::initialize() {
 	ItsG5Service::initialize();
 	subscribe(scSignalCamReceived);
 
-	if (auto holder = cavise::SingletonHolder<std::shared_ptr<cavise::CommunicationManager>>(); !holder.initalized()) {
-		communicationManager_ = cavise::CommunicationManager::create("tcp://*:7777", 1024);
+	if (auto holder = cavise::SingletonHolder<std::shared_ptr<CommunicationManager>>(); !holder.initalized()) {
+		communicationManager_ = CommunicationManager::create("tcp://*:7777", 1024);
 		communicationManager_->initialize();
 		holder.initialize(communicationManager_);
 	} else {

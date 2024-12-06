@@ -7,14 +7,31 @@
 
 namespace cavise {
 
+    /**
+     * @brief Singleton base implementation.
+     */
     template<typename Class>
     class SingletonHolder {
     public:
 
+        /**
+         * @brief Constructs new singleton object.
+         * @tparam Args template arguments
+         * @param args arguments passed to constructor
+         */
         template<typename... Args>
         void initialize(Args&&... args);
 
+        /**
+         * @brief Checks if singleton is constructed.
+         * @return true if singleton is initalized
+         */
         bool initalized() const noexcept;
+
+        /**
+         * @brief Get reference to singleton object
+         * @return Class& reference to singleton object
+         */
         Class& getInstance();
 
     private:

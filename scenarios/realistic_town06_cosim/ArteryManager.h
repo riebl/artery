@@ -16,7 +16,6 @@
 #pragma once
 
 // STD
-#include "comms/SingletonHolder.h"
 #include <memory>
 
 // artery
@@ -27,8 +26,8 @@
 #include <artery/application/NetworkInterface.h>
 
 // communication
-#include <comms/CommunicationManager.h>
-#include <comms/SingletonHolder.h>
+#include <cavise/comms/SingletonHolder.h>
+#include <cavise/comms/CommunicationManager.h>
 
 // proto
 #include <cavise/artery.pb.h>
@@ -36,6 +35,8 @@
 
 
 namespace artery {
+
+    using CommunicationManager = cavise::CommunicationManager<structure_artery::Artery_message, structure_opencda::OpenCDA_message>;
 
     class ArteryManager 
         : public ItsG5Service {
@@ -53,7 +54,7 @@ namespace artery {
         void handleMessage(omnetpp::cMessage*) override;
 
     private:
-        std::shared_ptr<cavise::CommunicationManager> communicationManager_;
+        std::shared_ptr<CommunicationManager> communicationManager_;
 
         omnetpp::cMessage* selfMessage_;
         omnetpp::simtime_t delta_ = 1.0;

@@ -21,8 +21,6 @@ RUN pacman -S --noconfirm xorg nvidia-utils mesa sdl2 libsm openmp qt5-base open
 
 RUN pip install --break-system-packages conan
 
-RUN ls -s /bin/python3 /usr/bin/python
-
 # for SUMO
 RUN pacman -S --noconfirm xerces-c fox gdal proj gl2ps jre17-openjdk swig maven eigen
 
@@ -31,17 +29,9 @@ RUN if [ "${REMOTE}" = "true" ]; then                                           
         git clone --recurse-submodules $REPOSITORY --branch $BRANCH --single-branch     \
     ; fi
 
-
 ENV PROTO_PATH=/cavise/protos
 ENV CONTAINER_ROOT_DIR=/cavise/artery
 ENV CONTAINER_BUILD_DIR=container_build
 ENV BUILD_CONFIG=Debug
-
-ADD messages /cavise/messages
-ADD artery /cavise/artery
-ADD configure.sh /cavise/configure.sh
-
-WORKDIR /cavise/artery
-RUN ./tools/build.py -icb --config ${BUILD_CONFIG} --omnetpp-tag ${OMNETPP_TAG} --dir ${CONTAINER_BUILD_DIR} --local-conan
 
 CMD ["echo", "'run this interactively'"]

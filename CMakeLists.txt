@@ -103,6 +103,7 @@ endif()
 add_subdirectory(src/traci)
 
 add_subdirectory(src/artery)
+add_subdirectory(src/cavise/comms)
 
 option(VSCODE_LAUNCH_INTEGRATION "Generate VS Code configuration for debugging Artery (requires debug build)" OFF)
 
