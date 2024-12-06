@@ -46,7 +46,6 @@ target_include_directories(protos PUBLIC
 )
 
 set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-add_subdirectory(comms)
 
 # Линковка необходимых библиотек
 target_link_libraries(ArteryManager PRIVATE protobuf::libprotobuf libzmq-static protos comms plog::plog)

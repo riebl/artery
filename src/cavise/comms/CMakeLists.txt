@@ -1,11 +1,12 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.16)
 
-project(comms VERSION 0.0 LANGUAGES CXX C)
+project(comms VERSION 1.0 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+find_package(Protobuf REQUIRED VERSION 3.18.1 CONFIG)
+find_package(cppzmq REQUIRED VERSION 4.10.0 CONFIG)
+find_package(plog REQUIRED VERSION 1.1.10 CONFIG)
 
-set(SOURCES CommunicationManager.cc)
+set(SOURCES )
 set(HEADERS CommunicationManager.h SingletonHolder.h)
 
 add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})
