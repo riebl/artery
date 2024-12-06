@@ -1,9 +1,11 @@
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.15)
+
 project(Artery)
 
 if(POLICY CMP0076)
     cmake_policy(SET CMP0076 NEW)
 endif()
+
 if(POLICY CMP0079)
     if (CMAKE_VERSION VERSION_LESS 3.17)
         cmake_policy(SET CMP0079 OLD)
@@ -13,24 +15,22 @@ if(POLICY CMP0079)
 endif()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-set(CMAKE_CXX_STANDARD 11)
+
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 enable_testing()
 
 find_package(OmnetPP 5.5.1 MODULE REQUIRED)
+find_package(Boost 1.86 COMPONENTS date_time system REQUIRED)
+
 include(AddOppRun)
 include(AddOppTarget)
 include(AddVSCode)
 include(CheckGitSubmodule)
 include(GenerateOppMessage)
 include(GNUInstallDirs)
-
-find_package(Boost 1.59 COMPONENTS date_time system REQUIRED)
-if (Boost_VERSION_STRING VERSION_GREATER_EQUAL "1.75")
-    # Boost.Geometry requires C++14 starting with Boost 1.75
-    set(CMAKE_CXX_STANDARD 14)
-endif()
 
 # running simulations with opp_run requires shared libraries
 set(BUILD_SHARED_LIBS ON CACHE INTERNAL "Cached for propagation to sub-projects with older CMake versions")
