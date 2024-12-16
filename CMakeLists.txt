@@ -22,6 +22,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 enable_testing()
 
+find_package(Protobuf REQUIRED VERSION 3.18.1 CONFIG)
+find_package(cppzmq REQUIRED VERSION 4.10.0 CONFIG)
+find_package(plog REQUIRED VERSION 1.1.10 CONFIG)
+
 find_package(OmnetPP 5.5.1 MODULE REQUIRED)
 find_package(Boost 1.86 COMPONENTS date_time system REQUIRED)
 
@@ -103,7 +107,7 @@ endif()
 add_subdirectory(src/traci)
 
 add_subdirectory(src/artery)
-add_subdirectory(src/cavise/comms)
+add_subdirectory(src/cavise)
 
 option(VSCODE_LAUNCH_INTEGRATION "Generate VS Code configuration for debugging Artery (requires debug build)" OFF)
 
