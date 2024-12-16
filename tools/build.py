@@ -161,12 +161,8 @@ class Routines:
             os.remove(target)
         shutil.copy(profile, target)
 
-        if get_arg(args, 'local_conan', False):
-            if profile == DEFAULT_PROFILE_PATH:
-                print(f'[configure] using default conan profile: {stem}')
-                conan_args.append(f'-pr:a={stem}')
-            else:
-                print(f'[configure] using user-defined profile: {stem}')
+        print(f'[configure] using conan profile: {stem}')
+        conan_args.append(f'-pr:a={stem}')
 
         print(f'[configure] running conan')
         command = ['conan', 'install', os.curdir, '--build=missing', *conan_args]
