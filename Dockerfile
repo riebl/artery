@@ -4,7 +4,7 @@ SHELL [ "/bin/bash", "-c"]
 
 # OMNeT release tag
 ARG OMNETPP_TAG=omnetpp-5.6.2
-# SUMO tag
+# SUMO tag (UNUSED FOR NOW)
 ARG SUMO_TAG=v1_20_0
 # use remote (to be used in pipelines)
 ARG REMOTE=false
@@ -29,9 +29,19 @@ RUN if [ "${REMOTE}" = "true" ]; then                                           
         git clone --recurse-submodules $REPOSITORY --branch $BRANCH --single-branch     \
     ; fi
 
+# Взято из configure.sh, стоит обновлять при изменении общей конфигурации 
 ENV PROTO_PATH=/cavise/protos
-ENV CONTAINER_ROOT_DIR=/cavise/artery
+ENV CONTAINER_ARTERY_DIR=/cavise/artery
+
 ENV CONTAINER_BUILD_DIR=container_build
-ENV BUILD_CONFIG=Debug
+ENV BUILD_CONFIG=Release
+ENV CONAN_PROFILE=tools/profiles/container.ini
+
+COPY artery/ ${CONTAINER_ARTERY_DIR}
+COPY protos /cavise/protos
+COPY cavise /cavise/cavise
+
+WORKDIR ${CONTAINER_ARTERY_DIR}
+RUN ./tools/build.py -icb --dir ${CONTAINER_BUILD_DIR} --config ${BUILD_CONFIG} --local-conan --profile ${CONAN_PROFILE}
 
 CMD ["echo", "'run this interactively'"]
