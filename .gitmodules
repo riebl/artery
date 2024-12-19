@@ -20,3 +20,6 @@
 [submodule "extern/sim0mqpp"]
 	path = extern/sim0mqpp
 	url = https://github.com/riebl/sim0mqpp.git
+[submodule "scenarios/most/MoSTScenario"]
+	path = scenarios/most/MoSTScenario
+	url = https://github.com/lcodeca/MoSTScenario.git
