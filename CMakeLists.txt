@@ -22,7 +22,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 enable_testing()
 
-find_package(Protobuf REQUIRED VERSION 3.18.1 CONFIG)
+find_package(Protobuf REQUIRED VERSION 3.21.9 CONFIG)
 find_package(cppzmq REQUIRED VERSION 4.10.0 CONFIG)
 find_package(plog REQUIRED VERSION 1.1.10 CONFIG)
 

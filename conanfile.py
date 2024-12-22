@@ -7,13 +7,13 @@ class Artery(ConanFile):
     version = "0.0"
     generators = ["CMakeToolchain", "CMakeDeps"]
     settings = "os", "compiler", "build_type", "arch"
-    tool_requires = ["protobuf/3.18.1"]
+    tool_requires = ["protobuf/3.21.9"]
 
     def requirements(self):
         for req in [
             'boost/1.86.0',
             'cryptopp/8.2.0',
-            'protobuf/3.18.1',
+            'protobuf/3.21.9',
             'geographiclib/2.3',
             'cppzmq/4.10.0',
             'plog/1.1.10'
