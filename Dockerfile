@@ -38,7 +38,6 @@ ENV BUILD_CONFIG=Release
 ENV CONAN_PROFILE=tools/profiles/container.ini
 
 COPY artery/ ${CONTAINER_ARTERY_DIR}
-COPY protos /cavise/protos
 COPY cavise /cavise/cavise
 
 WORKDIR ${CONTAINER_ARTERY_DIR}
