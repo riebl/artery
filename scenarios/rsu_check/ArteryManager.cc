@@ -243,10 +243,11 @@ void ArteryManager::trigger() {
 			if (message->cav_size() > 0) {
 				google::protobuf::util::JsonPrintOptions options;
 				options.add_whitespace = true;
-				options.always_print_primitive_fields = true;
 
 				std::string json;
-				google::protobuf::util::MessageToJsonString(*message, &json);
+				if (absl::Status status = google::protobuf::util::MessageToJsonString(*message, &json); !status.ok()) {
+					EV_INFO << "failed to serialize message"; 
+				}
 
 				const char *json_c_str = json.c_str();
 				cPacket *packet = new cPacket(json_c_str);

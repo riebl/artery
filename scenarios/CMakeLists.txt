@@ -2,9 +2,9 @@ add_subdirectory(artery)
 add_subdirectory(gemv2)
 add_subdirectory(highway-police)
 add_subdirectory(single_town06_cosim)
-add_subdirectory(realistic_town06_cosim)
 add_subdirectory(transfusion)
-# add_subdirectory(transfusion) 
+
+add_opp_run(realistic_town06_cosim WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/realistic_town06_cosim NED_FOLDERS ${CMAKE_SOURCE_DIR}/src/cavise)
 
 if(WITH_ENVMOD)
     add_subdirectory(rsu_grid)
