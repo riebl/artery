@@ -250,7 +250,7 @@ template<typename ArteryMessageType, typename OpencdaMessageType>
 cavise::CommunicationManager<ArteryMessageType, OpencdaMessageType>::CommunicationManager(
     const std::string& address,
     std::size_t queueMaxSize,
-    Private access
+    Private /* access */
 )
     : qMaxSize_(queueMaxSize)
     , address_(address)

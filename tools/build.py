@@ -92,14 +92,14 @@ class Routines:
         else:
             print('[install] skipping conan setup')
 
-        if not os.path.exists(DEFAULT_SUMO_HOME):
-            print('[install] installing sumo')
-            command = ['git', 'clone', '--recurse', '--depth', '1', 'https://github.com/eclipse-sumo/sumo']
-            handle_subprocess(subprocess.run(command, cwd=directory, encoding='UTF-8', stderr=subprocess.STDOUT, env=os.environ), 'install')
-            command = f'cmake -B build . && cmake --build build -j{cores} && cmake --install build'
-            handle_subprocess(subprocess.run(command, shell=True, cwd=f'{directory}/sumo', encoding='UTF-8', stderr=subprocess.STDOUT, env=os.environ), 'install')
-        else:
-            print('[install] sumo already installed')
+        # if not os.path.exists(DEFAULT_SUMO_HOME):
+        #     print('[install] installing sumo')
+        #     command = ['git', 'clone', '--recurse', '--depth', '1', 'https://github.com/eclipse-sumo/sumo']
+        #     handle_subprocess(subprocess.run(command, cwd=directory, encoding='UTF-8', stderr=subprocess.STDOUT, env=os.environ), 'install')
+        #     command = f'cmake -B build . && cmake --build build -j{cores} && cmake --install build'
+        #     handle_subprocess(subprocess.run(command, shell=True, cwd=f'{directory}/sumo', encoding='UTF-8', stderr=subprocess.STDOUT, env=os.environ), 'install')
+        # else:
+        #     print('[install] sumo already installed')
 
 
     # Clear build files
@@ -150,19 +150,19 @@ class Routines:
         conan_args = []
 
         profile = get_arg(args, 'profile', DEFAULT_PROFILE_PATH)
-        stem = pathlib.PurePath(profile).stem
+        # stem = pathlib.PurePath(profile).stem
 
-        target = f'{directory}/{DEFAULT_CONAN_DIR}/profiles/{stem}'
-        if not os.path.exists(profile):
-            print(f'[configure] failed to locate profile: {profile}')
-            sys.exit(errno.ENOENT)
-        if os.path.exists(target):
-            print(f'[configure] warning: profile {stem} already exists in destination, overwriting')
-            os.remove(target)
-        shutil.copy(profile, target)
+        # target = f'{directory}/{DEFAULT_CONAN_DIR}/profiles/{stem}'
+        # if not os.path.exists(profile):
+        #     print(f'[configure] failed to locate profile: {profile}')
+        #     sys.exit(errno.ENOENT)
+        # if os.path.exists(target):
+        #     print(f'[configure] warning: profile {stem} already exists in destination, overwriting')
+        #     os.remove(target)
+        # shutil.copy(profile, target)
 
-        print(f'[configure] using conan profile: {stem}')
-        conan_args.append(f'-pr:a={stem}')
+        print(f'[configure] using conan profile: {profile}')
+        conan_args.append(f'-pr:a={profile}')
 
         print(f'[configure] running conan')
         command = ['conan', 'install', os.curdir, '--build=missing', *conan_args]
