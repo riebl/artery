@@ -12,6 +12,34 @@ import multiprocessing
 
 from dataclasses import dataclass, field
 
+description = """
+This script primarily helps running cmake configure & build commands, but can also
+handle compile commands export, build artefact removal and conan setup. All of those
+things can be done just by adding an extra flag to build.py command, which is convenient.
+
+All functionality is splitted into routines that correspond to specific task you wish to accomplish.
+The basic routines are configure and build, they can be invoked with -c (--configure) and -b (--build)
+or -cb for short. The order of arguments does not matter. Examples:
+
+Running configure & build using default \'build\' directory:
+./devcontainers/build.py -cb
+
+Same as above, but using different directory:
+./devcontainers/build.py -cb --build-dir my_build_directory
+
+Removing subdirectories for \'Release\' and \'Debug\' configs:
+./devcontainers/build.py -r --config Release --config Debug
+
+Same as above, but performing configure & build afterwords (for both configs):
+./devcontainers/build.py -rcb --config Release --config Debug
+
+Generating conan toolchain:
+./devcontainers/build.py -i --config Debug
+
+Creating a symlink to build/.../compile_commands.json:
+./devcontainers/build.py -l --config Debug
+"""
+
 @dataclass
 class Config:
     build_directory: pathlib.Path = field(default_factory=lambda: pathlib.Path.cwd().joinpath('build'))
@@ -46,8 +74,8 @@ class Routines:
                 'install',
                 '--build=missing',
                 f'-pr:a={self._params.profile}',
-                f'--settings=build_type={config}',
-                f'--conf=user.recipe:build_dir={self._params.build_directory}',
+                self._decorate_conan_profile_entry('settings', 'build_type', config),
+                self._decorate_conan_profile_entry('conf', 'user.recipe:build_dir', self._params.build_directory),
                 str(pathlib.Path.cwd().joinpath('devcontainers'))
             ])
 
@@ -65,11 +93,16 @@ class Routines:
                 'cmake',
                 '--preset', f'conan-{config.lower()}',
                 '-B', str(binary), 
+                '-S', str(source),
+                self._decorate_cmake_variable('CMAKE_EXPORT_COMPILE_COMMANDS', 'ON', 'BOOL'),
+                self._decorate_cmake_variable('CMAKE_BUILD_TYPE', config)
+            ] if use_presets else [
+                'cmake',
+                '-B', str(binary),
                 '-S', str(source), 
+                self._decorate_cmake_variable('CMAKE_EXPORT_COMPILE_COMMANDS', 'ON', 'BOOL'),
                 self._decorate_cmake_variable('CMAKE_BUILD_TYPE', config)
             ]
-            if use_presets:
-                command += []
             print(f'running configure command for CMake config {config}')
             self._run(command)
 
@@ -96,6 +129,9 @@ class Routines:
             print(f'creating symlink for path \'{path}\'')
         if path is None:
             sys.exit('no supported CMake configs detected')
+        symlink = pathlib.Path.cwd().joinpath('compile_commands.json')
+        if symlink.is_symlink():
+            symlink.unlink()
         pathlib.Path.cwd().joinpath('compile_commands.json').symlink_to(path)
 
     def _run(self: 'Routines', command: typing.List[str]) -> None:
@@ -108,21 +144,47 @@ class Routines:
         if type is not None:
             return f'-D{var.upper()}:{type}={value}'
         return f'-D{var.upper()}={value}'
+    
+    def _decorate_conan_profile_entry(self: 'Routines', section: str, entry: str, value: str) -> str:
+        return f'--{section}={entry}={value}'
 
 
 def parse_cli_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawDescriptionHelpFormatter)
     # Routines
-    parser.add_argument('-b', '--build', action='store_true', dest='build')
-    parser.add_argument('-c', '--configure', action='store_true', dest='configure')
-    parser.add_argument('-i', '--install', action='store_true', dest='install')
-    parser.add_argument('-r', '--remove', action='store_true', dest='remove')
-    parser.add_argument('-l', '--link', action='store_true', dest='link')
+    parser.add_argument('-b', '--build', action='store_true', dest='build',
+        help='runs cmake build, runs after configure.'
+    )
+    parser.add_argument('-c', '--configure', action='store_true', dest='configure',
+        help='runs cmake configure. If CMakeUserPresets.json is preset, uses conan presets. '
+        'Runs after install.'
+    )
+    parser.add_argument('-i', '--install', action='store_true', dest='install',
+        help='runs conan install with devcontainers/conanfile.py. If you need specific profile, '
+        '(other than default) specify it with --profile, some examples are located under '
+        'devcontainers/templates as .ini files.'
+    )
+    parser.add_argument('-r', '--remove', action='store_true', dest='remove',
+        help='removes subdirectories in build/, according to configs provided. Might be useful '
+        'if CMake fresh configuration is required. Always executed before any other routine.'
+    )
+    parser.add_argument('-l', '--link', action='store_true', dest='link',
+        help='creates symlink to build/.../compile_commands.json in source directory. In case '
+        'both configs specified, links to Debug. In case symlink already exists, rewrites it.'
+    )
     # Environment
-    parser.add_argument('--build-dir', action='store', dest='build_directory')
-    parser.add_argument('--config', action='append', dest='configs', choices=['Debug', 'Release'])
-    parser.add_argument('--parallel', action='store', dest='cores')
-    parser.add_argument('--profile', action='store', dest='profile')
+    parser.add_argument('--build-dir', action='store', dest='build_directory', 
+        help='specify root directory to put build files in. Defaults to \'build\'.'
+    )
+    parser.add_argument('--config', action='append', dest='configs', choices=['Debug', 'Release'],
+        help='specify configs for build, options are Debug and Release.'
+    )
+    parser.add_argument('--parallel', action='store', dest='cores', 
+        help='similar to --parallel in cmake, specify how many threads will handle build.'
+    )
+    parser.add_argument('--profile', action='store', dest='profile', 
+        help='specify path to profile, or its name if available.'
+    )
     return parser.parse_args()
 
 
@@ -131,7 +193,7 @@ def main() -> None:
 
     params = Config()
     if getattr(args, 'build_directory') is not None:
-        params.build_directory = pathlib.Path.cwd().joinpath(args.directory)
+        params.build_directory = pathlib.Path.cwd().joinpath(args.build_directory)
         print(f'config: user-provided build directory: \'{params.build_directory}\'')
     if getattr(args, 'configs') is not None:
         params.build_configs = args.configs
