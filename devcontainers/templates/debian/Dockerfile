@@ -17,10 +17,9 @@ RUN apt-get update && apt-get upgrade -y &&     \
     apt-utils sudo libboost-all-dev             \
     libcrypto++-dev xorg libgeographiclib-dev   \
     qtchooser qt5-qmake qtbase5-dev-tools 	    \
-    libqt5opengl5-dev
-
-RUN pip install --break-system-packages conan
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+    libqt5opengl5-dev                           \
+    && pip install --break-system-packages conan    \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ###############
 # Build stage #

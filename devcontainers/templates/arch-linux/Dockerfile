@@ -14,10 +14,9 @@ RUN pacman -Syu --noconfirm     \
     gcc sdl2 libsm openmp       \
     openscenegraph qt5-base     \
     pacman-contrib sudo         \
-    boost crypto++ xorg
-
-RUN pip install --break-system-packages conan
-RUN paccache -r -k 0
+    boost crypto++ xorg         \
+    && pip install --break-system-packages conan \
+    && paccache -r -k 0
 
 ###############
 # Build stage #
