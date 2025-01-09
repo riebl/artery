@@ -17,6 +17,7 @@ RUN pacman -Syu --noconfirm     \
     boost crypto++ xorg
 
 RUN pip install --break-system-packages conan
+RUN paccache -r -k 0
 
 ###############
 # Build stage #
@@ -66,13 +67,6 @@ RUN cmake --install /sumo/build
 
 COPY --from=build /geographiclib /geographiclib
 RUN cmake --install /geographiclib/build
-
-###########
-# Cleanup #
-###########
-
-RUN paccache -r -k 0
-RUN rm -r /sumo
 
 RUN groupadd sudo && useradd -m -G sudo ${USER}
 RUN echo "${USER} ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/${USER}

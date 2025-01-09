@@ -114,16 +114,13 @@ def main() -> None:
             'XAUTHORITY': r'${localEnv:XAUTHORITY}'
         },
         'mounts': [
-            {
-                'source': r'${localEnv:XAUTHORITY}', 
-                'target': r'${localEnv:XAUTHORITY}', 
-                'type': 'bind' 
-            }, { 
+            { 
                 'source': '/tmp/.X11-unix', 
                 'target': '/tmp/.X11-unix', 
                 'type': 'bind' 
             }
-        ]
+        ],
+        'initializeCommand': 'xhost +local:docker'
     }
 
     if tag is not None:

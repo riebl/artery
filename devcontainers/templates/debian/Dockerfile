@@ -20,6 +20,7 @@ RUN apt-get update && apt-get upgrade -y &&     \
     libqt5opengl5-dev
 
 RUN pip install --break-system-packages conan
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ###############
 # Build stage #
@@ -59,13 +60,6 @@ COPY --from=build /omnetpp/Makefile.inc /omnetpp
 
 COPY --from=build /sumo /sumo
 RUN cmake --install /sumo/build
-
-###########
-# Cleanup #
-###########
-
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN rm -r /sumo
 
 RUN useradd -m -G sudo ${USER}
 RUN echo "${USER} ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/${USER}
