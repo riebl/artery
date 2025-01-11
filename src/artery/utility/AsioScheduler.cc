@@ -20,6 +20,7 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/read.hpp>
 #include <boost/asio/steady_timer.hpp>
+#include <boost/asio/executor_work_guard.hpp>
 
 namespace artery
 {
@@ -51,7 +52,10 @@ std::chrono::steady_clock::duration steady_clock_duration(const SimTime t)
 }
 
 
-AsioScheduler::AsioScheduler() : m_work(m_service), m_timer(m_service), m_state(FluxState::PAUSED)
+AsioScheduler::AsioScheduler() 
+	: m_work_guard(boost::asio::make_work_guard(m_service))
+	, m_timer(m_service)
+	, m_state(FluxState::PAUSED)
 {
 }
 
@@ -109,7 +113,7 @@ void AsioScheduler::startRun()
 {
 	m_state = FluxState::SYNC;
 	if (m_service.stopped()) {
-		m_service.reset();
+		m_service.restart();
 	}
 	m_reference = std::chrono::steady_clock::now();
 }
