@@ -107,11 +107,9 @@ def main() -> None:
             }
         },
         'containerUser': args.user,
-        'containerEnv': {
+        'remoteEnv': {
             # required to run artery inside the container
-            'DISPLAY': r'${localEnv:DISPLAY}',
-            # optional; xorg connections might be configured manually in host environment 
-            'XAUTHORITY': r'${localEnv:XAUTHORITY}'
+            'DISPLAY': r'${localEnv:DISPLAY}'
         },
         'mounts': [
             { 
