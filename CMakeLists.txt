@@ -1,16 +1,6 @@
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.16)
+cmake_policy(VERSION 3.16...3.31)
 project(Artery)
-
-if(POLICY CMP0076)
-    cmake_policy(SET CMP0076 NEW)
-endif()
-if(POLICY CMP0079)
-    if (CMAKE_VERSION VERSION_LESS 3.17)
-        cmake_policy(SET CMP0079 OLD)
-    else()
-        cmake_policy(SET CMP0079 NEW)
-    endif()
-endif()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_CXX_STANDARD 14)
@@ -25,7 +15,7 @@ include(CheckGitSubmodule)
 include(GenerateOppMessage)
 include(GNUInstallDirs)
 
-find_package(Boost 1.59 COMPONENTS date_time system REQUIRED)
+find_package(Boost 1.59 REQUIRED COMPONENTS date_time system CONFIG)
 if (Boost_VERSION_STRING VERSION_GREATER_EQUAL "1.75")
     # Boost.Geometry requires C++14 starting with Boost 1.75
     set(CMAKE_CXX_STANDARD 14)
