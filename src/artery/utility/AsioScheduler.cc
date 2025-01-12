@@ -52,10 +52,10 @@ std::chrono::steady_clock::duration steady_clock_duration(const SimTime t)
 }
 
 
-AsioScheduler::AsioScheduler() 
-	: m_work_guard(boost::asio::make_work_guard(m_service))
-	, m_timer(m_service)
-	, m_state(FluxState::PAUSED)
+AsioScheduler::AsioScheduler() :
+	m_work_guard(boost::asio::make_work_guard(m_io_context)),
+	m_timer(m_io_context),
+	m_state(FluxState::PAUSED)
 {
 }
 
@@ -81,13 +81,13 @@ cEvent* AsioScheduler::takeNextEvent()
 			} else {
 				m_run_until = m_reference + steady_clock_duration(event->getArrivalTime());
 				try {
-					ASSERT(!m_service.stopped());
+					ASSERT(!m_io_context.stopped());
 					setTimer();
 					while (m_state == FluxState::DWADLING) {
-						m_service.run_one();
+						m_io_context.run_one();
 					}
 					m_timer.cancel();
-					m_service.poll();
+					m_io_context.poll();
 				} catch (boost::system::system_error& e) {
 					cRuntimeError("AsioScheduler IO error: %s", e.what());
 				}
@@ -112,8 +112,8 @@ void AsioScheduler::putBackEvent(cEvent* event)
 void AsioScheduler::startRun()
 {
 	m_state = FluxState::SYNC;
-	if (m_service.stopped()) {
-		m_service.restart();
+	if (m_io_context.stopped()) {
+		m_io_context.restart();
 	}
 	m_reference = std::chrono::steady_clock::now();
 }
@@ -121,7 +121,7 @@ void AsioScheduler::startRun()
 void AsioScheduler::endRun()
 {
 	m_state = FluxState::PAUSED;
-	m_service.stop();
+	m_io_context.stop();
 }
 
 void AsioScheduler::executionResumed()
@@ -158,7 +158,7 @@ void AsioScheduler::setTimer()
 std::unique_ptr<AsioTask> AsioScheduler::createTask(cModule& mod)
 {
 	std::unique_ptr<AsioTask> result;
-	boost::asio::ip::tcp::socket socket(m_service);
+	boost::asio::ip::tcp::socket socket(m_io_context);
 	result.reset(new AsioTask(*this, std::move(socket), mod));
 	return result;
 }

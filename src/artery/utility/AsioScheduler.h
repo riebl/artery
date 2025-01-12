@@ -18,9 +18,9 @@
 
 #include <omnetpp/cmodule.h>
 #include <omnetpp/cscheduler.h>
-#include <boost/asio/io_service.hpp>
-#include <boost/asio/steady_timer.hpp>
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/executor_work_guard.hpp>
+#include <boost/asio/steady_timer.hpp>
 #include <chrono>
 #include <memory>
 
@@ -56,9 +56,9 @@ class AsioScheduler : public omnetpp::cScheduler
 			PAUSED, DWADLING, SYNC
 		};
 
-		boost::asio::io_service m_service;
-		boost::asio::steady_timer m_timer;
+		boost::asio::io_context m_io_context;
 		boost::asio::executor_work_guard<boost::asio::io_context::executor_type> m_work_guard;
+		boost::asio::steady_timer m_timer;
 		std::chrono::steady_clock::time_point m_reference;
 		std::chrono::steady_clock::time_point m_run_until;
 		FluxState m_state;
