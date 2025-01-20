@@ -76,5 +76,3 @@ USER ${USER}
 
 ENV PATH=/omnetpp/bin:$PATH
 ENV SUMO_HOME=/sumo/share/sumo
-
-CMD ["sleep", "infinity"]
