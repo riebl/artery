@@ -15,6 +15,8 @@ RUN pacman -Syu --noconfirm     \
     openscenegraph qt5-base     \
     pacman-contrib sudo         \
     boost crypto++ xorg         \
+    ttf-ubuntu-font-family      \
+    ninja                       \
     && pip install --break-system-packages conan \
     && paccache -r -k 0
 

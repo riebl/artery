@@ -1,0 +1,25 @@
+{
+    "name": "debian",
+    "build": {
+        "context": "${localWorkspaceFolder}",
+        "dockerfile": "${localWorkspaceFolder}/devcontainers/templates/debian/Dockerfile",
+        "args": {
+            "USER": "devcontainer",
+            "OMNETPP_TAG": "omnetpp-5.6.2",
+            "SUMO_TAG": "v1_21_0",
+            "GEOGRAPHICLIB_TAG": "v2.5"
+        }
+    },
+    "containerUser": "devcontainer",
+    "remoteEnv": {
+        "DISPLAY": "${localEnv:DISPLAY}"
+    },
+    "mounts": [
+        {
+            "source": "/tmp/.X11-unix",
+            "target": "/tmp/.X11-unix",
+            "type": "bind"
+        }
+    ],
+    "initializeCommand": "xhost +local:docker"
+}

@@ -20,8 +20,8 @@ class Artery(conan.ConanFile):
 
     def layout(self: 'Artery') -> None:
         conan.tools.cmake.cmake_layout(
-            self, 
-            build_folder=self._get_build_directory(), 
+            self,
+            build_folder=self._get_build_directory(),
             src_folder=self._get_source_directory()
         )
 
@@ -30,9 +30,9 @@ class Artery(conan.ConanFile):
 
     def _get_version(self: 'Artery', package: str) -> str:
         return self._get_conf_var(f'user.{package}:version', self._requirements[package])
-    
+
     def _get_build_directory(self: 'Artery', default: str = 'build') -> str:
-        return self._get_conf_var(f'user.recipe:build_dir', default)
+        return self._get_conf_var('user.recipe:build_dir', default)
 
     def _get_source_directory(self: 'Artery', default: str = '..') -> str:
-        return self._get_conf_var(f'user.recipe:source_dir', default)
+        return self._get_conf_var('user.recipe:source_dir', default)
