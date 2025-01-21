@@ -2,7 +2,7 @@
     "name": "debian",
     "build": {
         "context": "${localWorkspaceFolder}",
-        "dockerfile": "${localWorkspaceFolder}/devcontainers/templates/debian/Dockerfile",
+        "dockerfile": "${localWorkspaceFolder}/.devcontainer/debian/Dockerfile",
         "args": {
             "USER": "devcontainer",
             "OMNETPP_TAG": "omnetpp-5.6.2",
@@ -21,5 +21,5 @@
             "type": "bind"
         }
     ],
-    "initializeCommand": "xhost +local:docker"
+    "initializeCommand": "which xhost 1>/dev/null 2>/dev/null && xhost +local:docker"
 }

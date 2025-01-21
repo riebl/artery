@@ -29,6 +29,3 @@ CMakeUserPresets.json
 
 # Exported compile commands
 compile_commands.json
-
-# Devcontainer setups
-.devcontainer

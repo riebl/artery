@@ -34,5 +34,5 @@ class Artery(conan.ConanFile):
     def _get_build_directory(self: 'Artery', default: str = 'build') -> str:
         return self._get_conf_var('user.recipe:build_dir', default)
 
-    def _get_source_directory(self: 'Artery', default: str = '..') -> str:
+    def _get_source_directory(self: 'Artery', default: str = '.') -> str:
         return self._get_conf_var('user.recipe:source_dir', default)
