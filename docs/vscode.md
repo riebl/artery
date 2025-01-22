@@ -8,7 +8,7 @@ Install [VS Code](https://code.visualstudio.com/docs/setup/setup-overview) along
 
 ## Building and Running Simulations
 First, open Artery's folder with VS Code. 
-Press <kbd>Ctrl</kbd> + <kbd>Shfit</kbd> + <kbd>P</kbd> to open VS Code's Command Palette and execute the following commands:
+Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> to open VS Code's Command Palette and execute the following commands:
 
 1. `CMake: Scan for Kits`
 2. `CMake: Select a Kit` to select a compiler kit (GCC/Clang)
