@@ -23,22 +23,22 @@ The basic routines are configure and build, they can be invoked with -c (--confi
 or -cb for short. The order of arguments does not matter. Examples:
 
 Running configure & build using default \'build\' directory:
-./devcontainers/build.py -cb
+./build.py -cb
 
 Same as above, but using different directory:
-./devcontainers/build.py -cb --build-dir my_build_directory
+./build.py -cb --build-dir my_build_directory
 
 Removing subdirectories for \'Release\' and \'Debug\' configs:
-./devcontainers/build.py -r --config Release --config Debug
+./build.py -r --config Release --config Debug
 
 Same as above, but performing configure & build afterwords (for both configs):
-./devcontainers/build.py -rcb --config Release --config Debug
+./build.py -rcb --config Release --config Debug
 
 Generating conan toolchain:
-./devcontainers/build.py -i --config Debug
+./build.py -i --config Debug
 
 Creating a symlink to build/.../compile_commands.json:
-./devcontainers/build.py -l --config Debug
+./build.py -l --config Debug
 """
 
 
