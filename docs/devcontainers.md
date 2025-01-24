@@ -6,7 +6,7 @@ A [development container](https://containers.dev) (or devcontainer for short) al
 
 - Install [VS Code](https://code.visualstudio.com/docs/setup/setup-overview)
 - Install [Devcontainers Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-- Navigate to the root of Artery repository
+- Open the root directory of your cloned Artery repository in VSCode
 
 ## Develop inside the container
 
@@ -17,9 +17,11 @@ inside a container:
 
 `Reopen in Container`
 
-Selecting this entry brings you a list of options for containers. The ones Artery provides are called _arch-linux_ and _debian_.
-You can choose any of them, but keep in mind that graphic applications (including Artery) might fail due to version difference
-between libraries installed in the container and in your host system.
+Selecting this entry brings you a list of options for containers. The ones Artery provides are called _arch-linux_ and _debian_,
+built upon ArchLinux and Debian image respectively.
+
+!!! danger
+    Keep in mind that sharing X11 displays between your host and the container environment may fail and require tweaking on your specific system.
 
 Same can be achieved with _Command palette_:
 
@@ -27,13 +29,15 @@ Same can be achieved with _Command palette_:
 - Select `Dev Container: Reopen in Container`
 
 After choosing that, a VS Code window should reappear with connection established. If it's your first
-time opening, container will require to be built first, you can click on `view logs` in notification on the right
+time opening, container will require to be built first. You can click on `view logs` in notification on the right
 side to track progress.
 
-Directory which you have initially opened will be mounted in the container and changes that you make to the source code 
-or other files in that directory are saved in your host's filesystem. Although keep in mind that build that you 
-created inside the container does not have to be compatible with you host system, so if you leave devcontainer you should
-run clear build.
+The opened Artery directory will be mounted in the container and changes that you make to the source code 
+or other files in that directory are saved in your host's filesystem.
+
+!!! warning
+    Please use distinct build directories for host and devcontainer builds if you want to 
+    build Artery in both environments.
 
 ## Building inside the container
 
@@ -49,11 +53,13 @@ Let's look at how it operates more closely.
 The script consists of various _routines_ that are essentially just different shell commands that
 are being run under a hood:
 
-1. `remove (-r)` - clears directories for specific build configurations, for example `build/Debug` or `build/Release`
-2. `conan-install (-i)` - runs Conan installation command and generates presets to use use with CMake
-3. `configure (-c)` - runs CMake configuration step
-4. `build (-b)` - runs CMake build step
-5. `symlink-compile-commands (-l)` - generates a symlink to compile_commands.json in one of `build/<config>` directories
+| Command | Short option in CLI | Description |
+|---------|---------------------|-------------|
+| remove | -r |  clears directories for specific build configurations, for example `build/Debug` or `build/Release` |
+| conan-install | -i |  runs Conan installation command and generates presets to use use with CMake | 
+| configure | -c | runs CMake configuration step |
+| build | -b | runs CMake build step |
+| symlink-compile-commands | -l | generates a symlink to compile_commands.json in one of `build/<config>` directories |
 
 Here, routines are provided in order of their execution. Apart from them, you can also pass down to shell
 some configuration options:
@@ -98,6 +104,9 @@ Same as above, but also run `conan-install` with `default` profile:
 ```
 
 ### Conan
+
+!!! note
+    Using conan is not necessary: containers provide all dependencies anyway. 
 
 [Conan](https://conan.io) is one of the package providers for C++ development, operating independently from project's build system.
 Conan needs two things to compile and provide packages for you:
@@ -160,5 +169,3 @@ to invoke Conan:
 ```shell
 ./build.py -icb --config Release --profile $PWD/conan/debian-x86-64.ini
 ```
-
-Note that using conan is not necessary: containers provide all dependencies anyway. 
