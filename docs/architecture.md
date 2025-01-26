@@ -42,6 +42,8 @@ You can read more detailed introductions to Artery features at their respective 
 ## Repository layout
 
     | + ansible         Ansible playbooks and roles for deployment
+    | + conan           conan profiles for various distributions
+    | + .devcontainer   devcontainers' settings and images 
     | + cmake           some additional CMake macros
     | + docs            documentation, including this website
     | - extern          third-party components

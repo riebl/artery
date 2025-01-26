@@ -68,5 +68,6 @@ nav:
   - Architecture: architecture.md
   - Literature: literature.md
   - Work with VS Code: vscode.md
+  - Devcontainers: devcontainers.md
   - Questions & Answers: questions-n-answers.md
   - Legal Notice: legal.md
