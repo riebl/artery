@@ -9,18 +9,21 @@ ARG SUMO_TAG=v1_21_0
 
 WORKDIR /cavise
 
-RUN pacman -Syu --noconfirm pacman-contrib
-RUN pacman -S --noconfirm cmake python3 python-pip pyenv wget bison git gcc
-RUN pacman -S --noconfirm xorg nvidia-utils mesa sdl2 libsm openmp openscenegraph
+RUN pacman -Syu --noconfirm pacman-contrib &&\
+    pacman -S --noconfirm cmake python3 python-pip pyenv wget bison git gcc &&\
+    pacman -S --noconfirm xorg nvidia-utils mesa sdl2 libsm openmp openscenegraph &&\
+    pacman -Sc --noconfirm && \
+    rm -rf /var/cache/pacman/pkg/* /tmp/*
 
-RUN pip install --break-system-packages conan
+RUN pip install --no-cache-dir --break-system-packages conan
 
 # OmnetPP
-ENV OMNETPP_ROOT=/cavise/${OMNETPP_TAG}/bin
-ENV PATH=/cavise/${OMNETPP_TAG}/bin:${PATH}
-RUN pacman -S --noconfirm clang lld gdb bison flex perl qt5-base
-RUN wget -c https://github.com/omnetpp/omnetpp/releases/download/${OMNETPP_TAG}/${OMNETPP_TAG}-src-linux.tgz -O source.tgz
-RUN tar -xvzf source.tgz && rm source.tgz
+ENV OMNETPP_ROOT=/cavise/${OMNETPP_TAG}/bin \
+    PATH=/cavise/${OMNETPP_TAG}/bin:${PATH}
+RUN pacman -S --noconfirm clang lld gdb bison flex perl qt5-base && \
+    rm -rf /var/cache/pacman/pkg/* /tmp/*
+RUN wget -c https://github.com/omnetpp/omnetpp/releases/download/${OMNETPP_TAG}/${OMNETPP_TAG}-src-linux.tgz -O source.tgz &&\
+    tar -xvzf source.tgz && rm source.tgz
 RUN cd ${OMNETPP_TAG} && sed -i 's/^WITH_OSGEARTH=yes$/WITH_OSGEARTH=no/' configure.user
 RUN cd ${OMNETPP_TAG} && source setenv -f && ./configure
 RUN cd ${OMNETPP_TAG} && make -j$(nproc --all)
@@ -28,10 +31,11 @@ RUN cd ${OMNETPP_TAG} && make -j$(nproc --all)
 # SUMO
 # reference https://sumo.dlr.de/docs/Installing/Linux_Build.html
 ENV SUMO_HOME="/usr/local/share/sumo"
-RUN pacman -S --noconfirm xerces-c fox gdal proj gl2ps jre17-openjdk swig maven eigen
-RUN git clone --recurse --depth 1 --branch ${SUMO_TAG} https://github.com/eclipse-sumo/sumo
-RUN cd sumo && cmake -B build . && cmake --build build -j$(nproc --all)
-RUN cd sumo && cmake --install build
+RUN pacman -S --noconfirm xerces-c fox gdal proj gl2ps jre17-openjdk swig maven eigen && \
+        git clone --recurse --depth 1 --branch ${SUMO_TAG} https://github.com/eclipse-sumo/sumo && \
+        cd sumo && cmake -B build . && cmake --build build -j$(nproc --all) && \
+        cmake --install build && \
+        rm -rf /cavise/sumo /var/cache/pacman/pkg/* /tmp/*
 
 RUN paccache -r -k 0
 
