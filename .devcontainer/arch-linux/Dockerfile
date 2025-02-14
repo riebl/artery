@@ -75,4 +75,4 @@ RUN echo "${USER} ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/${USER}
 USER ${USER}
 
 ENV PATH=/omnetpp/bin:$PATH
-ENV SUMO_HOME=/sumo/share/sumo
+ENV SUMO_HOME=/usr/local/share/sumo

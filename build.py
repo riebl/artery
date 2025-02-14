@@ -72,7 +72,7 @@ class Routines:
         members = inspect.getmembers(self, predicate=inspect.ismethod)
         for name, method in sorted(members, key=key, reverse=True):
             if hasattr(method, 'is_routine'):
-                yield name.replace('_', '-'), method
+                yield name, method
 
     @routine(5)
     def remove(self: 'Routines') -> None:
