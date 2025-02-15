@@ -68,7 +68,7 @@ some configuration options:
 - `config` - build configurations for CMake, can be specified multiple times. (_Debug_/_Release_, defaults to _Debug_ only)
 - `parallel` - number of threads to use during build, defaults to number of your processor's cores
 - `generator` - generator for CMake, defaults to _Ninja_
-- `profile` - profile for CMake, you can pass a name or a path, defaults to `default`
+- `profile` - profile for Conan, you can pass a name or a path, defaults to `default`
 
 Usually these options impact only one routine but `config` and `build-dir` are special. You can
 think of them as some sort of 'scope' for the script: for example, if you specify only _Release_
