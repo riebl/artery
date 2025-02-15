@@ -1,25 +1,14 @@
 # Distribution tag
 ARG TAG=bookworm
-
 FROM debian:${TAG} AS setup
-
 SHELL [ "/bin/bash", "-c"]
-
-RUN apt-get update && apt-get upgrade -y &&     \
-    apt-get install -y --no-install-recommends  \
-    cmake python3 python3-pip                   \
-    libxerces-c-dev libfox-1.6-dev              \
-    libgdal-dev libproj-dev g++ qtbase5-dev     \
-    libgl2ps-dev openjdk-17-jdk swig            \
-    maven libeigen3-dev flex bison git          \
-    gcc libsdl2-dev libsm-dev libomp-dev        \
-    libopenscenegraph-dev qtbase5-dev           \
-    apt-utils sudo libboost-all-dev             \
-    libcrypto++-dev xorg libgeographiclib-dev   \
-    qtchooser qt5-qmake qtbase5-dev-tools 	    \
-    libqt5opengl5-dev ninja-build               \
-    && pip install --break-system-packages conan    \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash-completion bison build-essential cmake flex git git-lfs python3 python3-pip \
+    libboost-all-dev libcrypto++-dev libfox-1.6-dev libgdal-dev libgeographiclib-dev \
+    libopenscenegraph-dev libproj-dev libqt5opengl5-dev libxerces-c-dev \
+    ninja-build qtbase5-dev sudo \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN pip install --break-system-packages conan 
 
 ###############
 # Build stage #
