@@ -218,6 +218,6 @@ function(generate_run_script)
     set(opp_runall_script ${OMNETPP_RUNALL})
 
     # substitute variables first, then generator expressions
-    configure_file(${PROJECT_SOURCE_DIR}/cmake/run_artery.sh.in ${args_FILE} @ONLY)
+    configure_file(${PROJECT_SOURCE_DIR}/cmake/run_artery.py.in ${args_FILE} @ONLY)
     file(GENERATE OUTPUT ${args_FILE} INPUT ${args_FILE})
 endfunction()
