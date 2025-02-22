@@ -172,25 +172,25 @@ function(add_opp_test name)
         WORKING_DIRECTORY ${working_directory})
 endfunction(add_opp_test)
 
-function(generate_run_script)
+function(generate_run_config)
     set(option_args "INSTALL")
     set(one_value_args "TARGET;FILE;CONFIG")
     cmake_parse_arguments(args "${option_args}" "${one_value_args}" "" ${ARGN})
 
     if(args_UNPARSED_ARGUMENTS)
-        message(SEND_ERROR "generate_run_script called with invalid arguments: ${args_UNPARSED_ARGUMENTS}")
+        message(SEND_ERROR "generate_run_config called with invalid arguments: ${args_UNPARSED_ARGUMENTS}")
     endif()
 
     if(NOT args_TARGET)
-        message(SEND_ERROR "generate_run_script: TARGET argument is missing")
+        message(SEND_ERROR "generate_run_config: TARGET argument is missing")
     endif()
 
     if(NOT args_FILE)
-        message(SEND_ERROR "generate_run_script: FILE argument is missing")
+        message(SEND_ERROR "generate_run_config: FILE argument is missing")
     endif()
 
     if(NOT args_CONFIG)
-        message(SEND_ERROR "generate_run_script: FILE argument is missing")
+        message(SEND_ERROR "generate_run_config: CONFIG argument is missing")
     endif()
 
     # collect all NED folders for given target
