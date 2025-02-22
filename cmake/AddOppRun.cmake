@@ -172,21 +172,25 @@ function(add_opp_test name)
         WORKING_DIRECTORY ${working_directory})
 endfunction(add_opp_test)
 
-function(generate_run_script)
+function(generate_run_config)
     set(option_args "INSTALL")
-    set(one_value_args "TARGET;FILE")
+    set(one_value_args "TARGET;FILE;CONFIG")
     cmake_parse_arguments(args "${option_args}" "${one_value_args}" "" ${ARGN})
 
     if(args_UNPARSED_ARGUMENTS)
-        message(SEND_ERROR "generate_run_script called with invalid arguments: ${args_UNPARSED_ARGUMENTS}")
+        message(SEND_ERROR "generate_run_config called with invalid arguments: ${args_UNPARSED_ARGUMENTS}")
     endif()
 
     if(NOT args_TARGET)
-        message(SEND_ERROR "generate_run_script: TARGET argument is missing")
+        message(SEND_ERROR "generate_run_config: TARGET argument is missing")
     endif()
 
     if(NOT args_FILE)
-        message(SEND_ERROR "generate_run_script: FILE argument is missing")
+        message(SEND_ERROR "generate_run_config: FILE argument is missing")
+    endif()
+
+    if(NOT args_CONFIG)
+        message(SEND_ERROR "generate_run_config: CONFIG argument is missing")
     endif()
 
     # collect all NED folders for given target
@@ -209,15 +213,10 @@ function(generate_run_script)
     endforeach()
     set(opp_run_libraries "$<JOIN:${opp_run_libraries}, >")
 
-    # select opp_run executable depending on build type
-    if(NOT CMAKE_BUILD_TYPE OR "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-        set(opp_run_executable ${OMNETPP_RUN_DEBUG})
-    else()
-        set(opp_run_executable ${OMNETPP_RUN})
-    endif()
+    set(opp_run_executable "$<IF:$<CONFIG:Debug>,${OMNETPP_RUN_DEBUG},${OMNETPP_RUN}>")
     set(opp_runall_script ${OMNETPP_RUNALL})
 
     # substitute variables first, then generator expressions
-    configure_file(${PROJECT_SOURCE_DIR}/cmake/run_artery.sh.in ${args_FILE} @ONLY)
-    file(GENERATE OUTPUT ${args_FILE} INPUT ${args_FILE})
+    configure_file(${PROJECT_SOURCE_DIR}/cmake/run-artery-config.ini.in ${args_FILE} @ONLY)
+    file(GENERATE OUTPUT ${args_FILE} INPUT ${args_FILE} CONDITION $<CONFIG:${args_CONFIG}>)
 endfunction()

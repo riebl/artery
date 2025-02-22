@@ -1,0 +1,5 @@
+[General]
+oppRun = @opp_run_executable@
+oppRunAll = @opp_runall_script@
+nedFolders = @opp_run_ned_folders@
+libraries = @opp_run_libraries@
