@@ -21,7 +21,11 @@ static const std::set<int> sVehicleVariables {
     libsumo::VAR_POSITION, libsumo::VAR_SPEED, libsumo::VAR_ANGLE
 };
 static const std::set<int> sSimulationVariables {
-    libsumo::VAR_DEPARTED_VEHICLES_IDS, libsumo::VAR_ARRIVED_VEHICLES_IDS, libsumo::VAR_TELEPORT_STARTING_VEHICLES_IDS,
+    libsumo::VAR_DEPARTED_VEHICLES_IDS,
+    libsumo::VAR_ARRIVED_VEHICLES_IDS,
+    libsumo::VAR_TELEPORT_STARTING_VEHICLES_IDS,
+    libsumo::VAR_PARKING_STARTING_VEHICLES_IDS,
+    libsumo::VAR_PARKING_ENDING_VEHICLES_IDS,
     libsumo::VAR_TIME
 };
 
@@ -81,7 +85,7 @@ void BasicNodeManager::initialize()
     m_subscriptions = inet::getModuleFromPar<SubscriptionManager>(par("subscriptionsModule"), this);
     m_destroy_vehicles_on_crash = par("destroyVehiclesOnCrash");
     m_ignore_persons = par("ignorePersons");
-
+    m_handle_parking_vehicles = par("handleParkingVehicles");
 }
 
 void BasicNodeManager::finish()
@@ -123,6 +127,8 @@ void BasicNodeManager::traciStep()
         processPersons();
     }
     emit(updateNodeSignal, getNumberOfNodes());
+
+    m_ended_parking_vehicles.clear();
 }
 
 void BasicNodeManager::traciClose()
@@ -157,6 +163,22 @@ void BasicNodeManager::processVehicles()
         }
     }
 
+    if (m_handle_parking_vehicles) {
+        // handle vehicles that start to park
+        const auto& parked = sim_cache->get<libsumo::VAR_PARKING_STARTING_VEHICLES_IDS>();
+        EV_DETAIL << "TraCI: " << parked.size() << " vehicles started parking" << endl;
+        for (const auto& id : parked) {
+            startVehicleParking(id);
+        }
+
+        // handle vehicles that end parking
+        const auto& starting = sim_cache->get<libsumo::VAR_PARKING_ENDING_VEHICLES_IDS>();
+        EV_DETAIL << "TraCI: " << starting.size() << " vehicles ended parking" << endl;
+        for (const auto& id : starting) {
+            endVehicleParking(id);
+        }
+    }
+
     for (auto& vehicle : m_vehicles) {
         const std::string& id = vehicle.first;
         VehicleSink* sink = vehicle.second;
@@ -188,6 +210,7 @@ void BasicNodeManager::removeVehicle(const std::string& id)
     emit(removeVehicleSignal, id.c_str());
     removeNodeModule(id);
     m_vehicles.erase(id);
+    m_removed_vehicles.insert(id);
 }
 
 void BasicNodeManager::updateVehicle(const std::string& id, VehicleSink* sink)
@@ -261,6 +284,24 @@ void BasicNodeManager::updatePerson(const std::string& id, PersonSink* sink)
                 TraCIAngle { person->get<libsumo::VAR_ANGLE>() },
                 person->get<libsumo::VAR_SPEED>());
     }
+}
+
+void BasicNodeManager::startVehicleParking(const std::string& id)
+{
+    /* removeVehicle(id); */
+    m_parking_vehicles.insert(id);
+}
+
+void BasicNodeManager::endVehicleParking(const std::string& id)
+{
+    // check that vehicle is not added again after OverlappingVehiclesPolicy had removed it
+    auto match = m_removed_vehicles.find(id);
+    if (match != m_removed_vehicles.end()) {
+        // vehicle has been removed before, so it can be added again without duplication
+        addVehicle(id);
+    }
+    m_parking_vehicles.erase(id);
+    m_ended_parking_vehicles.insert(id);
 }
 
 cModule* BasicNodeManager::createModule(const std::string&, cModuleType* type)
@@ -350,6 +391,16 @@ PersonSink* BasicNodeManager::getPersonSink(const std::string& id)
 {
     auto found = m_persons.find(id);
     return found != m_persons.end() ? found->second : nullptr;
+}
+
+std::unordered_set<std::string>& BasicNodeManager::getParkingVehicles()
+{
+    return m_parking_vehicles;
+}
+
+std::unordered_set<std::string>& BasicNodeManager::getEndedParkingVehicles()
+{
+    return m_ended_parking_vehicles;
 }
 
 } // namespace traci

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<regions>
+    <polygon name="parkingArea:1104">
+        <point x="5118.70" y="2736.36" />
+        <point x="5066.56" y="2687.10" />
+        <point x="5091.18" y="2667.70" />
+        <point x="5144.84" y="2729.62" />
+    </polygon>
+</regions>
