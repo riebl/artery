@@ -49,7 +49,6 @@ class Config:
     cores: int = multiprocessing.cpu_count()
     profile: typing.Union[pathlib.Path, str] = 'default'
     generator: str = 'Ninja'
-    is_generator_multiconfig: bool = False
 
 
 def routine(priority: int) -> typing.Callable:
@@ -77,14 +76,16 @@ class Routines:
 
     @routine(5)
     def remove(self: 'Routines') -> None:
-        print(f'removing build directory {self._params.build_directory}')
-        shutil.rmtree(self._params.build_directory)
+        for config in self._params.build_configs:
+            directory = self._params.build_directory.joinpath(config)
+            if directory.is_dir():
+                print(f'removing directory for CMake build config \'{config}\'')
+                shutil.rmtree(directory)
+            else:
+                print(f'build directory for config \'{config}\' was not found or was not a directory')
 
     @routine(4)
     def conan_install(self: 'Routines') -> None:
-        if self._params.is_generator_multiconfig:
-            sys.exit('conan installation is not supported for multi-config generators')
-
         for config in self._params.build_configs:
             print(f'running conan install command for CMake config {config}')
             self._run([
@@ -102,20 +103,9 @@ class Routines:
         if not self._params.build_directory.is_dir():
             self._params.build_directory.mkdir()
 
-        print('configuring for CMake build configs: ' + ', '.join(self._params.build_configs))
-        if self._params.is_generator_multiconfig:
-            command = [
-                'cmake',
-                '-G', self._params.generator,
-                '-B', str(self._params.build_directory),
-                '-S', str(pathlib.Path.cwd()),
-                self._decorate_cmake_variable('CMAKE_EXPORT_COMPILE_COMMANDS', 'ON', 'BOOL'),
-                self._decorate_cmake_variable('CMAKE_CONFIGURATION_TYPES', ';'.join(self._params.build_configs))
-            ]
-            self._run(command)
-            return
-
         use_presets = pathlib.Path.cwd().joinpath('CMakeUserPresets.json').is_file()
+        print('configuring for CMake build configs: ' + ', '.join(self._params.build_configs))
+
         for config in self._params.build_configs:
             source = pathlib.Path.cwd()
             binary = self._params.build_directory.joinpath(config)
@@ -144,16 +134,6 @@ class Routines:
             sys.exit(f'build directory \'{self._params.build_directory}\' was not found')
 
         print(f'using {self._params.cores} threads')
-        if self._params.is_generator_multiconfig:
-            print('building for CMake configurations ' + ' '.join(self._params.build_configs))
-            configs = [['--config', config] for config in self._params.build_configs]
-            self._run([
-                'cmake',
-                '--build', str(self._params.build_directory),
-                '--parallel', str(self._params.cores)
-            ] + [arg for pair in configs for arg in pair])
-            return
-
         for config in self._params.build_configs:
             directory = self._params.build_directory.joinpath(config)
             print(f'building for CMake configuration \'{config}\'')
@@ -165,11 +145,9 @@ class Routines:
 
     @routine(1)
     def symlink_compile_commands(self: 'Routines') -> None:
-        if self._params.is_generator_multiconfig:
-            path = self._params.build_directory.joinpath('compile_commands.json')
-        elif 'Debug' in self._params.build_configs:
+        if 'Debug' in self._params.build_configs:
             path = self._params.build_directory.joinpath('Debug').joinpath('compile_commands.json')
-        elif 'Release' in self._params.build_configs:
+        if 'Release' in self._params.build_configs:
             path = self._params.build_directory.joinpath('Release').joinpath('compile_commands.json')
         if path is None:
             sys.exit('no supported CMake configs detected')
@@ -233,11 +211,6 @@ def parse_cli_args() -> argparse.Namespace:
     parser.add_argument('--profile', action='store', dest='profile',
         help='specify path to profile, or its name if available.'
     )
-    parser.add_argument('--generator-is-multiconfig', action='store_true', dest='is_generator_multiconfig',
-        help='specify if generator in use supports multiconfiguration. ' 
-        'In that case, script will create single directortory for all configurations.'
-    )
-
     return parser.parse_args()
 
 
@@ -260,7 +233,6 @@ def main() -> None:
     if getattr(args, 'generator') is not None:
         params.generator = args.generator
         print(f'config: user-provided generator: \'{params.generator}\'')
-    params.is_generator_multiconfig = args.is_generator_multiconfig
 
     r = Routines(params)
     for routine, f in r.routines():

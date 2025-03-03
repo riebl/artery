@@ -9,48 +9,31 @@ import configparser
 from pathlib import Path
 
 
-for template, value in copy.copy(globals()).items():
-    if not template.startswith('OPP'):
-        continue
-    if value.startswith('@') or value.endswith('@'):
-        raise ValueError(
-            f'template variable {template} is left unitialized: {value}'
-        )
-
-
 def main():
-    global OPP_RUNALL, OPP_RUN, OPP_DEBUG_RUN, \
-        OPP_RUN_NED_FOLDERS, OPP_RUN_LIBRARIES
-
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--all', action='store_true', help='sets runall mode')
     parser.add_argument('-b', '--batchsize', dest='batch', action='store')
     parser.add_argument('-j', '--jobs', dest='jobs', action='store')
-    parser.add_argument('--artery-launch-conf', action='store')
+    parser.add_argument('--launch-conf', action='store', required=True)
 
     args, unrecognized = parser.parse_known_args()
 
     cmd = []
     working_directory = Path.cwd()
 
-    if args.artery_launch_conf is None:
-        raise RuntimeError(
-            'missing artery launch config, which should be under build/'
-        )
-
     config_parser = configparser.ConfigParser(default_section='General')
-    with open(Path(args.artery_launch_conf)) as config_file:
+    with open(Path(args.launch_conf)) as config_file:
         config_parser.read_file(config_file)
 
-    if (opp_run := config_parser.get('General', 'oppRun', fallback=None)) is None:
-        raise ValueError('missing oppRun in General section')
-    if (opp_runall := config_parser.get('General', 'oppRunAll', fallback=None)) is None:
-        raise ValueError('missing oppRunAll in General section')
-    if (ned_folders := config_parser.get('General', 'nedFolders', fallback=None)) is None:
-        raise ValueError('missing nedFolders in General section')
-    if (libraries := config_parser.get('General', 'libraries', fallback=None)) is None:
-        raise ValueError('missing libraries in General section')
+    if (opp_run := config_parser.get('Executables', 'oppRun', fallback=None)) is None:
+        raise ValueError('missing oppRun in Executables section')
+    if (opp_runall := config_parser.get('Executables', 'oppRunAll', fallback=None)) is None:
+        raise ValueError('missing oppRunAll in Executables section')
+    if (ned_folders := config_parser.get('Artery', 'nedFolders', fallback=None)) is None:
+        raise ValueError('missing nedFolders in Artery section')
+    if (libraries := config_parser.get('Artery', 'libraries', fallback=None)) is None:
+        raise ValueError('missing libraries in Artery section')
 
     if args.all:
         cmd.append(opp_runall)
