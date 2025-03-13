@@ -42,7 +42,7 @@ void TransfusionService::initialize()
 
     boost::asio::ip::tcp::endpoint endpoint;
     boost::system::error_code ec;
-    auto remote_ip = boost::asio::ip::address_v4::from_string(par("remote_ip").stringValue(), ec);
+    auto remote_ip = boost::asio::ip::make_address(par("remote_ip").stringValue(), ec);
     if (ec) {
         throw cRuntimeError("remote IP address is invalid: %s", par("remote_ip").stringValue());
     }

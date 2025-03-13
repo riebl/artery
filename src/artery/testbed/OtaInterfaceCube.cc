@@ -34,7 +34,7 @@ void OtaInterfaceCube::initialize(int stage)
             // handler is likely called from another thread, but OtaIndicationQueue is thread-safe
             mOtaIndicationQueue->trigger(std::move(gn));
         };
-        boost::asio::ip::address cube_addr = boost::asio::ip::address::from_string(par("cubeAddress").stringValue());
+        boost::asio::ip::address cube_addr = boost::asio::ip::make_address(par("cubeAddress").stringValue());
         mCubeConnection = std::make_unique<CubeConnection>(cube_addr, par("cubeRxPort"), par("cubeTxPort"), inject);
     }
 }

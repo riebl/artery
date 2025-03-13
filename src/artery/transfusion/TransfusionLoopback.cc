@@ -15,8 +15,8 @@ class TransfusionLoopback::Context
 public:
     Context(int port) :
         mEndpoint(boost::asio::ip::tcp::v4(), port),
-        mAcceptor(mIoService, mEndpoint),
-        mSocket(mIoService)
+        mAcceptor(mIoContext, mEndpoint),
+        mSocket(mIoContext)
     {
         mAcceptor.listen();
         mAcceptor.async_accept(mSocket,
@@ -28,7 +28,7 @@ public:
     std::size_t receive()
     {
         mRxBytes = 0;
-        mIoService.poll();
+        mIoContext.poll();
         return mRxBytes;
     }
 
@@ -42,7 +42,7 @@ private:
                 });
     }
 
-    boost::asio::io_service mIoService;
+    boost::asio::io_context mIoContext;
     boost::asio::ip::tcp::endpoint mEndpoint;
     boost::asio::ip::tcp::acceptor mAcceptor;
     boost::asio::ip::tcp::socket mSocket;
