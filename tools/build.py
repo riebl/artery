@@ -147,12 +147,11 @@ class Routines:
     def symlink_compile_commands(self: 'Routines') -> None:
         if 'Debug' in self._params.build_configs:
             path = self._params.build_directory.joinpath('Debug').joinpath('compile_commands.json')
-            print(f'creating symlink for path \'{path}\'')
         if 'Release' in self._params.build_configs:
             path = self._params.build_directory.joinpath('Release').joinpath('compile_commands.json')
-            print(f'creating symlink for path \'{path}\'')
         if path is None:
             sys.exit('no supported CMake configs detected')
+        print(f'creating symlink for path \'{path}\'')
         symlink = pathlib.Path.cwd().joinpath('compile_commands.json')
         if symlink.is_symlink():
             symlink.unlink()
@@ -160,9 +159,9 @@ class Routines:
 
     def _run(self: 'Routines', command: typing.List[str]) -> None:
         print('running command: ' + ' '.join(command))
-        code = subprocess.run(command, encoding='UTF-8', stderr=subprocess.STDOUT, env=os.environ).returncode
-        if code:
-            sys.exit(f'error: subprocess failed: {errno.errorcode[code]} (code: {code})')
+        retval = subprocess.run(command, encoding='UTF-8', stderr=subprocess.STDOUT, env=os.environ).returncode
+        if retval:
+            sys.exit(f'error: subprocess failed: {errno.errorcode[retval]} (code: {retval})')
 
     def _decorate_cmake_variable(self: 'Routines', var: str, value: str, type: typing.Union[str, None] = None) -> str:
         if type is not None:
