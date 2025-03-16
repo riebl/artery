@@ -148,9 +148,11 @@ endif()
 macro(add_artery_feature name)
     add_library(${name} SHARED ${ARGN})
     add_library(Artery::${name} ALIAS ${name})
+    get_target_property(ned_folder ${name} SOURCE_DIR)
     set_target_properties(${name} PROPERTIES
         OUTPUT_NAME artery_${name}
-        OMNETPP_LIBRARY ON)
+        OMNETPP_LIBRARY ON
+        NED_FOLDERS ${ned_folder})
     target_link_libraries(${name} PRIVATE core)
     target_link_libraries(artery INTERFACE Artery::${name})
     install(TARGETS ${name} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
@@ -176,15 +178,6 @@ endif()
 install(TARGETS core LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 set_property(TARGET core APPEND PROPERTY INSTALL_NED_FOLDERS ${CMAKE_INSTALL_DATADIR}/ned/artery)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ DESTINATION share/ned/artery FILES_MATCHING PATTERN "*.ned")
-
-get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-if(NOT is_multi_config)
-    generate_run_script(TARGET artery FILE ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/run_artery.sh)
-    generate_run_script(TARGET artery FILE ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/run_artery.sh.install INSTALL)
-    install(
-        PROGRAMS ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/run_artery.sh.install
-        DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME run_artery.sh)
-endif()
 
 if(VSCODE_LAUNCH_INTEGRATION)
     if (NOT CMAKE_BUILD_TYPE OR "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
