@@ -1,29 +1,34 @@
 #!/usr/bin/env python3
-
 import sys
-import copy
 import argparse
 import subprocess
 import configparser
-
-from pathlib import Path
+import pathlib
 
 
 def main():
     parser = argparse.ArgumentParser()
-
     parser.add_argument('--all', action='store_true', help='sets runall mode')
     parser.add_argument('-b', '--batchsize', dest='batch', action='store')
     parser.add_argument('-j', '--jobs', dest='jobs', action='store')
-    parser.add_argument('--launch-conf', action='store', required=True)
+    parser.add_argument('-l', '--launch-conf', action='store', required=True, type=pathlib.Path)
+    parser.add_argument('-s', '--scenario', default=pathlib.Path.cwd(), type=pathlib.Path)
+    parser.add_argument('-v', '--verbose', action='store_true')
+    args, opp_args = parser.parse_known_args()
 
-    args, unrecognized = parser.parse_known_args()
-
-    cmd = []
-    working_directory = Path.cwd()
+    # remove '--' from opp_args when used to split run_artery args from opp_run args
+    if len(opp_args) > 0 and opp_args[0] == '--':
+        opp_args = opp_args[1:]
+    
+    if args.launch_conf.is_file():
+        config_filename = args.launch_conf
+    elif args.launch_conf.is_dir():
+        config_filename = args.launch_conf / 'run-artery.ini'
+    else:
+        raise ValueError('Argument "launch-conf" must be an existing file or directory')
 
     config_parser = configparser.ConfigParser(default_section='General')
-    with open(Path(args.launch_conf)) as config_file:
+    with open(config_filename) as config_file:
         config_parser.read_file(config_file)
 
     if (opp_run := config_parser.get('Executables', 'oppRun', fallback=None)) is None:
@@ -35,6 +40,7 @@ def main():
     if (libraries := config_parser.get('Artery', 'libraries', fallback=None)) is None:
         raise ValueError('missing libraries in Artery section')
 
+    cmd = []
     if args.all:
         cmd.append(opp_runall)
         if args.batch is not None:
@@ -45,11 +51,12 @@ def main():
     cmd.append(opp_run)
     cmd.extend(['-n', ned_folders])
     cmd.extend(libraries.split())
-    cmd.extend(unrecognized)
+    cmd.extend(opp_args)
 
-    print('running command: ', ' '.join(cmd))
+    if args.verbose:
+        print('running command: ', ' '.join(cmd))
 
-    process = subprocess.run(cmd, cwd=working_directory, stderr=sys.stderr, stdout=sys.stdout)
+    process = subprocess.run(cmd, cwd=args.scenario, stderr=sys.stderr, stdout=sys.stdout)
     sys.exit(process.returncode)
 
 
