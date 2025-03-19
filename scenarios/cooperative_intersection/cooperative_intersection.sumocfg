@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configuration>
+    <input>
+        <net-file value="Town04.net.xml"/>
+        <route-files value="cooperative_intersection.rou.xml" />
+    </input>
+    <time>
+        <step-length value="0.1"/>
+    </time>
+    <num-clients value="2"/>
+</configuration>
