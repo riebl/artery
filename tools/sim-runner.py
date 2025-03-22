@@ -3,12 +3,15 @@
 import sys
 import time
 import enum
+import logging
 import argparse
 import subprocess
 import configparser
 
 from pathlib import Path
-from typing import Dict, Optional, Any
+from typing import Dict, Optional, Any, Optional
+
+logger = logging.getLogger(__file__)
 
 
 class RunnerMode(enum.StrEnum):
@@ -39,7 +42,16 @@ class SimRunner:
         }
     }
 
-    def __init__(self, runner: Path, keep_runner_config: bool = False, frontend: str = 'Cmdenv'):
+    def __init__(
+        self,
+        runner: Path,
+        runner_config: Path,
+        runall: bool = False,
+        batch: Optional[int] = None,
+        jobs: Optional[int] = None,
+        keep_runner_config: bool = False,
+        frontend: str = 'Cmdenv'
+    ):
         self._keep_runner_config = keep_runner_config
         self._frontend = frontend
         self._runner = runner

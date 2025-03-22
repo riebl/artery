@@ -16,14 +16,14 @@ class SimRecordedData:
     vectors: Optional[pd.DataFrame] = None
 
     def __bool__(self):
-        return self.scalars is not None or self.vectors is not None
+        return all(data is not None for data in (self.scalars, self.vectors))
 
 
 class SimResultsReader:
 
-    def __init__(self, keep_intermidiate_data: bool = False, overwrite_intermidiate_data: bool = False):
-        self._keep_intermidiate_data = keep_intermidiate_data
-        self._overwrite_intermidiate_data = overwrite_intermidiate_data
+    def __init__(self, keep_intermediate_data: bool = False, overwrite_intermediate_data: bool = False):
+        self._keep_intermediate_data = keep_intermediate_data
+        self._overwrite_intermediate_data = overwrite_intermediate_data
 
     def _invoke_scavetool(self, results_file: Path, output: Optional[Union[Path, str]] = None) -> Path:
         if output is None or isinstance(output, str):
@@ -42,7 +42,7 @@ class SimResultsReader:
         if not results_file.is_file():
             raise FileNotFoundError(f'simulation results file could not be located: {results_file}')
         if output.is_file():
-            if self._overwrite_intermidiate_data:
+            if self._overwrite_intermediate_data:
                 output.unlink()
             else:
                 raise FileExistsError(f'processed simulation results file already exists: {output}')
@@ -77,13 +77,13 @@ class SimResultsReader:
 
         return records
 
-    def _handle_intermidiate_file(self, filepath: Path):
+    def _handle_intermediate_file(self, filepath: Path):
         if filepath.is_file():
-            if self._keep_intermidiate_data:
+            if self._keep_intermediate_data:
                 return
             filepath.unlink()
             return
-        raise FileNotFoundError(f'could not find intermidiate file: {filepath}')
+        raise FileNotFoundError(f'could not find intermediate file: {filepath}')
         
     
     def read(self, scenerio_path: Path) -> List[SimRecordedData]:
@@ -95,11 +95,11 @@ class SimResultsReader:
             if 'vectors' in path_mapping:
                 csv_filepath = self._invoke_scavetool(path_mapping['vectors'], '.csv')
                 recording.vectors = pd.read_csv(csv_filepath)
-                self._handle_intermidiate_file(csv_filepath)
+                self._handle_intermediate_file(csv_filepath)
             if 'scalars' in path_mapping:
                 csv_filepath = self._invoke_scavetool(path_mapping['scalars'], '.csv')
                 recording.scalars = pd.read_csv(csv_filepath)
-                self._handle_intermidiate_file(csv_filepath)
+                self._handle_intermediate_file(csv_filepath)
     
             if recording:
                 data.append(recording)
@@ -108,7 +108,7 @@ class SimResultsReader:
                 
 
 
-reader = SimResultsReader(overwrite_intermidiate_data=True)
+reader = SimResultsReader(overwrite_intermediate_data=True)
 for recording in reader.read(Path('/workspaces/artery/scenarios/highway-police')):
     print(recording.config_name)
     vec = recording.vectors
