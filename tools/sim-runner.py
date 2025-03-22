@@ -11,13 +11,9 @@ import configparser
 from pathlib import Path
 from typing import Dict, Optional, Any, Optional
 
+from run_artery import run_artery
+
 logger = logging.getLogger(__file__)
-
-
-class RunnerMode(enum.StrEnum):
-    BRIDGE = 'bridge'
-    SILENT = 'silent'
-    RECORD = 'record'
 
 
 class SimRunner:
@@ -44,53 +40,55 @@ class SimRunner:
 
     def __init__(
         self,
-        runner: Path,
-        runner_config: Path,
         runall: bool = False,
         batch: Optional[int] = None,
         jobs: Optional[int] = None,
-        keep_runner_config: bool = False,
         frontend: str = 'Cmdenv'
     ):
-        self._keep_runner_config = keep_runner_config
-        self._frontend = frontend
-        self._runner = runner
+        self.__runall = runall
+        self.__batch = batch
+        self.__jobs = jobs
+        self.__frontend = frontend
 
-    def run(self, scenario_directory: Path, user_options: Optional[Dict[str, Dict[str, Any]]] = None, mode: RunnerMode = RunnerMode.SILENT):
+    def run(
+        self,
+        runner_config: Path,
+        scenario_directory: Path,
+        scenario_config: Path,
+        user_options: Optional[Dict[str, Dict[str, Any]]] = None
+    ):
         if not isinstance(scenario_directory, Path):
             raise TypeError
         
         if not scenario_directory.is_dir():
             raise FileNotFoundError(f'scenario directory {scenario_directory} was not found')
-        
-        scenario_config_path = scenario_directory.joinpath('omnetpp.ini')
-        runner_config_path = scenario_directory.joinpath('omnetpp.test.ini')
-        self._make_config(runner_config_path, user_options)
+
+        scenario_config_path = self.__resolve_scenario_config_path(scenario_directory, scenario_config)
+        testing_config_path = scenario_directory.joinpath('.omnetpp.test.ini')
+        self.__make_config(testing_config_path, user_options)
 
         try:
-            cmd = [self._runner, scenario_config_path, runner_config_path.name, '-u', self._frontend, '-m']
-            result = None
-            match mode:
-                case RunnerMode.BRIDGE:
-                    print('running command: ' + ' '.join(map(str, cmd)))
-                    result = subprocess.run(cmd, cwd=scenario_directory, encoding='UTF-8', stdout=sys.stdout)
-                case RunnerMode.SILENT:
-                    result = subprocess.run(cmd, cwd=scenario_directory, encoding='UTF-8')
-                case RunnerMode.RECORD:
-                    result = subprocess.run(cmd, cwd=scenario_directory, encoding='UTF-8', capture_output=True) 
+            returncode = run_artery(
 
-            if code := result.returncode:
-                raise RuntimeError(f'runner failed with retirn code: {code}')
-            
-            if mode == RunnerMode.RECORD:
-                self.stdout, self.stderr = result.stdout, result.stderr
+            )
 
         finally:
-            if not self._keep_runner_config:
+            if not self.__keep_runner_config:
                 runner_config_path.unlink()
 
+    def __resolve_scenario_config_path(self, scenario_directory: Path, scenario_config: Path) -> Path:
+        if scenario_config.is_absolute():
+            return scenario_config
+        try:
+            resolved_path = scenario_config.relative_to(scenario_directory)
+        except ValueError:
+            raise ValueError(
+                'scenario config path should be either absolute or relative to scenario directory'
+            )
+        return resolved_path
+        
 
-    def _make_config(self, output_path: Path, user_options: Optional[Dict[str, Dict[str, Any]]] = None):
+    def __make_config(self, output_path: Path, user_options: Optional[Dict[str, Dict[str, Any]]] = None):
         if not isinstance(output_path, Path):
             raise TypeError
         
