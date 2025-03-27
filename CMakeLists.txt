@@ -17,6 +17,12 @@ include(GNUInstallDirs)
 
 find_package(Boost 1.59 REQUIRED COMPONENTS date_time system CONFIG)
 
+# use "RelWithDebInfo" as default build type
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "CMake build type" FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+
 # running simulations with opp_run requires shared libraries
 set(BUILD_SHARED_LIBS ON CACHE INTERNAL "Cached for propagation to sub-projects with older CMake versions")
 
