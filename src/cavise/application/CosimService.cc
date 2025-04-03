@@ -94,63 +94,7 @@ void CosimService::indicate(const vanetza::btp::DataIndication& /* ind */, omnet
 			structure_artery::Artery_message::Received_information::Cav* new_cav = received_info->add_cav();
 			// Заполняем новый объект значениями из объекта cav
 			new_cav->set_vid(cav.vid());
-			new_cav->set_ego_spd(cav.ego_spd());
-			
-			// Заполняем EgoPos
-			structure_artery::Artery_message::Received_information::Cav::EgoPos* new_ego_pos = new_cav->mutable_ego_pos();
-			new_ego_pos->set_x(cav.ego_pos().x());
-			new_ego_pos->set_y(cav.ego_pos().y());
-			new_ego_pos->set_z(cav.ego_pos().z());
-			new_ego_pos->set_pitch(cav.ego_pos().pitch());
-			new_ego_pos->set_yaw(cav.ego_pos().yaw());
-			new_ego_pos->set_roll(cav.ego_pos().roll());
-			
-			// Заполняем BlueVehicles
-			for (const auto& blue_cav : cav.blue_vehicles().blue_cav()) {
-				structure_artery::Artery_message::Received_information::Cav::BlueVehicles::BlueCav* new_blue_cav = new_cav->mutable_blue_vehicles()->add_blue_cav();
-				new_blue_cav->set_vid(blue_cav.vid());
-				new_blue_cav->set_ego_spd(blue_cav.ego_spd());
-				
-				// Заполняем EgoPos для BlueCav
-				structure_artery::Artery_message::Received_information::Cav::EgoPos* new_blue_ego_pos = new_blue_cav->mutable_ego_pos();
-				new_blue_ego_pos->set_x(blue_cav.ego_pos().x());
-				new_blue_ego_pos->set_y(blue_cav.ego_pos().y());
-				new_blue_ego_pos->set_z(blue_cav.ego_pos().z());
-				new_blue_ego_pos->set_pitch(blue_cav.ego_pos().pitch());
-				new_blue_ego_pos->set_yaw(blue_cav.ego_pos().yaw());
-				new_blue_ego_pos->set_roll(blue_cav.ego_pos().roll());
-				
-			}
-			
-			// Заполняем Vehicles
-			for (const auto& cav_pos : cav.vehicles().cav_pos()) {
-				structure_artery::Artery_message::Received_information::Cav::Vehicles::CavPos* new_cav_pos = new_cav->mutable_vehicles()->add_cav_pos();
-				new_cav_pos->set_x(cav_pos.x());
-				new_cav_pos->set_y(cav_pos.y());
-				new_cav_pos->set_z(cav_pos.z());
-			}
-
-			// Заполняем TrafficLights
-			for (const auto& tf_pos : cav.traffic_lights().tf_pos()) {
-				structure_artery::Artery_message::Received_information::Cav::TrafficLights::TfPos* new_tf_pos = new_cav->mutable_traffic_lights()->add_tf_pos();
-				new_tf_pos->set_x(tf_pos.x());
-				new_tf_pos->set_y(tf_pos.y());
-				new_tf_pos->set_z(tf_pos.z());
-			}
-
-			// Заполняем StaticObjects
-			for (const auto& obj_pos : cav.static_objects().obj_pos()) {
-				structure_artery::Artery_message::Received_information::Cav::StaticObjects::ObjPos* new_obj_pos = new_cav->mutable_static_objects()->add_obj_pos();
-				new_obj_pos->set_x(obj_pos.x());
-				new_obj_pos->set_y(obj_pos.y());
-				new_obj_pos->set_z(obj_pos.z());
-			}
-
-			// Заполняем from_who_received
-			for (const auto& from_who : cav.from_who_received()) {
-				new_cav->add_from_who_received(from_who);
-			}
-			
+			new_cav->set_ego_spd(cav.ego_spd());	
 		}
 	}
 
