@@ -1,3 +1,4 @@
 .cmdenv-log
 .qtenvrc
 sumo-*.log
+*.log

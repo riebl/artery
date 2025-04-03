@@ -5,7 +5,7 @@ SHELL [ "/bin/bash", "-c"]
 # OMNeT release tag
 ARG OMNETPP_TAG=omnetpp-5.6.2
 # SUMO tag
-ARG SUMO_TAG=v1_21_0
+ARG SUMO_TAG=v1_22_0
 
 WORKDIR /cavise
 
