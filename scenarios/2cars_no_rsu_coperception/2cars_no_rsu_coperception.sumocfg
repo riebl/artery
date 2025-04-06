@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configuration>
+    <input>
+        <net-file value="Town04.net.xml"/>
+        <route-files value="2cars_no_rsu_coperception.rou.xml"/>
+        <additional-files value="2cars_no_rsu_coperception.poly.xml"/>
+    </input>
+    <time>
+        <step-length value="0.1"/>
+    </time>
+    <num-clients value="2"/>
+</configuration>
