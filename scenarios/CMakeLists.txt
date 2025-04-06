@@ -7,6 +7,7 @@ add_subdirectory(transfusion)
 add_opp_run(realistic_town06_cosim WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/realistic_town06_cosim NED_FOLDERS ${CMAKE_SOURCE_DIR}/src/cavise)
 add_opp_run(rsu_check WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/rsu_check NED_FOLDERS ${CMAKE_SOURCE_DIR}/src/cavise)
 add_opp_run(2cars_2rsu_coperception WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/2cars_2rsu_coperception NED_FOLDERS ${CMAKE_SOURCE_DIR}/src/cavise)
+add_opp_run(car_rsu_traffic_coperception WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/car_rsu_traffic_coperception NED_FOLDERS ${CMAKE_SOURCE_DIR}/src/cavise)
 
 if(WITH_ENVMOD)
     add_subdirectory(rsu_grid)
