@@ -8,12 +8,12 @@ class Artery(conan.ConanFile):
 
     def __init__(self: 'Artery', display_name: str = '') -> None:
         self._requirements = {
-            'boost':'1.86.0',
-            'cryptopp':'8.9.0',
-            'protobuf':'3.21.9',
-            'geographiclib':'2.3',
-            'cppzmq':'4.10.0',
-            'plog':'1.1.10'
+            'boost': '1.86.0',
+            'cryptopp': '8.9.0',
+            'protobuf': '3.21.9',
+            'geographiclib': '2.3',
+            'cppzmq': '4.10.0',
+            'plog': '1.1.10'
         }
         super().__init__(display_name)
 
