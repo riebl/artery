@@ -1,311 +1,253 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 
 import os
 import sys
 import errno
 import shutil
 import typing
+import inspect
 import pathlib
-import tarfile
 import argparse
-import fileinput
 import subprocess
 import multiprocessing
 
-DEFAULT_BUILD_DIR = 'build'
+from dataclasses import dataclass, field
 
-DEFAULT_CONAN_DIR = 'conan2'
-DEFAULT_OMNETPP_DIR = 'omnetpp'
+description = """
+This script primarily helps running cmake configure & build commands, but can also
+handle compile commands export, build artefact removal and conan setup. All of those
+things can be done just by adding an extra flag to build.py command, which is convenient.
 
-DEFAULT_PROFILE_PATH = 'tools/profiles/default.ini'
-DEFAULT_OMNETPP_TAG = 'omnetpp-5.6.2'
-DEFAULT_OMNETPP_URL = 'https://github.com/omnetpp/omnetpp/releases/download/{0}/{0}-src-linux.tgz'
-DEFAULT_SUMO_HOME = '/usr/local/share/sumo' 
+All functionality is splitted into routines that correspond to specific task you wish to accomplish.
+The basic routines are configure and build, they can be invoked with -c (--configure) and -b (--build)
+or -cb for short. The order of arguments does not matter. Examples:
 
-DEFAULT_BUILD_CONFIGS = ['Debug']
+Running configure & build using default \'build\' directory:
+./build.py -cb
 
-usage = """
-Usage
+Same as above, but using different directory:
+./build.py -cb --build-dir my_build_directory
 
-    CLI builder is used to set up build environment, check all 
-    dependencies and run CMake build/configure routines.
+Removing subdirectories for \'Release\' and \'Debug\' configs:
+./build.py -r --config Release --config Debug
 
-    This version has added functionality to handle Artery deps specifically.
+Same as above, but performing configure & build afterwords (for both configs):
+./build.py -rcb --config Release --config Debug
 
-    -b --build              run CMake build routine. Requires configured environment.
-    -c --configure          configure CMake and check environment utils.
-    -i --install            perform installation of components
-    -f --force              remove everything, even local conan and omnetpp installs.
-       --dir                specify build directory
-       --config CONFIG      run for specified config. (Release, Debug) Default - only Debug.
-                            You might invoke this multiple times.
-       --link               create symlink in project root to Debug compile commands.
-       --omnetpp-tag TAG    tag for omnetpp local install, please refer to omnetpp download page
-                            for further reference.
-       --profile            profile to use with conan. Make sure to adjust it for local needs, and
-                            add to tools/profiles/ for others to refer to.
-    -c --clear              clears build directory, when used with other routines, does that before running them.
-       --local-conan        installs conan to deps directory, useful in packaged builds. 
+Generating conan toolchain:
+./build.py -i --config Debug
 
+Creating a symlink to build/.../compile_commands.json:
+./build.py -l --config Debug
 """
+
+
+@dataclass
+class Config:
+    build_directory: pathlib.Path = field(default_factory=lambda: pathlib.Path.cwd().joinpath('build'))
+    build_configs: typing.List[str] = field(default_factory=lambda: ['Debug'])
+    cores: int = multiprocessing.cpu_count()
+    profile: typing.Union[pathlib.Path, str] = 'default'
+    generator: str = 'Ninja'
+
+
+def routine(priority: int) -> typing.Callable:
+    def decorator(method):
+        method.priority = priority
+        method.is_routine = True
+        return method
+    return decorator
+
 
 class Routines:
 
-    # Installs local deps
-    @staticmethod
-    def install(args: argparse.Namespace) -> None:
-        directory, _ = get_common(args)
-        source_file = 'source.tgz'
-        cores = get_arg(args, 'cores', None)
-        if not cores:
-            cores = multiprocessing.cpu_count()
-        cores = int(cores)
-        omnetpp_dir = f'{directory}/{DEFAULT_OMNETPP_DIR}'
+    def __init__(self: 'Routines', params: Config) -> None:
+        self._params = params
 
-        # this is hardly done just to transfer all setup code to python, sooooo
-        if not os.path.exists(omnetpp_dir):
-            # handle install
-            omnetpp_tag = get_arg(args, 'omnetpp_tag', DEFAULT_OMNETPP_TAG)
-            print(f'[install] installing omnetpp: {omnetpp_tag}')
-            command = ['wget', '-c', DEFAULT_OMNETPP_URL.format(omnetpp_tag), '-O', source_file]
-            handle_subprocess(subprocess.run(command, cwd=directory, encoding='UTF-8', stderr=subprocess.STDOUT, env=os.environ), 'install')
-            # handle unpack
-            with tarfile.open(f'{directory}/{source_file}', 'r:gz') as tar:
-                tar.extractall(path=omnetpp_dir)
-            # handle build
-            # see https://askubuntu.com/questions/1035220/error-while-installing-omnet-on-ubuntu-16-04-cannot-find-osgearth
-            for line in fileinput.input(f'{omnetpp_dir}/{omnetpp_tag}/configure.user', inplace=True):
-                if line.startswith('WITH_OSGEARTH='):
-                    print('WITH_OSGEARTH=no')
-                else:
-                    print(line)
-            command = f'source $PWD/setenv -f && ./configure && make -j{cores}'
-            handle_subprocess(subprocess.run(command, shell=True, cwd=f'{omnetpp_dir}/{omnetpp_tag}', encoding='UTF-8', stderr=subprocess.STDOUT, env=os.environ), 'install')
-        else:
-            print('[install] skipping omnetpp install')
+    def routines(self: 'Routines') -> typing.Generator[typing.Tuple[str, typing.Callable], None, None]:
+        def key(pair):
+            _, member = pair
+            return member.priority if hasattr(member, 'priority') else 0
 
-        conan_dir = f'{directory}/{DEFAULT_CONAN_DIR}'
-        if not os.path.exists(conan_dir) and hasattr(args, 'local_conan'):
-            print('[install] making conan local dirs')
-            os.mkdir(conan_dir)
-            os.mkdir(f'{conan_dir}/profiles')
-        else:
-            print('[install] skipping conan setup')
+        members = inspect.getmembers(self, predicate=inspect.ismethod)
+        for name, method in sorted(members, key=key, reverse=True):
+            if hasattr(method, 'is_routine'):
+                yield name, method
 
-        # if not os.path.exists(DEFAULT_SUMO_HOME):
-        #     print('[install] installing sumo')
-        #     command = ['git', 'clone', '--recurse', '--depth', '1', 'https://github.com/eclipse-sumo/sumo']
-        #     handle_subprocess(subprocess.run(command, cwd=directory, encoding='UTF-8', stderr=subprocess.STDOUT, env=os.environ), 'install')
-        #     command = f'cmake -B build . && cmake --build build -j{cores} && cmake --install build'
-        #     handle_subprocess(subprocess.run(command, shell=True, cwd=f'{directory}/sumo', encoding='UTF-8', stderr=subprocess.STDOUT, env=os.environ), 'install')
-        # else:
-        #     print('[install] sumo already installed')
-
-
-    # Clear build files
-    @staticmethod
-    def clear(args: argparse.Namespace) -> None:
-        directory, configs = get_common(args)
-
-        force = get_arg(args, 'force', None)
-        if force and os.path.exists(directory) and os.path.isdir(directory):
-            confirm = input(f'[clear] force-removing everything in directory: {directory}. Are you sure? (N/y) ')
-            if not confirm:
-                confirm = 'n'
-            if confirm != 'y':
-                sys.exit(errno.ECANCELED)
-                
-            conan_dir = f'{directory}/{DEFAULT_CONAN_DIR}'
-            if os.path.exists(conan_dir):
-                shutil.rmtree(conan_dir)
-                print(f'[clear] removed conan local install')
+    @routine(5)
+    def remove(self: 'Routines') -> None:
+        for config in self._params.build_configs:
+            directory = self._params.build_directory.joinpath(config)
+            if directory.is_dir():
+                print(f'removing directory for CMake build config \'{config}\'')
+                shutil.rmtree(directory)
             else:
-                print(f'[clear] conan local install does not exist, skipping')
+                print(f'build directory for config \'{config}\' was not found or was not a directory')
 
-            omnetpp_dir = f'{directory}/{DEFAULT_OMNETPP_DIR}'
-            if os.path.exists(omnetpp_dir):
-                shutil.rmtree(omnetpp_dir)
-                print(f'[clear] removed omnetpp install')
-            else:
-                print(f'[clear] omnetpp install does not exist, skipping')
+    @routine(4)
+    def conan_install(self: 'Routines') -> None:
+        for config in self._params.build_configs:
+            print(f'running conan install command for CMake config {config}')
+            self._run([
+                'conan',
+                'install',
+                '--build=missing',
+                f'-pr:a={self._params.profile}',
+                self._decorate_conan_profile_entry('settings', 'build_type', config),
+                self._decorate_conan_profile_entry('conf', 'user.recipe:build_dir', self._params.build_directory),
+                str(pathlib.Path.cwd())
+            ])
 
-        for config in configs:
-            dir = f'{directory}/{config.capitalize()}'
-            if os.path.exists(dir):
-                shutil.rmtree(dir)
-                print(f'[clear] removing directory for config: {config}')
-            else:
-                print(f'[clear] skipping config: {config}')
-            
+    @routine(3)
+    def configure(self: 'Routines') -> None:
+        if not self._params.build_directory.is_dir():
+            self._params.build_directory.mkdir()
 
-    # Runs configure routine - part of build toolchain
-    @staticmethod
-    def configure(args: argparse.Namespace) -> None:
-        directory, configs = get_common(args)
+        use_presets = pathlib.Path.cwd().joinpath('CMakeUserPresets.json').is_file()
+        print('configuring for CMake build configs: ' + ', '.join(self._params.build_configs))
 
-        if not os.path.exists(directory):
-            os.mkdir(directory)  
+        for config in self._params.build_configs:
+            source = pathlib.Path.cwd()
+            binary = self._params.build_directory.joinpath(config)
+            command = [
+                'cmake',
+                '--preset', f'conan-{config.lower()}',
+                '-G', self._params.generator,
+                '-B', str(binary),
+                '-S', str(source),
+                self._decorate_cmake_variable('CMAKE_EXPORT_COMPILE_COMMANDS', 'ON', 'BOOL'),
+                self._decorate_cmake_variable('CMAKE_BUILD_TYPE', config)
+            ] if use_presets else [
+                'cmake',
+                '-G', self._params.generator,
+                '-B', str(binary),
+                '-S', str(source),
+                self._decorate_cmake_variable('CMAKE_EXPORT_COMPILE_COMMANDS', 'ON', 'BOOL'),
+                self._decorate_cmake_variable('CMAKE_BUILD_TYPE', config)
+            ]
+            print(f'running configure command for CMake config {config}')
+            self._run(command)
 
-        print('[configure] configuring for CMake build configs: ' + ', '.join(configs))
-        conan_args = []
+    @routine(2)
+    def build(self: 'Routines') -> None:
+        if not self._params.build_directory.is_dir():
+            sys.exit(f'build directory \'{self._params.build_directory}\' was not found')
 
-        profile = get_arg(args, 'profile', DEFAULT_PROFILE_PATH)
-        # stem = pathlib.PurePath(profile).stem
+        print(f'using {self._params.cores} threads')
+        for config in self._params.build_configs:
+            directory = self._params.build_directory.joinpath(config)
+            print(f'building for CMake configuration \'{config}\'')
+            self._run([
+                'cmake',
+                '--build', str(directory),
+                '--parallel', str(self._params.cores)
+            ])
 
-        # target = f'{directory}/{DEFAULT_CONAN_DIR}/profiles/{stem}'
-        # if not os.path.exists(profile):
-        #     print(f'[configure] failed to locate profile: {profile}')
-        #     sys.exit(errno.ENOENT)
-        # if os.path.exists(target):
-        #     print(f'[configure] warning: profile {stem} already exists in destination, overwriting')
-        #     os.remove(target)
-        # shutil.copy(profile, target)
+    @routine(1)
+    def symlink_compile_commands(self: 'Routines') -> None:
+        if 'Debug' in self._params.build_configs:
+            path = self._params.build_directory.joinpath('Debug').joinpath('compile_commands.json')
+        if 'Release' in self._params.build_configs:
+            path = self._params.build_directory.joinpath('Release').joinpath('compile_commands.json')
+        if path is None:
+            sys.exit('no supported CMake configs detected')
+        print(f'creating symlink for path \'{path}\'')
+        symlink = pathlib.Path.cwd().joinpath('compile_commands.json')
+        if symlink.is_symlink():
+            symlink.unlink()
+        pathlib.Path.cwd().joinpath('compile_commands.json').symlink_to(path)
 
-        print(f'[configure] using conan profile: {profile}')
-        conan_args.append(f'-pr:a={profile}')
+    def _run(self: 'Routines', command: typing.List[str]) -> None:
+        print('running command: ' + ' '.join(command))
+        retval = subprocess.run(command, encoding='UTF-8', stderr=subprocess.STDOUT, env=os.environ).returncode
+        if retval:
+            sys.exit(f'error: subprocess failed: {errno.errorcode[retval]} (code: {retval})')
 
-        print(f'[configure] running conan')
-        command = ['conan', 'install', os.curdir, '--build=missing', *conan_args]
-        handle_subprocess(subprocess.run(command, encoding='UTF-8', stderr=subprocess.STDOUT, env=os.environ), 'configure')
+    def _decorate_cmake_variable(self: 'Routines', var: str, value: str, type: typing.Union[str, None] = None) -> str:
+        if type is not None:
+            return f'-D{var.upper()}:{type}={value}'
+        return f'-D{var.upper()}={value}'
 
-        for config in configs:
-            print(f'[configure] running configure command for config {config}')
-            command = ['cmake', '--preset', f'conan-{config.lower()}', '-B', f'{directory}/{config}', '-S', f'{os.curdir}', f'-DCMAKE_BUILD_TYPE={config}']
-            handle_subprocess(subprocess.run(command, encoding='UTF-8', stderr=subprocess.STDOUT, env=os.environ), 'configure')
+    def _decorate_conan_profile_entry(self: 'Routines', section: str, entry: str, value: str) -> str:
+        return f'--{section}={entry}={value}'
 
-    # Runs actual build routine
-    @staticmethod
-    def build(args: argparse.Namespace) -> None:        
-        directory, configs = get_common(args)
 
-        print(f'[build] using directory: {directory}')
-        if not os.path.exists(directory):
-            print('[build] build directory not found.')
-            sys.exit(errno.ENOENT)
-
-        cores = get_arg(args, 'cores', None)
-        if not cores:
-            cores = multiprocessing.cpu_count()
-        cores = int(cores)
-        print(f'[build] running build with {cores} threads')
-        
-        for config in configs:
-            print(f'[build] running build command for config {config}...')
-            command = ['cmake', '--build', f'{directory}/{config}', '-j', str(cores), '--preset', f'conan-{config.lower()}']
-            handle_subprocess(subprocess.run(command, encoding='UTF-8', stderr=subprocess.STDOUT, env=os.environ), 'build')
-
-# Wraps subprocess execution, allows to exit gracefully on error.
-def handle_subprocess(process: subprocess.CompletedProcess, scope: str) -> None:
-    retval = process.returncode
-    if retval != 0:
-        print(f'[{scope}] error: subroutine failed (code: {retval}): {errno.errorcode[retval]}')
-        sys.exit(retval)
-
-# Wraps cached cmake vars into cmake-friendly syntax
-def cmake_var_decorator(var: str, value: str, type: str = 'STRING') -> str:
-    return f'-D{var.upper()}:{type}={value}'
-
-# Runs checks for executables specified by names.
-def utility_check(names: typing.List[str], scope: str) -> None:
-    for name in names:
-        print(f'[{scope}] checking utility: {name}, running $PATH check...', end=' ')
-        locations = subprocess.run(['whereis', name], stdout=subprocess.PIPE, encoding='UTF-8').stdout.split()[1:]
-        if not locations:
-            print('failed')
-            sys.exit(errno.ENOENT)
-        print('ok', f'[{scope}] found utility in: ' + ', '.join(locations), sep='\n', end='\n')
-
-def get_arg(args: argparse.Namespace, arg: str, default: typing.Any) -> typing.Any:
-    if hasattr(args, arg):
-        if getattr(args, arg) is not None:
-            return getattr(args, arg)
-    return default
-
-# symlinks compilation commands to assist Clang in helping you code
-def link_compile_commands(path: str) -> None:
-    if os.path.exists('compile_commands.json'):
-        print('[misc] compile commands file exists, overwriting')
-        os.remove('compile_commands.json')
-    os.symlink(path, 'compile_commands.json')
-    print('[misc] symlink created')
-
-# parse CLI args into a namespace
 def parse_cli_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        add_help=False
+    parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawDescriptionHelpFormatter)
+    # Routines
+    parser.add_argument('-b', '--build', action='store_true', dest='build',
+        help='runs cmake build, runs after configure.'
     )
-    parser.add_argument('-h', '--help', action='store_true', dest='help')
-    parser.add_argument('-b', '--build', action='store_true', dest='build')
-    parser.add_argument('-c', '--configure', action='store_true', dest='configure')
-    parser.add_argument('-i', '--install', action='store_true', dest='install')
-    parser.add_argument('-f', '--force', action='store_true', dest='force')
-    parser.add_argument('-r', '--clear', action='store_true', dest='clear')
-    parser.add_argument('--dir', action='store', dest='directory')
-    parser.add_argument('--config', action='append', dest='config')
-    parser.add_argument('--link', action='store_true', dest='link')
-    parser.add_argument('-j', action='store', dest='cores')
-
-    # Artery-specific setup
-    parser.add_argument('--omnetpp-tag', action='store', dest='omnetpp_tag')
-    parser.add_argument('--profile', action='store', dest='profile')
-    parser.add_argument('--local-conan', action='store_true', dest='local_conan')
-
+    parser.add_argument('-c', '--configure', action='store_true', dest='configure',
+        help='runs cmake configure. If CMakeUserPresets.json is preset, uses conan presets. '
+        'Runs after install.'
+    )
+    parser.add_argument('-i', '--conan-install', action='store_true', dest='conan_install',
+        help='runs conan install with devcontainers/conanfile.py. If you need specific profile, '
+        '(other than default) specify it with --profile, some examples are located under '
+        'devcontainers/templates as .ini files.'
+    )
+    parser.add_argument('-r', '--remove', action='store_true', dest='remove',
+        help='removes subdirectories in build/, according to configs provided. Might be useful '
+        'if CMake fresh configuration is required. Always executed before any other routine.'
+    )
+    parser.add_argument('-l', '--symlink-compile-commands', action='store_true', dest='symlink_compile_commands',
+        help='creates symlink to build/.../compile_commands.json in source directory. In case '
+        'both configs specified, links to Debug. In case symlink already exists, rewrites it.'
+    )
+    # Environment
+    parser.add_argument('--build-dir', action='store', dest='build_directory',
+        help='specify root directory to put build files in. Defaults to \'build\'.'
+    )
+    parser.add_argument('--config', action='append', dest='configs', choices=['Debug', 'Release'],
+        help='specify configs for build, options are Debug and Release.'
+    )
+    parser.add_argument('--parallel', action='store', dest='cores',
+        help='similar to --parallel in cmake, specify how many threads will handle build.'
+    )
+    parser.add_argument('--generator', action='store', dest='generator',
+        help='specify CMake generator to use.'
+    )
+    parser.add_argument('--profile', action='store', dest='profile',
+        help='specify path to profile, or its name if available.'
+    )
     return parser.parse_args()
 
-# return common args, used almost everywhere
-def get_common(args: argparse.Namespace) -> typing.List[typing.Tuple[str, typing.List[str]]]:
-    directory = get_arg(args, 'directory', DEFAULT_BUILD_DIR)
-    configs = get_arg(args, 'config', DEFAULT_BUILD_CONFIGS)
-    return directory, configs
+
+def main() -> None:
+    args = parse_cli_args()
+
+    params = Config()
+    if getattr(args, 'build_directory') is not None:
+        params.build_directory = pathlib.Path.cwd().joinpath(args.build_directory)
+        print(f'config: user-provided build directory: \'{params.build_directory}\'')
+    if getattr(args, 'configs') is not None:
+        params.build_configs = args.configs
+        print(f'config: user-provided build configs: \'{params.build_directory}\'')
+    if getattr(args, 'cores') is not None:
+        params.cores = int(args.cores)
+        print(f'config: user-provided threads, that will be run in parallel: \'{params.cores}\'')
+    if getattr(args, 'profile') is not None:
+        params.profile = args.profile
+        print(f'config: user-provided conan profile: \'{params.profile}\'')
+    if getattr(args, 'generator') is not None:
+        params.generator = args.generator
+        print(f'config: user-provided generator: \'{params.generator}\'')
+
+    r = Routines(params)
+    for routine, f in r.routines():
+        if not hasattr(args, routine):
+            print(f'routine \'{routine}\' is not configured for CLI, skipping')
+            continue
+        if getattr(args, routine):
+            print(f'running {routine}')
+            f()
+
+    print('done!')
 
 
 if __name__ == '__main__':
-    args = parse_cli_args()
-
-    if getattr(args, 'help'):
-        print(usage)
-        sys.exit()
-
-    requires = ['cmake', 'gcc', 'conan', 'wget', 'make']
-    print('[buildsystem] running build. checking requirements: ' + ', '.join(requires))
-    utility_check(requires, scope='buildsystem')
-
-    directory, configs = get_common(args)
-    if not os.path.exists(directory):
-        os.mkdir(directory)
-    
-    # setup env to use later in routines
-    os.environ['SUMO_HOME'] = DEFAULT_SUMO_HOME
-    if hasattr(args, 'local_conan'):
-        os.environ['CONAN_HOME'] = os.path.abspath(f'{directory}/{DEFAULT_CONAN_DIR}')
-    os.environ['PATH'] = '{0}:{1}/{2}/{3}/bin'.format(
-        os.environ['PATH'], 
-        os.path.abspath(directory), 
-        DEFAULT_OMNETPP_DIR,
-        get_arg(args, 'omnetpp_tag', DEFAULT_OMNETPP_TAG)
-    )
-    print(os.environ['PATH'])
-
-    if getattr(args, 'clear'):
-        print('[buildsystem] invoking clear routine')
-        Routines.clear(args)
-
-    if getattr(args, 'install'):
-        print('[buildsystem] invoking install routine')
-        Routines.install(args)
-
-    if getattr(args, 'configure'):
-        print('invoking configure routine')
-        Routines.configure(args)
-
-    if getattr(args, 'build'):
-        print('invoking build routine')
-        Routines.build(args)
-
-    if getattr(args, 'link'):
-        if 'Debug' in configs:
-            link_compile_commands(directory + '/Debug/compile_commands.json')
-        else:
-            link_compile_commands(directory + '/Release/compile_commands.json')
-
-    print('finished!')
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('exited by user')

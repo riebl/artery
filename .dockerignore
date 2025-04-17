@@ -3,3 +3,4 @@
 
 # CMake default directories
 build/
+CMakeUserPresets.json
