@@ -175,15 +175,6 @@ install(TARGETS core LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 set_property(TARGET core APPEND PROPERTY INSTALL_NED_FOLDERS ${CMAKE_INSTALL_DATADIR}/ned/artery)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ DESTINATION share/ned/artery FILES_MATCHING PATTERN "*.ned")
 
-get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-if(NOT is_multi_config)
-    generate_run_script(TARGET artery FILE ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/run_artery.sh)
-    generate_run_script(TARGET artery FILE ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/run_artery.sh.install INSTALL)
-    install(
-        PROGRAMS ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/run_artery.sh.install
-        DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME run_artery.sh)
-endif()
-
 if(VSCODE_LAUNCH_INTEGRATION)
     if (NOT CMAKE_BUILD_TYPE OR "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
         generate_vscode(TARGET artery FILE ${PROJECT_SOURCE_DIR}/.vscode/launch.json)
@@ -191,3 +182,5 @@ if(VSCODE_LAUNCH_INTEGRATION)
         message(STATUS "VS Code integration is enabled, but built type is Release")
     endif()
 endif()
+
+target_link_libraries(artery INTERFACE cavise)

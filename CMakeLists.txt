@@ -115,3 +115,12 @@ option(VSCODE_LAUNCH_INTEGRATION "Generate VS Code configuration for debugging A
 if(EXISTS ${PROJECT_SOURCE_DIR}/scenarios)
     add_subdirectory(scenarios)
 endif()
+
+get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if(NOT is_multi_config)
+    generate_run_script(TARGET artery FILE ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/run_artery.sh)
+    generate_run_script(TARGET artery FILE ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/run_artery.sh.install INSTALL)
+    install(
+        PROGRAMS ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/run_artery.sh.install
+        DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME run_artery.sh)
+endif()

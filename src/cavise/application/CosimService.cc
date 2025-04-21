@@ -47,6 +47,14 @@ CosimService::CosimService() {
 	cavise::init();
 }
 
+structure_artery::NDArray ConvertNDArray(const structure_opencda::NDArray& src) {
+    structure_artery::NDArray dst;
+    dst.set_dtype(src.dtype());
+    dst.mutable_shape()->CopyFrom(src.shape());
+    dst.set_data(src.data());
+    return dst;
+}
+
 void CosimService::indicate(const vanetza::btp::DataIndication& /* ind */, omnetpp::cPacket* packet, const artery::NetworkInterface& /* interface */) {
 	CAVISE_STUB();
     
@@ -77,27 +85,61 @@ void CosimService::indicate(const vanetza::btp::DataIndication& /* ind */, omnet
 	auto message = std::make_unique<structure_artery::Artery_message>();
 	structure_artery::Artery_message::Received_information* received_info = message->add_received_information();
 
-	received_info->set_artery_vid(vehicle.getVehicleId());
+	received_info->set_artery_id(vehicle.getVehicleId());
 
 	std::string prefix = "carla";
 	size_t pos = vehicle.getVehicleId().find(prefix);
 	std::string numberStr = vehicle.getVehicleId().substr(pos + prefix.length());
-	int vid = std::stoi(numberStr);
+	int id = std::stoi(numberStr);
 
-	auto& tp_cav = received_message.cav(vid).vid();
+	received_info->set_id(received_message.entity(id).id());
 
-	received_info->set_vid(tp_cav);
-
-	for (const auto& cav : received_message.cav()) {
-		if (cav.vid() != received_info->vid()) {
-			// Создаем новый объект Cav для сообщения Artery_message
-			structure_artery::Artery_message::Received_information::Cav* new_cav = received_info->add_cav();
-			// Заполняем новый объект значениями из объекта cav
-			new_cav->set_vid(cav.vid());
-			new_cav->set_ego_spd(cav.ego_spd());	
+	for (const auto& entity : received_message.entity()) {
+		if (entity.id() != received_info->id()) {
+			auto* new_entity = received_info->add_entity();
+			new_entity->set_id(entity.id());
+	
+			// Опциональные простые типы
+			if (entity.has_infra()) {
+				new_entity->set_infra(entity.infra());
+			}
+			if (entity.has_velocity()) {
+				new_entity->set_velocity(entity.velocity());
+			}
+			if (entity.has_time_delay()) {
+				new_entity->set_time_delay(entity.time_delay());
+			}
+	
+			// Повторяющееся поле — копируем всегда
+			new_entity->mutable_object_ids()->CopyFrom(entity.object_ids());
+	
+			// Обязательное NDArray
+			new_entity->mutable_object_bbx_center()->CopyFrom(ConvertNDArray(entity.object_bbx_center()));
+	
+			// Опциональные NDArray — копируем вручную
+			if (entity.has_spatial_correction_matrix()) {
+				new_entity->mutable_spatial_correction_matrix()->CopyFrom(
+					ConvertNDArray(entity.spatial_correction_matrix()));
+			}
+			if (entity.has_voxel_num_points()) {
+				new_entity->mutable_voxel_num_points()->CopyFrom(
+					ConvertNDArray(entity.voxel_num_points()));
+			}
+			if (entity.has_voxel_features()) {
+				new_entity->mutable_voxel_features()->CopyFrom(
+					ConvertNDArray(entity.voxel_features()));
+			}
+			if (entity.has_voxel_coords()) {
+				new_entity->mutable_voxel_coords()->CopyFrom(
+					ConvertNDArray(entity.voxel_coords()));
+			}
+			if (entity.has_projected_lidar()) {
+				new_entity->mutable_projected_lidar()->CopyFrom(
+					ConvertNDArray(entity.projected_lidar()));
+			}
 		}
 	}
-
+	
 	google::protobuf::util::JsonOptions options;
 	options.add_whitespace = true; 
 	options.always_print_primitive_fields = true;
@@ -109,7 +151,7 @@ void CosimService::indicate(const vanetza::btp::DataIndication& /* ind */, omnet
 		PLOG(plog::warning) << "failed to serialize to json: " << json;
 	}
 
-	if(auto result = communicationManager_->push(vid, std::move(message)); result.isError()) {
+	if(auto result = communicationManager_->push(id, std::move(message)); result.isError()) {
 		PLOG(plog::error) << "Error while adding artery message to the queue: " << result.error();
 	}
 
@@ -168,12 +210,12 @@ void CosimService::trigger() {
 			message = std::move(result.result());
 		}
 
-		PLOG(plog::debug) << "Cav number: " << message->cav_size() << '\n';
-		for (const auto& cav : message->cav()) {
-			PLOG(plog::debug) << "Cav vid: " + cav.vid() + '\n';
+		PLOG(plog::debug) << "Amount of CAVs and RSUs: " << message->entity_size() << '\n';
+		for (const auto& entity : message->entity()) {
+			PLOG(plog::debug) << "Entity id: " << entity.id() << "\n";
 		}
 
-		if (message->cav_size() > 0) {
+		if (message->entity_size() > 0) {
 			google::protobuf::util::JsonPrintOptions options;
 			options.add_whitespace = true;
 			options.always_print_primitive_fields = true;

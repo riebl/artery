@@ -10,7 +10,7 @@ ARG SUMO_TAG=v1_22_0
 WORKDIR /cavise
 
 RUN pacman -Syu --noconfirm pacman-contrib &&\
-    pacman -S --noconfirm cmake python3 python-pip pyenv wget bison git gcc &&\
+    pacman -S --noconfirm cmake python3 python-pip pyenv wget bison git gcc ninja &&\
     pacman -S --noconfirm xorg nvidia-utils mesa sdl2 libsm openmp openscenegraph &&\
     pacman -Sc --noconfirm && \
     rm -rf /var/cache/pacman/pkg/* /tmp/*
@@ -48,6 +48,6 @@ COPY artery/ ${ARTERY_DIR}
 COPY cavise/ /cavise/cavise
 
 WORKDIR ${ARTERY_DIR} 
-RUN ./tools/build.py -cb --config ${BUILD_CONFIG} --profile ${ARTERY_DIR}/tools/profiles/${CONAN_PROFILE}
+RUN ./tools/build.py -cbi --config ${BUILD_CONFIG} --profile ${ARTERY_DIR}/tools/profiles/${CONAN_PROFILE}
 
 CMD ["echo", "'run this interactively'"]
