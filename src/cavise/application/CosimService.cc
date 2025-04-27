@@ -110,35 +110,48 @@ void CosimService::indicate(const vanetza::btp::DataIndication& /* ind */, omnet
 				new_entity->set_time_delay(entity.time_delay());
 			}
 	
-			// Повторяющееся поле — копируем всегда
 			new_entity->mutable_object_ids()->CopyFrom(entity.object_ids());
+			new_entity->mutable_lidar_pose()->CopyFrom(entity.lidar_pose());
 	
-			// Обязательное NDArray
-			new_entity->mutable_object_bbx_center()->CopyFrom(ConvertNDArray(entity.object_bbx_center()));
-	
-			// Опциональные NDArray — копируем вручную
+			if (entity.has_object_bbx_center()) {
+				new_entity->mutable_object_bbx_center()->CopyFrom(ConvertNDArray(entity.object_bbx_center()));
+			}
+			if (entity.has_object_bbx_mask()) {
+				new_entity->mutable_object_bbx_mask()->CopyFrom(ConvertNDArray(entity.object_bbx_mask()));
+			}
+			if (entity.has_anchor_box()) {
+				new_entity->mutable_anchor_box()->CopyFrom(ConvertNDArray(entity.anchor_box()));
+			}
+			if (entity.has_pos_equal_one()) {
+				new_entity->mutable_pos_equal_one()->CopyFrom(ConvertNDArray(entity.pos_equal_one()));
+			}
+			if (entity.has_neg_equal_one()) {
+				new_entity->mutable_neg_equal_one()->CopyFrom(ConvertNDArray(entity.neg_equal_one()));
+			}
+			if (entity.has_targets()) {
+				new_entity->mutable_targets()->CopyFrom(ConvertNDArray(entity.targets()));
+			}
+			if (entity.has_origin_lidar()) {
+				new_entity->mutable_origin_lidar()->CopyFrom(ConvertNDArray(entity.origin_lidar()));
+			}
 			if (entity.has_spatial_correction_matrix()) {
-				new_entity->mutable_spatial_correction_matrix()->CopyFrom(
-					ConvertNDArray(entity.spatial_correction_matrix()));
+				new_entity->mutable_spatial_correction_matrix()->CopyFrom(ConvertNDArray(entity.spatial_correction_matrix()));
 			}
 			if (entity.has_voxel_num_points()) {
-				new_entity->mutable_voxel_num_points()->CopyFrom(
-					ConvertNDArray(entity.voxel_num_points()));
+				new_entity->mutable_voxel_num_points()->CopyFrom(ConvertNDArray(entity.voxel_num_points()));
 			}
 			if (entity.has_voxel_features()) {
-				new_entity->mutable_voxel_features()->CopyFrom(
-					ConvertNDArray(entity.voxel_features()));
+				new_entity->mutable_voxel_features()->CopyFrom(ConvertNDArray(entity.voxel_features()));
 			}
 			if (entity.has_voxel_coords()) {
-				new_entity->mutable_voxel_coords()->CopyFrom(
-					ConvertNDArray(entity.voxel_coords()));
+				new_entity->mutable_voxel_coords()->CopyFrom(ConvertNDArray(entity.voxel_coords()));
 			}
 			if (entity.has_projected_lidar()) {
-				new_entity->mutable_projected_lidar()->CopyFrom(
-					ConvertNDArray(entity.projected_lidar()));
+				new_entity->mutable_projected_lidar()->CopyFrom(ConvertNDArray(entity.projected_lidar()));
 			}
 		}
 	}
+	
 	
 	google::protobuf::util::JsonOptions options;
 	options.add_whitespace = true; 
