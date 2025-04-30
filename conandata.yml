@@ -1,0 +1,16 @@
+fetch_sources: 'git/master'
+sources:
+  git:
+    master:
+      url: "https://github.com/riebl/artery"
+      args:
+        - "--recurse-submodules"
+        - "--branch"
+        - "master"
+        - "--depth"
+        - "1"
+requirements:
+  boost: "1.86.0"
+  cryptopp: "8.2.0"
+  geographiclib: "2.3"
+  zeromq: "4.3.5"

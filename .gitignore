@@ -29,3 +29,6 @@ CMakeUserPresets.json
 
 # Exported compile commands
 compile_commands.json
+
+# Clangd language server cache
+.cache

@@ -19,7 +19,27 @@
             "source": "/tmp/.X11-unix",
             "target": "/tmp/.X11-unix",
             "type": "bind"
+        },
+        {
+            "source": "${localEnv:HOME}/.zshrc",
+            "target": "/home/devcontainer/.zshrc",
+            "type": "bind"
+        },
+        {
+            "target": "/home/devcontainer/.conan2",
+            "type": "volume"
         }
     ],
-    "initializeCommand": "which xhost 1>/dev/null 2>/dev/null && xhost +local:docker"
+    "initializeCommand": "which xhost 1>/dev/null 2>/dev/null && xhost +local:docker",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "twxs.cmake",
+                "ms-python.flake8",
+                "ms-python.python",
+                "llvm-vs-code-extensions.vscode-clangd",
+                "xaver.clang-format"
+            ]
+        }
+    }
 }
