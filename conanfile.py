@@ -11,8 +11,6 @@ from conan.tools.cmake import CMake, CMakeToolchain, CMakeDeps, cmake_layout
 
 class Artery(conan.ConanFile):
     name = 'artery'
-    # FIXME: probably should not be hardcoded 
-    version = '1.0.0'
     settings = ['os', 'compiler', 'build_type', 'arch']
     homepage = 'https://github.com/riebl/artery'
     license = 'GNU-2.0'
@@ -60,6 +58,12 @@ class Artery(conan.ConanFile):
         copy(self, 'COPYING', src=self.source_folder, dst=Path(self.package_folder) / 'licenses')
         cmake = CMake(self)
         cmake.install()
+
+    def set_version(self):
+        git = Git(self, folder=self.recipe_folder)
+        self.version = git.get_commit()[:8]
+        if not git.is_dirty():
+            self.version += '-dirty'
 
     def generate(self):
         tc = CMakeToolchain(self)
