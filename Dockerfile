@@ -10,7 +10,7 @@ ARG SUMO_TAG=v1_22_0
 WORKDIR /cavise
 
 RUN pacman -Syu --noconfirm pacman-contrib &&\
-    pacman -S --noconfirm cmake python3 python-pip pyenv wget bison git gcc ninja &&\
+    pacman -S --noconfirm cmake python3 python-pip pyenv wget bison git gcc14 ninja &&\
     pacman -S --noconfirm xorg nvidia-utils mesa sdl2 libsm openmp openscenegraph &&\
     pacman -Sc --noconfirm && \
     rm -rf /var/cache/pacman/pkg/* /tmp/*
@@ -32,10 +32,18 @@ RUN cd ${OMNETPP_TAG} && make -j$(nproc --all)
 # reference https://sumo.dlr.de/docs/Installing/Linux_Build.html
 ENV SUMO_HOME="/usr/local/share/sumo"
 RUN pacman -S --noconfirm xerces-c fox gdal proj gl2ps jre17-openjdk swig maven eigen && \
-        git clone --recurse --depth 1 --branch ${SUMO_TAG} https://github.com/eclipse-sumo/sumo && \
-        cd sumo && cmake -B build . && cmake --build build -j$(nproc --all) && \
-        cmake --install build && \
-        rm -rf /cavise/sumo /var/cache/pacman/pkg/* /tmp/*
+    rm -rf /cavise/sumo /var/cache/pacman/pkg/* /tmp/*
+
+# Temporary workaround: without this, the container builds with GCC 15 and crashes
+RUN ln -sf /usr/bin/gcc-14 /usr/local/bin/gcc && \
+    ln -sf /usr/bin/g++-14 /usr/local/bin/g++
+
+RUN git clone --recurse --depth 1 --branch ${SUMO_TAG} https://github.com/eclipse-sumo/sumo && \
+    cd sumo && \
+    cmake -B build . -DCMAKE_C_COMPILER=/usr/local/bin/gcc -DCMAKE_CXX_COMPILER=/usr/local/bin/g++ && \
+    cmake --build build -- -j$(nproc) && \
+    cmake --install build && \
+    rm -rf /cavise/sumo /var/cache/pacman/pkg/* /tmp/*
 
 RUN paccache -r -k 0
 

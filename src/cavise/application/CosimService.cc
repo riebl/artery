@@ -78,28 +78,48 @@ void CosimService::indicate(const vanetza::btp::DataIndication& /* ind */, omnet
 		PLOG(plog::debug) << "error parsing JSON: " << status.ToString();
 	}
 
-	if (vehicle.getVehicleId().find("carla") == std::string::npos) {
+	std::string id = vehicle.getVehicleId();
+	PLOG(plog::debug) << "Vehicle ID: " << id;
+	
+	if (!(id.rfind("rsu", 0) == 0 || id.rfind("cav", 0) == 0 || id.rfind("platoon", 0) == 0)) {
+		PLOG(plog::debug) << "Skipping vehicle '" << id << "' — not RSU/CAV/Platoon";
+		delete packet;
+		return;
+	}
+	
+	PLOG(plog::debug) << "Vehicle '" << id << "' passed prefix check";
+	
+	auto message = std::make_unique<structure_artery::Artery_message>();
+	auto* received_info = message->add_received_information();
+	received_info->set_id(id);
+	
+	std::string matchedPrefix;
+	for (const auto& prefix : {"rsu", "cav", "platoon"}) {
+		if (id.rfind(prefix, 0) == 0) {
+			matchedPrefix = prefix;
+			PLOG(plog::debug) << "Matched prefix: " << matchedPrefix;
+			break;
+		}
+	}
+	
+	if (matchedPrefix.empty()) {
+		PLOG(plog::warning) << "No valid prefix found in vehicle ID: " << id;
+		delete packet;
 		return;
 	}
 
-	auto message = std::make_unique<structure_artery::Artery_message>();
-	structure_artery::Artery_message::Received_information* received_info = message->add_received_information();
-
-	received_info->set_artery_id(vehicle.getVehicleId());
-
-	std::string prefix = "carla";
-	size_t pos = vehicle.getVehicleId().find(prefix);
-	std::string numberStr = vehicle.getVehicleId().substr(pos + prefix.length());
-	int id = std::stoi(numberStr);
-
-	received_info->set_id(received_message.entity(id).id());
-
 	for (const auto& entity : received_message.entity()) {
+		PLOG(plog::debug) << "  - entity.id() = " << entity.id();
+	}
+	
+	for (const auto& entity : received_message.entity()) {
+		PLOG(plog::debug) << "Processing entity with ID: " << entity.id();
+	
 		if (entity.id() != received_info->id()) {
+			PLOG(plog::debug) << "Adding new entity to received_info: " << entity.id();
 			auto* new_entity = received_info->add_entity();
 			new_entity->set_id(entity.id());
 	
-			// Опциональные простые типы
 			if (entity.has_infra()) {
 				new_entity->set_infra(entity.infra());
 			}
@@ -149,10 +169,14 @@ void CosimService::indicate(const vanetza::btp::DataIndication& /* ind */, omnet
 			if (entity.has_projected_lidar()) {
 				new_entity->mutable_projected_lidar()->CopyFrom(ConvertNDArray(entity.projected_lidar()));
 			}
+	
+			PLOG(plog::debug) << "Finished adding entity " << entity.id();
+		} else {
+			PLOG(plog::debug) << "Skipping own entity ID: " << entity.id();
 		}
 	}
 	
-	
+ 
 	google::protobuf::util::JsonOptions options;
 	options.add_whitespace = true; 
 	options.always_print_primitive_fields = true;
@@ -209,9 +233,11 @@ void CosimService::trigger() {
 		req.gn.its_aid = example_its_aid;
 
 		const auto& vehicle = getFacilities().get_const<traci::VehicleController>();
-		if (vehicle.getVehicleId().find("carla") == std::string::npos) {
+		std::string id = vehicle.getVehicleId();
+		
+		if (!(id.rfind("rsu", 0) == 0 || id.rfind("cav", 0) == 0 || id.rfind("platoon", 0) == 0)) {
 			auto packet = new Empty();
-			packet->setSender(vehicle.getVehicleId().c_str());
+			packet->setSender(id.c_str());
 			request(req, std::move(packet), network.get());
 			return;
 		}
@@ -225,7 +251,7 @@ void CosimService::trigger() {
 
 		PLOG(plog::debug) << "Amount of CAVs and RSUs: " << message->entity_size() << '\n';
 		for (const auto& entity : message->entity()) {
-			PLOG(plog::debug) << "Entity id: " << entity.id() << "\n";
+			PLOG(plog::debug) << "Entity id: " << entity.id();
 		}
 
 		if (message->entity_size() > 0) {
