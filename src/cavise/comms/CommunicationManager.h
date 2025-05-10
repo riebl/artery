@@ -156,7 +156,7 @@ namespace cavise {
          * @param message message to add to the queue
          * @return BinaryResult error wrapper for this method
          */
-        BinaryResult push(int cav, artery_message_t message);
+        BinaryResult push(const std::string& id, artery_message_t message);
 
     private:
         artery_message_t joinCav();
@@ -178,7 +178,7 @@ namespace cavise {
         std::unique_ptr<Worker> worker_;
 
         std::size_t qMaxSize_;
-        std::unordered_map<int, std::queue<artery_message_t>> arteryCavMapper_;
+        std::unordered_map<std::string, std::queue<artery_message_t>> arteryCavMapper_;
 
         // maybe make it a bit different?
         opencda_message_t opencdaMessage_;
@@ -288,19 +288,19 @@ cavise::Result<typename cavise::CommunicationManager<ArteryMessageType, OpencdaM
 }
 
 template<typename ArteryMessageType, typename OpencdaMessageType>
-cavise::BinaryResult cavise::CommunicationManager<ArteryMessageType, OpencdaMessageType>::push(int cav, artery_message_t message) {
+cavise::BinaryResult cavise::CommunicationManager<ArteryMessageType, OpencdaMessageType>::push(const std::string& id, artery_message_t message) {
     {
         std::unique_lock<std::mutex> unique_lock (worker_->mutex);
         PLOG(plog::debug) << "communication manager: trying to push message onto artery queue...";
 
-        std::queue<artery_message_t>& queue = arteryCavMapper_[cav];
+        std::queue<artery_message_t>& queue = arteryCavMapper_[id];
         if (queue.size() >= qMaxSize_) {
+            PLOG(plog::debug) << "communication manager: queue is full for ID: " << id;
             return BinaryResult::wrapError("queue is full, dropping message");
-            PLOG(plog::debug) << "communication manager: queue is full for cav: " << cav;
         }
 
         queue.push(std::move(message));
-        PLOG(plog::debug) << "communication manager: success! cav is " << cav;
+        PLOG(plog::debug) << "communication manager: success! ID is " << id;
     }
 
     worker_->cv.notify_all();
