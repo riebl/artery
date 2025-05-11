@@ -12,7 +12,7 @@
 	},
 	"containerUser": "devcontainer",
 	"remoteEnv": {
-	"DISPLAY": "${localEnv:DISPLAY}"
+		"DISPLAY": "${localEnv:DISPLAY}"
 	},
 	"mounts": [
 		{
