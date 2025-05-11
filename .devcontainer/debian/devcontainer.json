@@ -21,22 +21,11 @@
             "type": "bind"
         },
         {
-            "source": "debian-persist-conan",
+            "source": "artery-debian-persist-conan",
             "target": "/home/devcontainer/.conan2",
             "type": "volume"
         }
     ],
     "initializeCommand": "which xhost 1>/dev/null 2>/dev/null && xhost +local:docker",
-    "postStartCommand": "sudo chown -R devcontainer:devcontainer /home/devcontainer/.conan2",
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "twxs.cmake",
-                "ms-python.flake8",
-                "ms-python.python",
-                "llvm-vs-code-extensions.vscode-clangd",
-                "xaver.clang-format"
-            ]
-        }
-    }
+    "postStartCommand": "sudo chown -R devcontainer:devcontainer /home/devcontainer/.conan2"
 }

@@ -11,7 +11,7 @@ RUN pacman -Syu --noconfirm     \
     xerces-c fox gdal proj      \
     gl2ps jre17-openjdk swig    \
     maven eigen flex bison git  \
-    gcc sdl2 libsm openmp       \
+    gcc14 sdl2 libsm openmp     \
     openscenegraph qt5-base     \
     pacman-contrib sudo         \
     boost crypto++ xorg         \
@@ -44,7 +44,9 @@ RUN source setenv -f && ./configure WITH_OSGEARTH=no && make -j$(nproc --all)
 WORKDIR /
 RUN git clone --recurse --depth 1 --branch ${SUMO_TAG} https://github.com/eclipse-sumo/sumo
 WORKDIR /sumo
-RUN cmake -B build . && cmake --build build --parallel $(nproc --all)
+# FIXME: temporary switch to gcc-15 in builds due to missing imports
+RUN cmake -B build . -DCMAKE_CXX_COMPILER=g++-14 \
+    && cmake --build build --parallel $(nproc --all)
 
 WORKDIR /
 RUN git clone --recurse --depth 1 --branch ${GEOGRAPHICLIB_TAG} https://github.com/geographiclib/geographiclib

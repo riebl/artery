@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from typing import Callable, Iterable, Union, Tuple, Collection, Optional
 
 from conan.api.output import ConanOutput
-from conan.api.conan_api import ConanAPI, ConanException
+from conan.api.conan_api import ConanAPI
 
 
 def placeholder():

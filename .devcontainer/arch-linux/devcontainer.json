@@ -1,42 +1,31 @@
 {
-    "name": "arch-linux",
-    "build": {
-        "context": "${localWorkspaceFolder}",
-        "dockerfile": "${localWorkspaceFolder}/.devcontainer/arch-linux/Dockerfile",
-        "args": {
-            "USER": "devcontainer",
-            "OMNETPP_TAG": "omnetpp-5.6.2",
-            "SUMO_TAG": "v1_21_0",
-            "GEOGRAPHICLIB_TAG": "v2.5"
-        }
-    },
-    "containerUser": "devcontainer",
-    "remoteEnv": {
-        "DISPLAY": "${localEnv:DISPLAY}"
-    },
-    "mounts": [
-        {
-            "source": "/tmp/.X11-unix",
-            "target": "/tmp/.X11-unix",
-            "type": "bind"
-        },
-        {
-            "source": "arch-linux-persist-conan",
-            "target": "/home/devcontainer/.conan2",
-            "type": "volume"
-        }
-    ],
-    "initializeCommand": "which xhost 1>/dev/null 2>/dev/null && xhost +local:docker",
-    "postStartCommand": "sudo chown -R devcontainer:devcontainer /home/devcontainer/.conan2",
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "twxs.cmake",
-                "ms-python.flake8",
-                "ms-python.python",
-                "llvm-vs-code-extensions.vscode-clangd",
-                "xaver.clang-format"
-            ]
-        }
+  "name": "arch-linux",
+  "build": {
+    "context": "${localWorkspaceFolder}",
+    "dockerfile": "${localWorkspaceFolder}/.devcontainer/arch-linux/Dockerfile",
+    "args": {
+      "USER": "devcontainer",
+      "OMNETPP_TAG": "omnetpp-5.6.2",
+      "SUMO_TAG": "v1_21_0",
+      "GEOGRAPHICLIB_TAG": "v2.5"
     }
+  },
+  "containerUser": "devcontainer",
+  "remoteEnv": {
+    "DISPLAY": "${localEnv:DISPLAY}"
+  },
+  "mounts": [
+    {
+      "source": "/tmp/.X11-unix",
+      "target": "/tmp/.X11-unix",
+      "type": "bind"
+    },
+    {
+      "source": "artery-arch-linux-persist-conan",
+      "target": "/home/devcontainer/.conan2",
+      "type": "volume"
+    }
+  ],
+  "initializeCommand": "which xhost 1>/dev/null 2>/dev/null && xhost +local:docker",
+  "postStartCommand": "sudo chown -R devcontainer:devcontainer /home/devcontainer/.conan2"
 }
