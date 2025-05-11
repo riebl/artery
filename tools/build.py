@@ -21,16 +21,12 @@ from conan.api.output import ConanOutput
 from conan.api.conan_api import ConanAPI
 
 
-def placeholder():
-    pass
-
-
 # this is not part of external API, so this script should not depend upon those
 try:
     from conan.cli.printers import print_profiles
     from conan.cli.printers.graph import print_graph_basic, print_graph_packages
 except ModuleNotFoundError:
-    print_profiles = print_graph_basic = print_graph_packages = placeholder
+    print_profiles = print_graph_basic = print_graph_packages = lambda: ...
 
 
 logger = logging.getLogger(__file__ if '__file__' in vars() else 'build.helper')
