@@ -7,7 +7,7 @@ from typing import Type, Collection, Callable
 
 from tools.run_artery import run_artery
 from tools.ci.sim_results import SimRecordedData, SimResultsReader
-from tools.ci.artery_test import Config
+from tools.ci.artery_test_decorator import Config
 
 
 class ArteryTestCaseTemplate(TestCase):

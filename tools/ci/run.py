@@ -3,6 +3,7 @@ import argparse
 
 from pathlib import Path
 from tools.ci.artery_test_case import ArteryTestCaseFactory
+from tools.ci.artery_test_config_loader import ArteryTestConfigLoader
 
 
 def main():
@@ -15,13 +16,14 @@ def main():
     suite = unittest.TestSuite()
     loader = unittest.TestLoader()
 
+    config_loader = ArteryTestConfigLoader(Path(__file__).parent / 'config')
     factory = ArteryTestCaseFactory(args.launch_conf)
-    for scenario in args.scenario_base_dir.iterdir():
+    for scenario_name in config_loader.scenarios():
+        scenario = args.scenario_base_dir / scenario_name
         if not scenario.is_dir():
-            continue
-
-        # temporary use empty config
-        test_case = factory.make_test_case(scenario, dict())
+            raise FileNotFoundError
+        
+        test_case = factory.make_test_case(scenario, config_loader[scenario_name])
         suite.addTests(loader.loadTestsFromTestCase(test_case)._tests)
 
     runner = unittest.TextTestRunner(verbosity=args.verbosity)
