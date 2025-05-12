@@ -63,7 +63,6 @@ def run_artery(
 
     process = subprocess.run(cmd, cwd=scenario, stderr=sys.stderr, stdout=sys.stdout)
     return process.returncode
-    
 
 
 def main():
