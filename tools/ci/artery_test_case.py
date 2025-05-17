@@ -3,11 +3,11 @@ import importlib
 
 from pathlib import Path
 from unittest import TestCase
-from typing import Type, Collection, Callable
+from typing import Type, Collection, Callable, Optional
 
 from tools.run_artery import run_artery
 from tools.ci.sim_results import SimRecordedData, SimResultsReader
-from tools.ci.artery_test_decorator import Config
+from tools.ci.common import TestOptions, Decorators
 
 
 class ArteryTestCaseTemplate(TestCase):
@@ -39,7 +39,8 @@ class ArteryTestCaseTemplate(TestCase):
     launch_conf: Path
     scenario_path: Path
     sim_results: Collection[SimRecordedData]
-    config: Config
+    config: str
+    test_options: TestOptions
 
     @classmethod
     def setUpClass(cls):
@@ -47,13 +48,13 @@ class ArteryTestCaseTemplate(TestCase):
         for option, value in cls.run_options.items():
             opp_args.append(f'--{option}={value}')
 
-        opp_args.extend(('-u', 'Cmdenv'))
-        retval = run_artery(cls.launch_conf, opp_args, cls.scenario_path)
+        opp_args.extend(('-u', 'Cmdenv', '-c', cls.config))
+        retval = run_artery(cls.launch_conf, opp_args, cls.scenario_path, mute_standard_fds=True)
         if retval != 0:
             raise RuntimeError(f'call to run_artery returned non-zero exit code: {retval}')
 
         reader = SimResultsReader()
-        cls.sim_results = reader.read(cls.scenario_path)
+        cls.sim_results = reader.read(cls.scenario_path, cls.config)
 
     @classmethod
     def load_tests(cls):
@@ -68,7 +69,10 @@ class ArteryTestCaseTemplate(TestCase):
             module = importlib.import_module(str(cleared_path).replace('/', '.'), '.')
 
             for name, func in inspect.getmembers(module, predicate=inspect.isfunction):
-                if hasattr(func, 'is_artery_test'):
+                if hasattr(func, Decorators.ARTERY_TEST_TAG):
+                    for option, value in getattr(func, Decorators.ARTERY_OMNETPP_SETTINGS, {}).items():
+                        cls.run_options[option] = value
+
                     wrapper = cls.__make_test(func)
                     setattr(cls, f'test_{cls.__name__}_{name}', wrapper)
 
@@ -76,19 +80,39 @@ class ArteryTestCaseTemplate(TestCase):
     def __make_test(cls, impl: Callable):
         def test(self):
             nonlocal cls
-            impl(self, data=cls.sim_results, config=cls.config)
+            impl(self, data=cls.sim_results, config=cls.test_options)
 
         return test        
 
 
 class ArteryTestCaseFactory:
-    def __init__(self, launch_conf: Path):
+    def __init__(self, launch_conf: Path):     
         self.launch_conf = launch_conf
 
-    def make_test_case(self, scenario_path: Path, config: Config) -> type:
+    def make_test_case(
+        self,
+        scenario_path: Path,
+        config: str = 'General',
+        test_options: Optional[TestOptions] = None
+    ) -> type:
+        """
+        Creates test for scenario from template, loading all requested tests
+        and setting run configurations for Omnet++.
+
+        Args:
+            scenario_path (Path): Path to scenario under testing.
+            config (Optional[str]): Specifies Omnet++ configuration to test, defaults to General.
+            test_options (Optional[TestOptions]): Provides options for test, defaults to empty dictionary.
+
+        Returns:
+            type: A test case type that runs Omnet++ on creation and runs tests against captured data.
+        """
         scenario_name = scenario_path.stem.replace('-', '_')
+        if test_options is None:
+            test_options = {}
+
         test_case: Type[ArteryTestCaseTemplate] = type(
-            f'{scenario_name}_TestCase',
+            f'{scenario_name}_{config}_TestCase',
             ArteryTestCaseTemplate.__bases__,
             dict(ArteryTestCaseTemplate.__dict__)
         )
@@ -96,5 +120,6 @@ class ArteryTestCaseFactory:
         test_case.launch_conf = self.launch_conf
         test_case.scenario_path = scenario_path
         test_case.config = config
+        test_case.test_options = test_options
         test_case.load_tests()
         return test_case

@@ -3,21 +3,25 @@ import pandas as pd
 
 from pathlib import Path
 from dataclasses import dataclass
-from typing import Optional, Dict, List
+from typing import Optional, Dict
 
 
 @dataclass
 class SimRecordedData:
+    # TODO: expend to all all tables as needed
+    # TODO: support multiple runs?
     config_name: str
+    simtimeExp: Optional[int] = None
     scalars: Optional[pd.DataFrame] = None
     vectors: Optional[pd.DataFrame] = None
+    vectorData: Optional[pd.DataFrame] = None
 
     def __bool__(self):
         return all(data is not None for data in (self.scalars, self.vectors))
 
 
 class SimResultsReader:
-    def _scan_results(self, scenerio_path: Path) -> Dict[str, Dict[str, Path]]:
+    def __scan_results(self, scenerio_path: Path) -> Dict[str, Dict[str, Path]]:
         if not isinstance(scenerio_path, Path):
             raise TypeError
         
@@ -41,19 +45,22 @@ class SimResultsReader:
 
         return records
     
-    def read(self, scenerio_path: Path) -> List[SimRecordedData]:
-        records = self._scan_results(scenerio_path)
+    def read(self, scenerio_path: Path, config: str) -> SimRecordedData:
+        records = self.__scan_results(scenerio_path)
+        if config not in records:
+            raise KeyError(f'run results for config {config} not found in ' + ', '.join(records.keys()))
 
-        data = []
-        for config, path_mapping in records.items():
-            recording = SimRecordedData(config)
-            if 'vectors' in path_mapping:
-                with sqlite3.connect(path_mapping['vectors']) as ctx:
-                    recording.vectors = pd.read_sql('SELECT * FROM vector', ctx)
-            if 'scalars' in path_mapping:
-                with sqlite3.connect(path_mapping['scalars']) as ctx:
-                    recording.scalars = pd.read_sql('SELECT * FROM scalar', ctx)
-            if recording:
-                data.append(recording)
+        recording = SimRecordedData(config)
+        path_mapping = records[config]
+        if 'vectors' in path_mapping:
+            with sqlite3.connect(path_mapping['vectors']) as ctx:
+                recording.vectors = pd.read_sql('SELECT * FROM vector', ctx)
+                recording.vectorData = pd.read_sql('SELECT * FROM vectorData', ctx)
+        if 'scalars' in path_mapping:
+            with sqlite3.connect(path_mapping['scalars']) as ctx:
+                recording.scalars = pd.read_sql('SELECT * FROM scalar', ctx)
+                cursor = ctx.execute('SELECT simtimeExp FROM run')
+                # TODO: dataclasses should be capable of parsing this
+                recording.simtimeExp = cursor.fetchall()[0][0]
 
-        return data
+        return recording

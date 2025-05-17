@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import sys
 import argparse
 import subprocess
@@ -16,7 +17,8 @@ def run_artery(
     runall: bool = False,
     batchsize: Optional[int] = None,
     jobs: Optional[int] = None,
-    verbose: bool = False
+    verbose: bool = False,
+    mute_standard_fds: bool = False
 ) -> int:
     
     if opp_args is None:
@@ -61,7 +63,10 @@ def run_artery(
     if verbose:
         print('running command: ', ' '.join(cmd))
 
-    process = subprocess.run(cmd, cwd=scenario, stderr=sys.stderr, stdout=sys.stdout)
+    stdout, stderr = sys.stdout, sys.stderr
+    if mute_standard_fds:
+        stdout = stderr = subprocess.DEVNULL
+    process = subprocess.run(cmd, cwd=scenario, stderr=stderr, stdout=stdout)
     return process.returncode
 
 

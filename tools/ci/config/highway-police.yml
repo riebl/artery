@@ -1,2 +1,28 @@
 scenario:
-  someoption: somevalue
+  # omnet.ini configurations to run tests for 
+  tested_configurations: 
+    - General
+    - envmod
+    - storyboard
+
+  # number if vehicles (World.node[*]) to expect
+  vehicles: 4
+
+  # cbr: policy for comparison (less, greater)
+  cbr: greater
+  # cbr: value to compare against
+  cbr_threshold: 0.0
+
+  # coordinates span: check that vehicles actually moving
+  # you can hardcode coordinate span, or use more relaxed approach
+  # specifying allowed coordinates span
+  # approach 1: hardcode coordinates, if any exceed - fail
+  posY_min: -8
+  posY_max: -1
+  # approach 2: specify relative coordinates span (if any boundary is empty - assume inf or 0)
+  posX_min_span: 100
+  # max_span is +inf
+  # approaches may be combined
+
+  # min/max cam rate
+  min_cam_rate: 1
