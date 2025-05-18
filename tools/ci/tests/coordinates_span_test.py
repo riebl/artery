@@ -13,7 +13,7 @@ from tools.ci.common import TestOptions, Decorators
     '**.posX.result-recording-modes': 'vector',
     '**.posY.result-recording-modes': 'vector'
 })
-def coordinates_span_test(test: TestCase, data: SimRecordedData, config: TestOptions):
+def coordinates_span_test(test: TestCase, data: SimRecordedData, test_options: TestOptions):
     maskX = data.vectors['vectorName'].str.startswith('posX')
     maskY = data.vectors['vectorName'].str.startswith('posY')
 
@@ -30,26 +30,26 @@ def coordinates_span_test(test: TestCase, data: SimRecordedData, config: TestOpt
         X_max, X_min = X_values.max(), X_values.min()
         Y_max, Y_min = Y_values.max(), Y_values.min()
 
-        if 'posX_min' in config:
-            test.assertGreaterEqual(X_min, config['posX_min'])
-        if 'posX_max' in config:
-            test.assertLessEqual(X_max, config['posX_max'])
-        if 'posY_min' in config:
-            test.assertGreaterEqual(Y_min, config['posY_min'])
-        if 'posY_max' in config:
-            test.assertLessEqual(Y_max, config['posY_max'])
+        if 'posX_min' in test_options:
+            test.assertGreaterEqual(X_min, test_options['posX_min'])
+        if 'posX_max' in test_options:
+            test.assertLessEqual(X_max, test_options['posX_max'])
+        if 'posY_min' in test_options:
+            test.assertGreaterEqual(Y_min, test_options['posY_min'])
+        if 'posY_max' in test_options:
+            test.assertLessEqual(Y_max, test_options['posY_max'])
 
         X_span = X_max - X_min
-        posX_min_span = config.get('posX_min_span', 0)
-        posX_max_span = config.get('posX_max_span', math.inf)
+        posX_min_span = test_options.get('posX_min_span', 0)
+        posX_max_span = test_options.get('posX_max_span', math.inf)
         test.assertTrue(
             posX_min_span <= X_span < posX_max_span,
             f'expected X_span {X_span} to be in ({posX_min_span}, {posX_max_span})'
         )
 
         Y_span = Y_max - Y_min
-        posY_min_span = config.get('posY_min_span', 0)
-        posY_max_span = config.get('posY_max_span', math.inf)
+        posY_min_span = test_options.get('posY_min_span', 0)
+        posY_max_span = test_options.get('posY_max_span', math.inf)
         test.assertTrue(
             posY_min_span <= Y_span < posY_max_span,
             f'expected Y_span {Y_span} to be in ({posY_min_span}, {posY_max_span})'

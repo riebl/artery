@@ -9,9 +9,13 @@ from tools.ci.sim_results import SimRecordedData
 # TODO: this test is naive, we should probably check time difference between
 # vector records
 @Decorators.artery_test
-def min_cam_rate_test(test: TestCase, data: SimRecordedData, config: TestOptions):
-    sentDown = data.scalars[data.scalars['scalarName'] == 'sentDownPk:count']
+@Decorators.defines_test_options({
+    'min_cam_rate': 1
+})
+def min_cam_rate_test(test: TestCase, data: SimRecordedData, test_options: TestOptions):
+    sentDown = data.scalars[data.scalars['scalarName'] == 'sentDownPk:count']['scalarValue']
     simtime = data.vectors['endSimtimeRaw'].max() - data.vectors['startSimtimeRaw'].min()
     simtime_seconds = math.pow(simtime, data.simtimeExp)
 
-    test.assertGreaterEqual(sentDown / simtime_seconds, config.get('min_cam_rate', 1))
+    for sentDownCount in sentDown:
+        test.assertGreaterEqual(sentDownCount / simtime_seconds, test_options['min_cam_rate'])

@@ -80,7 +80,7 @@ class ArteryTestCaseTemplate(TestCase):
     def __make_test(cls, impl: Callable):
         def test(self):
             nonlocal cls
-            impl(self, data=cls.sim_results, config=cls.test_options)
+            impl(self, data=cls.sim_results, test_options=cls.test_options)
 
         return test        
 

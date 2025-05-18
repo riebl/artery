@@ -7,8 +7,10 @@ from tools.ci.common import TestOptions, Decorators
 
 
 @Decorators.artery_test
-def stations_test(test: TestCase, data: SimRecordedData, config: TestOptions):
-    test.assertTrue('vehicles' in config, 'vehicle count was not provided by config')
+@Decorators.defines_test_options({
+    'vehicles': None
+})
+def stations_test(test: TestCase, data: SimRecordedData, test_options: TestOptions):
     uniq = data.vectors['moduleName'].unique()
 
     node_ids = set()
@@ -19,7 +21,7 @@ def stations_test(test: TestCase, data: SimRecordedData, config: TestOptions):
 
         node_ids.add(match.group(1))
 
-    count = config['vehicles']
+    count = test_options['vehicles']
     test.assertEqual(
         len(node_ids),
         count,

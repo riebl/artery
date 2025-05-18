@@ -4,15 +4,16 @@ from tools.ci.sim_results import SimRecordedData
 from tools.ci.common import TestOptions, Decorators
 
 
-# TODO: also support all_close cbr evaluation policy
-# TODO: also support veins model 
 @Decorators.artery_test
 @Decorators.with_omnetpp_settings({
     '**.ChannelLoad.scalar': 'true'
 })
-def cbr_test(test: TestCase, data: SimRecordedData, config: TestOptions):
-    cbr = config.get('cbr', 'greater')
-    threshold = config.get('cbr_threshold', 0.0)
+@Decorators.defines_test_options({
+    'cbr': 'greater',
+    'cbr_threshold': 0.0
+})
+def cbr_test(test: TestCase, data: SimRecordedData, test_options: TestOptions):
+    cbr, threshold = test_options['cbr'], test_options['cbr_threshold']
 
     mask = data.scalars['scalarName'] == 'ChannelLoad:timeavg'
     cbr_values = data.scalars[mask]['scalarValue']
