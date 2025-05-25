@@ -3,6 +3,7 @@
 #include "vanetza/common/byte_buffer.hpp"
 #include "vanetza/common/byte_buffer_convertible.hpp"
 #include "vanetza/net/chunk_packet.hpp"
+#include "vanetza/net/cohesive_packet.hpp"
 #include "vanetza/net/osi_layer.hpp"
 
 #include <pybind11/embed.h>
@@ -14,11 +15,11 @@
 
 namespace py = pybind11;
 
-PYBIND11_EMBEDDED_MODULE(omnetpp, m)
+PYBIND11_EMBEDDED_MODULE(_omnetpp, m)
 {
 }
 
-PYBIND11_EMBEDDED_MODULE(vanetza, m)
+PYBIND11_EMBEDDED_MODULE(_vanetza, m)
 {
     py::enum_<vanetza::OsiLayer>(m, "OsiLayer")
         .value("Physical", vanetza::OsiLayer::Physical)
@@ -30,7 +31,7 @@ PYBIND11_EMBEDDED_MODULE(vanetza, m)
         .value("Application", vanetza::OsiLayer::Application);
 
     m.def("min_osi_layer", vanetza::min_osi_layer);
-    m.def("max_osi_layer", vanetza::max_osi_layer());
+    m.def("max_osi_layer", vanetza::max_osi_layer);
 
     m.def("distance", vanetza::distance);
     m.def("num_osi_layers", vanetza::num_osi_layers);
@@ -67,6 +68,6 @@ PYBIND11_EMBEDDED_MODULE(vanetza, m)
 }
 
 
-PYBIND11_EMBEDDED_MODULE(artery, m)
+PYBIND11_EMBEDDED_MODULE(_artery, m)
 {
 }

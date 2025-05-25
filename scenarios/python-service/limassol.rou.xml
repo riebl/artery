@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="car0" depart="0.00" from="348513100" to="24642897"/>
+    <flow id="carFlow0" begin="0.00" end="0.05" vehsPerHour="1800">
+        <route edges="1185138262#1 899821840 555452855"/>
+    </flow>
+    <flow id="carFlow1" begin="0.00" end="0.05" vehsPerHour="1800">
+        <route edges="1036403204 348513095 543574677#1 149039336 149039346 543574674#1 1036403207#0 555452855"/>
+    </flow>
+    <flow id="carFlow3" begin="0.00" end="0.05" vehsPerHour="1800">
+        <route edges="543556733 555452854 20462657 1185138262#0 1185138262#1 899821840 555452855"/>
+    </flow>
+    <flow id="carFlow4" begin="0.00" end="0.05" vehsPerHour="1800">
+        <route edges="348513100 543574670#1 543574670#2 543574673 543574672 543574676#1 348513086"/>
+    </flow>
+</routes>
