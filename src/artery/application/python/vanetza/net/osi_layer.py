@@ -11,8 +11,6 @@ except ImportError:
     import warn
     import enum
 
-    warn.warn_user()
-
     class OsiLayer(enum.Enum):
         Physical = 1
         Link = 2
