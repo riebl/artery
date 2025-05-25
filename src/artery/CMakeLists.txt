@@ -14,7 +14,6 @@ add_library(core SHARED
     application/ItsG5BaseService.cc
     application/ItsG5PromiscuousService.cc
     application/ItsG5Service.cc
-    application/PythonItsG5Service.cc
     application/LocalDynamicMap.cc
     application/LocationTableLogger.cc
     application/Middleware.cc
@@ -161,6 +160,18 @@ endmacro()
 
 if(WITH_STORYBOARD)
     add_subdirectory(storyboard)
+endif()
+
+if(WITH_PYTHON_BINDINGS)
+    add_artery_feature(python_bindings)
+    target_sources(python_bindings PRIVATE
+        application/PythonItsG5Service.cc
+        application/Binding.cc
+    )
+    target_link_libraries(python_bindings PRIVATE pybind11)
+    target_compile_definitions(python_bindings PRIVATE
+        $<$<CONFIG:Debug>:PREFER_LOCAL_PYTHON_STUBS>
+    )
 endif()
 
 if(WITH_TRANSFUSION)
