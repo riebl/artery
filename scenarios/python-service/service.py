@@ -1,0 +1,5 @@
+print('hello')
+
+
+class ExampleService:
+    ...

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <input>
+        <net-file value="limassol.net.xml" />
+        <route-files value="limassol.rou.xml" />
+    </input>
+
+    <time>
+        <step-length value="0.001" />
+    </time>
+</configuration>
