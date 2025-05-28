@@ -24,6 +24,9 @@ public:
 
     void addTransportDescriptor(const TransportDescriptor& td);
 
+protected:
+    void finish() override;
+
 private:
     void initializeInterpreter();
     void initializeModules();

@@ -1,5 +1,6 @@
 #include "artery/application/PythonItsG5Service.h"
 
+#include "artery/application/ItsG5BaseService.h"
 #include "omnetpp/cexception.h"
 #include "pybind11/detail/common.h"
 #include "pybind11/embed.h"
@@ -15,6 +16,30 @@
 using namespace omnetpp;
 namespace py = pybind11;
 
+namespace
+{
+
+template <typename... Args>
+void pySafeCall(py::object& obj, const char* method, Args... args)
+{
+    try {
+        obj.attr(method)(std::forward<Args>(args)...);
+    } catch (const py::error_already_set& error) {
+        throw cRuntimeError("Python method %s call on object %#x failed: %s", method, obj.ptr(), error.what());
+    }
+}
+
+template <typename... Args>
+bool pyOptionalCall(py::object& obj, const char* method, Args... args)
+{
+    if (!py::hasattr(obj, method)) {
+        return false;
+    }
+    pySafeCall(obj, method, std::forward<Args>(args)...);
+    return true;
+}
+}  // namespace
+
 namespace artery
 {
 
@@ -26,16 +51,16 @@ public:
     static py::scoped_interpreter& interpreter()
     {
         if (!mInterpreter) {
-            mInterpreter = std::make_shared<py::scoped_interpreter>();
+            mInterpreter = std::make_unique<py::scoped_interpreter>();
         }
         return *mInterpreter;
     }
 
 private:
-    static std::shared_ptr<py::scoped_interpreter> mInterpreter;
+    static std::unique_ptr<py::scoped_interpreter> mInterpreter;
 };
 
-std::shared_ptr<py::scoped_interpreter> SharedPythonContext::mInterpreter = nullptr;
+std::unique_ptr<py::scoped_interpreter> SharedPythonContext::mInterpreter = nullptr;
 
 struct PythonItsG5Service::PythonContext {
     py::module module;
@@ -63,6 +88,7 @@ int PythonItsG5Service::numInitStages() const
 
 void PythonItsG5Service::initializeInterpreter()
 {
+    ItsG5BaseService::initialize();
     if (const cModule* storyboard = getModuleByPath("World.storyboard"); storyboard != nullptr) {
         throw cRuntimeError("Could not initialize Python interpreter: this module conflicts with storyboard");
     }
@@ -99,9 +125,13 @@ void PythonItsG5Service::initializeModules()
         const char* pythonServiceCls = nullptr;
         try {
             pythonServiceCls = par("pythonServiceClass").stringValue();
-            mPythonContext->service = mPythonContext->module.attr(pythonServiceCls);
+            mPythonContext->service = mPythonContext->module.attr(pythonServiceCls)();
         } catch (const py::attribute_error&) {
             throw cRuntimeError("Failed to get service class: %s from Python module: %s", pythonServiceCls, pythonModule);
+        }
+
+        if (!pyOptionalCall(mPythonContext->service, "initialize")) {
+            EV_INFO << "Python service does not provide initialize() method!";
         }
     } catch (const py::error_already_set& error) {
         throw cRuntimeError("Python exception raised: %s", error.what());
@@ -125,6 +155,12 @@ void PythonItsG5Service::trigger()
 
 void PythonItsG5Service::addTransportDescriptor(const TransportDescriptor& td)
 {
+}
+
+void PythonItsG5Service::finish()
+{
+    ItsG5BaseService::finish();
+    pyOptionalCall(mPythonContext->service, "finish");
 }
 
 
