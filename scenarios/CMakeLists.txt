@@ -11,6 +11,7 @@ add_opp_run(car_rsu_traffic_coperception WORKING_DIRECTORY ${CMAKE_CURRENT_SOURC
 add_opp_run(3cars_coperception WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/3cars_coperception NED_FOLDERS ${CMAKE_SOURCE_DIR}/src/cavise)
 add_opp_run(2cars_no_rsu_coperception WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/2cars_no_rsu_coperception NED_FOLDERS ${CMAKE_SOURCE_DIR}/src/cavise)
 add_opp_run(cooperative_intersection WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cooperative_intersection NED_FOLDERS ${CMAKE_SOURCE_DIR}/src/cavise)
+add_opp_run(4cars_coperception WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/4cars_coperception NED_FOLDERS ${CMAKE_SOURCE_DIR}/src/cavise)
 
 if(WITH_ENVMOD)
     add_subdirectory(rsu_grid)
