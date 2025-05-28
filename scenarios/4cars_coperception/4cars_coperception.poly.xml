@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-05-28 23:25:14 by Eclipse SUMO netedit Version 1.22.0
+-->
+
+<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
+    <!-- Shapes -->
+    <poly id="building_0" type="building" color="129,129,129" fill="1" layer="0.00" shape="716.770000,608.580000 717.600000,658.160000 746.820000,658.440000 746.820000,607.610000 716.770000,608.580000"/>
+    <poly id="building_1" type="building" color="129,129,129" fill="1" layer="0.00" shape="772.872545,581.531485 772.567858,556.851866 802.884181,556.242492 802.731837,581.226798 772.872545,581.531485"/>
+    <poly id="building_2" type="building" color="129,129,129" fill="1" layer="0.00" shape="718.884698,582.087834 739.316834,581.709461 739.316834,573.574444 746.695106,573.479851 746.695106,559.953020 727.492682,560.236800 727.492682,574.331190 718.979292,574.520376 718.884698,582.087834"/>
+</additional>
