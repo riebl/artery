@@ -1,5 +1,7 @@
+#include "pybind11/buffer_info.h"
 #include "pybind11/detail/common.h"
 #include "pybind11/pybind11.h"
+#include "pybind11/pytypes.h"
 #include "vanetza/common/byte_buffer.hpp"
 #include "vanetza/common/byte_buffer_convertible.hpp"
 #include "vanetza/net/chunk_packet.hpp"
@@ -12,8 +14,29 @@
 #include <vanetza/net/packet.hpp>
 
 #include <cstddef>
+#include <cstdint>
 
 namespace py = pybind11;
+
+namespace helpers
+{
+
+py::bytes to_bytes(const vanetza::ByteBuffer& buffer)
+{
+    return py::bytes(reinterpret_cast<const char*>(buffer.data()), buffer.size());
+}
+
+vanetza::ByteBuffer from_bytes(const py::bytes& bytes)
+{
+    py::buffer buf = bytes;
+    py::buffer_info bufInfo = buf.request();
+    vanetza::ByteBuffer buffer(bufInfo.size);
+
+    std::copy(static_cast<std::uint8_t*>(bufInfo.ptr), static_cast<std::uint8_t*>(bufInfo.ptr) + bufInfo.size, buffer.begin());
+    return buffer;
+}
+
+}  // namespace helpers
 
 PYBIND11_EMBEDDED_MODULE(_omnetpp, m)
 {
@@ -36,31 +59,33 @@ PYBIND11_EMBEDDED_MODULE(_vanetza, m)
     m.def("distance", vanetza::distance);
     m.def("num_osi_layers", vanetza::num_osi_layers);
 
-    // TODO: wrap num_osi_layers and osi_layer_range as python code
-    // (should be better than binding directly)
+    // num_osi_layers and osi_layer_range are wrapped as python code
 
+    // Python code should implement byte convertors itself
     py::class_<vanetza::ByteBufferConvertible>(m, "ByteBufferConvertible")
         .def(py::init())
-        .def(py::init<std::string>())
-        .def(py::init<vanetza::ByteBuffer>())
+        .def(py::init<const std::string&>())
+        .def(py::init([](const py::bytes& bytes) { return vanetza::ByteBufferConvertible(helpers::from_bytes(bytes)); }))
         .def(
             "convert",
             [](vanetza::ByteBufferConvertible& self) {
                 vanetza::ByteBuffer buffer;
                 self.convert(buffer);
-                return buffer;
+                return helpers::to_bytes(buffer);
             })
         .def("size", &vanetza::ByteBufferConvertible::size);
 
     py::class_<vanetza::ChunkPacket>(m, "ChunkPacket")
         .def(py::init())
-        .def(py::init<vanetza::ChunkPacket&>())
+        .def(py::init<const vanetza::ChunkPacket&>())
         .def(
             "layer", static_cast<vanetza::ByteBufferConvertible& (vanetza::ChunkPacket::*)(vanetza::OsiLayer)>(&vanetza::ChunkPacket::layer),
             py::return_value_policy::reference_internal)
+        .def("set_layer", [](vanetza::ChunkPacket& self, vanetza::OsiLayer ol, const vanetza::ByteBufferConvertible& buffer) { self.layer(ol) = buffer; })
         .def(
             "__getitem__", static_cast<vanetza::ByteBufferConvertible& (vanetza::ChunkPacket::*)(vanetza::OsiLayer)>(&vanetza::ChunkPacket::operator[]),
             py::return_value_policy::reference_internal)
+        .def("__setitem__", [](vanetza::ChunkPacket& self, vanetza::OsiLayer ol, const vanetza::ByteBufferConvertible& buffer) { self[ol] = buffer; })
         .def("size", static_cast<std::size_t (vanetza::ChunkPacket::*)() const>(&vanetza::ChunkPacket::size))
         .def("size_range", static_cast<std::size_t (vanetza::ChunkPacket::*)(vanetza::OsiLayer, vanetza::OsiLayer) const>(&vanetza::ChunkPacket::size))
         .def("extract", &vanetza::ChunkPacket::extract, py::return_value_policy::take_ownership)
