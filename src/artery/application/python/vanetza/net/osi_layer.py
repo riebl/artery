@@ -1,37 +1,48 @@
 # Binds: extern/vanetza/vanetza/net/osi_layer.hpp
 # pylint: disable=unused-import,function-redefined,useless-parent-delegation
 
-from typing import List, Iterable
+import enum
 
-try:
-    from _vanetza import OsiLayer, min_osi_layer, max_osi_layer
-    from _vanetza import distance, num_osi_layers
+from typing import List, Iterable, TYPE_CHECKING
 
-except ImportError:
-    import warn
-    import enum
 
-    class OsiLayer(enum.Enum):
-        Physical = 1
-        Link = 2
-        Network = 3
-        Transport = 4
-        Session = 5
-        Presentation = 6    
-        Application = 7
+class _OsiLayer(enum.Enum):
+    Physical = 1
+    Link = 2
+    Network = 3
+    Transport = 4
+    Session = 5
+    Presentation = 6    
+    Application = 7
 
-    def min_osi_layer():
-        return OsiLayer.Physical
+def _min_osi_layer():
+    return _OsiLayer.Physical
 
-    def max_osi_layer():
-        return OsiLayer.Application
+def _max_osi_layer():
+    return _OsiLayer.Application
 
-    def distance(start: OsiLayer, end: OsiLayer) -> int:
-        return max(int(start) - int(end), 0)
+def _distance(start: _OsiLayer, end: _OsiLayer) -> int:
+    return max(int(start) - int(end), 0)
 
-    def num_osi_layers(start: OsiLayer, end: OsiLayer) -> int:
-        d = distance(start, end)
-        return d + 1 if d > 0 else d
+def _num_osi_layers(start: _OsiLayer, end: _OsiLayer) -> int:
+    d = distance(start, end)
+    return d + 1 if d > 0 else d
+
+
+if TYPE_CHECKING:
+    OsiLayer = _OsiLayer
+    min_osi_layer = _min_osi_layer
+    max_osi_layer = _max_osi_layer
+    distance = _distance
+    num_osi_layers = _num_osi_layers
+
+else:
+    try:
+        from _vanetza import OsiLayer, min_osi_layer, max_osi_layer
+        from _vanetza import distance, num_osi_layers
+
+    except ImportError:
+        import warn
     
 
 OsiLayers = [
@@ -49,4 +60,4 @@ def osi_layer_list(start: OsiLayer, end: OsiLayer) -> List[OsiLayer]:
 
 def osi_layer_iterable(start: OsiLayer, end: OsiLayer) -> Iterable[OsiLayer]:
     for layer in range(int(start), int(end) + 1):
-        yield OsiLayer[layer - 1]
+        yield OsiLayers[layer - 1]
