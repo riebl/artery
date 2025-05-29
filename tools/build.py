@@ -212,6 +212,7 @@ class Routines:
         if 'Debug' in self.__params.build_configs:
             path = self.__params.build_directory.joinpath('Debug').joinpath('compile_commands.json')
             logger.info(f'creating symlink for path \'{path}\'')
+            Path.cwd().joinpath('compile_commands.json').symlink_to(path)
             return
 
         # if Debug config is not found, just wire up the first one that exists
