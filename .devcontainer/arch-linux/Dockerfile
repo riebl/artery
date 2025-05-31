@@ -44,9 +44,7 @@ RUN source setenv -f && ./configure WITH_OSGEARTH=no && make -j$(nproc --all)
 WORKDIR /
 RUN git clone --recurse --depth 1 --branch ${SUMO_TAG} https://github.com/eclipse-sumo/sumo
 WORKDIR /sumo
-# FIXME: temporary switch to gcc-15 in builds due to missing imports
-RUN cmake -B build . -DCMAKE_CXX_COMPILER=g++-14 \
-    && cmake --build build --parallel $(nproc --all)
+RUN cmake -B build . && cmake --build build --parallel $(nproc --all)
 
 WORKDIR /
 RUN git clone --recurse --depth 1 --branch ${GEOGRAPHICLIB_TAG} https://github.com/geographiclib/geographiclib

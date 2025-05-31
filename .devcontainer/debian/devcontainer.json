@@ -19,13 +19,7 @@
             "source": "/tmp/.X11-unix",
             "target": "/tmp/.X11-unix",
             "type": "bind"
-        },
-        {
-            "source": "artery-debian-persist-conan",
-            "target": "/home/devcontainer/.conan2",
-            "type": "volume"
         }
     ],
-    "initializeCommand": "which xhost 1>/dev/null 2>/dev/null && xhost +local:docker",
-    "postStartCommand": "sudo chown -R devcontainer:devcontainer /home/devcontainer/.conan2"
+    "initializeCommand": "which xhost 1>/dev/null 2>/dev/null && xhost +local:docker"
 }

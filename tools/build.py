@@ -15,7 +15,7 @@ import multiprocessing
 from pathlib import Path
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from typing import Callable, Iterable, Union, Tuple, Collection, Optional
+from typing import Callable, Iterable, Union, Tuple, List, Optional
 
 from conan.api.output import ConanOutput
 from conan.api.conan_api import ConanAPI
@@ -26,7 +26,7 @@ try:
     from conan.cli.printers import print_profiles
     from conan.cli.printers.graph import print_graph_basic, print_graph_packages
 except ModuleNotFoundError:
-    print_profiles = print_graph_basic = print_graph_packages = lambda: ...
+    print_profiles = print_graph_basic = print_graph_packages = lambda *args, **kwargs: ...
 
 
 logger = logging.getLogger(__file__ if '__file__' in vars() else 'build.helper')
@@ -68,7 +68,7 @@ class Config:
     # CMake-specific
     build_configs: Iterable[str] = field(default_factory=lambda: ['Debug'])
     generator: Optional[str] = None
-    defines: Collection[Tuple[str, str, str]] = field(default_factory=lambda: [])
+    defines: List[Tuple[str, str, str]] = field(default_factory=lambda: [])
     # Conan-specific
     # whether to place conan home in build directory
     use_local_cache: bool = False
@@ -331,6 +331,7 @@ def parse_cli_args() -> argparse.Namespace:
     parser.add_argument('-l', '--symlink-compile-commands', action='store_true', dest='symlink_compile_commands')
     # Environment
     parser.add_argument('--build-dir', action='store', dest='build_directory')
+    parser.add_argument('--local-cache', action='store_true', dest='local_cache', default=False)
     # TODO: allow more configs
     parser.add_argument('--config', action='append', dest='configs', choices=['Debug', 'Release'])
     parser.add_argument('--parallel', action='store', dest='cores')
@@ -339,7 +340,6 @@ def parse_cli_args() -> argparse.Namespace:
     parser.add_argument('--pr:a', action='store', dest='profile_all')
     parser.add_argument('--pr:h', action='store', dest='profile_host')
     parser.add_argument('--pr:b', action='store', dest='profile_build')
-    parser.add_argument('--profiles-detection', action='store_true', dest='profile_detect')
     # Arbitrary CMake flags
     parser.add_argument('-D', metavar='KEY:TYPE=VALUE', action='append', default=[], dest='defines')
     return parser.parse_args()
@@ -379,7 +379,7 @@ def main():
     if getattr(args, 'generator') is not None:
         params.generator = args.generator
         logger.info(f'config: user-provided generator: "{params.generator}"')
-    params.allow_profile_detection = args.profile_detect
+    params.local_cache = args.local_cache
 
     resolve_profiles(params, args)
     resolve_defines(params, args)
