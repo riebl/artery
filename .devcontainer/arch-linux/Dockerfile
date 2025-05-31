@@ -11,7 +11,7 @@ RUN pacman -Syu --noconfirm     \
     xerces-c fox gdal proj      \
     gl2ps jre17-openjdk swig    \
     maven eigen flex bison git  \
-    sdl2 libsm openmp           \
+    gcc sdl2 libsm openmp       \
     openscenegraph qt5-base     \
     pacman-contrib sudo         \
     boost crypto++ xorg         \
