@@ -16,10 +16,7 @@ RUN pacman -Syu --noconfirm     \
     pacman-contrib sudo         \
     boost crypto++ xorg         \
     ttf-ubuntu-font-family      \
-    ninja zsh bat               \
-    zsh-autocomplete            \
-    zsh-syntax-highlighting     \
-    zsh-autosuggestions         \
+    ninja                       \
     && pip install --break-system-packages conan \
     && paccache -r -k 0
 
