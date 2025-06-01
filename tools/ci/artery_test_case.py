@@ -38,7 +38,7 @@ class ArteryTestCaseTemplate(TestCase):
     # these are set upon creating new type
     launch_conf: Path
     scenario_path: Path
-    sim_results: Collection[SimRecordedData]
+    sim_results: SimRecordedData
     config: str
     test_options: TestOptions
 
@@ -82,7 +82,7 @@ class ArteryTestCaseTemplate(TestCase):
             nonlocal cls
             impl(self, data=cls.sim_results, test_options=cls.test_options)
 
-        return test        
+        return test
 
 
 class ArteryTestCaseFactory:
@@ -111,7 +111,7 @@ class ArteryTestCaseFactory:
         if test_options is None:
             test_options = {}
 
-        test_case: Type[ArteryTestCaseTemplate] = type(
+        test_case = type(
             f'{scenario_name}_{config}_TestCase',
             ArteryTestCaseTemplate.__bases__,
             dict(ArteryTestCaseTemplate.__dict__)

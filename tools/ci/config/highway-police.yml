@@ -1,10 +1,18 @@
-scenario:
+test_runner: !test_runner
+  # test suite selection
+  test_functions:
+    - cbr_test
+    - coordinates_span_test
+    - min_cam_rate_test
+    - stations_test
+
   # omnet.ini configurations to run tests for 
   tested_configurations: 
     - General
     - envmod
     - storyboard
 
+scenario: !scenario
   # number if vehicles (World.node[*]) to expect
   vehicles: 4
 
@@ -26,3 +34,8 @@ scenario:
 
   # min/max cam rate
   min_cam_rate: 1
+
+  configurations:
+    # overriden options for certain configurations
+    envmod:
+      null

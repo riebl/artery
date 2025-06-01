@@ -1,6 +1,6 @@
 from functools import wraps
 from unittest import TestCase
-from typing import Callable, TypeAlias, Dict, Union, Collection, Optional
+from typing import Callable, TypeAlias, Dict, Union, Collection, Optional, Any
 
 
 TestOptions: TypeAlias = Dict[
@@ -22,24 +22,44 @@ class Decorators:
         Args:
             settings (Dict[str, str]): Additional options.
         """
-        def factory(test_func_impl: Callable):
+        def factory(test_func_impl: Callable) -> Callable:
             nonlocal settings
             setattr(test_func_impl, cls.ARTERY_OMNETPP_SETTINGS, settings)
             return test_func_impl
 
         return factory
-
+    
     @classmethod
     def artery_test(cls, test_func_impl: Callable) -> Callable:
         """
         Marks method as Artery test case, required for ArteryTestCase class to determine
-        which methods to load from tests/.
+        which methods to load from tests.
         """
-        setattr(test_func_impl, cls.ARTERY_TEST_TAG, True)
-        return test_func_impl\
+        setattr(test_func_impl, cls.ARTERY_TEST_TAG, test_func_impl.__name__)
+        return test_func_impl
+
+    @classmethod
+    def artery_test_with_name(cls, name: Optional[str] = None) -> Callable:
+        """
+        Same as Decorators.artery_test, but supports specifying overriden function name,
+        which is visible to yaml configs.
+
+        Args:
+            name (Optional[str]): overriden name for this test. Takes function identifier as default.
+        """
+        def factory(test_func_impl: Callable) -> Callable:
+            nonlocal name
+            if name is None:
+                return cls.artery_test(test_func_impl)
+            
+            decorated = cls.artery_test(test_func_impl)
+            setattr(decorated, cls.ARTERY_TEST_TAG, name)
+            return decorated
+        
+        return factory
         
     @classmethod
-    def defines_test_options(cls, test_options: Dict[str, Optional[str]]) -> Callable:
+    def defines_test_options(cls, test_options: Dict[str, Optional[Any]]) -> Callable:
         """
         Preprocesses "test_options" argument, inserting default values. If default value is None,
         then this wrapper raises error.
@@ -47,7 +67,7 @@ class Decorators:
         Args:
             test_options (Dict[str, str]): options and their default values, provide None for option if it is required.
         """
-        def factory(test_func_impl: Callable):
+        def factory(test_func_impl: Callable) -> Callable:
             @wraps(test_func_impl)
             def wrapper(*args, **kwargs):
                 nonlocal test_options
