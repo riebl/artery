@@ -3,14 +3,14 @@ import importlib
 
 from pathlib import Path
 from unittest import TestCase
-from typing import Type, Collection, Callable, Optional
+from typing import Type, cast, Callable, Optional
 
 from tools.run_artery import run_artery
 from tools.ci.sim_results import SimRecordedData, SimResultsReader
 from tools.ci.common import TestOptions, Decorators
 
 
-class ArteryTestCaseTemplate(TestCase):
+class ArteryTestCaseBase(TestCase):
     """
     This class is responsible for collecting tests from tests/ directory
     and providing arguments to them, primarily configuration options and sim results.
@@ -83,43 +83,48 @@ class ArteryTestCaseTemplate(TestCase):
             impl(self, data=cls.sim_results, test_options=cls.test_options)
 
         return test
+    
 
-
-class ArteryTestCaseFactory:
-    def __init__(self, launch_conf: Path):     
-        self.launch_conf = launch_conf
-
-    def make_test_case(
-        self,
+class ArteryTestFactory:
+    @classmethod
+    def make(
+        cls,
+        launch_conf: Path,
         scenario_path: Path,
         config: str = 'General',
         test_options: Optional[TestOptions] = None
-    ) -> type:
+    ) -> Type[ArteryTestCaseBase]:
         """
         Creates test for scenario from template, loading all requested tests
         and setting run configurations for Omnet++.
 
         Args:
-            scenario_path (Path): Path to scenario under testing.
+            launch_conf (Path): path to launch configuration.
+            scenario_path (Path): path to scenario under testing.
             config (Optional[str]): Specifies Omnet++ configuration to test, defaults to General.
-            test_options (Optional[TestOptions]): Provides options for test, defaults to empty dictionary.
+            test_options (Optional[TestOptions]): provides options for test, defaults to empty dictionary.
 
         Returns:
-            type: A test case type that runs Omnet++ on creation and runs tests against captured data.
+            type: a test case type that runs Omnet++ on creation and runs tests against captured data.
         """
         scenario_name = scenario_path.stem.replace('-', '_')
+        name = f'{scenario_name}_{config}_TestCase'
+
         if test_options is None:
             test_options = {}
 
-        test_case = type(
-            f'{scenario_name}_{config}_TestCase',
-            ArteryTestCaseTemplate.__bases__,
-            dict(ArteryTestCaseTemplate.__dict__)
-        )
+        attrs = {
+            attr: value
+            for attr, value in zip(
+                ('launch_conf', 'scenario_path', 'config', 'test_options'),
+                (launch_conf, scenario_path, config, test_options)
+            )
+        }
 
-        test_case.launch_conf = self.launch_conf
-        test_case.scenario_path = scenario_path
-        test_case.config = config
-        test_case.test_options = test_options
-        test_case.load_tests()
-        return test_case
+        new_cls = type(name, (ArteryTestCaseBase, ), attrs)
+
+        if not hasattr(new_cls, 'load_tests'):
+            raise AttributeError('expected ArteryTestCaseBase to define load_tests class method')
+        getattr(new_cls, 'load_tests')()
+
+        return cast(Type[ArteryTestCaseBase], new_cls)
