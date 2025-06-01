@@ -1,23 +1,118 @@
+import enum
 import sqlite3
-import pandas as pd
 
 from pathlib import Path
-from dataclasses import dataclass
-from typing import Optional, Dict
+from functools import cached_property
+from typing import Dict, Optional
+
+import pandas as pd
 
 
-@dataclass
 class SimRecordedData:
-    # TODO: expend to all all tables as needed
-    # TODO: support multiple runs?
-    config_name: str
-    simtimeExp: Optional[int] = None
-    scalars: Optional[pd.DataFrame] = None
-    vectors: Optional[pd.DataFrame] = None
-    vectorData: Optional[pd.DataFrame] = None
+    """Python interface to Recorded scalar & vector data"""
 
-    def __bool__(self):
-        return all(data is not None for data in (self.scalars, self.vectors))
+    class File(enum.StrEnum):
+        SCALAR = 'scalar'
+        VECTOR = 'vector'
+
+    # Omnet++ saves data to .sca and .vec files, and data in those
+    # differ. For example, statistics are written to .sca files, and .vec
+    # files just contain empty table. This Loader must know which file
+    # contains requested table, so this mapping is used.
+    __file_mapping = {
+        'run': File.SCALAR,
+        'runAttr': File.SCALAR,
+        'runItervar': File.SCALAR,
+        'runParam': File.SCALAR,
+        'scalar': File.SCALAR,
+        'scalarAttr': File.SCALAR,
+        'vector': File.VECTOR,
+        'vectorAttr': File.VECTOR,
+        'vectorData': File.VECTOR
+    }
+
+    __sql_quieries = {
+        'run': 'SELECT * FROM run',
+        'runAttr': 'SELECT * FROM runAttr',
+        'runItervar': 'SELECT * FROM runItervar',
+        'runParam': 'SELECT * FROM runParam',
+        'scalar': 'SELECT * FROM scalar',
+        'scalarAttr': 'SELECT * FROM scalarAttr',
+        'vector': 'SELECT * FROM vector',
+        'vectorAttr': 'SELECT * FROM vectorAttr',
+        'vectorData': 'SELECT * FROM vectorData'
+    }
+
+    def __init__(self, vector_file: Path, scalar_file: Path):
+        self.__vector_file = vector_file
+        self.__scalar_file = scalar_file
+
+    def __lazy_load(self, attr: str, private_field: Optional[str] = None) -> pd.DataFrame:
+        if private_field is None:
+            private_field = f'__{attr}'
+
+        if getattr(self, private_field, None) is None:
+            if attr not in self.__sql_quieries:
+                raise KeyError(f'could not find query for attr: {attr}')
+            if attr not in self.__file_mapping:
+                raise KeyError(f'could not determine file type for attr: {attr}')
+            
+            match self.__file_mapping[attr]:
+                case self.File.SCALAR:
+                    file = self.__scalar_file
+                case self.File.VECTOR:
+                    file = self.__vector_file
+                case _:
+                    raise KeyError
+
+            with sqlite3.connect(file) as ctx:
+                df = pd.read_sql(self.__sql_quieries[attr], ctx)
+                setattr(self, private_field, df)
+
+        return getattr(self, private_field)
+    
+    @property
+    def run(self) -> pd.DataFrame:
+        return self.__lazy_load('run')
+
+    @property
+    def runAttr(self) -> pd.DataFrame:
+        return self.__lazy_load('runAttr')
+
+    @property
+    def runItervar(self) -> pd.DataFrame:
+        return self.__lazy_load('runItervar')
+
+    @property
+    def runParam(self) -> pd.DataFrame:
+        return self.__lazy_load('runParam')
+
+    @property
+    def scalar(self) -> pd.DataFrame:
+        return self.__lazy_load('scalar')
+
+    @property
+    def scalarAttr(self) -> pd.DataFrame:
+        return self.__lazy_load('scalarAttr')
+
+    @property
+    def vector(self) -> pd.DataFrame:
+        return self.__lazy_load('vector')
+
+    @property
+    def vectorAttr(self) -> pd.DataFrame:
+        return self.__lazy_load('vectorAttr')
+
+    @property
+    def vectorData(self) -> pd.DataFrame:
+        return self.__lazy_load('vectorData')
+    
+    @cached_property
+    def simtimeExp(self) -> int:
+        if self.run['simtimeExp'].shape[0] != 1:
+            raise RuntimeError('simtimeExp property only works for single runs')
+
+        return self.run['simtimeExp'][0]
 
 
 class SimResultsReader:
@@ -50,17 +145,5 @@ class SimResultsReader:
         if config not in records:
             raise KeyError(f'run results for config {config} not found in ' + ', '.join(records.keys()))
 
-        recording = SimRecordedData(config)
-        path_mapping = records[config]
-        if 'vectors' in path_mapping:
-            with sqlite3.connect(path_mapping['vectors']) as ctx:
-                recording.vectors = pd.read_sql('SELECT * FROM vector', ctx)
-                recording.vectorData = pd.read_sql('SELECT * FROM vectorData', ctx)
-        if 'scalars' in path_mapping:
-            with sqlite3.connect(path_mapping['scalars']) as ctx:
-                recording.scalars = pd.read_sql('SELECT * FROM scalar', ctx)
-                cursor = ctx.execute('SELECT simtimeExp FROM run')
-                # TODO: dataclasses should be capable of parsing this
-                recording.simtimeExp = cursor.fetchall()[0][0]
-
-        return recording
+        mapping = records[config]
+        return SimRecordedData(mapping['vectors'], mapping['scalars'])

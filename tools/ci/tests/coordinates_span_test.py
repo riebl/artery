@@ -14,11 +14,11 @@ from tools.ci.common import TestOptions, Decorators
     '**.posY.result-recording-modes': 'vector'
 })
 def coordinates_span_test(test: TestCase, data: SimRecordedData, test_options: TestOptions):
-    maskX = data.vectors['vectorName'].str.startswith('posX')
-    maskY = data.vectors['vectorName'].str.startswith('posY')
+    maskX = data.vector['vectorName'].str.startswith('posX')
+    maskY = data.vector['vectorName'].str.startswith('posY')
 
-    posX = data.vectors[maskX].rename(columns={'vectorId': 'vectorId_posX'})
-    posY = data.vectors[maskY].rename(columns={'vectorId': 'vectorId_posY'})
+    posX = data.vector[maskX].rename(columns={'vectorId': 'vectorId_posX'})
+    posY = data.vector[maskY].rename(columns={'vectorId': 'vectorId_posY'})
 
     merged = pd.merge(posX, posY, on='moduleName', how='inner')
     filtered = merged[['moduleName', 'vectorId_posX', 'vectorId_posY']]

@@ -13,8 +13,8 @@ from tools.ci.sim_results import SimRecordedData
     'min_cam_rate': 1
 })
 def min_cam_rate_test(test: TestCase, data: SimRecordedData, test_options: TestOptions):
-    sentDown = data.scalars[data.scalars['scalarName'] == 'sentDownPk:count']['scalarValue']
-    simtime = data.vectors['endSimtimeRaw'].max() - data.vectors['startSimtimeRaw'].min()
+    sentDown = data.scalar[data.scalar['scalarName'] == 'sentDownPk:count']['scalarValue']
+    simtime = data.vector['endSimtimeRaw'].max() - data.vector['startSimtimeRaw'].min()
     simtime_seconds = math.pow(simtime, data.simtimeExp)
 
     for sentDownCount in sentDown:

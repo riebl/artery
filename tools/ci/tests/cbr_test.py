@@ -15,8 +15,8 @@ from tools.ci.common import TestOptions, Decorators
 def cbr_test(test: TestCase, data: SimRecordedData, test_options: TestOptions):
     cbr, threshold = test_options['cbr'], test_options['cbr_threshold']
 
-    mask = data.scalars['scalarName'] == 'ChannelLoad:timeavg'
-    cbr_values = data.scalars[mask]['scalarValue']
+    mask = data.scalar['scalarName'] == 'ChannelLoad:timeavg'
+    cbr_values = data.scalar[mask]['scalarValue']
     match cbr:
         case 'greater':
             test.assertTrue(

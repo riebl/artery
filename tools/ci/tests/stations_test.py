@@ -11,7 +11,7 @@ from tools.ci.common import TestOptions, Decorators
     'vehicles': None
 })
 def stations_test(test: TestCase, data: SimRecordedData, test_options: TestOptions):
-    uniq = data.vectors['moduleName'].unique()
+    uniq = data.vector['moduleName'].unique()
 
     node_ids = set()
     pattern = re.compile(r'World\.node\[(\d*)\].*', flags=re.DOTALL)
