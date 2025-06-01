@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--generated on 2020-03-04 18:25:00 by create_sumo_vtypes.py-->
+
+<routes>
+	<vType id="vType_0" minGap="2.00" speedFactor="normc(1.00,0.00)" vClass="passenger" carFollowModel="IDMM" tau="0.4"/>
+	<vType id="DEFAULT_VEHTYPE" minGap="2.50" tau="1.0"  color="255,255,255" Class="passenger" accel="0.5"/>
+	<vehicle id="stopped_car" type="vType_0" depart="0">
+        <route edges="-13.0.00 -14.0.00"/>
+        <stop lane="-13.0.00_3" startPos="0" endPos="5" duration="100000"/>
+    </vehicle>
+</routes>
