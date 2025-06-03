@@ -8,6 +8,7 @@ from typing import Type, cast, Callable, Optional
 from tools.run_artery import run_artery
 from tools.ci.sim_results import SimRecordedData, SimResultsReader
 from tools.ci.common import TestOptions, Decorators
+from tools.ci.test_options_loader import ArteryTestConfig
 
 
 class ArteryTestCaseBase(TestCase):
@@ -40,10 +41,18 @@ class ArteryTestCaseBase(TestCase):
     scenario_path: Path
     sim_results: SimRecordedData
     config: str
-    test_options: TestOptions
+    test_config: ArteryTestConfig
+
+    @classmethod
+    def __preprocess_run_options(cls):
+        runner_config = cls.test_config.test_runner
+        if runner_config.sim_time_limit is not None:
+            cls.run_options['sim-time-limit'] = '30s'
 
     @classmethod
     def setUpClass(cls):
+        cls.__preprocess_run_options()
+
         opp_args = []
         for option, value in cls.run_options.items():
             opp_args.append(f'--{option}={value}')
@@ -69,7 +78,11 @@ class ArteryTestCaseBase(TestCase):
             module = importlib.import_module(str(cleared_path).replace('/', '.'), '.')
 
             for name, func in inspect.getmembers(module, predicate=inspect.isfunction):
-                if hasattr(func, Decorators.ARTERY_TEST_TAG):
+                func_name = getattr(func, Decorators.ARTERY_TEST_TAG, None)
+                if func_name is not None:
+                    if func_name not in cls.test_config.test_runner.test_functions:
+                        continue
+
                     for option, value in getattr(func, Decorators.ARTERY_OMNETPP_SETTINGS, {}).items():
                         cls.run_options[option] = value
 
@@ -80,7 +93,8 @@ class ArteryTestCaseBase(TestCase):
     def __make_test(cls, impl: Callable):
         def test(self):
             nonlocal cls
-            impl(self, data=cls.sim_results, test_options=cls.test_options)
+            test_options = cls.test_config.scenario.resolve_options(cls.config)
+            impl(self, data=cls.sim_results, test_options=test_options)
 
         return test
     
@@ -91,8 +105,8 @@ class ArteryTestFactory:
         cls,
         launch_conf: Path,
         scenario_path: Path,
-        config: str = 'General',
-        test_options: Optional[TestOptions] = None
+        test_config: ArteryTestConfig,
+        config: str = 'General'
     ) -> Type[ArteryTestCaseBase]:
         """
         Creates test for scenario from template, loading all requested tests
@@ -101,8 +115,8 @@ class ArteryTestFactory:
         Args:
             launch_conf (Path): path to launch configuration.
             scenario_path (Path): path to scenario under testing.
+            test_config (ArteryTestConfig): provides options for test defined in yaml file.
             config (Optional[str]): Specifies Omnet++ configuration to test, defaults to General.
-            test_options (Optional[TestOptions]): provides options for test, defaults to empty dictionary.
 
         Returns:
             type: a test case type that runs Omnet++ on creation and runs tests against captured data.
@@ -110,14 +124,11 @@ class ArteryTestFactory:
         scenario_name = scenario_path.stem.replace('-', '_')
         name = f'{scenario_name}_{config}_TestCase'
 
-        if test_options is None:
-            test_options = {}
-
         attrs = {
             attr: value
             for attr, value in zip(
-                ('launch_conf', 'scenario_path', 'config', 'test_options'),
-                (launch_conf, scenario_path, config, test_options)
+                ('launch_conf', 'scenario_path', 'config', 'test_config'),
+                (launch_conf, scenario_path, config, test_config)
             )
         }
 

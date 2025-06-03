@@ -129,7 +129,10 @@ class SimResultsReader:
             raise RuntimeError(f'sanity check failed for directory: {scenerio_path}; results directory was not found')
         
         records = {}
-        key_mappings = {'.sca': 'scalars', '.vec': 'vectors'}
+        key_mappings = {
+            '.sca': SimRecordedData.File.SCALAR,
+            '.vec': SimRecordedData.File.VECTOR
+        }
 
         for child in results_dir.iterdir():
             if child.match('*.sca') or child.match('*.vec'):
@@ -146,4 +149,4 @@ class SimResultsReader:
             raise KeyError(f'run results for config {config} not found in ' + ', '.join(records.keys()))
 
         mapping = records[config]
-        return SimRecordedData(mapping['vectors'], mapping['scalars'])
+        return SimRecordedData(mapping[SimRecordedData.File.VECTOR], mapping[SimRecordedData.File.SCALAR])

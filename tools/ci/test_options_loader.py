@@ -17,8 +17,10 @@ class ArteryRunnerConfig(YAMLObject):
 
     yaml_tag = '!test_runner'
     yaml_loader = YAMLObject.yaml_loader + [SafeLoader]
+
     test_functions: List[str]
     tested_configurations: List[str]
+    sim_time_limit: Optional[int] = None
 
 
 class ArteryScenarioConfig(YAMLObject):
@@ -46,6 +48,13 @@ class ArteryScenarioConfig(YAMLObject):
             return self.__options[key]
         
         return self.__configurations[configuration].get(key, self.__options[key])
+    
+    def resolve_options(self, configuration: str) -> TestOptions:
+        options = {}
+        for option in self.keys(configuration):
+            options[option] = self[(configuration, option)]
+
+        return options
     
     def __rich_repr__(self) -> Result:
         yield '__options', self.__options
@@ -93,32 +102,12 @@ class ArteryTestConfigLoader:
             if not file.is_file() or file.suffix != '.yml':
                 continue
             self.__scenarios[file.stem] = None
-
-    def __getitem__(self, key: Tuple[str, str]) -> TestOptions:
-        """
-        Access scenario configuration, resolving overriden options.
-
-        Args:
-            key (Tuple[str, str]): pair of (scenario, configuration).
-
-        Returns:
-            TestOptions: loaded options.
-        """
-        scenario, config = key
-        test_config = self.__lazy_load(scenario)
-
-        options = {}
-        for option in test_config.scenario.keys(config):
-            options[option] = test_config.scenario[(config, option)]
-
-        return options
     
     def scenarios(self) -> List[str]:
         return list(self.__scenarios.keys())
     
-    def configs(self, scenario: str) -> List[str]:
-        options = self.__lazy_load(scenario)
-        return options.test_runner.tested_configurations
+    def test_config(self, scenario: str) -> ArteryTestConfig:
+        return self.__lazy_load(scenario)
 
     def __lazy_load(self, scenario: str) -> ArteryTestConfig:
         if scenario not in self.__scenarios:

@@ -44,7 +44,7 @@ def coordinates_span_test(test: TestCase, data: SimRecordedData, test_options: T
         posX_max_span = test_options.get('posX_max_span', math.inf)
         test.assertTrue(
             posX_min_span <= X_span < posX_max_span,
-            f'expected X_span {X_span} to be in ({posX_min_span}, {posX_max_span})'
+            f'{module}: expected X_span {X_span} to be in ({posX_min_span}, {posX_max_span})'
         )
 
         Y_span = Y_max - Y_min
@@ -52,6 +52,6 @@ def coordinates_span_test(test: TestCase, data: SimRecordedData, test_options: T
         posY_max_span = test_options.get('posY_max_span', math.inf)
         test.assertTrue(
             posY_min_span <= Y_span < posY_max_span,
-            f'expected Y_span {Y_span} to be in ({posY_min_span}, {posY_max_span})'
+            f'{module}: expected Y_span {Y_span} to be in ({posY_min_span}, {posY_max_span})'
         )
         

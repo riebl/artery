@@ -25,14 +25,13 @@ def main():
 
     config_loader = ArteryTestConfigLoader(Path(__file__).parent / 'config')
     for scenario_name in config_loader.scenarios():
-        scenario = args.scenario_base_dir / scenario_name
-        if not scenario.is_dir():
+        scenario_path = args.scenario_base_dir / scenario_name
+        if not scenario_path.is_dir():
             raise FileNotFoundError
         
-        for config in config_loader.configs(scenario_name):
-            test_case = ArteryTestFactory.make(
-                args.launch_conf, scenario, config, config_loader[scenario_name, config]
-            )
+        test_config = config_loader.test_config(scenario_name)
+        for config in test_config.test_runner.tested_configurations:
+            test_case = ArteryTestFactory.make(args.launch_conf, scenario_path, test_config, config)
             suite.addTests(loader.loadTestsFromTestCase(test_case)._tests)
 
     runner = unittest.TextTestRunner(verbosity=args.verbosity)
