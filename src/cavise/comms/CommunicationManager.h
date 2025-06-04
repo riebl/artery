@@ -336,7 +336,7 @@ template<typename ArteryMessageType, typename OpencdaMessageType>
 void cavise::CommunicationManager<ArteryMessageType, OpencdaMessageType>::run() {
 
     while (true) {
-        PLOG(plog::debug) << "communication manager: waiting for messaggge";
+        PLOG(plog::debug) << "communication manager: waiting for message";
         if (worker_->abort) {
             PLOG(plog::debug) << "communication manager: aborting";
             return;
