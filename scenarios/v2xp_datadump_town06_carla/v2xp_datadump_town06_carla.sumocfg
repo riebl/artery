@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configuration>
+	<input>
+		<net-file value="../maps/Town06.net.xml"/>
+		<route-files value="v2xp_datadump_town06_carla.rou.xml"/>
+		<additional-files value="v2xp_datadump_town06_carla.poly.xml"/>
+	</input>
+	<time>
+		<step-length value="0.1"/>
+	</time>
+	<num-clients value="2"/>
+</configuration>
