@@ -1,0 +1,13 @@
+test_runner: !test_runner
+  test_functions:
+    - cbr_test
+
+  tested_configurations: 
+    - veins
+    - inet
+
+  sim_time_limit: 90
+
+scenario: !scenario
+  cbr: greater
+  cbr_threshold: 0.0

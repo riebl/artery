@@ -41,6 +41,10 @@ def min_cam_rate_test(test: TestCase, data: SimRecordedData, test_options: TestO
             for current, next in zip(ndarray, ndarray + 1):
                 # time is recorded in ms
                 delta = round((stamps_for_id.iat[next] - stamps_for_id.iat[current]) * 0.001, 2)
+                if delta < 0:
+                    # I guess time stamps reset when vehicle goes out of view?
+                    continue
+
                 test.assertTrue(
                     min_cam_rate <= delta <= max_cam_rate,
                     f'{module}: cam rate {delta} is out of range [{min_cam_rate}; {max_cam_rate}]'
