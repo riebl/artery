@@ -1,18 +1,18 @@
 from unittest import TestCase
 
 from tools.ci.sim_results import SimRecordedData
-from tools.ci.common import TestOptions, Decorators
+from tools.ci.common import TestOptions, ArteryTest
 
 
-@Decorators.artery_test
-@Decorators.with_omnetpp_settings({
+@ArteryTest.artery_test
+@ArteryTest.with_omnetpp_settings({
     '**.ChannelLoad.scalar': 'true'
 })
-@Decorators.defines_test_options({
+@ArteryTest.defines_test_options({
     'cbr': 'greater',
     'cbr_threshold': 0.0
 })
-def cbr_test(test: TestCase, data: SimRecordedData, test_options: TestOptions):
+def average_cbr_test(test: TestCase, data: SimRecordedData, test_options: TestOptions):
     cbr, threshold = test_options['cbr'], test_options['cbr_threshold']
 
     mask = data.scalar['scalarName'] == 'ChannelLoad:timeavg'

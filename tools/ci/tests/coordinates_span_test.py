@@ -5,11 +5,11 @@ from unittest import TestCase
 import pandas as pd
 
 from tools.ci.sim_results import SimRecordedData
-from tools.ci.common import TestOptions, Decorators
+from tools.ci.common import TestOptions, ArteryTest
 
 
-@Decorators.artery_test
-@Decorators.with_omnetpp_settings({
+@ArteryTest.artery_test
+@ArteryTest.with_omnetpp_settings({
     '**.posX.result-recording-modes': 'vector',
     '**.posY.result-recording-modes': 'vector'
 })

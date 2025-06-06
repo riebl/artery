@@ -3,8 +3,6 @@ import argparse
 
 from pathlib import Path
 
-import nose2
-
 from rich.traceback import install as install_rich_traceback
 
 from tools.ci.artery_test_case import ArteryTestFactory

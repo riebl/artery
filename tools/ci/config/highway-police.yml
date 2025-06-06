@@ -1,7 +1,7 @@
 test_runner: !test_runner
   # test suite selection
   test_functions:
-    - cbr_test
+    - average_cbr_test
     - coordinates_span_test
     - stations_test
 
@@ -12,8 +12,8 @@ test_runner: !test_runner
     - storyboard
 
 scenario: !scenario
-  # number if vehicles (World.node[*]) to expect
-  vehicles: 4
+  # number of dynamic_nodes (World.node[*]) to expect
+  dynamic_nodes: 4
 
   # cbr: policy for comparison (less, greater)
   cbr: greater
@@ -30,8 +30,3 @@ scenario: !scenario
   posX_min_span: 100
   # max_span is +inf
   # approaches may be combined
-
-  configurations:
-    # overriden options for certain configurations
-    envmod:
-      null

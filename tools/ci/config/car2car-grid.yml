@@ -9,7 +9,7 @@ test_runner: !test_runner
   sim_time_limit: 90
 
 scenario: !scenario
-  vehicles: 30
+  dynamic_nodes: 30
 
   cbr: greater
   cbr_threshold: 0.0

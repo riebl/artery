@@ -18,7 +18,7 @@ def run_artery(
     batchsize: Optional[int] = None,
     jobs: Optional[int] = None,
     verbose: bool = False,
-    mute_standard_fds: bool = False
+    capture_output: bool = False
 ) -> int:
     
     if opp_args is None:
@@ -64,7 +64,7 @@ def run_artery(
         print('running command: ', ' '.join(cmd))
 
     stdout, stderr = sys.stdout, sys.stderr
-    if mute_standard_fds:
+    if capture_output:
         stdout = stderr = subprocess.DEVNULL
     process = subprocess.run(cmd, cwd=scenario, stderr=stderr, stdout=stdout)
     return process.returncode

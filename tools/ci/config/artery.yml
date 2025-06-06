@@ -1,11 +1,12 @@
 test_runner: !test_runner
   test_functions:
-    - cbr_test
+    - average_cbr_test
 
   tested_configurations: 
     - veins
     - inet
 
+  results_dir: results
   sim_time_limit: 90
 
 scenario: !scenario

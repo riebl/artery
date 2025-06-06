@@ -7,7 +7,7 @@ from typing import Type, cast, Callable, Optional
 
 from tools.run_artery import run_artery
 from tools.ci.sim_results import SimRecordedData, SimResultsReader
-from tools.ci.common import TestOptions, Decorators
+from tools.ci.common import TestOptions, ArteryTest
 from tools.ci.test_options_loader import ArteryTestConfig
 
 
@@ -58,12 +58,13 @@ class ArteryTestCaseBase(TestCase):
             opp_args.append(f'--{option}={value}')
 
         opp_args.extend(('-u', 'Cmdenv', '-c', cls.config))
-        retval = run_artery(cls.launch_conf, opp_args, cls.scenario_path, mute_standard_fds=True)
+        retval = run_artery(cls.launch_conf, opp_args, cls.scenario_path, capture_output=True)
         if retval != 0:
             raise RuntimeError(f'call to run_artery returned non-zero exit code: {retval}')
 
         reader = SimResultsReader()
-        cls.sim_results = reader.read(cls.scenario_path, cls.config)
+        results_dir = cls.test_config.test_runner.results_dir
+        cls.sim_results = reader.read(cls.scenario_path, results_dir, cls.config)
 
     @classmethod
     def load_tests(cls):
@@ -78,12 +79,12 @@ class ArteryTestCaseBase(TestCase):
             module = importlib.import_module(str(cleared_path).replace('/', '.'), '.')
 
             for name, func in inspect.getmembers(module, predicate=inspect.isfunction):
-                func_name = getattr(func, Decorators.ARTERY_TEST_TAG, None)
+                func_name = getattr(func, ArteryTest.ARTERY_TEST_TAG, None)
                 if func_name is not None:
                     if func_name not in cls.test_config.test_runner.test_functions:
                         continue
 
-                    for option, value in getattr(func, Decorators.ARTERY_OMNETPP_SETTINGS, {}).items():
+                    for option, value in getattr(func, ArteryTest.ARTERY_OMNETPP_SETTINGS, {}).items():
                         cls.run_options[option] = value
 
                     wrapper = cls.__make_test(func)
@@ -94,7 +95,7 @@ class ArteryTestCaseBase(TestCase):
         def test(self):
             nonlocal cls
             test_options = cls.test_config.scenario.resolve_options(cls.config)
-            impl(self, data=cls.sim_results, test_options=test_options)
+            impl(test=self, data=cls.sim_results, test_options=test_options)
 
         return test
     

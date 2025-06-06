@@ -20,6 +20,7 @@ class ArteryRunnerConfig(YAMLObject):
 
     test_functions: List[str]
     tested_configurations: List[str]
+    results_dir: Path = Path('results')
     sim_time_limit: Optional[int] = None
 
 

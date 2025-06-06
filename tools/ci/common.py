@@ -4,11 +4,11 @@ from typing import Callable, TypeAlias, Dict, Union, Collection, Optional, Any
 
 
 TestOptions: TypeAlias = Dict[
-    str, Union[str, 'TestOptions', Collection['TestOptions']]
+    str, Union[float, int, str, 'TestOptions', Collection['TestOptions']]
 ]
 
 
-class Decorators:
+class ArteryTest:
     ARTERY_TEST_TAG = 'artery_test_tag'
     ARTERY_OMNETPP_SETTINGS = 'artery_omnetpp_settings'
 

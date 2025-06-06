@@ -3,12 +3,12 @@ import re
 from unittest import TestCase
 
 from tools.ci.sim_results import SimRecordedData
-from tools.ci.common import TestOptions, Decorators
+from tools.ci.common import TestOptions, ArteryTest
 
 
-@Decorators.artery_test
-@Decorators.defines_test_options({
-    'vehicles': None
+@ArteryTest.artery_test
+@ArteryTest.defines_test_options({
+    'dynamic_nodes': None
 })
 def stations_test(test: TestCase, data: SimRecordedData, test_options: TestOptions):
     uniq = data.vector['moduleName'].unique()
@@ -21,7 +21,7 @@ def stations_test(test: TestCase, data: SimRecordedData, test_options: TestOptio
 
         node_ids.add(match.group(1))
 
-    count = test_options['vehicles']
+    count = test_options['dynamic_nodes']
     test.assertEqual(
         len(node_ids),
         count,

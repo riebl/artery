@@ -47,9 +47,8 @@ class SimRecordedData:
         self.__vector_file = vector_file
         self.__scalar_file = scalar_file
 
-    def __lazy_load(self, attr: str, private_field: Optional[str] = None) -> pd.DataFrame:
-        if private_field is None:
-            private_field = f'__{attr}'
+    def __lazy_load(self, attr: str) -> pd.DataFrame:
+        private_field = f'__{attr}'
 
         if getattr(self, private_field, None) is None:
             if attr not in self.__sql_quieries:
@@ -116,17 +115,14 @@ class SimRecordedData:
 
 
 class SimResultsReader:
-    def __scan_results(self, scenerio_path: Path) -> Dict[str, Dict[str, Path]]:
-        if not isinstance(scenerio_path, Path):
-            raise TypeError
-        
+    def __scan_results(self, scenerio_path: Path, results_dir: Path) -> Dict[str, Dict[str, Path]]:
         scenerio_path = scenerio_path.resolve()
         if not scenerio_path.is_dir():
             raise FileNotFoundError(f'scenerio folder was not found: {scenerio_path}')
+        
         # sanity check
-        results_dir = scenerio_path.joinpath('results')
         if not results_dir.is_dir():
-            raise RuntimeError(f'sanity check failed for directory: {scenerio_path}; results directory was not found')
+            raise RuntimeError(f'sanity check failed for directory: {results_dir}; results directory was not found')
         
         records = {}
         key_mappings = {
@@ -143,8 +139,9 @@ class SimResultsReader:
 
         return records
     
-    def read(self, scenerio_path: Path, config: str) -> SimRecordedData:
-        records = self.__scan_results(scenerio_path)
+    def read(self, scenerio_path: Path, results_dir: Path, config: str) -> SimRecordedData:
+        abs_results_dir = scenerio_path / results_dir
+        records = self.__scan_results(scenerio_path, abs_results_dir)
         if config not in records:
             raise KeyError(f'run results for config {config} not found in ' + ', '.join(records.keys()))
 
