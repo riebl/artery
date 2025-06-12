@@ -17,8 +17,13 @@ from collections import OrderedDict
 from dataclasses import dataclass, field
 from typing import Callable, Iterable, Union, Tuple, List, Optional
 
-from conan.api.output import ConanOutput
-from conan.api.conan_api import ConanAPI
+try:
+    from conan.api.output import ConanOutput
+    from conan.api.conan_api import ConanAPI
+except ModuleNotFoundError:
+    import warnings
+    warnings.warn('could not find Conan API, calling conan routine is not possible')
+    ConanOutput = ConanAPI = None
 
 
 # this is not part of external API, so this script should not depend upon those
@@ -80,8 +85,8 @@ class Config:
 
 def routine(priority: int) -> Callable:
     def factory(f: Callable) -> Callable:
-        f.priority = priority
-        f.is_routine = True
+        setattr(f, 'priority', priority)
+        setattr(f, 'is_routine', True)
         return f
 
     return factory
@@ -130,6 +135,9 @@ class Routines:
 
     @routine(4)
     def conan_install(self):
+        if any(obj is None for obj in [ConanAPI, ConanOutput]):
+            raise RuntimeError('could not run Conan API calls while it is unavailable')
+
         target_dir = None
         if self.__params.use_local_cache:
             target_dir = str(self.__params.build_directory / 'conan2')

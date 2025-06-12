@@ -1,0 +1,49 @@
+name: Prepare environment
+
+on:
+  workflow_call:
+    null
+
+jobs:
+  build-or-load:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set weekly cache key
+        id: cache-key
+        run: echo "key=runner-image-${{ runner.os }}-$(date +'%Y-%W')" >> "$GITHUB_OUTPUT"
+
+      - name: Restore runner image tarball from cache
+        id: cache-restore
+        uses: actions/cache@v4
+        with:
+          path: runner.tar.gz
+          key: ${{ steps.cache-key.outputs.key }}
+          restore-keys: |
+            runner-image-${{ runner.os }}-
+
+      - name: Checkout code
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
+
+      - name: Set up Docker buildx
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        run: docker buildx create --use || true
+
+      - name: Build Docker image
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        run: |
+          docker buildx build . \
+            --tag runner:latest \
+            --file .github/containers/Dockerfile \
+            --load
+
+      - name: Save Docker image to tarball
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        run: docker save runner:latest | gzip > runner.tar.gz
+
+      - name: Upload runner image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: runner
+          path: runner.tar.gz

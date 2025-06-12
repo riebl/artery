@@ -1,0 +1,21 @@
+name: Mainline
+
+on:
+  push:
+    branches-ignore:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  prepare:
+    uses: ./.github/workflows/prepare.yaml
+
+  lint:
+    needs: prepare
+    uses: ./.github/workflows/lint.yaml
+
+  test:
+    needs: prepare
+    uses: ./.github/workflows/test.yaml

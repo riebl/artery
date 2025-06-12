@@ -1,0 +1,47 @@
+name: Test
+
+on:
+  workflow_call:
+    null
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Download runner image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: runner
+
+      - name: Load runner image
+        run: |
+          gunzip -c runner.tar.gz | docker load &&  \
+          docker run -d                             \
+            -v ${{ github.workspace }}:/workspace   \
+            -w /workspace                           \
+            --name runner                           \
+            runner:latest tail -f /dev/null
+
+      - name: Install venv package
+        run: docker exec runner bash -c "apt update && apt install -y python3-venv"
+
+      - name: Create virtual environment
+        run: docker exec runner python3 -m venv .venv
+
+      - name: Install pip dependencies
+        run: docker exec runner bash -c ". ./.venv/bin/activate && pip3 install -r tools/ci/requirements.txt"
+
+      - name: Configure and build CMake
+        run: docker exec runner /workspace/tools/build.py -cb --config Release
+
+      - name: Run tests
+        run: docker exec runner bash -c ". ./.venv/bin/activate && PYTHONPATH=/workspace python3 tools/ci/run.py -l /workspace/build/Release/run-artery.ini -s /workspace/scenarios"
+
+      - name: Stop runner
+        run: docker stop runner

@@ -34,8 +34,11 @@ RUN source setenv -f                                            \
 WORKDIR /
 RUN git clone --recurse --depth 1 --branch ${SUMO_TAG} https://github.com/eclipse-sumo/sumo
 WORKDIR /sumo
-RUN cmake -B build . -DCMAKE_BUILD_CONFIG=Release -DCMAKE_INSTALL_PREFIX=/sumo-prefix   \
-    && cmake --build build --parallel $(nproc --all)                                    \
+RUN cmake -B build .                                    \
+        -DCMAKE_BUILD_CONFIG=Release                    \
+        -DCMAKE_INSTALL_PREFIX=/sumo-prefix             \
+        -DFOX_LIBRARY=OFF                               \
+    && cmake --build build --parallel $(nproc --all)    \
     && cmake --install build
 
 FROM setup AS final
@@ -46,7 +49,7 @@ COPY --from=build /omnetpp/lib /omnetpp/lib
 COPY --from=build /omnetpp/images /omnetpp/images
 COPY --from=build /omnetpp/Makefile.inc /omnetpp
 
-COPY --from=build /sumo-prefix /
+COPY --from=build /sumo-prefix/ /usr/local
 
 ENV PATH=/omnetpp/bin:$PATH
 ENV SUMO_HOME=/usr/local/share/sumo
