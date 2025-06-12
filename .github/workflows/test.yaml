@@ -1,18 +1,17 @@
-name: Test
+name: Run integration tests
 
 on:
   workflow_call:
     null
 
 jobs:
-  integration-test:
+  integration-tests:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-          fetch-depth: 0
 
       - name: Download runner image artifact
         uses: actions/download-artifact@v4

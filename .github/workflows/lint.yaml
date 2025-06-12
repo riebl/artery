@@ -31,6 +31,7 @@ jobs:
       - name: Configure CMake
         run: docker exec runner /workspace/tools/build.py -cl
 
+      # TODO: probably better to install curl directly
       - name: Download curl executable
         run: docker exec runner bash -c "apt update && apt install -y curl"
 

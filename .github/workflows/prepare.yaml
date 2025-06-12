@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+        # Following step generates a key with respect to current year and week, which
+        # means upon week/year change cache is missed later.
       - name: Set weekly cache key
         id: cache-key
         run: echo "key=runner-image-${{ runner.os }}-$(date +'%Y-%W')" >> "$GITHUB_OUTPUT"
