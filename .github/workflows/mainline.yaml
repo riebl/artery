@@ -6,12 +6,11 @@ on:
       - master
 
 jobs:
-  permissions:
-      packages: write
-
   prepare:
     uses: ./.github/workflows/prepare.yaml
     secrets: inherit
+    permissions:
+      packages: write
 
   lint:
     needs: prepare
