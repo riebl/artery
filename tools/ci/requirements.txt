@@ -1,4 +1,3 @@
 pandas
 pyaml
 rich
-nose2
