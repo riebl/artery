@@ -8,11 +8,17 @@ on:
 jobs:
   prepare:
     uses: ./.github/workflows/prepare.yaml
+    secrets:
+      token: ${{ secrets.PACKAGE_TOKEN }}
 
   lint:
     needs: prepare
     uses: ./.github/workflows/lint.yaml
+    secrets:
+      token: ${{ secrets.PACKAGE_TOKEN }}
 
   test:
     needs: prepare
     uses: ./.github/workflows/test.yaml
+    secrets:
+      token: ${{ secrets.PACKAGE_TOKEN }}

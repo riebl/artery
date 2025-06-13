@@ -2,15 +2,18 @@ name: Run integration tests
 
 on:
   workflow_call:
+    secrets:
+      token:
+        required: true
 
 jobs:
   integration-tests:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.repository_owner }}/runner:latest
+      image: ghcr.io/ashfungor/runner:latest
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.token }}
       options: --workdir /workspace
 
     steps:

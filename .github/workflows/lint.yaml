@@ -2,16 +2,18 @@ name: Lint Check
 
 on:
   workflow_call:
-    null
+    secrets:
+      token:
+        required: true
 
 jobs:
   clang-tidy:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.repository_owner }}/runner:latest
+      image: ghcr.io/ashfungor/runner:latest
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.token }}
 
     steps:
       - uses: actions/checkout@v4
@@ -20,12 +22,9 @@ jobs:
           fetch-depth: 0
 
       - name: Configure CMake
-        run: /workspace/tools/build.py -cl
+        run: tools/build.py -cl
 
       - name: Run clang-tidy
         continue-on-error: true
         run: |
-          python3 clang-tidy-diff.py      \
-          -p1                             \
-          -path .                         \
-          < <(git diff -U0 origin/master)
+          clang-tidy-diff.py -p1 -path . < <(git diff -U0 origin/master)
