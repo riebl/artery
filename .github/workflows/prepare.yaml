@@ -31,6 +31,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/ashfungor/runner:latest
+          tags: ghcr.io/riebl/runner:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

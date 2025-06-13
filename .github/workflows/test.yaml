@@ -10,7 +10,7 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/ashfungor/runner:latest
+      image: ghcr.io/riebl/runner:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.token }}
