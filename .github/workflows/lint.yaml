@@ -7,6 +7,11 @@ on:
 jobs:
   clang-tidy:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository_owner }}/runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
@@ -14,38 +19,13 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Download runner image artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: runner
-
-      - name: Load runner image
-        run: |
-          gunzip -c runner.tar.gz | docker load &&  \
-          docker run -d                             \
-            -v ${{ github.workspace }}:/workspace   \
-            -w /workspace                           \
-            --name runner                           \
-            runner:latest tail -f /dev/null
-
       - name: Configure CMake
-        run: docker exec runner /workspace/tools/build.py -cl
-
-      # TODO: probably better to install curl directly
-      - name: Download curl executable
-        run: docker exec runner bash -c "apt update && apt install -y curl"
-
-      - name: Fetch clang-format-diff script
-        run: |
-          docker exec runner curl -sSL -O https://raw.githubusercontent.com/llvm/llvm-project/main/clang-tools-extra/clang-tidy/tool/clang-tidy-diff.py
+        run: /workspace/tools/build.py -cl
 
       - name: Run clang-tidy
         continue-on-error: true
         run: |
-          docker exec runner python3 clang-tidy-diff.py   \
-          -p1                                             \
-          -path .                                         \
+          python3 clang-tidy-diff.py      \
+          -p1                             \
+          -path .                         \
           < <(git diff -U0 origin/master)
-
-      - name: Stop runner
-        run: docker stop runner

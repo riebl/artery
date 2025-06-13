@@ -2,50 +2,27 @@ name: Prepare environment
 
 on:
   workflow_call:
-    null
 
 jobs:
   build-or-load:
     runs-on: ubuntu-latest
 
     steps:
-        # Following step generates a key with respect to current year and week, which
-        # means upon week/year change cache is missed later.
-      - name: Set weekly cache key
-        id: cache-key
-        run: echo "key=runner-image-${{ runner.os }}-$(date +'%Y-%W')" >> "$GITHUB_OUTPUT"
-
-      - name: Restore runner image tarball from cache
-        id: cache-restore
-        uses: actions/cache@v4
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          path: runner.tar.gz
-          key: ${{ steps.cache-key.outputs.key }}
-          restore-keys: |
-            runner-image-${{ runner.os }}-
-
-      - name: Checkout code
-        if: steps.cache-restore.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Docker buildx
-        if: steps.cache-restore.outputs.cache-hit != 'true'
-        run: docker buildx create --use || true
+        uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image
-        if: steps.cache-restore.outputs.cache-hit != 'true'
-        run: |
-          docker buildx build . \
-            --tag runner:latest \
-            --file .github/containers/Dockerfile \
-            --load
-
-      - name: Save Docker image to tarball
-        if: steps.cache-restore.outputs.cache-hit != 'true'
-        run: docker save runner:latest | gzip > runner.tar.gz
-
-      - name: Upload runner image artifact
-        uses: actions/upload-artifact@v4
+      - name: Build and push
+        uses: docker/build-push-action@v6
         with:
-          name: runner
-          path: runner.tar.gz
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/runner:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
