@@ -6,19 +6,19 @@ on:
       - master
 
 jobs:
+  permissions:
+      packages: write
+
   prepare:
     uses: ./.github/workflows/prepare.yaml
-    secrets:
-      token: ${{ secrets.PACKAGE_TOKEN }}
+    secrets: inherit
 
   lint:
     needs: prepare
     uses: ./.github/workflows/lint.yaml
-    secrets:
-      token: ${{ secrets.PACKAGE_TOKEN }}
+    secrets: inherit
 
   test:
     needs: prepare
     uses: ./.github/workflows/test.yaml
-    secrets:
-      token: ${{ secrets.PACKAGE_TOKEN }}
+    secrets: inherit

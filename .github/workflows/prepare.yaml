@@ -2,16 +2,10 @@ name: Prepare environment
 
 on:
   workflow_call:
-    secrets:
-      token:
-        required: true
 
 jobs:
   build-docker-image:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
 
     steps:
       - name: Log in to GHCR
@@ -19,7 +13,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.token }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/checkout@v4
 

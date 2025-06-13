@@ -2,9 +2,6 @@ name: Run integration tests
 
 on:
   workflow_call:
-    secrets:
-      token:
-        required: true
 
 jobs:
   integration-tests:
@@ -13,8 +10,7 @@ jobs:
       image: ghcr.io/riebl/runner:latest
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.token }}
-      options: --workdir /workspace
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4

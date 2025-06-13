@@ -2,9 +2,6 @@ name: Lint Check
 
 on:
   workflow_call:
-    secrets:
-      token:
-        required: true
 
 jobs:
   clang-tidy:
@@ -13,7 +10,7 @@ jobs:
       image: ghcr.io/riebl/runner:latest
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.token }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
@@ -26,5 +23,4 @@ jobs:
 
       - name: Run clang-tidy
         continue-on-error: true
-        run: |
-          clang-tidy-diff.py -p1 -path . < <(git diff -U0 origin/master)
+        run: clang-tidy-diff.py -p1 -path . < <(git diff -U0 origin/master)
