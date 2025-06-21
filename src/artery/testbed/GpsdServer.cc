@@ -8,7 +8,7 @@ namespace artery
 {
 
 GpsdServer::GpsdServer(const std::string& timebase, unsigned short port) :
-    mSocket(mIoService)
+    mSocket(mIoContext)
 {
     mTimer.setTimebase(timebase);
     waitForListener(port);
@@ -50,7 +50,7 @@ void GpsdServer::write(const std::string& sentence)
 void GpsdServer::waitForListener(unsigned short port)
 {
     using boost::asio::ip::tcp;
-    tcp::acceptor acceptor(mIoService, tcp::endpoint(tcp::v4(), port));
+    tcp::acceptor acceptor(mIoContext, tcp::endpoint(tcp::v4(), port));
     std::cout << "wait for gpsd" << std::endl;
     acceptor.accept(mSocket);
     std::cout << "gpsd connected" << std::endl;

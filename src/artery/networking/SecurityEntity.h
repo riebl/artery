@@ -3,13 +3,13 @@
 
 #include <omnetpp/csimplemodule.h>
 #include <vanetza/security/backend.hpp>
-#include <vanetza/security/certificate_cache.hpp>
-#include <vanetza/security/certificate_provider.hpp>
-#include <vanetza/security/certificate_validator.hpp>
 #include <vanetza/security/security_entity.hpp>
-#include <vanetza/security/sign_header_policy.hpp>
 #include <vanetza/security/sign_service.hpp>
 #include <vanetza/security/verify_service.hpp>
+#include <vanetza/security/v2/certificate_cache.hpp>
+#include <vanetza/security/v2/certificate_provider.hpp>
+#include <vanetza/security/v2/certificate_validator.hpp>
+#include <vanetza/security/v2/sign_header_policy.hpp>
 #include <memory>
 #include <string>
 
@@ -35,19 +35,19 @@ class SecurityEntity : public omnetpp::cSimpleModule, public vanetza::security::
 
     protected:
         std::unique_ptr<vanetza::security::Backend> createBackend(const std::string&) const;
-        std::unique_ptr<vanetza::security::CertificateProvider> createCertificateProvider(const std::string&) const;
-        std::unique_ptr<vanetza::security::CertificateValidator> createCertificateValidator(const std::string&) const;
-        vanetza::security::SignService createSignService(const std::string&) const;
-        vanetza::security::VerifyService createVerifyService(const std::string&) const;
+        std::unique_ptr<vanetza::security::v2::CertificateProvider> createCertificateProvider(const std::string&) const;
+        std::unique_ptr<vanetza::security::v2::CertificateValidator> createCertificateValidator(const std::string&) const;
+        std::unique_ptr<vanetza::security::SignService> createSignService(const std::string&) const;
+        std::unique_ptr<vanetza::security::VerifyService> createVerifyService(const std::string&) const;
 
     private:
         vanetza::Runtime* mRuntime;
         vanetza::PositionProvider* mPositionProvider;
         std::unique_ptr<vanetza::security::Backend> mBackend;
-        std::unique_ptr<vanetza::security::CertificateProvider> mCertificateProvider;
-        std::unique_ptr<vanetza::security::CertificateValidator> mCertificateValidator;
-        std::unique_ptr<vanetza::security::CertificateCache> mCertificateCache;
-        std::unique_ptr<vanetza::security::SignHeaderPolicy> mSignHeaderPolicy;
+        std::unique_ptr<vanetza::security::v2::CertificateProvider> mCertificateProvider;
+        std::unique_ptr<vanetza::security::v2::CertificateValidator> mCertificateValidator;
+        std::unique_ptr<vanetza::security::v2::CertificateCache> mCertificateCache;
+        std::unique_ptr<vanetza::security::v2::SignHeaderPolicy> mSignHeaderPolicy;
         std::unique_ptr<vanetza::security::SecurityEntity> mEntity;
 };
 

@@ -1,0 +1,19 @@
+test_runner: !test_runner
+  test_functions:
+    - min_cam_rate_test
+    - stations_test
+
+  tested_configurations: 
+    - General
+
+  sim_time_limit: 90
+
+scenario: !scenario
+  dynamic_nodes: 30
+
+  cbr: greater
+  cbr_threshold: 0.0
+
+  # min/max cam rate
+  min_cam_rate: 0.1
+  max_cam_rate: 1

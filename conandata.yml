@@ -1,0 +1,8 @@
+requirements:
+  boost: "1.86.0"
+  cryptopp: "8.9.0"
+  geographiclib: "2.3"
+  protobuf: "3.21.9"
+  cppzmq: "4.10.0"
+  plog: "1.1.10"
+

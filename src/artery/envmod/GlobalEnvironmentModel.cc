@@ -4,12 +4,13 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
-#include "artery/envmod/EnvironmentModelObject.h"
 #include "artery/envmod/GlobalEnvironmentModel.h"
 #include "artery/envmod/Geometry.h"
+#include "artery/envmod/TraCIEnvironmentModelObject.h"
 #include "artery/envmod/sensor/SensorConfiguration.h"
 #include "artery/traci/Cast.h"
 #include "artery/traci/ControllableVehicle.h"
+#include "artery/traci/ControllablePerson.h"
 #include "artery/utility/IdentityRegistry.h"
 #include "traci/Core.h"
 #include <boost/geometry/geometries/register/linestring.hpp>
@@ -104,17 +105,17 @@ void GlobalEnvironmentModel::refresh()
     emit(refreshSignal, this);
 }
 
-bool GlobalEnvironmentModel::addVehicle(traci::VehicleController* vehicle)
+bool GlobalEnvironmentModel::addObject(traci::Controller* controller)
 {
     uint32_t id = 0;
     if (mIdentityRegistry) {
-        auto identity = mIdentityRegistry->lookup<IdentityRegistry::traci>(vehicle->getVehicleId());
+        auto identity = mIdentityRegistry->lookup<IdentityRegistry::traci>(controller->getId());
         if (identity) {
             id = identity->application;
         }
     }
 
-    auto object = std::make_shared<EnvironmentModelObject>(vehicle, id);
+    auto object = std::make_shared<TraCIEnvironmentModelObject>(controller, id);
     auto insertion = mObjects.emplace(object->getExternalId(), object);
     if (insertion.second) {
         auto box = boost::geometry::return_envelope<geometry::Box>(object->getOutline());
@@ -182,14 +183,14 @@ void GlobalEnvironmentModel::buildObjectRtree()
     mTainted = false;
 }
 
-bool GlobalEnvironmentModel::removeVehicle(const std::string& objectId)
+bool GlobalEnvironmentModel::removeObject(const std::string& objectId)
 {
     bool erased = mObjects.erase(objectId) > 0;
     mTainted |= erased; /*< pending object rtree update */
     return erased;
 }
 
-void GlobalEnvironmentModel::removeVehicles()
+void GlobalEnvironmentModel::removeObjects()
 {
     mObjects.clear();
     mObjectRtree.clear();
@@ -205,7 +206,7 @@ void GlobalEnvironmentModel::removeVehicles()
 
 void GlobalEnvironmentModel::clear()
 {
-    removeVehicles();
+    removeObjects();
     mObstacles.clear();
     mObstacleRtree.clear();
 }
@@ -243,7 +244,7 @@ void GlobalEnvironmentModel::initialize()
 
 void GlobalEnvironmentModel::finish()
 {
-    removeVehicles();
+    removeObjects();
 }
 
 void GlobalEnvironmentModel::receiveSignal(cComponent* source, simsignal_t signal, const SimTime&, cObject*)
@@ -261,13 +262,13 @@ void GlobalEnvironmentModel::receiveSignal(cComponent*, simsignal_t signal, cons
     if (signal == traciNodeAddSignal) {
         cModule* module = dynamic_cast<cModule*>(obj);
         if (module) {
-            auto controller = getVehicleController(module);
+            auto controller = getController(module);
             if (controller) {
-                addVehicle(controller);
+                addObject(controller);
             }
         }
     } else if (signal == traciNodeRemoveSignal) {
-        removeVehicle(id);
+        removeObject(id);
     }
 }
 
@@ -306,11 +307,22 @@ void GlobalEnvironmentModel::fetchObstacles(const traci::API& traci)
     buildObstacleRtree();
 }
 
-traci::VehicleController* GlobalEnvironmentModel::getVehicleController(cModule* module)
+traci::Controller* GlobalEnvironmentModel::getController(cModule* module)
 {
     assert(module);
-    auto vehicle = dynamic_cast<ControllableVehicle*>(module->getModuleByPath(par("nodeMobilityModule")));
-    return vehicle ? vehicle->getVehicleController() : nullptr;
+    auto mobility = module->getModuleByPath(par("nodeMobilityModule"));
+
+    auto vehicle = dynamic_cast<ControllableVehicle*>(mobility);
+    if  (vehicle) {
+        return vehicle->getVehicleController();
+    }
+
+    auto person = dynamic_cast<ControllablePerson*>(mobility);
+    if  (person) {
+        return person->getPersonController();
+    }
+
+    return nullptr;
 }
 
 std::shared_ptr<EnvironmentModelObject> GlobalEnvironmentModel::getObject(const std::string& objId)
@@ -339,7 +351,7 @@ GlobalEnvironmentModel::preselectObjects(const std::string& ego, const std::vect
     std::vector<std::shared_ptr<EnvironmentModelObject>> objectsInSearchArea;
     ObjectRtree::const_query_iterator it = query_intersections(mObjectRtree, area);
     for (; it != mObjectRtree.qend(); ++it) {
-        if (it->second->getExternalId() != ego) {
+        if (it->second->getExternalId() != ego && it->second->isVisible()) {
             objectsInSearchArea.push_back(it->second);
         }
     }

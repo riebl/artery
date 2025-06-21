@@ -7,8 +7,9 @@
 #include "artery/envmod/service/EnvmodPrinter.h"
 #include "artery/envmod/EnvironmentModelObject.h"
 #include "artery/envmod/LocalEnvironmentModel.h"
+#include "artery/envmod/TraCIEnvironmentModelObject.h"
 #include "artery/envmod/sensor/Sensor.h"
-#include "artery/traci/VehicleController.h"
+#include "artery/traci/Controller.h"
 #include <boost/units/io.hpp>
 #include <omnetpp/clog.h>
 
@@ -21,7 +22,7 @@ void EnvmodPrinter::initialize()
 {
     ItsG5Service::initialize();
     mLocalEnvironmentModel = getFacilities().get_mutable_ptr<LocalEnvironmentModel>();
-    mEgoId = getFacilities().get_const<traci::VehicleController>().getVehicleId();
+    mEgoId = getFacilities().get_const<VehicleDataProvider>().getStationId();
 }
 
 void EnvmodPrinter::trigger()
@@ -50,15 +51,21 @@ void EnvmodPrinter::printSensorObjectList(const std::string& title, const Tracke
         if (!obj_ptr) {
             continue; /*< objects remain in tracking briefly after leaving simulation */
         }
-        const auto& vd = obj_ptr->getVehicleData();
-        EV_DETAIL
-            << "station ID: " << vd.station_id()
-            << " TraCI ID: " << obj_ptr->getExternalId()
-            << " lon: " << vd.longitude()
-            << " lat: " << vd.latitude()
-            << " speed: " << vd.speed()
-            << " when: " << vd.updated()
-            << std::endl;
+
+        auto traci_obj_ptr = std::dynamic_pointer_cast<TraCIEnvironmentModelObject>(obj_ptr);
+        if (traci_obj_ptr) {
+            const auto& vd = traci_obj_ptr->getVehicleData();
+            EV_DETAIL
+                << "station ID: " << vd.station_id()
+                << " TraCI ID: " << obj_ptr->getExternalId()
+                << " lon: " << vd.longitude()
+                << " lat: " << vd.latitude()
+                << " speed: " << vd.speed()
+                << " when: " << vd.updated()
+                << std::endl;
+        } else {
+            EV_DETAIL << "Non-TraCI object with ID " << obj_ptr->getExternalId() << std::endl;
+        }
     }
 }
 

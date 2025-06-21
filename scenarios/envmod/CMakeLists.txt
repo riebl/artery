@@ -1,0 +1,1 @@
+add_opp_run(envmod CONFIG omnetpp.ini)

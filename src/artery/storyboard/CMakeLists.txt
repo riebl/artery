@@ -27,13 +27,11 @@ add_artery_feature(storyboard
 )
 
 add_library(pybind11 INTERFACE)
-if(CMAKE_VERSION VERSION_GREATER 3.12)
+if(NOT (CMAKE_VERSION VERSION_LESS 3.12))
     find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
-    target_include_directories(
-        pybind11 INTERFACE 
+    target_include_directories(pybind11 INTERFACE
         ${PROJECT_SOURCE_DIR}/extern/pybind11/include
-        ${Python3_INCLUDE_DIRS}
-    )
+        ${Python3_INCLUDE_DIRS})
     target_link_libraries(pybind11 INTERFACE ${Python3_LIBRARIES})
 else()
     find_package(PythonLibs REQUIRED)

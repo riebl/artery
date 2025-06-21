@@ -15,7 +15,7 @@ namespace traci
 namespace
 {
 static const std::set<int> sPersonVariables {
-    libsumo::VAR_POSITION, libsumo::VAR_SPEED, libsumo::VAR_ANGLE
+    libsumo::VAR_POSITION, libsumo::VAR_SPEED, libsumo::VAR_ANGLE, libsumo::VAR_VEHICLE
 };
 static const std::set<int> sVehicleVariables {
     libsumo::VAR_POSITION, libsumo::VAR_SPEED, libsumo::VAR_ANGLE
@@ -48,6 +48,7 @@ public:
     const TraCIPosition& getPosition() const override { return m_cache->get<libsumo::VAR_POSITION>(); }
     TraCIAngle getHeading() const override { return TraCIAngle { m_cache->get<libsumo::VAR_ANGLE>() }; }
     double getSpeed() const override { return m_cache->get<libsumo::VAR_SPEED>(); }
+    std::string getVehicle() const override { return m_cache->get<libsumo::VAR_VEHICLE>(); }
 
 private:
     std::shared_ptr<PersonCache> m_cache;

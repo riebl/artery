@@ -15,7 +15,7 @@ simple Router
         string runtimeModule;
         string securityModule;
 
-        bool deferInitialBeacon = default(true);
+        double deferInitialBeacon = default(uniform(0s, 1s)) @unit(s);
         bool disableBeaconing = default(false);
         bool isMobile = default(true);
 

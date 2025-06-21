@@ -5,11 +5,14 @@
 #include <vanetza/common/position_provider.hpp>
 #include <vanetza/common/runtime.hpp>
 #include <vanetza/security/delegating_security_entity.hpp>
-#include <vanetza/security/naive_certificate_provider.hpp>
-#include <vanetza/security/null_certificate_provider.hpp>
-#include <vanetza/security/null_certificate_validator.hpp>
+#include <vanetza/security/straight_verify_service.hpp>
+#include <vanetza/security/v2/naive_certificate_provider.hpp>
+#include <vanetza/security/v2/null_certificate_provider.hpp>
+#include <vanetza/security/v2/null_certificate_validator.hpp>
+#include <vanetza/security/v2/sign_service.hpp>
 
 namespace vs = vanetza::security;
+namespace vs2 = vanetza::security::v2;
 
 namespace artery
 {
@@ -30,8 +33,8 @@ void SecurityEntity::initialize(int stage)
         mBackend = createBackend(par("CryptoBackend"));
         mCertificateProvider = createCertificateProvider(par("CertificateProvider"));
         mCertificateValidator = createCertificateValidator(par("CertificateValidator"));
-        mCertificateCache.reset(new vs::CertificateCache(*notNullPtr(mRuntime)));
-        mSignHeaderPolicy.reset(new vs::DefaultSignHeaderPolicy(*notNullPtr(mRuntime), *mPositionProvider));
+        mCertificateCache.reset(new vs2::CertificateCache(*notNullPtr(mRuntime)));
+        mSignHeaderPolicy.reset(new vs2::DefaultSignHeaderPolicy(*notNullPtr(mRuntime), *mPositionProvider));
         mEntity.reset(new vs::DelegatingSecurityEntity(createSignService(par("SignService")), createVerifyService(par("VerifyService"))));
     }
 }
@@ -56,22 +59,22 @@ std::unique_ptr<vs::Backend> SecurityEntity::createBackend(const std::string& na
     return backend;
 }
 
-std::unique_ptr<vs::CertificateProvider> SecurityEntity::createCertificateProvider(const std::string& name) const
+std::unique_ptr<vs2::CertificateProvider> SecurityEntity::createCertificateProvider(const std::string& name) const
 {
-    std::unique_ptr<vs::CertificateProvider> certificates;
+    std::unique_ptr<vs2::CertificateProvider> certificates;
     if (name == "Null") {
-        certificates.reset(new vs::NullCertificateProvider());
+        certificates.reset(new vs2::NullCertificateProvider());
     } else if (name == "Naive") {
-        certificates.reset(new vs::NaiveCertificateProvider(*notNullPtr(mRuntime)));
+        certificates.reset(new vs2::NaiveCertificateProvider(*notNullPtr(mRuntime)));
     } else {
         error("No certificate provider available with name \"%s\"", name.c_str());
     }
     return certificates;
 }
 
-std::unique_ptr<vs::CertificateValidator> SecurityEntity::createCertificateValidator(const std::string& name) const
+std::unique_ptr<vs2::CertificateValidator> SecurityEntity::createCertificateValidator(const std::string& name) const
 {
-    std::unique_ptr<vs::NullCertificateValidator> validator { new vs::NullCertificateValidator() };
+    std::unique_ptr<vs2::NullCertificateValidator> validator { new vs2::NullCertificateValidator() };
 
     if (name == "Null") {
         // no-op
@@ -86,37 +89,35 @@ std::unique_ptr<vs::CertificateValidator> SecurityEntity::createCertificateValid
     return validator;
 }
 
-vs::SignService SecurityEntity::createSignService(const std::string& name) const
+std::unique_ptr<vs::SignService> SecurityEntity::createSignService(const std::string& name) const
 {
-    vs::SignService sign_service;
-
     if (name == "straight") {
-        sign_service = vs::straight_sign_service(*mCertificateProvider, *mBackend, *mSignHeaderPolicy);
+        return std::make_unique<vs2::StraightSignService>(*mCertificateProvider, *mBackend, *mSignHeaderPolicy);
     } else if (name == "deferred") {
-        sign_service = vs::deferred_sign_service(*mCertificateProvider, *mBackend, *mSignHeaderPolicy);
+        return std::make_unique<vs2::DeferredSignService>(*mCertificateProvider, *mBackend, *mSignHeaderPolicy);
     } else if (name == "dummy") {
-        sign_service = vs::dummy_sign_service(*mRuntime, vs::NullCertificateProvider::null_certificate());
+        return std::make_unique<vs2::DummySignService>(*mRuntime, vs2::NullCertificateProvider::null_certificate());
     } else {
         error("No security sign service available with name \"%s\"", name.c_str());
+        return nullptr;
     }
-
-    return sign_service;
 }
 
-vs::VerifyService SecurityEntity::createVerifyService(const std::string& name) const
+std::unique_ptr<vs::VerifyService> SecurityEntity::createVerifyService(const std::string& name) const
 {
-    vs::VerifyService verify_service;
-
     if (name == "straight") {
-        verify_service = vs::straight_verify_service(*mRuntime, *mCertificateProvider, *mCertificateValidator,
-                    *mBackend, *mCertificateCache, *mSignHeaderPolicy, *mPositionProvider);
+        auto verify_service = std::make_unique<vs::StraightVerifyService>(*mRuntime, *mBackend, *mPositionProvider);
+        verify_service->use_certificate_cache(mCertificateCache.get());
+        verify_service->use_certificate_provider(mCertificateProvider.get());
+        verify_service->use_certificate_validator(mCertificateValidator.get());
+        verify_service->use_sign_header_policy(mSignHeaderPolicy.get());
+        return verify_service;
     } else if (name == "dummy") {
-        verify_service = vs::dummy_verify_service(vs::VerificationReport::Success, vs::CertificateValidity::valid());
+        return std::make_unique<vs::DummyVerifyService>(vs::VerificationReport::Success, vs::CertificateValidity::valid());
     } else {
         error("No security verify service available with name \"%s\"", name.c_str());
+        return nullptr;
     }
-
-    return verify_service;
 }
 
 vs::EncapConfirm SecurityEntity::encapsulate_packet(vs::EncapRequest&& request)
