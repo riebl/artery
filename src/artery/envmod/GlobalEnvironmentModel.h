@@ -20,11 +20,13 @@
 #include <memory>
 #include <string>
 
-
-namespace traci {
+// forward declarations
+namespace traci
+{
     class API;
-    class VehicleController;
-}
+    class Controller;
+} // namespace traci
+
 
 namespace artery
 {
@@ -33,7 +35,15 @@ class EnvironmentModelObstacle;
 class IdentityRegistry;
 
 /**
- * Implementation of the environment model.
+ * The GlobalEnvironmentModel has the global view of all objects and obstacles
+ * relevant for object detection by sensors.
+ * 
+ * Obstacles are static by nature, e.g. buildings and trees.
+ * Users can configure via the obstacleTypes module parameters which polygon types
+ * are loaded from SUMO during initialization as obstacles into the environment model.
+ * 
+ * Objects are dynamic and updated for each SUMO simulation step.
+ * Such dynamic objects are vehicles and pedestrians.
  */
 class GlobalEnvironmentModel : public omnetpp::cSimpleModule, public omnetpp::cListener
 {
@@ -88,23 +98,23 @@ private:
     void refresh();
 
     /**
-     * Add vehicle to the environment database
+     * Add object to the environment database
      * @param vehicle TraCI mobility corresponding to vehicle
      * @return true if successful
      */
-    bool addVehicle(traci::VehicleController* vehicle);
+    bool addObject(traci::Controller* object);
 
     /**
-     * Remove vehicle from the database
-     * @param nodeId TraCI id of vehicle to be removed
-     * @return true if the vehicle is successfully removed
+     * Remove objects from the database
+     * @param nodeId TraCI id of object to be removed
+     * @return true if the object is successfully removed
      */
-    bool removeVehicle(const std::string& nodeId);
+    bool removeObject(const std::string& id);
 
     /**
-     * Remove all known vehicles from internal database
+     * Remove all known objects from internal database
      */
-    void removeVehicles();
+    void removeObjects();
 
     /**
      * Add (static) obstacles to the obstacle database
@@ -137,11 +147,11 @@ private:
     void fetchObstacles(const traci::API& api);
 
     /**
-     * Try to get vehicle controller corresponding to given module
-     * @param mod vehicle host module
-     * @return nullptr if no vehicle controller is available
+     * Try to get controller corresponding to given module
+     * @param mod host module
+     * @return nullptr if no controller is available
      */
-    virtual traci::VehicleController* getVehicleController(omnetpp::cModule* mod);
+    virtual traci::Controller* getController(omnetpp::cModule* mod);
 
     using ObjectDB = std::unordered_map<std::string, std::shared_ptr<EnvironmentModelObject>>;
     using ObjectRtreeValue = std::pair<geometry::Box, std::shared_ptr<EnvironmentModelObject>>;

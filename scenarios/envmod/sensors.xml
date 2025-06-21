@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sensors>
+	<sensor name="FrontShortRangeRadar" type="artery.envmod.sensor.FrontRadar" />
+	<sensor name="FrontLongRangeRadar" type="artery.envmod.sensor.FrontRadar" />
+	<sensor name="RearLongRangeRadar" type="artery.envmod.sensor.RearRadar" />
+	<sensor name="RearShortRangeRadar" type="artery.envmod.sensor.RearRadar" />
+	<sensor name="SeeThrough" type="artery.envmod.sensor.SeeThroughSensor" />
+	<sensor type="artery.envmod.sensor.CamSensor" />
+</sensors>

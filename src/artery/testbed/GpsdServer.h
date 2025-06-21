@@ -26,7 +26,7 @@ private:
     void write(const std::string& sentence);
     void waitForListener(unsigned short port);
 
-    boost::asio::io_service mIoService;
+    boost::asio::io_context mIoContext;
     boost::asio::ip::tcp::socket mSocket;
     Timer mTimer;
 };

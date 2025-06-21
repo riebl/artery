@@ -12,6 +12,7 @@ class VeinsMobility : public veins::BaseMobility, public artery::VehicleMobility
 {
 public:
     void initialize(int stage) override;
+    const std::string& getId() override { return mVehicleId; };
 
 private:
     void initialize(const Position&, Angle, double speed) override;

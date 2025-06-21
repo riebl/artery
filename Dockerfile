@@ -5,7 +5,7 @@ SHELL [ "/bin/bash", "-c"]
 # OMNeT release tag
 ARG OMNETPP_TAG=omnetpp-5.6.2
 # SUMO tag
-ARG SUMO_TAG=v1_22_0
+ARG SUMO_TAG=v1_23_0
 
 WORKDIR /cavise
 
@@ -34,13 +34,9 @@ ENV SUMO_HOME="/usr/local/share/sumo"
 RUN pacman -S --noconfirm xerces-c fox gdal proj gl2ps jre17-openjdk swig maven eigen && \
     rm -rf /cavise/sumo /var/cache/pacman/pkg/* /tmp/*
 
-# Temporary workaround: without this, the container builds with GCC 15 and crashes
-RUN ln -sf /usr/bin/gcc-14 /usr/local/bin/gcc && \
-    ln -sf /usr/bin/g++-14 /usr/local/bin/g++
-
 RUN git clone --recurse --depth 1 --branch ${SUMO_TAG} https://github.com/eclipse-sumo/sumo && \
     cd sumo && \
-    cmake -B build . -DCMAKE_C_COMPILER=/usr/local/bin/gcc -DCMAKE_CXX_COMPILER=/usr/local/bin/g++ && \
+    cmake -B build . && \
     cmake --build build -- -j$(nproc) && \
     cmake --install build && \
     rm -rf /cavise/sumo /var/cache/pacman/pkg/* /tmp/*
@@ -56,6 +52,6 @@ COPY artery/ ${ARTERY_DIR}
 COPY cavise/ /cavise/cavise
 
 WORKDIR ${ARTERY_DIR} 
-RUN ./tools/build.py -cbi --config ${BUILD_CONFIG} --profile ${ARTERY_DIR}/tools/profiles/${CONAN_PROFILE}
+RUN ./tools/build.py -cib --config ${BUILD_CONFIG} --pr:a tools/profiles/container.ini
 
 CMD ["echo", "'run this interactively'"]

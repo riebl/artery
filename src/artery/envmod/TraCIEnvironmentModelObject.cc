@@ -4,12 +4,14 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
-#include "artery/traci/VehicleController.h"
 #include "artery/application/StationType.h"
-#include "artery/envmod/EnvironmentModelObject.h"
+#include "artery/envmod/TraCIEnvironmentModelObject.h"
+#include "artery/traci/PersonController.h"
+#include "artery/traci/VehicleController.h"
 #include <boost/geometry/strategies/transform/matrix_transformers.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/units/cmath.hpp>
+#include <boost/units/systems/angle/degrees.hpp>
 #include <omnetpp/cexception.h>
 
 namespace artery
@@ -37,7 +39,7 @@ const Position squareCentrePoint(-0.5, 0.0);
 
 #if BOOST_VERSION < 106400
 boost::geometry::strategy::transform::ublas_transformer<double, 2, 2>
-transformVehicle(double length, double width, const Position& pos, Angle alpha)
+transformObject(double length, double width, const Position& pos, Angle alpha)
 {
     using namespace boost::geometry::strategy::transform;
     using result_type = ublas_transformer<double, 2, 2>;
@@ -56,7 +58,7 @@ transformVehicle(double length, double width, const Position& pos, Angle alpha)
 }
 #else
 boost::geometry::strategy::transform::matrix_transformer<double, 2, 2>
-transformVehicle(double length, double width, const Position& pos, Angle alpha)
+transformObject(double length, double width, const Position& pos, Angle alpha)
 {
     using namespace boost::geometry::strategy::transform;
 
@@ -73,29 +75,40 @@ transformVehicle(double length, double width, const Position& pos, Angle alpha)
 
 }
 
-EnvironmentModelObject::EnvironmentModelObject(const traci::VehicleController* vehicle, uint32_t id) :
+TraCIEnvironmentModelObject::TraCIEnvironmentModelObject(const traci::Controller* controller, uint32_t id) :
     VehicleDataProvider(id),
-    mVehicleController(vehicle),
-    mLength(vehicle->getVehicleType().getLength()),
-    mWidth(vehicle->getVehicleType().getWidth())
+    mController(controller)
 {
+    mLength = controller->getLength();
+    mWidth = controller->getWidth();
     const auto halfWidth = mWidth * 0.5;
     const auto halfLength = mLength * 0.5;
     mRadius = sqrt(halfWidth * halfWidth + halfLength * halfLength);
 
-    setStationType(deriveStationTypeFromVehicleClass(mVehicleController->getVehicleClass()));
+    auto vehicle = dynamic_cast<const traci::VehicleController*>(controller);
+    if  (vehicle) {
+        setStationType(deriveStationTypeFromVehicleClass(vehicle->getVehicleClass()));
+    }
+    else {
+        setStationType(StationType::Pedestrian);
+    }
     update();
 }
 
-void EnvironmentModelObject::update()
+const VehicleDataProvider& TraCIEnvironmentModelObject::getVehicleData() const
+{
+   return *this;
+}
+
+void TraCIEnvironmentModelObject::update()
 {
     // Update the internal vdp
-    VehicleDataProvider::update(getKinematics(*mVehicleController));
+    VehicleDataProvider::update(getKinematics(*mController));
 
     // Recalculate all time and position dependent attributes
     using namespace boost::math::double_constants;
     Angle heading = -1.0 * (getVehicleData().heading() - 0.5 * pi * boost::units::si::radian);
-    auto affine = transformVehicle(mLength.value(), mWidth.value(), getVehicleData().position(), heading);
+    auto affine = transformObject(mLength.value(), mWidth.value(), getVehicleData().position(), heading);
 
     boost::geometry::transform(squareCentrePoint, mCentrePoint, affine);
     mOutline.clear();
@@ -104,39 +117,30 @@ void EnvironmentModelObject::update()
     boost::geometry::transform(squareAttachmentPoints, mAttachmentPoints, affine);
 }
 
-std::string EnvironmentModelObject::getExternalId() const
+EnvironmentModelObject::Heading TraCIEnvironmentModelObject::getHeading() const
 {
-    return mVehicleController->getVehicleId();
+    using boost::units::si::radians;
+    static const auto pi = boost::math::constants::pi<double>();
+
+    // heading from vehicle data is headed north (clockwise),
+    vanetza::units::Angle traci_heading = getVehicleData().heading();
+    // OMNeT++ angles are headed east (counter-clockwise)
+    Angle opp_heading = 0.5 * pi * radians - traci_heading;
+    return opp_heading;
 }
 
-const Position& EnvironmentModelObject::getAttachmentPoint(const SensorPosition& pos) const
+std::string TraCIEnvironmentModelObject::getExternalId() const
 {
-    assert(mAttachmentPoints.size() == 4);
-    const Position* point = nullptr;
-    switch (pos) {
-        case SensorPosition::FRONT:
-            point = &mAttachmentPoints[0];
-            break;
-        case SensorPosition::BACK:
-            point = &mAttachmentPoints[2];
-            break;
-        case SensorPosition::RIGHT:
-            point = &mAttachmentPoints[1];
-            break;
-        case SensorPosition::LEFT:
-            point = &mAttachmentPoints[3];
-            break;
-        default:
-            throw omnetpp::cRuntimeError("Invalid sensor attachment point requested");
-            break;
+    return mController->getId();
+}
+
+bool TraCIEnvironmentModelObject::isVisible() {
+    if (getStationType() == StationType::Pedestrian) {
+        return !dynamic_cast<const traci::PersonController *>(mController)->isDriving();
     }
-
-    return *point;
-}
-
-const VehicleDataProvider& EnvironmentModelObject::getVehicleData() const
-{
-   return *this;
+    else {
+        return true;
+    }
 }
 
 } // namespace artery

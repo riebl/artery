@@ -27,7 +27,7 @@ RUN pacman -Syu --noconfirm     \
 FROM setup AS build
 
 # SUMO version (github tag)
-ARG SUMO_TAG=v1_22_0
+ARG SUMO_TAG=v1_21_0
 # OMNeT version (github tag)
 ARG OMNETPP_TAG=omnetpp-5.6.2
 # GeographicLib version (github tag)

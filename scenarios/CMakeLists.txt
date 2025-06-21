@@ -1,4 +1,5 @@
 add_subdirectory(artery)
+
 add_subdirectory(gemv2)
 add_subdirectory(highway-police)
 add_subdirectory(single_town06_cosim)
@@ -15,6 +16,7 @@ add_opp_run(4cars_coperception WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/4ca
 add_opp_run(v2xp_datadump_town06_carla WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/v2xp_datadump_town06_carla NED_FOLDERS ${CMAKE_SOURCE_DIR}/src/cavise)
 
 if(WITH_ENVMOD)
+    add_subdirectory(envmod)
     add_subdirectory(rsu_grid)
 endif()
 if(WITH_STORYBOARD)

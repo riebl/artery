@@ -1,5 +1,5 @@
 #include "artery/application/VehicleKinematics.h"
-#include "artery/traci/VehicleController.h"
+#include "artery/traci/Controller.h"
 #include <limits>
 
 namespace artery
@@ -11,7 +11,7 @@ VehicleKinematics::VehicleKinematics() :
 {
 }
 
-VehicleKinematics getKinematics(const traci::VehicleController& controller)
+VehicleKinematics getKinematics(const traci::Controller& controller)
 {
     artery::VehicleKinematics kinematics;
     kinematics.position = controller.getPosition();

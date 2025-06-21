@@ -1,16 +1,12 @@
 package artery.envmod;
 
 import artery.inet.PlainVehicle;
-import artery.envmod.CarIdentityRegistrant;
+import artery.envmod.IdentityRegistrant;
 
 module PlainVehicle extends artery.inet.PlainVehicle
 {
-    parameters:
-        @display("i=blocki/process;is=vs");
-        @labels(node);
-
     submodules:
-        carIdentityRegistrant: CarIdentityRegistrant {
+        carIdentityRegistrant: IdentityRegistrant {
             parameters:
                 @display("p=53,300");
         }

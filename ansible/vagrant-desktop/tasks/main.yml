@@ -21,7 +21,7 @@
   copy:
     content: |
       [Autologin]
-      User={{ ansible_user }}
+      User={{ ansible_env.USER }}
       Session=lxqt.desktop
       Relogin=false
     dest: /etc/sddm.conf.d/autologin
@@ -35,10 +35,4 @@
   loop:
   - lxqt-powermanagement
   - lxqt-xscreensaver-autostart
-  become: yes
-
-- name: enable login for vagrant user
-  user:
-    name: vagrant
-    password: $6$SEC8uRcudj/vUPNJ$tAm07NjUGvBvnTX9UQ2nKYWH/FQVT2OQPUaLAW7jm9JqoWXJVE6vy5F2L76gG0yuN1AdJhDzSJtJuWo9BGJHb.
   become: yes

@@ -1,25 +1,10 @@
-cmake_minimum_required(VERSION 3.15)
-
+cmake_minimum_required(VERSION 3.16)
+cmake_policy(VERSION 3.16...3.31)
 project(Artery)
 
-if(POLICY CMP0076)
-    cmake_policy(SET CMP0076 NEW)
-endif()
-
-if(POLICY CMP0079)
-    if (CMAKE_VERSION VERSION_LESS 3.17)
-        cmake_policy(SET CMP0079 OLD)
-    else()
-        cmake_policy(SET CMP0079 NEW)
-    endif()
-endif()
-
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 enable_testing()
 
 find_package(protobuf REQUIRED VERSION 3.21.9 CONFIG)
@@ -35,6 +20,14 @@ include(AddVSCode)
 include(CheckGitSubmodule)
 include(GenerateOppMessage)
 include(GNUInstallDirs)
+
+find_package(Boost 1.59 REQUIRED COMPONENTS date_time system CONFIG)
+
+# use "RelWithDebInfo" as default build type
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "CMake build type" FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
 
 # running simulations with opp_run requires shared libraries
 set(BUILD_SHARED_LIBS ON CACHE INTERNAL "Cached for propagation to sub-projects with older CMake versions")
@@ -117,10 +110,13 @@ if(EXISTS ${PROJECT_SOURCE_DIR}/scenarios)
 endif()
 
 get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-if(NOT is_multi_config)
-    generate_run_script(TARGET artery FILE ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/run_artery.sh)
-    generate_run_script(TARGET artery FILE ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/run_artery.sh.install INSTALL)
-    install(
-        PROGRAMS ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/run_artery.sh.install
-        DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME run_artery.sh)
+if(is_multi_config)
+    foreach(config IN LISTS CMAKE_CONFIGURATION_TYPES)
+        string(TOLOWER "${config}" config_lower)
+        generate_run_config(TARGET artery CONFIG ${config} FILE "${PROJECT_BINARY_DIR}/run-artery.${config}.ini")
+        generate_run_config(TARGET artery CONFIG ${config} FILE "${PROJECT_BINARY_DIR}/run-artery.${config}.ini.install" INSTALL)
+    endforeach()
+else()
+    generate_run_config(TARGET artery CONFIG ${CMAKE_BUILD_TYPE} FILE "${PROJECT_BINARY_DIR}/run-artery.ini")
+    generate_run_config(TARGET artery CONFIG ${CMAKE_BUILD_TYPE} FILE "${PROJECT_BINARY_DIR}/run-artery.ini.install" INSTALL)
 endif()

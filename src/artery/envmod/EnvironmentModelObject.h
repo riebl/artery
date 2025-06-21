@@ -7,66 +7,73 @@
 #ifndef EVIRONMENTMODELOBJECT_H_
 #define EVIRONMENTMODELOBJECT_H_
 
-#include "artery/application/VehicleDataProvider.h"
-#include "artery/envmod//Geometry.h"
 #include "artery/envmod/sensor/SensorPosition.h"
-#include "artery/traci/VehicleType.h"
 #include "artery/utility/Geometry.h"
-#include <boost/optional/optional.hpp>
+#include <vanetza/units/length.hpp>
 #include <cstdint>
 #include <memory>
 #include <vector>
-
-namespace traci { class VehicleController; }
 
 namespace artery
 {
 
 /**
- * EnvironmentModelObject
+ * EnvironmentModelObject is the interface class for all dynamic objects
+ * tracked by the GlobalEnvironmentModel and thus detectable by sensors.
  */
-class EnvironmentModelObject : private VehicleDataProvider
+class EnvironmentModelObject
 {
 public:
-    using Length = traci::VehicleType::Length;
-
-    /**
-     * @param ctrl associated VehicleController to this object
-     * @param id station ID used by this object for application messages (e.g. CAM)
-     */
-    EnvironmentModelObject(const traci::VehicleController*, uint32_t id);
+    using Length = vanetza::units::Length;
+    using Heading = Angle;
+    virtual ~EnvironmentModelObject() = default;
 
     /**
      * Updates the internal object data.
      */
-    void update();
+    virtual void update() = 0;
+
+    /**
+     * Returns the external ID of the object.
+     * In most cases this is the SUMO identifier.
+     * @return external ID
+     */
+    virtual std::string getExternalId() const = 0;
 
     /**
      * Returns the polygon describing the object's outline
      * @return polygon points
      */
-    const std::vector<Position>& getOutline() const { return mOutline; }
+    virtual const std::vector<Position>& getOutline() const = 0;
 
     /**
-     * Returns a sensor attachment point of the vehicle object
+     * Returns a sensor attachment point of the object
      * @param pos logical position of sensor
      * @return sensor attachment point
      */
-    const Position& getAttachmentPoint(const SensorPosition& pos) const;
-
-    const VehicleDataProvider& getVehicleData() const;
-
-    std::string getExternalId() const;
+    virtual const Position& getAttachmentPoint(const SensorPosition& pos) const = 0;
 
     /**
-     * Return the centre point coord of this vehicle object
+     * Return the centre point coord of object
      * @return centre point
      */
-    const Position& getCentrePoint() const { return mCentrePoint; }
+    virtual const Position& getCentrePoint() const = 0;
 
-    Length getLength() const { return mLength; }
+    /**
+     * Get heading (orientation) of object
+     * @return heading as angle from north, clockwise
+     */
+    virtual Heading getHeading() const = 0;
 
-    Length getWidth() const { return mWidth; }
+    /**
+     * Get length of object
+     */
+    virtual Length getLength() const = 0;
+
+    /**
+     * Get width of object
+     */
+    virtual Length getWidth() const = 0;
 
     /**
      * Return outer object radius
@@ -74,16 +81,14 @@ public:
      * Object is guaranteed to lie completely in the circle described by getCentrePoint and getRadius().
      * @return outer radius
      */
-    Length getRadius() const { return mRadius; }
+    virtual Length getRadius() const = 0;
 
-private:
-    const traci::VehicleController* mVehicleController;
-    traci::VehicleType::Length mLength;
-    traci::VehicleType::Length mWidth;
-    traci::VehicleType::Length mRadius;
-    std::vector<Position> mOutline;
-    std::vector<Position> mAttachmentPoints;
-    Position mCentrePoint;
+    /**
+     * Returns whether the object should be visible
+     * 
+     * Vehicles should always be visible. Persons might be driving a vehicle and should not be visibile while doing so.
+     */
+    virtual bool isVisible() = 0;
 };
 
 } // namespace artery

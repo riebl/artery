@@ -57,7 +57,9 @@ add_library(core SHARED
     nic/ChannelLoadSampler.cc
     nic/RadioDriverBase.cc
     traci/Cast.cc
+    traci/Controller.cc
     traci/MobilityBase.cc
+    traci/PersonController.cc
     traci/PersonMobility.cc
     traci/VehicleController.cc
     traci/VehicleMobility.cc
@@ -146,9 +148,11 @@ endif()
 macro(add_artery_feature name)
     add_library(${name} SHARED ${ARGN})
     add_library(Artery::${name} ALIAS ${name})
+    get_target_property(ned_folder ${name} SOURCE_DIR)
     set_target_properties(${name} PROPERTIES
         OUTPUT_NAME artery_${name}
-        OMNETPP_LIBRARY ON)
+        OMNETPP_LIBRARY ON
+        NED_FOLDERS ${ned_folder})
     target_link_libraries(${name} PRIVATE core)
     target_link_libraries(artery INTERFACE Artery::${name})
     install(TARGETS ${name} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
