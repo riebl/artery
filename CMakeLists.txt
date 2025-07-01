@@ -14,6 +14,7 @@ include(AddVSCode)
 include(CheckGitSubmodule)
 include(GenerateOppMessage)
 include(GNUInstallDirs)
+include(CMakeDependentOption)
 
 find_package(Boost 1.59 REQUIRED COMPONENTS date_time system CONFIG)
 
@@ -86,6 +87,7 @@ option(WITH_ENVMOD "Build Artery with environment model feature" ON)
 option(WITH_STORYBOARD "Build Artery with storyboard feature" ON)
 option(WITH_TRANSFUSION "Build Artery with transfusion feature" OFF)
 option(WITH_TESTBED "Build Artery with testbed feature" OFF)
+cmake_dependent_option(WITH_CPSERVICE "Build Artery with Collective Perception Service" ON "WITH_ENVMOD" OFF)
 
 option(WITH_OTS "Build Artery with support for OpenTrafficSim" OFF)
 if(WITH_OTS)
