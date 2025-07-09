@@ -15,8 +15,7 @@
 #include <cavise/comms/CommunicationManager.h>
 
 // protos
-#include <cavise/artery.pb.h>
-#include <cavise/opencda.pb.h>
+#include <cavise/capi.pb.h>
 
 
 namespace cavise {
@@ -25,8 +24,8 @@ namespace cavise {
     public:
 
         using CommunicationManager = cavise::CommunicationManager<
-            structure_artery::Artery_message, 
-            structure_opencda::OpenCDA_message
+            structure_capi::Artery_message, 
+            structure_capi::OpenCDA_message
         >;
 
         CosimService();

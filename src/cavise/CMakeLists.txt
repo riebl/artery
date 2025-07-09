@@ -21,8 +21,7 @@ set(PROTO_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/protos)
 set(PROTO_GENERATOR_DIR ${CMAKE_CURRENT_SOURCE_DIR}/protos/cavise)
 
 set(PROTOS )
-list(APPEND PROTOS ${PROTO_SOURCE_DIR}/artery.proto)
-list(APPEND PROTOS ${PROTO_SOURCE_DIR}/opencda.proto)
+list(APPEND PROTOS ${PROTO_SOURCE_DIR}/capi.proto)
 
 add_library(protos OBJECT ${PROTOS})
 protobuf_generate(

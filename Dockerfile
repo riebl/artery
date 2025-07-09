@@ -15,7 +15,8 @@ RUN pacman -Syu --noconfirm pacman-contrib &&\
     pacman -Sc --noconfirm && \
     rm -rf /var/cache/pacman/pkg/* /tmp/*
 
-RUN pip install --no-cache-dir --break-system-packages conan
+# Temporary: Using conan==2.17 to avoid errors with Pathlib
+RUN pip install --no-cache-dir --break-system-packages conan==2.17
 
 # OmnetPP
 ENV OMNETPP_ROOT=/cavise/${OMNETPP_TAG}/bin \

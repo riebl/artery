@@ -49,15 +49,6 @@ CosimService::CosimService()
     cavise::init();
 }
 
-structure_artery::NDArray ConvertNDArray(const structure_opencda::NDArray& src)
-{
-    structure_artery::NDArray dst;
-    dst.set_dtype(src.dtype());
-    dst.mutable_shape()->CopyFrom(src.shape());
-    dst.set_data(src.data());
-    return dst;
-}
-
 void CosimService::indicate(const vanetza::btp::DataIndication& /* ind */, omnetpp::cPacket* packet, const artery::NetworkInterface& /* interface */)
 {
     CAVISE_STUB();
@@ -72,7 +63,7 @@ void CosimService::indicate(const vanetza::btp::DataIndication& /* ind */, omnet
     }
 
     OpencdaPayload* payload = static_cast<OpencdaPayload*>(packet);
-    structure_opencda::OpenCDA_message received_message;
+    structure_capi::OpenCDA_message received_message;
     if (auto status = google::protobuf::util::JsonStringToMessage(payload->getJson(), &received_message); !status.ok()) {
         PLOG(plog::debug) << "error parsing JSON: " << status.ToString();
     }
@@ -88,7 +79,7 @@ void CosimService::indicate(const vanetza::btp::DataIndication& /* ind */, omnet
 
     PLOG(plog::debug) << "Vehicle '" << id << "' passed prefix check";
 
-    auto message = std::make_unique<structure_artery::Artery_message>();
+    auto message = std::make_unique<structure_capi::Artery_message>();
     auto* received_info = message->add_received_information();
     received_info->set_id(id);
 
@@ -111,68 +102,17 @@ void CosimService::indicate(const vanetza::btp::DataIndication& /* ind */, omnet
 
     for (const auto& entity : received_message.entity()) {
         PLOG(plog::debug) << "Processing entity with ID: " << entity.id();
-
-        if (entity.id() != received_info->id()) {
-            PLOG(plog::debug) << "Adding new entity to received_info: " << entity.id();
-            auto* new_entity = received_info->add_entity();
-            new_entity->set_id(entity.id());
-
-            if (entity.has_infra()) {
-                new_entity->set_infra(entity.infra());
-            }
-            if (entity.has_velocity()) {
-                new_entity->set_velocity(entity.velocity());
-            }
-            if (entity.has_time_delay()) {
-                new_entity->set_time_delay(entity.time_delay());
-            }
-
-            new_entity->mutable_object_ids()->CopyFrom(entity.object_ids());
-            new_entity->mutable_lidar_pose()->CopyFrom(entity.lidar_pose());
-
-            if (entity.has_object_bbx_center()) {
-                new_entity->mutable_object_bbx_center()->CopyFrom(ConvertNDArray(entity.object_bbx_center()));
-            }
-            if (entity.has_object_bbx_mask()) {
-                new_entity->mutable_object_bbx_mask()->CopyFrom(ConvertNDArray(entity.object_bbx_mask()));
-            }
-            if (entity.has_anchor_box()) {
-                new_entity->mutable_anchor_box()->CopyFrom(ConvertNDArray(entity.anchor_box()));
-            }
-            if (entity.has_pos_equal_one()) {
-                new_entity->mutable_pos_equal_one()->CopyFrom(ConvertNDArray(entity.pos_equal_one()));
-            }
-            if (entity.has_neg_equal_one()) {
-                new_entity->mutable_neg_equal_one()->CopyFrom(ConvertNDArray(entity.neg_equal_one()));
-            }
-            if (entity.has_targets()) {
-                new_entity->mutable_targets()->CopyFrom(ConvertNDArray(entity.targets()));
-            }
-            if (entity.has_origin_lidar()) {
-                new_entity->mutable_origin_lidar()->CopyFrom(ConvertNDArray(entity.origin_lidar()));
-            }
-            if (entity.has_spatial_correction_matrix()) {
-                new_entity->mutable_spatial_correction_matrix()->CopyFrom(ConvertNDArray(entity.spatial_correction_matrix()));
-            }
-            if (entity.has_voxel_num_points()) {
-                new_entity->mutable_voxel_num_points()->CopyFrom(ConvertNDArray(entity.voxel_num_points()));
-            }
-            if (entity.has_voxel_features()) {
-                new_entity->mutable_voxel_features()->CopyFrom(ConvertNDArray(entity.voxel_features()));
-            }
-            if (entity.has_voxel_coords()) {
-                new_entity->mutable_voxel_coords()->CopyFrom(ConvertNDArray(entity.voxel_coords()));
-            }
-            if (entity.has_projected_lidar()) {
-                new_entity->mutable_projected_lidar()->CopyFrom(ConvertNDArray(entity.projected_lidar()));
-            }
-
-            PLOG(plog::debug) << "Finished adding entity " << entity.id();
-        } else {
+        if (entity.id() == received_info->id()) {
             PLOG(plog::debug) << "Skipping own entity ID: " << entity.id();
+            continue;
         }
+    
+        auto* new_entity = received_info->add_entity();
+        new_entity->set_id(entity.id());
+        PLOG(plog::debug) << "Copying fields from entity " << entity.id();
+        
+        new_entity->CopyFrom(entity);
     }
-
 
     google::protobuf::util::JsonOptions options;
     options.add_whitespace = true;
@@ -238,7 +178,7 @@ void CosimService::trigger()
             return;
         }
 
-        std::unique_ptr<structure_opencda::OpenCDA_message> message;
+        std::unique_ptr<structure_capi::OpenCDA_message> message;
         if (auto result = communicationManager_->collect(); result.isError()) {
             PLOG(plog::debug) << "error acquiring message: " << result.error();
         } else {
