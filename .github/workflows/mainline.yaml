@@ -1,6 +1,9 @@
-name: Mainline
+name: CI on main branch
 
 on:
+  push:
+    branches:
+      - master
   pull_request:
     branches:
       - master

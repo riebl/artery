@@ -1,4 +1,4 @@
-name: Prepare environment
+name: Prepare GitHub container
 
 on:
   workflow_call:
@@ -25,6 +25,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/riebl/runner:latest
+          tags: ghcr.io/riebl/artery-gh-runner:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

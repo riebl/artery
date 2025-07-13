@@ -19,7 +19,4 @@ jobs:
         run: sudo apt update && sudo apt install -y clang-format
 
       - name: Run git-clang-format
-        run: |
-          git-clang-format              \
-            origin/master               \
-            --diff
+        run: git-clang-format --diff origin/master
