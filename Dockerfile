@@ -2,103 +2,60 @@
 # The idea of having Artery in a container is to run multiple instances with different parameter sets, e.g. running a large parameter study on a cluster.
 # You may want to use Vagrant for a setup with GUI instead.
 
-FROM debian:bullseye-slim as base
+# Distribution tag
+ARG TAG=bookworm-slim
 
-FROM base as omnetpp-build
-ARG VERSION=5.6.2
-WORKDIR /root
-RUN apt-get update && apt-get install -y \
-    bison \
-    build-essential \
-    flex \
-    libxml2-dev \
-    wget \
-    zlib1g-dev \
+FROM debian:${TAG} AS setup
+
+SHELL [ "/bin/bash", "-c"]
+RUN apt-get update && apt-get install -y        \
+    bison build-essential flex git python3-dev  \
+    libxml2-dev wget zlib1g-dev cmake           \
+    libboost-all-dev libcrypto++-dev            \
+    libfox-1.6-dev libgdal-dev libproj-dev      \
+    libgeographiclib-dev libxerces-c-dev        \
+    ninja-build curl python3-venv               \
     && rm -rf /var/lib/apt/lists/*
-RUN wget https://github.com/omnetpp/omnetpp/releases/download/omnetpp-$VERSION/omnetpp-$VERSION-src-core.tgz \
-    --progress=bar:force:noscroll -O omnetpp-src-core.tgz && \
-    tar xf omnetpp-src-core.tgz && \
-    rm omnetpp-src-core.tgz && \
-    mv omnetpp-$VERSION /omnetpp
+
+FROM setup AS build
+
+# SUMO version (github tag)
+ARG SUMO_TAG=v1_21_0
+# OMNeT version (github tag)
+ARG OMNETPP_TAG=omnetpp-5.6.2
+
+RUN git clone --recurse --depth 1 --branch ${OMNETPP_TAG} https://github.com/omnetpp/omnetpp
 WORKDIR /omnetpp
-ENV PATH /omnetpp/bin:$PATH
-RUN ./configure WITH_QTENV=no WITH_OSG=no WITH_OSGEARTH=no && \
-    make -j $(nproc) base MODE=release
+RUN mv configure.user.dist configure.user
+RUN source setenv -f                                            \
+    && ./configure WITH_QTENV=no WITH_OSG=no WITH_OSGEARTH=no   \
+    && make -j$(nproc --all) base MODE=release
 
-FROM omnetpp-build as omnetpp-debug
-RUN make -j $(nproc) base MODE=debug
+WORKDIR /
+RUN git clone --recurse --depth 1 --branch ${SUMO_TAG} https://github.com/eclipse-sumo/sumo
+WORKDIR /sumo
+RUN cmake -B build .                                    \
+        -DCMAKE_BUILD_CONFIG=Release                    \
+        -DCMAKE_INSTALL_PREFIX=/sumo-prefix             \
+        -DENABLE_CS_BINDINGS=OFF                        \
+        -DENABLE_JAVA_BINDINGS=OFF                      \
+        -DENABLE_PYTHON_BINDINGS=OFF                    \
+        -DNETEDIT=OFF                                   \
+    && cmake --build build --parallel $(nproc --all)    \
+    && cmake --install build
 
-FROM base as artery-build
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    cmake \
-    libboost1.74-dev \
-    libboost-date-time1.74-dev \
-    libboost-system1.74-dev \
-    libcrypto++-dev \
-    libgeographic-dev \
-    libpython3.9-dev \
-    libssl-dev \
-    libzmq3-dev \
-    pkg-config \
-    python3-distutils \
-    && rm -rf /var/lib/apt/lists/*
-COPY --from=omnetpp-build /omnetpp/bin /omnetpp/bin
-COPY --from=omnetpp-build /omnetpp/include /omnetpp/include
-COPY --from=omnetpp-build /omnetpp/lib /omnetpp/lib
-COPY --from=omnetpp-build /omnetpp/Makefile.inc /omnetpp/Version /omnetpp/
-COPY . /artery/source
-ENV PATH /omnetpp/bin:$PATH
-RUN cmake -S /artery/source -B /artery/build -DCMAKE_BUILD_TYPE=Release -DWITH_OTS=ON -DWITH_SIMULTE=ON \
-    -DCMAKE_INSTALL_PREFIX=/artery -DCMAKE_INSTALL_RPATH=/artery/lib -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON \
-    && cmake --build /artery/build --parallel $(nproc) --target install
+FROM setup AS final
 
-FROM base as sumo-build
-ARG VERSION=1_6_0
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    cmake \
-    libproj-dev \
-    libxerces-c-dev \
-    python3 \
-    python3-setuptools \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
-RUN wget https://github.com/eclipse/sumo/archive/v$VERSION.tar.gz \
-    --progress=bar:force:noscroll -O sumo-src.tar.gz && \
-    tar xfz sumo-src.tar.gz && \
-    rm sumo-src.tar.gz
-RUN cmake -S sumo-$VERSION -B build-sumo -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/sumo && \
-    cmake --build build-sumo --parallel $(nproc) --target install
+COPY --from=build /omnetpp/bin /omnetpp/bin
+COPY --from=build /omnetpp/include /omnetpp/include
+COPY --from=build /omnetpp/lib /omnetpp/lib
+COPY --from=build /omnetpp/images /omnetpp/images
+COPY --from=build /omnetpp/Makefile.inc /omnetpp
 
-FROM base as run
-RUN apt-get update && apt-get install -y \
-    libboost-date-time1.74 \
-    libboost-system1.74 \
-    libcrypto++ \
-    libgeographic19 \
-    libproj19 \
-    libpython3.9 \
-    libssl1.1 \
-    libxerces-c3.2 \
-    libxml2 \
-    libzmq5 \
-    python3 \
-    make \
-    && rm -rf /var/lib/apt/lists/*
-COPY --from=omnetpp-build /omnetpp/bin /omnetpp/bin
-COPY --from=omnetpp-build /omnetpp/lib /omnetpp/lib
-COPY --from=sumo-build /sumo/bin/sumo /sumo/bin/sumo
-COPY --from=sumo-build /sumo/share/sumo/data /sumo/share/sumo/data
-COPY --from=artery-build /artery/bin /artery/bin
-COPY --from=artery-build /artery/lib /artery/lib
-COPY --from=artery-build /artery/share/ned /artery/share/ned
-ENV SUMO_HOME /sumo/share/sumo
-ENV PATH /sumo/bin:/omnetpp/bin:$PATH
-RUN ln -s /usr/bin/python3 /usr/bin/python
-RUN useradd -m artery
-RUN mkdir -p /scenario /results && chown -R artery:users /scenario /results
-USER artery
-VOLUME /scenario /results
-WORKDIR /scenario
-ENTRYPOINT ["/artery/bin/run_artery.sh", "--result-dir=/results"]
+COPY --from=build /sumo-prefix/ /usr/local
+
+RUN cd /usr/local/bin && \
+    curl -sSL -O https://raw.githubusercontent.com/llvm/llvm-project/main/clang-tools-extra/clang-tidy/tool/clang-tidy-diff.py
+
+ENV PATH=/omnetpp/bin:$PATH
+ENV SUMO_HOME=/usr/local/share/sumo

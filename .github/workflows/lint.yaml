@@ -1,0 +1,26 @@
+name: Lint Check
+
+on:
+  workflow_call:
+
+jobs:
+  clang-tidy:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/riebl/runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Configure CMake
+        run: tools/build.py -cl
+
+      - name: Run clang-tidy
+        continue-on-error: true
+        run: clang-tidy-diff.py -p1 -path . < <(git diff -U0 origin/master)

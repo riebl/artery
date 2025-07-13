@@ -1,0 +1,22 @@
+name: Mainline
+
+on:
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  packages: write
+
+jobs:
+  prepare:
+    uses: ./.github/workflows/prepare.yaml
+    secrets: inherit
+    
+  lint:
+    needs: prepare
+    uses: ./.github/workflows/lint.yaml
+
+  test:
+    needs: prepare
+    uses: ./.github/workflows/test.yaml
