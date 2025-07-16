@@ -22,4 +22,6 @@ jobs:
         run: tools/build.py -cl
 
       - name: Run clang-tidy
-        run: git diff -U0 origin/master | clang-tidy-diff.py -p1 -path .
+        run: |
+          git config --global --add safe.directory $PWD
+          git diff -U0 origin/master | clang-tidy-diff.py -p1 -path .
