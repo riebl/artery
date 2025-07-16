@@ -53,6 +53,9 @@ public:
      */
     virtual Decision removeVehicle(const std::string& id) { return Decision::Continue; }
 
+    virtual Decision startVehicleParking(const std::string& id) { return Decision::Continue; }
+    virtual Decision endVehicleParking(const std::string& id) { return Decision::Continue; }
+
     virtual ~VehiclePolicy() = default;
 };
 

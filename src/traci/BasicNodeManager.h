@@ -39,6 +39,8 @@ public:
     std::shared_ptr<API> getAPI() override { return m_api; }
     SubscriptionManager* getSubscriptions() { return m_subscriptions; }
     std::size_t getNumberOfNodes() const override;
+    std::unordered_set<std::string>& getParkingVehicles();
+    std::unordered_set<std::string>& getEndedParkingVehicles();
 
     /**
      * VehicleObject wraps variable cache of a subscribed TraCI vehicle
@@ -76,6 +78,8 @@ protected:
     virtual void addVehicle(const std::string&);
     virtual void removeVehicle(const std::string&);
     virtual void updateVehicle(const std::string&, VehicleSink*);
+    virtual void startVehicleParking(const std::string&);
+    virtual void endVehicleParking(const std::string&);
     virtual omnetpp::cModule* createModule(const std::string&, omnetpp::cModuleType*);
     virtual omnetpp::cModule* addNodeModule(const std::string&, omnetpp::cModuleType*, NodeInitializer&);
     virtual void removeNodeModule(const std::string&);
@@ -105,6 +109,11 @@ private:
     bool m_destroy_vehicles_on_crash;
     bool m_ignore_persons;
     omnetpp::SimTime m_offset = omnetpp::SimTime::ZERO;
+
+    bool m_handle_parking_vehicles;
+    std::unordered_set<std::string> m_parking_vehicles;
+    std::unordered_set<std::string> m_ended_parking_vehicles;
+    std::unordered_set<std::string> m_removed_vehicles;
 };
 
 } // namespace traci
