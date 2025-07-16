@@ -4,8 +4,8 @@
 from copy import deepcopy
 from typing import Optional, List, TYPE_CHECKING
 
-from vanetza.common.byte_buffer_convertable import ByteBufferConvertible
-from vanetza.net.osi_layer import _OsiLayer, osi_layer_iterable, max_osi_layer, _min_osi_layer
+from vanetza.common.byte_buffer_convertible import ByteBufferConvertible
+from vanetza.net.osi_layer import OsiLayer, osi_layer_iterable, max_osi_layer, min_osi_layer
 
 
 class _ChunkPacket:
@@ -18,10 +18,10 @@ class _ChunkPacket:
             self.__layers = deepcopy(other.__layers)
         else:
             self.__layers: List[ByteBufferConvertible] = [
-                ByteBufferConvertible() for _ in osi_layer_iterable(_min_osi_layer(), max_osi_layer())
+                ByteBufferConvertible() for _ in osi_layer_iterable(min_osi_layer(), max_osi_layer())
             ]
 
-    def layer(self, ol: _OsiLayer) -> ByteBufferConvertible:
+    def layer(self, ol: OsiLayer) -> ByteBufferConvertible:
         """
         Access specific Osi Layer of a packet.
 
@@ -33,7 +33,7 @@ class _ChunkPacket:
         """
         return self.__layers[ol]
     
-    def set_layer(self, ol: _OsiLayer, buffer: ByteBufferConvertible):
+    def set_layer(self, ol: OsiLayer, buffer: ByteBufferConvertible):
         """
         Sets buffer to provided Osi Layer.
 
@@ -43,7 +43,7 @@ class _ChunkPacket:
         """
         self.__layers[ol] = buffer
 
-    def __getitem__(self, key: _OsiLayer) -> ByteBufferConvertible:
+    def __getitem__(self, key: OsiLayer) -> ByteBufferConvertible:
         """
         Same as layer().
 
@@ -55,7 +55,7 @@ class _ChunkPacket:
         """
         return self.layer(key)
     
-    def __setitem__(self, key: _OsiLayer, value: ByteBufferConvertible):
+    def __setitem__(self, key: OsiLayer, value: ByteBufferConvertible):
         """
         Same as set_layer().
 
@@ -74,7 +74,7 @@ class _ChunkPacket:
         """
         return sum([layer.size() for layer in self.__layers])
 
-    def size_range(self, start: _OsiLayer, end: _OsiLayer) -> int:
+    def size_range(self, start: OsiLayer, end: OsiLayer) -> int:
         """
         Returns size of packet in Osi layers [start, end].
 
@@ -90,7 +90,7 @@ class _ChunkPacket:
             s += self[layer].size()
         return s
 
-    def extract(self, start: _OsiLayer, end: _OsiLayer) -> 'ChunkPacket':
+    def extract(self, start: OsiLayer, end: OsiLayer) -> 'ChunkPacket':
         """
         Extract a range of Osi layers to a new packet.
 
@@ -107,7 +107,7 @@ class _ChunkPacket:
             self[layer] = ByteBufferConvertible()
         return new
 
-    def merge(self, source: 'ChunkPacket', start: _OsiLayer, end: _OsiLayer) -> 'ChunkPacket':
+    def merge(self, source: 'ChunkPacket', start: OsiLayer, end: OsiLayer) -> 'ChunkPacket':
         """
         Merges a range of Osi layers into this packet.
 
@@ -121,7 +121,7 @@ class _ChunkPacket:
         """
         for layer in osi_layer_iterable(start, end):
             self[layer] = source[layer]
-            source = ByteBufferConvertible()
+            source = ChunkPacket()
         return self
 
 
