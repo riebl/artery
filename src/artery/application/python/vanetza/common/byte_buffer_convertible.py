@@ -11,7 +11,7 @@ class _ByteBufferConvertible:
     constructor of this class, instead of template overloads that are perfomed in C++ code.
     """
 
-    def __init__(self, value: Optional[AnyStr]):
+    def __init__(self, value: Optional[AnyStr] = None):
         if value is None:
             self.__value = bytes()
         elif isinstance(value, str):

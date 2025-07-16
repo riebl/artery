@@ -6,7 +6,7 @@ import enum
 from typing import List, Iterable, TYPE_CHECKING
 
 
-class _OsiLayer(enum.Enum):
+class OsiLayer(enum.IntEnum):
     Physical = 1
     Link = 2
     Network = 3
@@ -15,23 +15,23 @@ class _OsiLayer(enum.Enum):
     Presentation = 6    
     Application = 7
 
-def _min_osi_layer():
-    return _OsiLayer.Physical
+def min_osi_layer():
+    return OsiLayer.Physical
 
 def _max_osi_layer():
-    return _OsiLayer.Application
+    return OsiLayer.Application
 
-def _distance(start: _OsiLayer, end: _OsiLayer) -> int:
+def _distance(start: OsiLayer, end: OsiLayer) -> int:
     return max(int(start) - int(end), 0)
 
-def _num_osi_layers(start: _OsiLayer, end: _OsiLayer) -> int:
+def _num_osi_layers(start: OsiLayer, end: OsiLayer) -> int:
     d = distance(start, end)
     return d + 1 if d > 0 else d
 
 
 if TYPE_CHECKING:
-    OsiLayer = _OsiLayer
-    min_osi_layer = _min_osi_layer
+    OsiLayer = OsiLayer
+    min_osi_layer = min_osi_layer
     max_osi_layer = _max_osi_layer
     distance = _distance
     num_osi_layers = _num_osi_layers
