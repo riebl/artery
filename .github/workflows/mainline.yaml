@@ -2,24 +2,13 @@ name: CI on main branch
 
 on:
   push:
-    branches:
-      - master
+    branches: [$default_branch]
   pull_request:
-    branches:
-      - master
-
-permissions:
-  packages: write
+    branches: [$default_branch]
 
 jobs:
-  prepare:
-    uses: ./.github/workflows/prepare.yaml
-    secrets: inherit
-    
   lint:
-    needs: prepare
     uses: ./.github/workflows/lint.yaml
 
   test:
-    needs: prepare
     uses: ./.github/workflows/test.yaml

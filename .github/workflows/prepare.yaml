@@ -1,11 +1,16 @@
 name: Prepare GitHub container
 
 on:
+  push:
+    branches: [$default_branch]
   workflow_call:
 
 jobs:
   build-docker-image:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Log in to GHCR
