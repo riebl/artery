@@ -23,7 +23,8 @@ namespace py = pybind11;
 namespace helpers
 {
 
-py::memoryview to_memview(vanetza::CohesivePacket::buffer_range& range) {
+py::memoryview to_memview(vanetza::CohesivePacket::buffer_range& range)
+{
     auto size = std::distance(range.begin(), range.end());
     return py::memoryview::from_memory(range.begin().base(), size);
 }
@@ -46,7 +47,7 @@ vanetza::ByteBuffer from_bytes(const py::bytes& bytes)
     return buffer;
 }
 
-}
+}  // namespace helpers
 
 PYBIND11_EMBEDDED_MODULE(_vanetza, m)
 {
@@ -99,19 +100,17 @@ PYBIND11_EMBEDDED_MODULE(_vanetza, m)
 
     py::class_<vanetza::CohesivePacket>(m, "CohesivePacket")
         .def(py::init<const vanetza::CohesivePacket&>())
-        .def(py::init([](const py::bytes& bytes, vanetza::OsiLayer layer) {
-            return vanetza::CohesivePacket(helpers::from_bytes(bytes), layer);
-        }))
-        .def("__getitem__", [](vanetza::CohesivePacket& self, vanetza::OsiLayer layer) {
-            vanetza::CohesivePacket::buffer_range range = self[layer];
-            return helpers::to_memview(range);
-        })
+        .def(py::init([](const py::bytes& bytes, vanetza::OsiLayer layer) { return vanetza::CohesivePacket(helpers::from_bytes(bytes), layer); }))
+        .def(
+            "__getitem__",
+            [](vanetza::CohesivePacket& self, vanetza::OsiLayer layer) {
+                vanetza::CohesivePacket::buffer_range range = self[layer];
+                return helpers::to_memview(range);
+            })
         .def("set_boundary", &vanetza::CohesivePacket::set_boundary)
         .def("trim", &vanetza::CohesivePacket::trim)
         .def("size", static_cast<std::size_t (vanetza::CohesivePacket::*)() const>(&vanetza::CohesivePacket::size))
         .def("size_layer", static_cast<std::size_t (vanetza::CohesivePacket::*)(vanetza::OsiLayer) const>(&vanetza::CohesivePacket::size))
         .def("size_range", static_cast<std::size_t (vanetza::CohesivePacket::*)(vanetza::OsiLayer, vanetza::OsiLayer) const>(&vanetza::CohesivePacket::size))
-        .def("buffer", [](vanetza::CohesivePacket& self) {
-            return helpers::to_bytes(self.buffer());
-        });
+        .def("buffer", [](vanetza::CohesivePacket& self) { return helpers::to_bytes(self.buffer()); });
 }
