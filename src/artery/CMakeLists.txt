@@ -162,6 +162,18 @@ if(WITH_STORYBOARD)
     add_subdirectory(storyboard)
 endif()
 
+if(WITH_PYTHON_BINDINGS)
+    add_artery_feature(python_bindings)
+    target_sources(python_bindings PRIVATE
+        application/PythonItsG5Service.cc
+        application/bindings/VanetzaNetBindings.cc
+    )
+    target_link_libraries(python_bindings PRIVATE pybind11)
+    target_compile_definitions(python_bindings PRIVATE
+        $<$<CONFIG:Debug>:PREFER_LOCAL_PYTHON_STUBS>
+    )
+endif()
+
 if(WITH_TRANSFUSION)
     add_subdirectory(transfusion)
 endif()

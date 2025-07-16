@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services>
+	<service type="artery.application.PythonItsG5Service" name="python">
+		<listener port="2000" />
+	</service>
+</services>
