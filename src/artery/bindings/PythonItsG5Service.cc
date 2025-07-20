@@ -1,6 +1,5 @@
-#include "artery/application/PythonItsG5Service.h"
+#include "artery/bindings/PythonItsG5Service.h"
 
-#include "artery/application/ItsG5BaseService.h"
 #include "omnetpp/cexception.h"
 #include "pybind11/detail/common.h"
 #include "pybind11/embed.h"
@@ -9,7 +8,6 @@
 
 #include <omnetpp/cconfiguration.h>
 
-#include <cstddef>
 #include <filesystem>
 #include <memory>
 
@@ -109,7 +107,7 @@ void PythonItsG5Service::initializeModules()
 
 #ifdef PREFER_LOCAL_PYTHON_STUBS
         using path = std::filesystem::path;
-        auto localStubsBaseDir = path(__FILE__).parent_path() / "python";
+        auto localStubsBaseDir = path(__FILE__) / "python";
         extendPythonPath(localStubsBaseDir.string());
 #endif
         // Otherwise python stubs must be provided by system.

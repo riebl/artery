@@ -4,7 +4,7 @@
 from copy import deepcopy
 from typing import Optional, List, TYPE_CHECKING
 
-from vanetza.common.byte_buffer_convertible import ByteBufferConvertible
+from vanetza.net.byte_buffer_convertible import ByteBufferConvertible
 from vanetza.net.osi_layer import OsiLayer, osi_layer_iterable, max_osi_layer, min_osi_layer
 
 
