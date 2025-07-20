@@ -4,7 +4,7 @@
 from typing import Optional, TYPE_CHECKING
 
 from vanetza.net.osi_layer import OsiLayer, OsiLayers, max_osi_layer
-from vanetza.common.byte_buffer_convertible import ByteBufferConvertible
+from vanetza.net.byte_buffer_convertible import ByteBufferConvertible
 
 
 class _CohesivePacket:
@@ -59,7 +59,13 @@ class _CohesivePacket:
             from_layer (OsiLayer): Layer from which trimming begins.
             bytes (int): Final desired total byte length.
         """
-        ...
+        left, _ = self.__boundaries[from_layer]
+        size = len(self.__data)
+
+        if left + bytes < size:
+            rightmost_left, _ = self.__boundaries[max_osi_layer()]
+            self.__boundaries[max_osi_layer()] = rightmost_left, left + bytes
+            self.__data = self.__data[:left + bytes]
 
     def size(self) -> int:
         """
