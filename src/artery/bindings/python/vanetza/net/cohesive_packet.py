@@ -17,15 +17,7 @@ class _CohesivePacket:
             data (Optional[bytes]): Raw buffer bytes to assign to one layer.
             layer (Optional[OsiLayer]): OSI layer to assign all bytes to.
         """
-
-        self.__data = bytes()
-        self.__boundaries = {
-            layer: (0, 0) for layer in OsiLayers
-        }
-
-        if all(arg is not None for arg in (data, layer)):
-            self.__data += data                         # type: ignore
-            self.__boundaries[layer] = (0, len(data))   # type: ignore
+        ...
 
     def __getitem__(self, layer: OsiLayer) -> memoryview:
         """
@@ -37,8 +29,7 @@ class _CohesivePacket:
         Returns:
             memoryview: View of underlying bytes corresponding to that layer.
         """
-        left, right = self.__boundaries[layer]
-        return memoryview(self.__data[left:right])
+        ...
 
     def set_boundary(self, layer: OsiLayer, bytes: int):
         """
@@ -48,8 +39,7 @@ class _CohesivePacket:
             layer (OsiLayer): Layer for which to set boundary.
             bytes (int): Number of bytes in that layer.
         """
-        left, _ = self.__boundaries[layer]
-        self.__boundaries[layer] = (left, left + bytes)
+        ...
 
     def trim(self, from_layer: OsiLayer, bytes: int):
         """
@@ -59,13 +49,7 @@ class _CohesivePacket:
             from_layer (OsiLayer): Layer from which trimming begins.
             bytes (int): Final desired total byte length.
         """
-        left, _ = self.__boundaries[from_layer]
-        size = len(self.__data)
-
-        if left + bytes < size:
-            rightmost_left, _ = self.__boundaries[max_osi_layer()]
-            self.__boundaries[max_osi_layer()] = rightmost_left, left + bytes
-            self.__data = self.__data[:left + bytes]
+        ...
 
     def size(self) -> int:
         """
@@ -74,8 +58,7 @@ class _CohesivePacket:
         Returns:
             int: Number of bytes.
         """
-        _, end = self.__boundaries[max_osi_layer()]
-        return end
+        ...
 
     def size_layer(self, layer: OsiLayer) -> int:
         """
@@ -87,8 +70,7 @@ class _CohesivePacket:
         Returns:
             int: Number of bytes.
         """
-        left, right = self.__boundaries[layer]
-        return right - left
+        ...
 
     def size_range(self, start: OsiLayer, end: OsiLayer) -> int:
         """
@@ -101,9 +83,7 @@ class _CohesivePacket:
         Returns:
             int: Number of bytes in range.
         """
-        left, _ = self.__boundaries[start]
-        _, right = self.__boundaries[end]
-        return right - left
+        ...
 
     def buffer(self) -> bytes:
         """
@@ -112,7 +92,7 @@ class _CohesivePacket:
         Returns:
             bytes: Copied raw packet buffer.
         """
-        return self.__data
+        ...
 
 
 if TYPE_CHECKING:

@@ -49,7 +49,13 @@ vanetza::ByteBuffer from_bytes(const py::bytes& bytes)
 
 }  // namespace helpers
 
-PYBIND11_EMBEDDED_MODULE(_vanetza, m)
+/*
+ * Modules that do not depend on embedded omnet/artery functionality
+ * should be exported as shared libraries that can be used
+ * outside of runtime for proper testing.
+ */
+
+PYBIND11_MODULE(_vanetza, m)
 {
     py::enum_<vanetza::OsiLayer>(m, "OsiLayer")
         .value("Physical", vanetza::OsiLayer::Physical)
