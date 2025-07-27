@@ -29,7 +29,7 @@ class _ByteBufferConvertible:
         Returns:
             bytes: a newly constructuted buffer with binary data.
         """
-        return self.__value
+        return bytes(memoryview(self.__value))
 
     def size(self) -> int:
         """
