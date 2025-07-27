@@ -15,18 +15,17 @@ class _OsiLayer(enum.IntEnum):
     Presentation = 6    
     Application = 7
 
-def _min_osi_layer():
-    return _OsiLayer.Physical
+def _min_osi_layer() -> _OsiLayer:
+    ...
 
-def _max_osi_layer():
-    return _OsiLayer.Application
+def _max_osi_layer() -> _OsiLayer:
+    ...
 
 def _distance(start: _OsiLayer, end: _OsiLayer) -> int:
-    return max(int(start) - int(end), 0)
+    ...
 
 def _num_osi_layers(start: _OsiLayer, end: _OsiLayer) -> int:
-    d = distance(start, end)
-    return d + 1 if d > 0 else d
+    ...
 
 
 if TYPE_CHECKING:

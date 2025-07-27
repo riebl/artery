@@ -14,7 +14,8 @@ with catch_warnings(record=True) as w:
     assert not len(w), 'expected vanetza stub imports to pass without any error'
 
 
-from vanetza.net import ByteBufferConvertible, CohesivePacket, OsiLayer
+from vanetza.net import ByteBufferConvertible, CohesivePacket, ChunkPacket, OsiLayer, \
+    osi_layer_iterable, max_osi_layer, min_osi_layer, num_osi_layers, osi_layer_list
 
 
 def test_buffer_convertable():
@@ -69,3 +70,50 @@ def test_cohesive_packet():
 
     packet.trim(OsiLayer.Link, 0)
     assert packet.size() == part1
+
+
+def test_osi_layer_aux():
+    start, end = OsiLayer.Presentation, OsiLayer.Application
+    diff = 2
+
+    assert len(list(osi_layer_iterable(start, end))) == diff
+    assert len(osi_layer_list(start, end)) == diff
+
+    assert max_osi_layer() == OsiLayer.Application
+    assert min_osi_layer() == OsiLayer.Physical
+
+    assert num_osi_layers(start, end) == diff
+
+
+def test_chunk_packet():
+    def yield_size(iterable):
+        return map(lambda p: len(p), iterable)
+    
+    def yield_encoded(iterable):
+        return map(lambda p: p.encode(), iterable)
+
+    part1, part2, part3 = yield_encoded(('hello', ' ', 'world!'))
+
+    packet = ChunkPacket()
+    for layer, buffer in zip(
+        osi_layer_list(OsiLayer.Physical, OsiLayer.Network), (part1, part2, part3)
+    ):
+        packet[layer] = ByteBufferConvertible(buffer)
+
+    assert packet.size() == sum(yield_size((part1, part2, part3)))
+    assert packet.size_range(OsiLayer.Physical, OsiLayer.Link) == sum(yield_size((part1, part2)))
+
+    new_part3 = part3 + '!'.encode()
+    packet.set_layer(OsiLayer.Network, ByteBufferConvertible(new_part3))
+    
+    assert packet[OsiLayer.Network].convert() == new_part3
+
+    new_packet = packet.extract(OsiLayer.Physical, OsiLayer.Link)
+    assert new_packet.size() == sum(yield_size((part1, part2)))
+
+    part4, part5 = yield_encoded(('!', '!'))
+    new_packet[OsiLayer.Presentation] = ByteBufferConvertible(part4)
+    new_packet[OsiLayer.Application] = ByteBufferConvertible(part5)
+
+    packet = packet.merge(new_packet, OsiLayer.Presentation, OsiLayer.Application)
+    assert packet.size() == sum(yield_size((new_part3, part4, part5)))
