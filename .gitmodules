@@ -1,24 +1,18 @@
 [submodule "extern/inet"]
   path = extern/inet
-  url = ../inet.git
-  branch = main
+  url = https://github.com/riebl/inet
 [submodule "extern/pybind11"]
   path = extern/pybind11
-  url = ../pybind11.git
-  branch = main
+  url = https://github.com/pybind/pybind11
 [submodule "extern/simulte"]
   path = extern/simulte
-  url = ../simulte.git
-  branch = main
+  url = https://github.com/riebl/simulte
 [submodule "extern/vanetza"]
   path = extern/vanetza
-  url = ../vanetza.git
-  branch = main
+  url = https://github.com/riebl/vanetza
 [submodule "extern/veins"]
   path = extern/veins
-  url = ../veins.git
-  branch = main
+  url = https://github.com/sommer/veins
 [submodule "extern/sim0mqpp"]
   path = extern/sim0mqpp
-  url = ../sim0mqpp.git
-  branch = main
+  url = https://github.com/riebl/sim0mqpp
