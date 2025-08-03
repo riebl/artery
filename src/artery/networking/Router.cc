@@ -133,7 +133,7 @@ void Router::initializeManagementInformationBase(vanetza::geonet::ManagementInfo
 {
     using namespace std::chrono;
 
-    mib.itsGnDefaultTrafficClass.tc_id(3);  // send BEACONs with DP3
+    mib.itsGnDefaultTrafficClass.tc_id(3); // send BEACONs with DP3
     mib.itsGnIsMobile = par("isMobile");
     mib.itsGnSecurity = (mSecurityEntity != nullptr);
     mib.vanetzaDeferInitialBeacon = duration_cast<vanetza::Clock::duration>(duration<double>(par("deferInitialBeacon")));

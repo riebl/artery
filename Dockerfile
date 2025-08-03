@@ -1,58 +1,63 @@
-FROM archlinux:base-devel
+##################
+###### Args ######
+##################
 
-SHELL [ "/bin/bash", "-c"]
+# Distribution tag
+ARG TAG=base-devel
+
+FROM archlinux:${TAG}
 
 # OMNeT release tag
 ARG OMNETPP_TAG=omnetpp-5.6.2
+
 # SUMO tag
 ARG SUMO_TAG=v1_23_0
 
-WORKDIR /cavise
+# Final non-root user
+ARG USER=cavise
 
-RUN pacman -Syu --noconfirm pacman-contrib &&\
-    pacman -S --noconfirm cmake python3 python-pip pyenv wget bison git gcc14 ninja &&\
-    pacman -S --noconfirm xorg nvidia-utils mesa sdl2 libsm openmp openscenegraph &&\
-    pacman -Sc --noconfirm && \
-    rm -rf /var/cache/pacman/pkg/* /tmp/*
+SHELL [ "/bin/bash", "-c" ]
+
+RUN pacman -Syu --noconfirm pacman-contrib clang lld gdb bison flex perl qt5-base               \
+    cmake python3 python-pip pyenv wget bison git gcc14 ninja jre17-openjdk swig maven eigen    \
+    xorg nvidia-utils mesa sdl2 libsm openmp openscenegraph xerces-c fox gdal proj gl2ps        \
+    && paccache -r -k 0
 
 # Temporary: Using conan==2.17 to avoid errors with Pathlib
 RUN pip install --no-cache-dir --break-system-packages conan==2.17
 
 # OmnetPP
-ENV OMNETPP_ROOT=/cavise/${OMNETPP_TAG}/bin \
-    PATH=/cavise/${OMNETPP_TAG}/bin:${PATH}
-RUN pacman -S --noconfirm clang lld gdb bison flex perl qt5-base && \
-    rm -rf /var/cache/pacman/pkg/* /tmp/*
-RUN wget -c https://github.com/omnetpp/omnetpp/releases/download/${OMNETPP_TAG}/${OMNETPP_TAG}-src-linux.tgz -O source.tgz &&\
-    tar -xvzf source.tgz && rm source.tgz
-RUN cd ${OMNETPP_TAG} && sed -i 's/^WITH_OSGEARTH=yes$/WITH_OSGEARTH=no/' configure.user
-RUN cd ${OMNETPP_TAG} && source setenv -f && ./configure
-RUN cd ${OMNETPP_TAG} && make -j$(nproc --all)
+WORKDIR /
+RUN git clone --recurse --depth 1 --branch ${OMNETPP_TAG} https://github.com/omnetpp/omnetpp
+RUN cd /omnetpp                                                 \
+    && mv configure.user.dist configure.user                    \
+    && source setenv -f                                         \
+    && ./configure WITH_OSGEARTH=no                             \
+    && make -j$(nproc --all) base MODE=release
 
 # SUMO
 # reference https://sumo.dlr.de/docs/Installing/Linux_Build.html
-ENV SUMO_HOME="/usr/local/share/sumo"
-RUN pacman -S --noconfirm xerces-c fox gdal proj gl2ps jre17-openjdk swig maven eigen && \
-    rm -rf /cavise/sumo /var/cache/pacman/pkg/* /tmp/*
+WORKDIR /
+RUN git clone --recurse --depth 1 --branch ${SUMO_TAG} https://github.com/eclipse-sumo/sumo
+RUN cd /sumo                                            \
+    && cmake -B build .                                 \
+        -DCMAKE_BUILD_CONFIG=Release                    \
+        -DENABLE_CS_BINDINGS=OFF                        \
+        -DENABLE_JAVA_BINDINGS=OFF                      \
+    && cmake --build build --parallel $(nproc --all)    \
+    && cmake --install build
 
-RUN git clone --recurse --depth 1 --branch ${SUMO_TAG} https://github.com/eclipse-sumo/sumo && \
-    cd sumo && \
-    cmake -B build . && \
-    cmake --build build -- -j$(nproc) && \
-    cmake --install build && \
-    rm -rf /cavise/sumo /var/cache/pacman/pkg/* /tmp/*
+RUN cd /usr/local/bin && \
+    curl -sSL -O https://raw.githubusercontent.com/llvm/llvm-project/main/clang-tools-extra/clang-tidy/tool/clang-tidy-diff.py && \
+    chmod +x clang-tidy-diff.py
 
-RUN paccache -r -k 0
+RUN useradd -m ${USER}
+USER ${USER}
 
-# Artery build params
-ARG ARTERY_DIR=/cavise/artery
-ARG BUILD_CONFIG=Release
-ARG CONAN_PROFILE=container.ini
+ADD --chown=${USER}:${USER} . /home/cavise/artery
 
-COPY artery/ ${ARTERY_DIR}
-COPY cavise/ /cavise/cavise
+ENV PATH=/omnetpp/bin:$PATH
+ENV SUMO_HOME=/usr/local/share/sumo
 
-WORKDIR ${ARTERY_DIR} 
-RUN ./tools/build.py -cib --config ${BUILD_CONFIG} --pr:a tools/profiles/container.ini
-
-CMD ["echo", "'run this interactively'"]
+WORKDIR /home/cavise/artery
+RUN ./tools/build.py -icb --config Release --pr:a tools/profiles/container.ini
