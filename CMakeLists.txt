@@ -7,9 +7,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 enable_testing()
 
-find_package(protobuf REQUIRED VERSION 3.21.9 CONFIG)
-find_package(cppzmq REQUIRED VERSION 4.10.0 CONFIG)
-find_package(plog REQUIRED VERSION 1.1.10 CONFIG)
+find_package(protobuf REQUIRED VERSION 3.21.9)
+find_package(cppzmq REQUIRED VERSION 4.10.0)
+find_package(plog REQUIRED VERSION 1.1.10)
 
 find_package(OmnetPP 5.5.1 MODULE REQUIRED)
 find_package(Boost 1.86 COMPONENTS date_time system REQUIRED)

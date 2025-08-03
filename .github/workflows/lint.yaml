@@ -1,0 +1,27 @@
+name: Lint Check
+
+on:
+  workflow_call:
+
+jobs:
+  clang-tidy:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/CAVISE/artery-gh-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Configure CMake
+        run: tools/build.py -cl
+
+      - name: Run clang-tidy
+        run: |
+          git config --global --add safe.directory $PWD
+          git diff -U0 origin/main | clang-tidy-diff.py -p1 -path .
