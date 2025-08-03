@@ -7,7 +7,7 @@ jobs:
   clang-tidy:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/CAVISE/artery-gh-runner:latest
+      image: ghcr.io/cavise/artery-gh-runner:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}

@@ -30,6 +30,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/riebl/artery-gh-runner:latest
+          tags: ghcr.io/cavise/artery-gh-runner:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
