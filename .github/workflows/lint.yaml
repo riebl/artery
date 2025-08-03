@@ -7,7 +7,7 @@ jobs:
   clang-tidy:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/riebl/artery-gh-runner:latest
+      image: ghcr.io/cavise/artery-gh-runner:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -24,4 +24,4 @@ jobs:
       - name: Run clang-tidy
         run: |
           git config --global --add safe.directory $PWD
-          git diff -U0 origin/master | clang-tidy-diff.py -p1 -path .
+          git diff -U0 origin/main | clang-tidy-diff.py -p1 -path .

@@ -3,7 +3,7 @@ name: Style Check
 on:
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   clang-format:
@@ -19,4 +19,4 @@ jobs:
         run: sudo apt update && sudo apt install -y clang-format
 
       - name: Run git-clang-format
-        run: git-clang-format --diff origin/master
+        run: git-clang-format --diff origin/main
