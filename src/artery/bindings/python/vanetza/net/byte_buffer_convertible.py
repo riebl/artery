@@ -45,7 +45,7 @@ if TYPE_CHECKING:
     ByteBufferConvertible = _ByteBufferConvertible
 else:
     try:
-        from _vanetza import ByteBufferConvertible
+        from _vanetza_net import ByteBufferConvertible
     except ImportError:
         import warn
         ByteBufferConvertible = _ByteBufferConvertible

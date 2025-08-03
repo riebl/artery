@@ -114,7 +114,7 @@ if TYPE_CHECKING:
     ChunkPacket = _ChunkPacket
 else:
     try:
-        from _vanetza import ChunkPacket
+        from _vanetza_net import ChunkPacket
     except ImportError:
         import warn
         ChunkPacket = _ChunkPacket    

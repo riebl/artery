@@ -1,53 +1,17 @@
-#include "pybind11/buffer_info.h"
-#include "pybind11/detail/common.h"
-#include "pybind11/pybind11.h"
-#include "pybind11/pytypes.h"
-#include "vanetza/common/byte_buffer.hpp"
-#include "vanetza/common/byte_buffer_convertible.hpp"
-#include "vanetza/net/chunk_packet.hpp"
-#include "vanetza/net/cohesive_packet.hpp"
-#include "vanetza/net/osi_layer.hpp"
+#include "TypeConvertions.h"
 
-#include <pybind11/embed.h>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
+#include <pybind11/pybind11.h>
+#include <vanetza/common/byte_buffer.hpp>
+#include <vanetza/common/byte_buffer_convertible.hpp>
+#include <vanetza/net/chunk_packet.hpp>
+#include <vanetza/net/cohesive_packet.hpp>
+#include <vanetza/net/osi_layer.hpp>
 #include <vanetza/net/packet.hpp>
 
 #include <cstddef>
-#include <cstdint>
 #include <cstring>
-#include <iterator>
 
 namespace py = pybind11;
-
-namespace helpers
-{
-
-py::memoryview to_memview(vanetza::CohesivePacket::buffer_range& range)
-{
-    auto size = std::distance(range.begin(), range.end());
-    return py::memoryview::from_memory(range.begin().base(), size);
-}
-
-py::bytes to_bytes(const vanetza::ByteBuffer& buffer)
-{
-    // bytes owns underlying memory, so we need to copy here
-    auto data = new char[buffer.size()];
-    std::memcpy(data, buffer.data(), buffer.size());
-    return py::bytes(data, buffer.size());
-}
-
-vanetza::ByteBuffer from_bytes(const py::bytes& bytes)
-{
-    py::buffer buf = bytes;
-    py::buffer_info bufInfo = buf.request();
-    vanetza::ByteBuffer buffer(bufInfo.size);
-
-    std::copy(static_cast<std::uint8_t*>(bufInfo.ptr), static_cast<std::uint8_t*>(bufInfo.ptr) + bufInfo.size, buffer.begin());
-    return buffer;
-}
-
-}  // namespace helpers
 
 /*
  * Modules that do not depend on embedded omnet/artery functionality
@@ -55,7 +19,7 @@ vanetza::ByteBuffer from_bytes(const py::bytes& bytes)
  * outside of runtime for proper testing.
  */
 
-PYBIND11_MODULE(_vanetza, m)
+PYBIND11_MODULE(_vanetza_net, m)
 {
     py::enum_<vanetza::OsiLayer>(m, "OsiLayer")
         .value("Physical", vanetza::OsiLayer::Physical)
@@ -78,13 +42,13 @@ PYBIND11_MODULE(_vanetza, m)
     py::class_<vanetza::ByteBufferConvertible>(m, "ByteBufferConvertible")
         .def(py::init())
         .def(py::init<const std::string&>())
-        .def(py::init([](const py::bytes& bytes) { return vanetza::ByteBufferConvertible(helpers::from_bytes(bytes)); }))
+        .def(py::init([](const py::bytes& bytes) { return vanetza::ByteBufferConvertible(artery::types::from_bytes(bytes)); }))
         .def(
             "convert",
             [](vanetza::ByteBufferConvertible& self) {
                 vanetza::ByteBuffer buffer;
                 self.convert(buffer);
-                return helpers::to_bytes(buffer);
+                return artery::types::to_bytes(buffer);
             })
         .def("size", &vanetza::ByteBufferConvertible::size);
 
@@ -106,17 +70,17 @@ PYBIND11_MODULE(_vanetza, m)
 
     py::class_<vanetza::CohesivePacket>(m, "CohesivePacket")
         .def(py::init<const vanetza::CohesivePacket&>())
-        .def(py::init([](const py::bytes& bytes, vanetza::OsiLayer layer) { return vanetza::CohesivePacket(helpers::from_bytes(bytes), layer); }))
+        .def(py::init([](const py::bytes& bytes, vanetza::OsiLayer layer) { return vanetza::CohesivePacket(artery::types::from_bytes(bytes), layer); }))
         .def(
             "__getitem__",
             [](vanetza::CohesivePacket& self, vanetza::OsiLayer layer) {
                 vanetza::CohesivePacket::buffer_range range = self[layer];
-                return helpers::to_memview(range);
+                return artery::types::to_memview(range);
             })
         .def("set_boundary", &vanetza::CohesivePacket::set_boundary)
         .def("trim", &vanetza::CohesivePacket::trim)
         .def("size", static_cast<std::size_t (vanetza::CohesivePacket::*)() const>(&vanetza::CohesivePacket::size))
         .def("size_layer", static_cast<std::size_t (vanetza::CohesivePacket::*)(vanetza::OsiLayer) const>(&vanetza::CohesivePacket::size))
         .def("size_range", static_cast<std::size_t (vanetza::CohesivePacket::*)(vanetza::OsiLayer, vanetza::OsiLayer) const>(&vanetza::CohesivePacket::size))
-        .def("buffer", [](vanetza::CohesivePacket& self) { return helpers::to_bytes(self.buffer()); });
+        .def("buffer", [](vanetza::CohesivePacket& self) { return artery::types::to_bytes(self.buffer()); });
 }

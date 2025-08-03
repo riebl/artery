@@ -37,8 +37,8 @@ if TYPE_CHECKING:
 
 else:
     try:
-        from _vanetza import OsiLayer, min_osi_layer, max_osi_layer
-        from _vanetza import distance, num_osi_layers
+        from _vanetza_net import OsiLayer, min_osi_layer, max_osi_layer
+        from _vanetza_net import distance, num_osi_layers
 
     except ImportError:
         import warn
