@@ -99,7 +99,7 @@ if TYPE_CHECKING:
     CohesivePacket = _CohesivePacket
 else:
     try:
-        from _vanetza import CohesivePacket
+        from _vanetza_net import CohesivePacket
     except ImportError:
         CohesivePacket = _CohesivePacket
         import warn
