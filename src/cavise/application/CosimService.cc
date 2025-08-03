@@ -18,8 +18,6 @@
 #include <plog/Severity.h>
 
 // proto
-#include <cavise/artery.pb.h>
-#include <cavise/opencda.pb.h>
 #include <google/protobuf/util/json_util.h>
 
 // omnetpp messages
