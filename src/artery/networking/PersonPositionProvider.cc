@@ -1,6 +1,5 @@
-#include "artery/networking/PersonPositionProvider.h"
-
 #include "artery/networking/Runtime.h"
+#include "artery/networking/PersonPositionProvider.h"
 #include "artery/traci/PersonMobility.h"
 #include "artery/utility/InitStages.h"
 #include "inet/common/ModuleAccess.h"
@@ -26,7 +25,8 @@ void PersonPositionProvider::initialize(int stage)
                 error("Module on path '%s' is not a PersonMobility", mobilityModule->getFullPath().c_str());
             }
         } else {
-            error("Module not found on path '%s' defined by par '%s'", mobilityPar.stringValue(), mobilityPar.getFullPath().c_str());
+            error("Module not found on path '%s' defined by par '%s'",
+                    mobilityPar.stringValue(), mobilityPar.getFullPath().c_str());
         }
     } else if (stage == InitStages::Propagate) {
         updatePosition();
@@ -56,11 +56,11 @@ void PersonPositionProvider::updatePosition()
     mPositionFix.longitude = geopos.longitude;
     mPositionFix.confidence.semi_minor = 5.0 * si::meter;
     mPositionFix.confidence.semi_major = 5.0 * si::meter;
-    mPositionFix.course.assign(north + GeoAngle{mPersonController->getHeading().getTrueNorth()}, north + 3.0 * degree);
+    mPositionFix.course.assign(north + GeoAngle { mPersonController->getHeading().getTrueNorth() }, north + 3.0 * degree);
     mPositionFix.speed.assign(mPersonController->getSpeed(), 1.0 * si::meter_per_second);
 
     // prevent signal listeners to modify our position data
-    PositionFixObject tmp{mPositionFix};
+    PositionFixObject tmp { mPositionFix };
     emit(scPositionFixSignal, &tmp);
 }
 
@@ -75,4 +75,4 @@ GeoPosition PersonPositionProvider::getGeodeticPosition() const
 }
 
 
-}  // namespace artery
+} // namespace artery

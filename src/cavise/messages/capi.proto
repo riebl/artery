@@ -1,1 +1,44 @@
-../../../../cavise/messages/capi.proto
+syntax = "proto3";
+
+package structure_capi;
+
+message Artery_message {
+    repeated Received_information received_information = 1;
+}
+
+message OpenCDA_message {
+    repeated Entity entity = 1;
+}
+
+message Received_information {      // Information received from other vehicles (CAV/RSU/Platoon)
+    string id = 1;
+    repeated Entity entity = 2;
+}
+
+message Entity {
+    string id = 1;                  // Unique string ID: e.g., 'cav-1', 'rsu-3', 'platoon-5'
+    optional int64 infra = 2;
+    optional float velocity = 3;
+    optional float time_delay = 4;
+    repeated int64 object_ids = 5;
+    repeated float lidar_pose = 6;
+
+    optional NDArray object_bbx_center = 7;
+    optional NDArray object_bbx_mask = 8;
+    optional NDArray anchor_box = 9;
+    optional NDArray pos_equal_one = 10;
+    optional NDArray neg_equal_one = 11;
+    optional NDArray targets = 12;
+    optional NDArray origin_lidar = 13;
+    optional NDArray spatial_correction_matrix = 14;
+    optional NDArray voxel_num_points = 15;
+    optional NDArray voxel_features = 16;
+    optional NDArray voxel_coords = 17;
+    optional NDArray projected_lidar = 18;
+}
+
+message NDArray {
+  bytes data = 1;
+  repeated int64 shape = 2;
+  string dtype = 3;
+}
