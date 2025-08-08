@@ -54,6 +54,19 @@ if(NOT WITH_INET)
     endif()
 endif()
 
+##############################
+# Artery build configuration #
+##############################
+
+# use "RelWithDebInfo" as default build type
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "CMake build type" FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+
+# running simulations with opp_run requires shared libraries
+set(BUILD_SHARED_LIBS ON CACHE INTERNAL "Cached for propagation to sub-projects with older CMake versions")
+
 ###############################
 # Required packages & scripts #
 ###############################
@@ -106,18 +119,9 @@ macro(add_artery_feature name)
     install(TARGETS ${name} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endmacro()
 
-##############################
-# Artery build configuration #
-##############################
-
-# use "RelWithDebInfo" as default build type
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "CMake build type" FORCE)
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
-endif()
-
-# running simulations with opp_run requires shared libraries
-set(BUILD_SHARED_LIBS ON CACHE INTERNAL "Cached for propagation to sub-projects with older CMake versions")
+##########
+# Artery #
+##########
 
 add_subdirectory(src/traci)
 add_subdirectory(src/artery)
