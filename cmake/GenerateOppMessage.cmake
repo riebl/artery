@@ -11,8 +11,6 @@ function(generate_opp_message msg_input)
     get_filename_component(msg_name "${msg_input}" NAME_WE)
     get_filename_component(msg_dir "${msg_input}" DIRECTORY)
 
-    message(STATUS "${OMNETPP_MSGC}")
-
     if(args_DIRECTORY)
         set(msg_prefix "${args_DIRECTORY}")
     else()
