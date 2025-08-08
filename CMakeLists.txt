@@ -17,7 +17,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 ##################
 
 # These are essential componets that are better to be turned on.
-option(WITH_INET "Build Artery with Inet framework integration" ON)
+option(WITH_INET "Build Artery with INET framework integration" ON)
 option(WITH_VEINS "Build Artery with Veins framework integration" ON)
 
 # Various extensions, adjust them as needed.
@@ -37,20 +37,20 @@ option(VSCODE_LAUNCH_INTEGRATION "Generate VS Code configuration for debugging A
 #################################
 
 if(NOT WITH_INET)
-    # SimuLTE extends Inet network (see src/artery/lte/World.ned)
+    # SimuLTE extends INET network (see src/artery/lte/World.ned)
     if(WITH_SIMULTE)
-        message(ERROR "SimuLTE requires Inet framework integration (WITH_INET must be set to ON)")
+        message(ERROR "SimuLTE requires INET framework integration (WITH_INET must be set to ON)")
     endif()
 
-    # Components below use Inet classes
+    # Components below use INET classes
     if(WITH_OTS)
-        message(ERROR "OpenTrafficSim requires Inet framework integration (WITH_INET must be set to ON)")
+        message(ERROR "OpenTrafficSim requires INET framework integration (WITH_INET must be set to ON)")
     endif()
     if(WITH_TESTBED)
-        message(ERROR "Testbed requires Inet framework integration (WITH_INET must be set to ON)")
+        message(ERROR "Testbed requires INET framework integration (WITH_INET must be set to ON)")
     endif()
     if(WITH_ENVMOD)
-        message(ERROR "Environment model requires Inet framework integration (WITH_INET must be set to ON)")
+        message(ERROR "Environment model requires INET framework integration (WITH_INET must be set to ON)")
     endif()
 endif()
 
@@ -71,12 +71,15 @@ include(GNUInstallDirs)
 if(WITH_TRANSFUSION OR WITH_OTS)
     find_package(Protobuf REQUIRED)
 endif()
+    
+if(WITH_OTS)
+    find_package(PkgConfig MODULE REQUIRED)
+    pkg_check_modules(ZEROMQ REQUIRED libzmq)
+endif()
 
 if(WITH_TESTBED)
     find_package(SEA_V2X CONFIG)
     mark_as_advanced(SEA_V2X_DIR)
-    find_package(PkgConfig MODULE REQUIRED)
-    pkg_check_modules(ZEROMQ REQUIRED libzmq)
 endif()
 
 add_subdirectory(extern)
