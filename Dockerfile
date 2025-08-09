@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y        \
     libboost-all-dev libcrypto++-dev            \
     libfox-1.6-dev libgdal-dev libproj-dev      \
     libgeographiclib-dev libxerces-c-dev        \
-    ninja-build curl python3-venv               \
+    ninja-build curl python3-venv clang-tidy    \
     && rm -rf /var/lib/apt/lists/*
 
 FROM setup AS build
@@ -35,6 +35,7 @@ WORKDIR /
 RUN git clone --recurse --depth 1 --branch ${SUMO_TAG} https://github.com/eclipse-sumo/sumo
 WORKDIR /sumo
 RUN cmake -B build .                                    \
+        -G Ninja                                        \
         -DCMAKE_BUILD_CONFIG=Release                    \
         -DCMAKE_INSTALL_PREFIX=/sumo-prefix             \
         -DENABLE_CS_BINDINGS=OFF                        \
