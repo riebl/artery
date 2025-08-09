@@ -24,7 +24,7 @@ jobs:
         run: . .venv/bin/activate && pip install -r tools/ci/requirements.txt
 
       - name: Configure and build CMake
-        run: tools/build.py -cb --config Release
+        run: tools/build.py -cb --config Release --generator Ninja
 
       - name: Run tests
         run: . .venv/bin/activate && PYTHONPATH=$PWD python3 tools/ci/run.py -l build/Release/run-artery.ini -s scenarios
