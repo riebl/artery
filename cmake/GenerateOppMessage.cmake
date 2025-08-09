@@ -32,6 +32,6 @@ function(generate_opp_message msg_input)
 
     # force cmake to generate message first, in case actual args_TARGET
     # sources use results from custom_command (include message headers)
-    add_custom_target(dummy_${msg_name}_target DEPENDS "${msg_output_header}")
-    add_dependencies(${args_TARGET} dummy_${msg_name}_target)
+    # add_custom_target(dummy_${msg_name}_target DEPENDS "${msg_output_header}")
+    # add_dependencies(${args_TARGET} dummy_${msg_name}_target)
 endfunction()
