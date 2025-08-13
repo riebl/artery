@@ -7,5 +7,3 @@ target_sources(core PUBLIC
     FilterRules.cc
     Geometry.cc
 )
-
-generate_opp_message(AsioData.msg TARGET core)
