@@ -1,9 +1,18 @@
+add_library(artery INTERFACE)
+
+add_library(core SHARED)
+add_library(Artery::Core ALIAS core)
+
 # Artery core modules
 add_subdirectory(nic)
 add_subdirectory(traci)
 add_subdirectory(utility)
 add_subdirectory(networking)
 add_subdirectory(application)
+
+# TODO: this belongs to utility/, bit until codegen target
+# is implemented it should stay here
+generate_opp_message(utility/AsioData.msg TARGET core)
 
 target_sources(core PRIVATE
     StaticNodeManager.cc
@@ -29,17 +38,12 @@ target_link_libraries(core PUBLIC
     Vanetza::vanetza
 )
 
-if(WITH_VEINS)
-    add_subdirectory(veins)
-endif()
+add_artery_subdirectory(veins SWITCH WITH_VEINS)
+add_artery_subdirectory(inet SWITCH WITH_INET)
+add_artery_subdirectory(storyboard SWITCH WITH_STORYBOARD)
 
-if(WITH_INET)
-    add_subdirectory(inet)
-endif()
-
-if(WITH_OTS)
-    add_subdirectory(ots)
-endif()
+add_artery_subdirectory(transfusion DEPENDENCIES Protobuf SWITCH WITH_TRANSFUSION)
+add_artery_subdirectory(testbed DEPENDENCIES SEA_V2X Protobuf SWITCH WITH_TESTBED)
 
 if(TARGET lte)
     # SimuLTE is a non-integral feature: add it to "artery" but not "core"
@@ -47,21 +51,9 @@ if(TARGET lte)
     target_link_libraries(artery INTERFACE lte)
 endif()
 
-if(WITH_STORYBOARD)
-    add_subdirectory(storyboard)
-endif()
-
-if(WITH_TRANSFUSION)
-    add_subdirectory(transfusion)
-endif()
-
 if(WITH_ENVMOD)
     add_subdirectory(envmod)
     set_property(SOURCE application/VehicleMiddleware.cc APPEND PROPERTY COMPILE_DEFINITIONS "WITH_ENVMOD")
-endif()
-
-if(WITH_TESTBED)
-    add_subdirectory(testbed)
 endif()
 
 install(TARGETS core LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})

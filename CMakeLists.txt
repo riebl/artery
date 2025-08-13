@@ -79,19 +79,24 @@ include(AddOppTarget)
 include(AddVSCode)
 include(CheckGitSubmodule)
 include(GenerateOppMessage)
+include(AddArterySubdirectory)
 include(GNUInstallDirs)
 
-if(WITH_TRANSFUSION OR WITH_OTS)
-    find_package(Protobuf REQUIRED)
-endif()
-    
-if(WITH_OTS)
-    find_package(PkgConfig MODULE REQUIRED)
-    pkg_check_modules(ZEROMQ REQUIRED libzmq)
+# Packages below are needed by various
+# optional components. They should be used
+# with add_artery_subdirectory() to trigger
+# checks on them only if variables (WITH*)
+# are set.
+
+find_package(Protobuf QUIET)
+find_package(PkgConfig MODULE QUIET)
+find_package(SEA_V2X CONFIG QUIET)
+
+if(PkgConfig_FOUND)
+    pkg_check_modules(ZEROMQ QUIET libzmq)
 endif()
 
-if(WITH_TESTBED)
-    find_package(SEA_V2X CONFIG)
+if(SEA_V2X_FOUND)
     mark_as_advanced(SEA_V2X_DIR)
 endif()
 
@@ -101,10 +106,7 @@ add_subdirectory(extern)
 # Primary Artery targets #
 ##########################
 
-add_library(artery INTERFACE)
-
-add_library(core SHARED)
-add_library(Artery::Core ALIAS core)
+# TODO: temporarily targets are moved into src/artery
 
 macro(add_artery_feature name)
     add_library(${name} SHARED ${ARGN})
@@ -126,9 +128,7 @@ endmacro()
 add_subdirectory(src/traci)
 add_subdirectory(src/artery)
 
-if(WITH_OTS)
-    add_subdirectory(src/ots)
-endif()
+add_artery_subdirectory(src/ots DEPENDENCIES ZEROMQ SWITCH WITH_OTS)
 
 # scenarios directory is part of repository but omitted for Docker build context
 if(WITH_SCENARIOS)

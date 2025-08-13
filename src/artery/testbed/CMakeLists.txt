@@ -18,7 +18,7 @@ else()
     message(STATUS "Building Testbed without SEA API")
 endif()
 
-if (Protobuf_FOUND)
+if(Protobuf_FOUND)
     message(STATUS "Building Testbed with CUBE integration")
     set(CUBE_PROTO_DIR ${PROJECT_SOURCE_DIR}/extern/vanetza/tools/socktap)
 
@@ -33,7 +33,7 @@ if (Protobuf_FOUND)
     target_include_directories(testbed PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(testbed PUBLIC protobuf::libprotobuf)
 
-    if (Protobuf_VERSION VERSION_GREATER_EQUAL "22.0")
+    if(Protobuf_VERSION VERSION_GREATER_EQUAL "22.0")
         set_property(TARGET testbed PROPERTY CXX_STANDARD 17)
     endif()
 else()
