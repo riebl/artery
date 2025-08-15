@@ -72,9 +72,15 @@ if(WITH_INET)
 endif()
 
 if(WITH_SIMULTE)
+    message(STATUS "Enable SimuLTE integration")
+    if(NOT TARGET INET)
+        message(FATAL_ERROR "SimuLTE requires INET")
+    endif()
+
     check_git_submodule(PATH simulte REQUIRED_FILES src/package.ned)
     find_path(SimuLTE_DIR NAMES src/package.ned PATHS simulte DOC "SimuLTE root directory")
     mark_as_advanced(SimuLTE_DIR)
+
     add_opp_target(TARGET lte ROOT_DIR ${SimuLTE_DIR})
     target_link_libraries(lte PUBLIC INET)
 else()

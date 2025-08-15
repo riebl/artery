@@ -43,16 +43,15 @@ add_artery_subdirectory(inet SWITCH WITH_INET)
 add_artery_subdirectory(storyboard SWITCH WITH_STORYBOARD)
 
 add_artery_subdirectory(transfusion DEPENDENCIES Protobuf SWITCH WITH_TRANSFUSION)
-add_artery_subdirectory(testbed DEPENDENCIES SEA_V2X Protobuf SWITCH WITH_TESTBED)
+add_artery_subdirectory(testbed REQUIRES INET DEPENDENCIES SEA_V2X Protobuf SWITCH WITH_TESTBED)
 
 if(TARGET lte)
     # SimuLTE is a non-integral feature: add it to "artery" but not "core"
-    message(STATUS "Enable SimuLTE integration")
     target_link_libraries(artery INTERFACE lte)
 endif()
 
+add_artery_subdirectory(envmod REQUIRES INET SWITCH WITH_ENVMOD)
 if(WITH_ENVMOD)
-    add_subdirectory(envmod)
     set_property(SOURCE application/VehicleMiddleware.cc APPEND PROPERTY COMPILE_DEFINITIONS "WITH_ENVMOD")
 endif()
 
