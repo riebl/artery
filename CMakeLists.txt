@@ -32,28 +32,6 @@ option(WITH_TRANSFUSION "Build Artery with transfusion feature" OFF)
 option(WITH_SCENARIOS "Build Artery with scenarios" ON)
 option(VSCODE_LAUNCH_INTEGRATION "Generate VS Code configuration for debugging Artery (requires debug build)" OFF)
 
-#################################
-# Resolving conflicting options #
-#################################
-
-if(NOT WITH_INET)
-    # SimuLTE extends INET network (see src/artery/lte/World.ned)
-    if(WITH_SIMULTE)
-        message(ERROR "SimuLTE requires INET framework integration (WITH_INET must be set to ON)")
-    endif()
-
-    # Components below use INET classes
-    if(WITH_OTS)
-        message(ERROR "OpenTrafficSim requires INET framework integration (WITH_INET must be set to ON)")
-    endif()
-    if(WITH_TESTBED)
-        message(ERROR "Testbed requires INET framework integration (WITH_INET must be set to ON)")
-    endif()
-    if(WITH_ENVMOD)
-        message(ERROR "Environment model requires INET framework integration (WITH_INET must be set to ON)")
-    endif()
-endif()
-
 ##############################
 # Artery build configuration #
 ##############################
@@ -128,7 +106,7 @@ endmacro()
 add_subdirectory(src/traci)
 add_subdirectory(src/artery)
 
-add_artery_subdirectory(src/ots DEPENDENCIES ZEROMQ SWITCH WITH_OTS)
+add_artery_subdirectory(src/ots REQUIRES INET DEPENDENCIES ZEROMQ SWITCH WITH_OTS)
 
 # scenarios directory is part of repository but omitted for Docker build context
 if(WITH_SCENARIOS)
