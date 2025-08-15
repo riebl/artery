@@ -17,7 +17,7 @@ RUN pacman -Syu --noconfirm     \
     boost crypto++ xorg         \
     ttf-ubuntu-font-family      \
     ninja                       \
-    && pip install --break-system-packages conan \
+    && pip install --break-system-packages conan pytest \
     && paccache -r -k 0
 
 ###############

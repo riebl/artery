@@ -162,6 +162,10 @@ if(WITH_STORYBOARD)
     add_subdirectory(storyboard)
 endif()
 
+if(WITH_PYTHON_BINDINGS)
+    add_subdirectory(bindings)
+endif()
+
 if(WITH_TRANSFUSION)
     add_subdirectory(transfusion)
 endif()
