@@ -289,7 +289,7 @@ class Routines:
         print_graph_packages(graph)
 
         api.install.install_binaries(graph, remotes)
-        api.install.install_consumer(graph, source_folder=Path.cwd())
+        api.install.install_consumer(graph, str(source_folder=Path.cwd()))
             
 
     def _run(self: 'Routines', command: typing.List[str]) -> None:
