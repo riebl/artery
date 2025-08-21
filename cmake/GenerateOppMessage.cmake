@@ -29,9 +29,4 @@ function(generate_opp_message msg_input)
 
     target_sources(${args_TARGET} PRIVATE "${msg_output_source}" "${msg_output_header}")
     target_include_directories(${args_TARGET} PUBLIC ${msg_output_root})
-
-    # force cmake to generate message first, in case actual args_TARGET
-    # sources use results from custom_command (include message headers)
-    # add_custom_target(dummy_${msg_name}_target DEPENDS "${msg_output_header}")
-    # add_dependencies(${args_TARGET} dummy_${msg_name}_target)
 endfunction()
