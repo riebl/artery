@@ -71,7 +71,7 @@ find_package(PkgConfig MODULE QUIET)
 find_package(SEA_V2X CONFIG QUIET)
 
 if(PkgConfig_FOUND)
-    pkg_check_modules(ZEROMQ QUIET libzmq)
+    pkg_check_modules(ZEROMQ QUIET IMPORTED_TARGET libzmq)
 endif()
 
 if(SEA_V2X_FOUND)
