@@ -106,7 +106,7 @@ endmacro()
 add_subdirectory(src/traci)
 add_subdirectory(src/artery)
 
-add_artery_subdirectory(src/ots REQUIRES INET DEPENDENCIES ZEROMQ SWITCH WITH_OTS)
+add_artery_subdirectory(src/ots REQUIRES INET PkgConfig::ZEROMQ SWITCH WITH_OTS)
 
 # scenarios directory is part of repository but omitted for Docker build context
 if(WITH_SCENARIOS)
