@@ -29,8 +29,7 @@ jobs:
           tools/build.py -cb --config Release \
             --generator Ninja                 \
             -D WITH_SIMULTE:BOOL=ON           \
-            -D WITH_OTS:BOOL=ON               \
-            -D WITH_TESTBED:BOOL=ON
+            -D WITH_OTS:BOOL=ON
 
       - name: Run tests
         run: . .venv/bin/activate && PYTHONPATH=$PWD python3 tools/ci/run.py -l build/Release/run-artery.ini -s scenarios
