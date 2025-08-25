@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libopenscenegraph-dev libproj-dev libqt5opengl5-dev libxerces-c-dev \
     ninja-build qtbase5-dev sudo \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN pip install --break-system-packages conan 
+RUN pip install --break-system-packages conan pytest
 
 ###############
 # Build stage #
