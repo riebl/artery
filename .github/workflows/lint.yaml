@@ -19,7 +19,12 @@ jobs:
           fetch-depth: 0
 
       - name: Configure CMake
-        run: tools/build.py -cl
+        run: |
+          tools/build.py -cl              \
+            -D WITH_SIMULTE:BOOL=ON       \
+            -D WITH_OTS:BOOL=ON           \
+            -D WITH_TESTBED:BOOL=ON       \
+            -D WITH_TRANSFUSION:BOOL=ON
 
       - name: Run clang-tidy
         run: |
