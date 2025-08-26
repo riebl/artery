@@ -1,9 +1,16 @@
-find_package(Protobuf REQUIRED)
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS TransfusionMsg.proto)
-
-add_artery_feature(transfusion
+add_artery_feature(
+    transfusion
     TransfusionLoopback.cc
     TransfusionService.cc
-    ${PROTO_SRCS} ${PROTO_HDRS})
-target_include_directories(transfusion PRIVATE ${PROTOBUF_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(transfusion PRIVATE ${PROTOBUF_LIBRARIES})
+)
+
+target_link_libraries(transfusion PRIVATE protobuf::libprotobuf)
+
+protobuf_generate(
+    TARGET transfusion
+    LANGUAGE cpp
+    PROTOS ${CMAKE_CURRENT_SOURCE_DIR}/TransfusionMsg.proto
+    PROTOC_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+target_include_directories(transfusion PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)

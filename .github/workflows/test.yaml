@@ -16,6 +16,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           submodules: recursive
+          fetch-depth: 0
 
       - name: Create virtual environment
         run: python3 -m venv .venv
@@ -24,7 +25,11 @@ jobs:
         run: . .venv/bin/activate && pip install -r tools/ci/requirements.txt
 
       - name: Configure and build CMake
-        run: tools/build.py -cb --config Release --generator Ninja
+        run: |
+          tools/build.py -cb --config Release \
+            --generator Ninja                 \
+            -D WITH_SIMULTE:BOOL=ON           \
+            -D WITH_OTS:BOOL=ON
 
       - name: Run tests
         run: . .venv/bin/activate && PYTHONPATH=$PWD python3 tools/ci/run.py -l build/Release/run-artery.ini -s scenarios
