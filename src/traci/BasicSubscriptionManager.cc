@@ -47,6 +47,8 @@ void BasicSubscriptionManager::traciInit()
         VAR_ARRIVED_VEHICLES_IDS,
         VAR_DELTA_T,
         VAR_TELEPORT_STARTING_VEHICLES_IDS,
+        VAR_PARKING_STARTING_VEHICLES_IDS,
+        VAR_PARKING_ENDING_VEHICLES_IDS,
         VAR_TIME
     };
     subscribeSimulationVariables(vars);
