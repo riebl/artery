@@ -21,6 +21,7 @@ jobs:
       - name: Configure CMake
         run: |
           tools/build.py -cl              \
+            --generator Ninja             \
             -D WITH_SIMULTE:BOOL=ON       \
             -D WITH_OTS:BOOL=ON           \
             -D WITH_TESTBED:BOOL=ON       \

@@ -2,7 +2,7 @@ add_library(transfusion-protos OBJECT)
 protobuf_generate(
     TARGET transfusion-protos
     LANGUAGE cpp
-    PROTOS TransfusionMsg.proto
+    PROTOS ${CMAKE_CURRENT_SOURCE_DIR}/TransfusionMsg.proto
     IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
 )
 artery_mark_as_codegen(transfusion-protos)
