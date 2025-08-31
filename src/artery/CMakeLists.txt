@@ -1,18 +1,9 @@
-add_library(artery INTERFACE)
-
-add_library(core SHARED)
-add_library(Artery::Core ALIAS core)
-
 # Artery core modules
 add_subdirectory(nic)
 add_subdirectory(traci)
 add_subdirectory(utility)
 add_subdirectory(networking)
 add_subdirectory(application)
-
-# TODO: this belongs to utility/, bit until codegen target
-# is implemented it should stay here
-generate_opp_message(utility/AsioData.msg TARGET core)
 
 target_sources(core PRIVATE
     StaticNodeManager.cc

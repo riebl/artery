@@ -6,7 +6,7 @@
 	"configurations": [
 		{
 			"name": "Launch Artery in Debugger (generated)",
-			"description": "Generic debug configuration for Artey. It is (re-)generated with every CMake build generation and any modifications are overwritten!",
+			"description": "Generic debug configuration for Artery. It is (re-)generated with every CMake build generation and any modifications are overwritten!",
 			"type": "cppdbg",
 			"request": "launch",
 
