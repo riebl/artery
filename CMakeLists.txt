@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-cmake_policy(VERSION 3.20...3.29)
+cmake_policy(VERSION 3.20...3.31)
 
 project(Artery LANGUAGES CXX C)
 
