@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y        \
     libgeographiclib-dev libxerces-c-dev        \
     ninja-build curl python3-venv clang-tidy    \
     pkg-config libzmq5-dev libprotobuf-dev      \
+    protobuf-compiler                           \
     && rm -rf /var/lib/apt/lists/*
 
 FROM setup AS build
