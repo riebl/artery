@@ -29,17 +29,26 @@ if(Protobuf_FOUND)
         OtaInterfaceCube.cc
     )
 
-    add_library(testbed-protos OBJECT)
-    protobuf_generate(
-        TARGET testbed-protos
-        LANGUAGE cpp
-        PROTOS ${CUBE_PROTO_DIR}/nfiniity_cube_radio.proto
-        IMPORT_DIRS ${CUBE_PROTO_DIR}
-        PROTOC_EXECUTABLE ${Protobuf_PROTOC_EXECUTABLE}
+    protobuf_generate_cpp(
+        TESTBED_PROTO_SRCS TESTBED_PROTO_HDRS
+        ${CUBE_PROTO_DIR}/nfiniity_cube_radio.proto
     )
+
+    add_library(
+        testbed-protos OBJECT
+        ${TESTBED_PROTO_SRCS} ${TESTBED_PROTO_HDRS}
+    )
+
     artery_mark_as_codegen(testbed-protos)
 
-    target_include_directories(testbed PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(testbed-protos PUBLIC ${PROTOBUF_LIBRARIES})
+
+    target_include_directories(
+        testbed-protos PUBLIC
+        ${PROTOBUF_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
     target_link_libraries(testbed PUBLIC testbed-protos)
 
     if(Protobuf_VERSION VERSION_GREATER_EQUAL "22.0")

@@ -79,10 +79,6 @@ if(SEA_V2X_FOUND)
     mark_as_advanced(SEA_V2X_DIR)
 endif()
 
-if(NOT Protobuf_PROTOC_EXECUTABLE)
-    find_program(Protobuf_PROTOC_EXECUTABLE protoc REQUIRED)
-endif()
-
 add_subdirectory(extern)
 
 ##########################
