@@ -35,6 +35,7 @@ if(Protobuf_FOUND)
         LANGUAGE cpp
         PROTOS ${CUBE_PROTO_DIR}/nfiniity_cube_radio.proto
         IMPORT_DIRS ${CUBE_PROTO_DIR}
+        PROTOC_EXECUTABLE ${Protobuf_PROTOC_EXECUTABLE}
     )
     artery_mark_as_codegen(testbed-protos)
 

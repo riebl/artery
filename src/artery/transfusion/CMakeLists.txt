@@ -4,6 +4,7 @@ protobuf_generate(
     LANGUAGE cpp
     PROTOS ${CMAKE_CURRENT_SOURCE_DIR}/TransfusionMsg.proto
     IMPORT_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
+    PROTOC_EXECUTABLE ${Protobuf_PROTOC_EXECUTABLE}
 )
 artery_mark_as_codegen(transfusion-protos)
 
