@@ -26,6 +26,9 @@ jobs:
             -D WITH_TESTBED:BOOL=ON       \
             -D WITH_TRANSFUSION:BOOL=ON
 
+      - name: Build Artery codegen target
+        run: cmake --build build/Debug --target artery-codegen
+
       - name: Run clang-tidy
         run: |
           git config --global --add safe.directory $PWD

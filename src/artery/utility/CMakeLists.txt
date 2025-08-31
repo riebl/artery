@@ -8,4 +8,8 @@ target_sources(core PUBLIC
     Geometry.cc
 )
 
-generate_opp_message(MESSAGE AsioData.msg TARGET core)
+add_library(asio-data-message OBJECT)
+generate_opp_message(MESSAGE AsioData.msg TARGET asio-data-message)
+
+artery_mark_as_codegen(asio-data-message)
+target_link_libraries(core PRIVATE asio-data-message)

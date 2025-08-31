@@ -76,17 +76,7 @@ function(generate_opp_message)
         WORKING_DIRECTORY ${output_directory} VERBATIM
     )
 
-    cmake_path(HASH message message_hash)
-    set(object_library_name opp_message_${message_hash})
-
-    add_library(
-        ${object_library_name} OBJECT
-        ${message_output_source} ${message_output_header}
-    )
-
-    artery_mark_as_codegen(${object_library_name})
-    target_link_libraries(${object_library_name} PUBLIC OmnetPP::header)
-    target_include_directories(${object_library_name} PUBLIC ${output_root})
-
-    target_link_libraries(${args_TARGET} PRIVATE ${object_library_name})
+    target_sources(${args_TARGET} PRIVATE ${message_output_source} ${message_output_header})
+    target_link_libraries(${args_TARGET} PUBLIC OmnetPP::header)
+    target_include_directories(${args_TARGET} PUBLIC ${output_root})
 endfunction()

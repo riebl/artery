@@ -32,7 +32,9 @@ if(Protobuf_FOUND)
     add_library(testbed-protos OBJECT)
     protobuf_generate(
         TARGET testbed-protos
+        LANGUAGE cpp
         PROTOS ${CUBE_PROTO_DIR}/nfiniity_cube_radio.proto
+        IMPORT_DIRS ${CUBE_PROTO_DIR}
     )
     artery_mark_as_codegen(testbed-protos)
 
