@@ -1,9 +1,11 @@
 add_artery_feature(police ClearLaneService.cc PoliceService.cc)
 
-add_library(highway-police-message OBJECT)
-generate_opp_message(MESSAGE PoliceClearLane.msg TARGET highway-police-message DIRECTORY police_msgs)
+add_opp_message(
+    highway-police-message
+    MESSAGE PoliceClearLane.msg
+    MSG_PREFIX police_msgs
+)
 
-artery_mark_as_codegen(highway-police-message)
 target_link_libraries(police PRIVATE highway-police-message)
 
 add_opp_run(highway_police NED_FOLDERS ${CMAKE_CURRENT_SOURCE_DIR})

@@ -1,9 +1,11 @@
 add_artery_feature(blackice BlackIceCentral.cc BlackIceReporter.cc BlackIceWarner.cc BlackIceWarnerD2D.cc)
 
-add_library(lte-blackice-message OBJECT)
-generate_opp_message(MESSAGE BlackIceWarning.msg TARGET lte-blackice-message DIRECTORY lte_msgs)
+add_opp_message(
+    lte-blackice-message
+    MESSAGE BlackIceWarning.msg
+    MSG_PREFIX lte_msgs
+)
 
-artery_mark_as_codegen(lte-blackice-message)
 target_link_libraries(blackice PRIVATE lte-blackice-message)
 
 add_opp_run(lte_blackice DEPENDENCY artery-lte NED_FOLDERS ${CMAKE_CURRENT_SOURCE_DIR})
