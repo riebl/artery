@@ -16,7 +16,8 @@ RUN pacman -Syu --noconfirm     \
     pacman-contrib sudo         \
     boost crypto++ xorg         \
     ttf-ubuntu-font-family      \
-    ninja                       \
+    ninja cppzmq protobuf       \
+    pkg-config                  \
     && pip install --break-system-packages conan \
     && paccache -r -k 0
 

@@ -6,7 +6,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bash-completion bison build-essential cmake flex git git-lfs python3 python3-pip \
     libboost-all-dev libcrypto++-dev libfox-1.6-dev libgdal-dev libgeographiclib-dev \
     libopenscenegraph-dev libproj-dev libqt5opengl5-dev libxerces-c-dev \
-    ninja-build qtbase5-dev sudo \
+    ninja-build qtbase5-dev sudo pkg-config libzmq5-dev libprotobuf-dev \
+    protobuf-compiler \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN pip install --break-system-packages conan 
 

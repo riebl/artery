@@ -1,4 +1,5 @@
-add_artery_feature(testbed
+add_artery_feature(
+    testbed
     GpsdServer.cc
     OtaIndicationQueue.cc
     OtaInterfaceLayer.cc
@@ -26,12 +27,10 @@ if(Protobuf_FOUND)
         testbed PUBLIC
         CubeConnection.cc
         OtaInterfaceCube.cc
-        ${CUBE_PROTO_DIR}/nfiniity_cube_radio.proto
     )
 
-    protobuf_generate(TARGET testbed IMPORT_DIRS ${CUBE_PROTO_DIR})
-    target_include_directories(testbed PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-    target_link_libraries(testbed PUBLIC protobuf::libprotobuf)
+    add_protobuf(testbed-protos PROTOS ${CUBE_PROTO_DIR}/nfiniity_cube_radio.proto)
+    target_link_libraries(testbed PRIVATE testbed-protos)
 
     if(Protobuf_VERSION VERSION_GREATER_EQUAL "22.0")
         set_property(TARGET testbed PROPERTY CXX_STANDARD 17)

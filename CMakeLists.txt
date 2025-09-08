@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 
-cmake_policy(VERSION 3.16...3.31)
+cmake_policy(VERSION 3.20...3.31)
 
 project(Artery LANGUAGES CXX C)
 
@@ -43,6 +43,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 # running simulations with opp_run requires shared libraries
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(BUILD_SHARED_LIBS ON CACHE INTERNAL "Cached for propagation to sub-projects with older CMake versions")
 
 ###############################
@@ -56,7 +57,7 @@ include(AddOppRun)
 include(AddOppTarget)
 include(AddVSCode)
 include(CheckGitSubmodule)
-include(GenerateOppMessage)
+include(ArteryCodegen)
 include(AddArterySubdirectory)
 include(GNUInstallDirs)
 
@@ -84,7 +85,10 @@ add_subdirectory(extern)
 # Primary Artery targets #
 ##########################
 
-# TODO: temporarily targets are moved into src/artery
+add_library(artery INTERFACE)
+
+add_library(core SHARED)
+add_library(Artery::Core ALIAS core)
 
 macro(add_artery_feature name)
     add_library(${name} SHARED ${ARGN})
@@ -127,7 +131,7 @@ else()
 endif()
 
 if(VSCODE_LAUNCH_INTEGRATION)
-    if(is_multi_config AND "Debug" NOT IN CMAKE_CONFIGURATION_TYPES)
+    if(is_multi_config AND "Debug" IN_LIST CMAKE_CONFIGURATION_TYPES)
         message(STATUS "VS Code integration is enabled, but Debug is not included in build types")
     elseif(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
         message(STATUS "VS Code integration is enabled, but build type is not Debug")

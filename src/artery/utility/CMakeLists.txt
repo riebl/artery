@@ -7,3 +7,7 @@ target_sources(core PUBLIC
     FilterRules.cc
     Geometry.cc
 )
+
+add_opp_message(asio-data-message MESSAGE AsioData.msg)
+
+target_link_libraries(core PRIVATE asio-data-message)

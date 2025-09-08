@@ -1,9 +1,10 @@
 include(CMakeParseArguments)
-if(NOT EXISTS ${OMNETPP_MSGC})
-    message(FATAL_ERROR "OMNeT++ message compiler is missing")
-endif()
 
 function(add_opp_target)
+    if(NOT EXISTS ${OMNETPP_MSGC})
+        message(FATAL_ERROR "OMNeT++ message compiler is missing")
+    endif()
+
     set(single_args ROOT_DIR SOURCE_DIR TARGET)
     set(multi_args DEPENDS OPP_MAKEMAKE)
     cmake_parse_arguments(args "" "${single_args}" "${multi_args}" ${ARGN})
