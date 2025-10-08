@@ -26,5 +26,5 @@ add_artery_feature(storyboard
     Vehicle.cc
 )
 
-target_link_libraries(storyboard PRIVATE pybind11::pybind11)
+target_link_libraries(storyboard PRIVATE pybind11::embed)
 set_property(TARGET storyboard PROPERTY CXX_VISIBILITY_PRESET hidden)
