@@ -45,27 +45,6 @@ vanetza::MacAddress convert(veins::LAddress::L2Type addr)
     }
 }
 
-int user_priority(vanetza::access::AccessCategory ac)
-{
-    using AC = vanetza::access::AccessCategory;
-    int up = 0;
-    switch (ac) {
-        case AC::BK:
-            up = 1;
-            break;
-        case AC::BE:
-            up = 3;
-            break;
-        case AC::VI:
-            up = 5;
-            break;
-        case AC::VO:
-            up = 7;
-            break;
-    }
-    return up;
-}
-
 const simsignal_t channelBusySignal = veins::Mac1609_4::sigChannelBusy;
 
 } // namespace
