@@ -34,7 +34,7 @@ namespace artery {
         };
 
         /**
-         * @brief Small helper metadata class for initializing connection to SUMO via libsumo or libtraci.
+         * @brief Small helper metadata class for initializing connection to SUMO via libtraci.
          */
         struct ServerEndpoint {
             std::string hostname;
