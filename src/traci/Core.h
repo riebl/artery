@@ -1,46 +1,47 @@
-#ifndef CORE_H_HPQGM1MF
-#define CORE_H_HPQGM1MF
+#pragma once
+
+#include <memory>
 
 #include <omnetpp/cmessage.h>
 #include <omnetpp/csimplemodule.h>
 #include <omnetpp/simtime.h>
-#include <memory>
 
-namespace traci
-{
+#include <traci/API.h>
+#include <traci/launchers/Launcher.h>
 
-class API;
-class Launcher;
-class LiteAPI;
-class SubscriptionManager;
+namespace artery {
 
-class Core : public omnetpp::cSimpleModule
-{
-public:
-    Core();
-    virtual ~Core();
+    namespace traci {
 
-    void initialize() override;
-    void finish() override;
-    void handleMessage(omnetpp::cMessage*) override;
-    std::shared_ptr<API> getAPI();
+        class SubscriptionManager;
 
-protected:
-    virtual void checkVersion();
-    virtual void syncTime();
+        class Core : public omnetpp::cSimpleModule
+        {
+        public:
+            Core();
+            virtual ~Core();
 
-private:
-    omnetpp::cMessage* m_connectEvent;
-    omnetpp::cMessage* m_updateEvent;
-    omnetpp::SimTime m_updateInterval;
+            void initialize() override;
+            void finish() override;
+            void handleMessage(omnetpp::cMessage*) override;
+            std::shared_ptr<API> getAPI();
 
-    Launcher* m_launcher;
-    std::shared_ptr<API> m_traci;
-    bool m_stopping;
-    SubscriptionManager* m_subscriptions;
-};
+        protected:
+            virtual void checkVersion();
+            virtual void syncTime();
 
-} // namespace traci
+        private:
+            omnetpp::cMessage* m_connectEvent;
+            omnetpp::cMessage* m_updateEvent;
+            omnetpp::SimTime m_updateInterval;
 
-#endif /* CORE_H_HPQGM1MF */
+            ILauncher* m_launcher;
+            std::shared_ptr<API> m_traci;
+            bool m_stopping;
+            SubscriptionManager* m_subscriptions;
+        };
+
+    } // namespace traci
+
+}
 
