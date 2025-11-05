@@ -35,15 +35,24 @@ foreach(_library IN LISTS _libraries)
     string(TOUPPER ${_library} _LIBRARY)
     find_library(OMNETPP_${_LIBRARY}_LIBRARY_RELEASE opp${_library} PATHS ${OMNETPP_ROOT}/lib)
     find_library(OMNETPP_${_LIBRARY}_LIBRARY_DEBUG NAMES opp${_library}d opp${_library}_dbg PATHS ${OMNETPP_ROOT}/lib)
-    add_library(OmnetPP::${_library} SHARED IMPORTED)
-    list(APPEND OMNETPP_LIBRARIES OmnetPP::${_library})
-    set_target_properties(OmnetPP::${_library} PROPERTIES
-        IMPORTED_LOCATION_RELEASE ${OMNETPP_${_LIBRARY}_LIBRARY_RELEASE}
-        IMPORTED_LOCATION_DEBUG ${OMNETPP_${_LIBRARY}_LIBRARY_DEBUG}
-        INTERFACE_LINK_LIBRARIES OmnetPP::header)
-    set_property(TARGET OmnetPP::${_library} PROPERTY IMPORTED_CONFIGURATIONS "DEBUG" "RELEASE")
-    set_property(TARGET OmnetPP::${_library} PROPERTY IMPORTED_NO_SONAME ON)
     mark_as_advanced(OMNETPP_${_LIBRARY}_LIBRARY_RELEASE OMNETPP_${_LIBRARY}_LIBRARY_DEBUG)
+
+    if(OMNETPP_${_LIBRARY}_LIBRARY_RELEASE OR OMNETPP_${_LIBRARY}_LIBRARY_DEBUG)
+        add_library(OmnetPP::${_library} SHARED IMPORTED)
+        list(APPEND OMNETPP_LIBRARIES OmnetPP::${_library})
+        set_property(TARGET OmnetPP::${_library} PROPERTY IMPORTED_NO_SONAME ON)
+        set_property(TARGET OmnetPP::${_library} PROPERTY INTERFACE_LINK_LIBRARIES OmnetPP::header)
+    endif()
+
+    if(OMNETPP_${_LIBRARY}_LIBRARY_RELEASE)
+        set_property(TARGET OmnetPP::${_library} PROPERTY IMPORTED_LOCATION_RELEASE ${OMNETPP_${_LIBRARY}_LIBRARY_RELEASE})
+        set_property(TARGET OmnetPP::${_library} APPEND PROPERTY IMPORTED_CONFIGURATIONS "RELEASE")
+    endif()
+
+    if(OMNETPP_${_LIBRARY}_LIBRARY_DEBUG)
+        set_property(TARGET OmnetPP::${_library} PROPERTY IMPORTED_LOCATION_DEBUG ${OMNETPP_${_LIBRARY}_LIBRARY_DEBUG})
+        set_property(TARGET OmnetPP::${_library} APPEND PROPERTY IMPORTED_CONFIGURATIONS "DEBUG")
+    endif()
 endforeach()
 unset(_libraries)
 
