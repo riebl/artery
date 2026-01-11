@@ -2,11 +2,9 @@
 
 #include <libsumo/libsumo.h>
 
-namespace artery
-{
+namespace artery {
 
-namespace traci
-{
+namespace traci {
 
 /**
  * @brief Namespace alias for currently used libsumo/libtraci. Use this to access common API.

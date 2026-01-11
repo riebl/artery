@@ -6,12 +6,10 @@
 
 using namespace artery;
 
-traci::TraCIGeoPosition::TraCIGeoPosition(double longitude, double latitude) : longitude(longitude), latitude(latitude)
-{
+traci::TraCIGeoPosition::TraCIGeoPosition(double longitude, double latitude) : longitude(longitude), latitude(latitude) {
 }
 
-traci::TraCIGeoPosition::TraCIGeoPosition(const lib::TraCIPosition& position)
-{
+traci::TraCIGeoPosition::TraCIGeoPosition(const lib::TraCIPosition& position) {
     if (position.getType() != lib::POSITION_2D) {
         return;
     }
@@ -21,13 +19,11 @@ traci::TraCIGeoPosition::TraCIGeoPosition(const lib::TraCIPosition& position)
     latitude = result.y;
 }
 
-traci::lib::TraCIPosition traci::TraCIGeoPosition::convert2D()
-{
+traci::lib::TraCIPosition traci::TraCIGeoPosition::convert2D() {
     return lib::Simulation::convertGeo(longitude, latitude, true);
 }
 
-void traci::API::connectTraCI(const ServerEndpoint& endpoint)
-{
+void traci::API::connectTraCI(const ServerEndpoint& endpoint) {
 #ifdef LIBTRACI
     std::size_t numRetries = (endpoint.retry) ? compat::DEFAULT_NUM_RETRIES : 0;
     compat::Simulation::init(endpoint.port, numRetries, endpoint.hostname);
