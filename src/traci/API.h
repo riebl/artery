@@ -1,31 +1,26 @@
-#ifndef API_H_HBQVASFR
-#define API_H_HBQVASFR
+#pragma once
 
-#include "traci/sumo/utils/traci/TraCIAPI.h"
-#include "traci/Angle.h"
-#include "traci/Boundary.h"
-#include "traci/GeoPosition.h"
-#include "traci/Position.h"
-#include "traci/Time.h"
-#include <omnetpp/simtime.h>
+#include <libsumo/libsumo.h>
 
-namespace traci
-{
+#include "Defs.h"
 
-class ServerEndpoint;
+namespace artery {
 
-class API : public TraCIAPI
-{
-public:
-    using Version = std::pair<int, std::string>;
+    namespace traci {
 
-    TraCIGeoPosition convertGeo(const TraCIPosition&) const;
-    TraCIPosition convert2D(const TraCIGeoPosition&) const;
+        class API : public libsumo::Simulation {
+        public:
+            using Version = std::pair<int, std::string>;
 
-    void connect(const ServerEndpoint&);
-};
+            /**
+             * @brief Connect to SUMO instance with \Endpoint metadata.
+             * 
+             * @param endpoint Connection details.
+             */
+            void connectTraCI(const ServerEndpoint& endpoint);
+        };
+
+    }
 
 } // namespace traci
-
-#endif /* API_H_HBQVASFR */
 

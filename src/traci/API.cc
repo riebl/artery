@@ -1,44 +1,18 @@
-#include "traci/API.h"
-#include "traci/Launcher.h"
-#include <thread>
+#include <libsumo/Simulation.h>
+#include <libsumo/TraCIConstants.h>
 
-namespace traci
-{
+#include <omnetpp/cexception.h>
 
-TraCIGeoPosition API::convertGeo(const TraCIPosition& pos) const
-{
-    libsumo::TraCIPosition result = simulation.convertGeo(pos.x, pos.y, false);
-    TraCIGeoPosition geo;
-    geo.longitude = result.x;
-    geo.latitude = result.y;
-    return geo;
+#include "API.h"
+
+using namespace artery;
+
+void traci::API::connectTraCI(const ServerEndpoint& endpoint) {
+#ifdef LIBTRACI
+    std::size_t numRetries = (endpoint.retry) ? compat::DEFAULT_NUM_RETRIES : 0;
+    compat::Simulation::init(endpoint.port, numRetries, endpoint.hostname);
+    compat::Simulation::setOrder(endpoint.clientId);
+#else
+    throw omnetpp::cRuntimeError("libsumo does not allow connecting to existing endpoint. Please compile with LIBTRACI instead");
+#endif
 }
-
-TraCIPosition API::convert2D(const TraCIGeoPosition& pos) const
-{
-    return simulation.convertGeo(pos.longitude, pos.latitude, true);
-}
-
-void API::connect(const ServerEndpoint& endpoint)
-{
-    const unsigned max_tries = endpoint.retry ? 10 : 0;
-    unsigned tries = 0;
-    auto sleep = std::chrono::milliseconds(500);
-
-    while (true) {
-        try {
-            TraCIAPI::connect(endpoint.hostname, endpoint.port);
-            TraCIAPI::setOrder(endpoint.clientId);
-            return;
-        } catch (tcpip::SocketException&) {
-            if (++tries < max_tries) {
-                std::this_thread::sleep_for(sleep);
-                sleep *= 2;
-            } else {
-                throw;
-            }
-        }
-    }
-}
-
-} // namespace traci
