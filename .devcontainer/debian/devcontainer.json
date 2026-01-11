@@ -21,5 +21,5 @@
             "type": "bind"
         }
     ],
-    "initializeCommand": "which xhost 1>/dev/null 2>/dev/null && xhost +local:docker"
+    "initializeCommand": "if [[ \"$XDG_SESSION_TYPE\" == \"x11\" ]]; then xhost +local:docker; fi"
 }
