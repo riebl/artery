@@ -1,47 +1,47 @@
 #pragma once
 
-#include <memory>
-
 #include <omnetpp/cmessage.h>
 #include <omnetpp/csimplemodule.h>
 #include <omnetpp/simtime.h>
-
 #include <traci/API.h>
 #include <traci/launchers/Launcher.h>
 
-namespace artery {
+#include <memory>
 
-    namespace traci {
+namespace artery
+{
 
-        class SubscriptionManager;
+namespace traci
+{
 
-        class Core : public omnetpp::cSimpleModule
-        {
-        public:
-            Core();
-            virtual ~Core();
+class SubscriptionManager;
 
-            void initialize() override;
-            void finish() override;
-            void handleMessage(omnetpp::cMessage*) override;
-            std::shared_ptr<API> getAPI();
+class Core : public omnetpp::cSimpleModule
+{
+public:
+    Core();
+    virtual ~Core();
 
-        protected:
-            virtual void checkVersion();
-            virtual void syncTime();
+    void initialize() override;
+    void finish() override;
+    void handleMessage(omnetpp::cMessage*) override;
+    std::shared_ptr<API> getAPI();
 
-        private:
-            omnetpp::cMessage* m_connectEvent;
-            omnetpp::cMessage* m_updateEvent;
-            omnetpp::SimTime m_updateInterval;
+protected:
+    virtual void checkVersion();
+    virtual void syncTime();
 
-            ILauncher* m_launcher;
-            std::shared_ptr<API> m_traci;
-            bool m_stopping;
-            SubscriptionManager* m_subscriptions;
-        };
+private:
+    omnetpp::cMessage* m_connectEvent;
+    omnetpp::cMessage* m_updateEvent;
+    omnetpp::SimTime m_updateInterval;
 
-    } // namespace traci
+    ILauncher* m_launcher;
+    std::shared_ptr<API> m_traci;
+    bool m_stopping;
+    SubscriptionManager* m_subscriptions;
+};
 
-}
+}  // namespace traci
 
+}  // namespace artery

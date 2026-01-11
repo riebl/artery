@@ -1,21 +1,24 @@
 #pragma once
 
-#include <traci/Defs.h>
+#include <traci/API.h>
 
-namespace artery {
+namespace artery
+{
 
-    namespace traci {
+namespace traci
+{
 
-        /**
-         * @brief Interface for various SUMO Launchers.
-         *
-         * Launchers are expected to start SUMO in a particular way
-         * and return endpoint for created instance.
-         */
-        class ILauncher {
-        public:
-            virtual ServerEndpoint launch() = 0;
-        };
+/**
+ * @brief Interface for various SUMO Launchers.
+ *
+ * Launchers are expected to start SUMO in a particular way
+ * and return endpoint for created instance.
+ */
+class ILauncher
+{
+public:
+    virtual ServerEndpoint launch() = 0;
+};
 
-    }
-}
+}  // namespace traci
+}  // namespace artery
