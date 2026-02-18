@@ -174,8 +174,6 @@ class Routines:
         for config in self.__params.build_configs:
             source = Path.cwd()
             binary = self.__params.build_directory.joinpath(config)
-            if self.__params.preset is not None:
-                binary= binary.joinpath(self.__params.preset)
             command = [
                 'cmake',
                 '--preset', f'conan-{config.lower()}',
@@ -216,8 +214,6 @@ class Routines:
         logger.info(f'using {self.__params.cores} threads')
         for config in self.__params.build_configs:
             directory = self.__params.build_directory.joinpath(config)
-            if self.__params.preset is not None:
-                directory = directory.joinpath(self.__params.preset)
             logger.info(f'building for CMake configuration \'{config}\'')
             self._run([
                 'cmake',
