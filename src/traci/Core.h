@@ -1,17 +1,19 @@
-#ifndef CORE_H_HPQGM1MF
-#define CORE_H_HPQGM1MF
+#pragma once
 
 #include <omnetpp/cmessage.h>
 #include <omnetpp/csimplemodule.h>
 #include <omnetpp/simtime.h>
+#include <traci/API.h>
+#include <traci/launchers/Launcher.h>
+
 #include <memory>
+
+namespace artery
+{
 
 namespace traci
 {
 
-class API;
-class Launcher;
-class LiteAPI;
 class SubscriptionManager;
 
 class Core : public omnetpp::cSimpleModule
@@ -34,13 +36,12 @@ private:
     omnetpp::cMessage* m_updateEvent;
     omnetpp::SimTime m_updateInterval;
 
-    Launcher* m_launcher;
+    ILauncher* m_launcher;
     std::shared_ptr<API> m_traci;
     bool m_stopping;
     SubscriptionManager* m_subscriptions;
 };
 
-} // namespace traci
+}  // namespace traci
 
-#endif /* CORE_H_HPQGM1MF */
-
+}  // namespace artery
