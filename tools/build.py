@@ -70,6 +70,7 @@ DESCRIPTION = '''
 class Config:
     build_directory: Path = field(default_factory=lambda: Path.cwd().joinpath('build'))
     cores: int = multiprocessing.cpu_count()
+    preset: Optional[str] = None
     # CMake-specific
     build_configs: Iterable[str] = field(default_factory=lambda: ['Debug'])
     generator: Optional[str] = None
@@ -165,15 +166,14 @@ class Routines:
         if not self.__params.build_directory.is_dir():
             self.__params.build_directory.mkdir()
 
-        use_presets = Path.cwd().joinpath('CMakeUserPresets.json').is_file()
-        if use_presets:
+        use_custom_presets = Path.cwd().joinpath('CMakeUserPresets.json').is_file()
+        if use_custom_presets:
             logger.info('found CMake presets')
 
         logger.info('configuring for CMake build configs: ' + ', '.join(self.__params.build_configs))
         for config in self.__params.build_configs:
             source = Path.cwd()
             binary = self.__params.build_directory.joinpath(config)
-
             command = [
                 'cmake',
                 '--preset', f'conan-{config.lower()}',
@@ -181,7 +181,14 @@ class Routines:
                 '-S', str(source),
                 self._decorate_cmake_variable('CMAKE_EXPORT_COMPILE_COMMANDS', 'ON', 'BOOL'),
                 self._decorate_cmake_variable('CMAKE_BUILD_TYPE', config)
-            ] if use_presets else [
+            ] if use_custom_presets else [
+                'cmake',
+                '--preset', f'{self.__params.preset}',
+                '-B', str(binary),
+                '-S', str(source),
+                self._decorate_cmake_variable('CMAKE_EXPORT_COMPILE_COMMANDS', 'ON', 'BOOL'),
+                self._decorate_cmake_variable('CMAKE_BUILD_TYPE', config)
+            ] if self.__params.preset else [
                 'cmake',
                 '-B', str(binary),
                 '-S', str(source),
@@ -302,7 +309,6 @@ class Routines:
         if var_type is not None:
             return f'-D{var.upper()}:{var_type}={value}'
         return f'-D{var.upper()}={value}'
-    
 
 def resolve_profiles(config: Config, args: argparse.Namespace):
     if args.profile_all is not None:
@@ -340,6 +346,8 @@ def parse_cli_args() -> argparse.Namespace:
     # Environment
     parser.add_argument('--build-dir', action='store', dest='build_directory')
     parser.add_argument('--local-cache', action='store_true', dest='local_cache', default=False)
+    # Presets
+    parser.add_argument('--preset', action='store', dest='preset')
     # TODO: allow more configs
     parser.add_argument('--config', action='append', dest='configs', choices=['Debug', 'Release'])
     parser.add_argument('--parallel', action='store', dest='cores')
@@ -387,6 +395,9 @@ def main():
     if getattr(args, 'generator') is not None:
         params.generator = args.generator
         logger.info(f'config: user-provided generator: "{params.generator}"')
+    if getattr(args, 'preset') is not None:
+        params.preset = args.preset
+        logger.info(f'config: user-provided preset: "{params.preset}"')
     params.local_cache = args.local_cache
 
     resolve_profiles(params, args)
