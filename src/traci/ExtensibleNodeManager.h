@@ -36,11 +36,15 @@ protected:
     void addVehicle(const std::string&) override;
     void updateVehicle(const std::string&, VehicleSink*) override;
     void removeVehicle(const std::string&) override;
+    void startVehicleParking(const std::string&) override;
+    void endVehicleParking(const std::string&) override;
 
     friend class VehicleLifecycle;
     void addVehicle(const VehiclePolicy* omit, const std::string&);
     void removeVehicle(const VehiclePolicy* omit, const std::string&);
     void updateVehicle(const VehiclePolicy* omit, const std::string&, VehicleSink*);
+    void startVehicleParking(const VehiclePolicy* omit, const std::string&);
+    void endVehicleParking(const VehiclePolicy* omit, const std::string&);
 
 private:
     class VehicleLifecycle : public traci::VehicleLifecycle
@@ -50,6 +54,8 @@ private:
         void addVehicle(const std::string& id) override;
         void removeVehicle(const std::string& id) override;
         void updateVehicle(const std::string& id) override;
+        void startVehicleParking(const std::string& id) override;
+        void endVehicleParking(const std::string& id) override;
 
     private:
         ExtensibleNodeManager* m_manager;

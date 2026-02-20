@@ -23,6 +23,8 @@ public:
     virtual void addVehicle(const std::string& id) = 0;
     virtual void updateVehicle(const std::string& id) = 0;
     virtual void removeVehicle(const std::string& id) = 0;
+    virtual void startVehicleParking(const std::string& id) = 0;
+    virtual void endVehicleParking(const std::string& id) = 0;
 
     virtual ~VehicleLifecycle() = default;
 };
