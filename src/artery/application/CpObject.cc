@@ -81,12 +81,9 @@ protected:
     void receiveSignal(cResultFilter* prev, simtime_t_cref t, cObject* object, cObject* details) override
     {
         if (auto cpm = dynamic_cast<CpObject*>(object)) {
-            // 42 bit sequence number (0..4398046511103). Minimum 6 bytes required.
-            static_assert(sizeof(unsigned long) >= 6, "unsigned long cannot represent ReferenceTime");
             const auto& referenceTime = cpm->asn1()->payload.managementContainer.referenceTime;
-            unsigned long genTime;
-            if(asn_INTEGER2ulong(&referenceTime, &genTime) == 0) {
-                // genTime = genTime | 0x3FFFFFFFFFF;
+            uint64_t genTime;
+            if(asn_INTEGER2uint64(&referenceTime, &genTime) == 0) {
                 fire(this, t, genTime, details);
             }
         }

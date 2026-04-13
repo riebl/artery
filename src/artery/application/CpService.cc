@@ -8,7 +8,7 @@
 #include "artery/application/Asn1PacketVisitor.h"
 #include "artery/application/MultiChannelPolicy.h"
 #include "artery/application/VehicleDataProvider.h"
-#include <artery/envmod/TraCIEnvironmentModelObject.h>
+#include "artery/envmod/TraCIEnvironmentModelObject.h"
 #include "artery/envmod/sensor/FovSensor.h"
 #include "artery/utility/simtime_cast.h"
 #include "veins/base/utils/Coord.h"
@@ -29,6 +29,13 @@ using namespace omnetpp;
 
 static const simsignal_t scSignalCpmReceived = cComponent::registerSignal("CpmReceived");
 static const simsignal_t scSignalCpmSent = cComponent::registerSignal("CpmSent");
+
+// CPM object/sensor ID allocation constants
+static constexpr std::size_t kCpmObjectIdSpace = 65536;
+static constexpr uint32_t kInvalidLemId = std::numeric_limits<uint32_t>::max();
+static constexpr std::size_t kCpmSensorIdSpace = 256;
+static constexpr int kInvalidLemSensorId = -1;
+static constexpr const_simtime_t kNeverUsedSimTime = -1;
 
 template<typename T, typename U>
 long round(const boost::units::quantity<T>& q, const U& u)
@@ -138,11 +145,11 @@ CpService::CpService() :
 void CpService::initialize()
 {
 	ItsG5BaseService::initialize();
-	mNetworkInterfaceTable = &getFacilities().get_const<NetworkInterfaceTable>();
-	mVehicleDataProvider = &getFacilities().get_const<VehicleDataProvider>();
-	mTimer = &getFacilities().get_const<Timer>();
-	mLocalDynamicMap = &getFacilities().get_mutable<artery::LocalDynamicMap>();
-    mLocalEnvironmentModel = &getFacilities().get_mutable<LocalEnvironmentModel>();
+	mNetworkInterfaceTable = getFacilities().get_const_ptr<NetworkInterfaceTable>();
+	mVehicleDataProvider = getFacilities().get_const_ptr<VehicleDataProvider>();
+	mTimer = getFacilities().get_const_ptr<Timer>();
+	mLocalDynamicMap = getFacilities().get_mutable_ptr<artery::LocalDynamicMap>();
+	mLocalEnvironmentModel = getFacilities().get_mutable_ptr<LocalEnvironmentModel>();
 
 	// avoid unreasonable high elapsed time values for newly inserted vehicles
 	mLastCpmTimestamp = simTime();
@@ -173,7 +180,6 @@ void CpService::initialize()
     mMaxLastInclusionTimePriorityThreshold = par("maxLastInclusionTimePriorityThreshold");
 
 	mUnusedObjectIdRetentionPeriod = par("unusedObjectIdRetentionPeriod");
-	kNeverUsedSimTime = SimTime(-1, SIMTIME_MS);
 	mHaveStationId = false;
 	mLastStationId = 0;
 	mLem2Cps.clear();
@@ -326,7 +332,7 @@ void CpService::captureSensorSnapshot(const omnetpp::SimTime& T_now, const std::
 		}
 		SensorSnapshot snap;
 		snap.sensor = sensor;
-		auto cpsId = tryAllocateCpmSensorId(T_now, sensor->getId());
+		auto cpsId = allocateCpmSensorId(T_now, sensor->getId());
 		if (!cpsId) {
 			EV_WARN << "no available CPS sensor ID";
 			continue;
@@ -406,8 +412,7 @@ void CpService::capturePerceivedObjectSnapshot(const omnetpp::SimTime& T_now, ui
 		}
 		int64_t lastDetectedTaiMs = countTaiMilliseconds(mTimer->getTimeFor(lastDetected));
 		int64_t deltaTime = referenceTime - lastDetectedTaiMs;
-		if (deltaTime < -2048) deltaTime = -2048;
-		else if (deltaTime > 2047) deltaTime = 2047;
+		deltaTime = std::clamp(deltaTime, int64_t(-2048), int64_t(2047));
 		snap.measurementDeltaTimeMs = static_cast<long>(deltaTime);
 
 		// first detected time
@@ -423,12 +428,11 @@ void CpService::capturePerceivedObjectSnapshot(const omnetpp::SimTime& T_now, ui
 		}
 		int64_t firstDetectedTaiMs = countTaiMilliseconds(mTimer->getTimeFor(firstDetected));
 		int64_t age = referenceTime - firstDetectedTaiMs;
-		if (age < 0) age = 0;
-		else if (age > 2047) age = 2047;
+		age = std::clamp(age, int64_t(0), int64_t(2047));
 		snap.objectAgeMs = age;
 
 		// replace LEM identifier with standard compliant CPM object ID (0..65535, random, reuse holdoff)
-		const auto cpsId = tryAllocateCpmObjectId(T_now, snap.lemId, snap.objectAgeMs);
+		const auto cpsId = allocateCpmObjectId(T_now, snap.lemId, snap.objectAgeMs);
 		if (!cpsId) {
 			EV_WARN << "no available CPS object ID";
 			continue;
@@ -650,9 +654,11 @@ bool CpService::checkPerceivedObjectTrigger(const SimTime& T_now)
 
 double CpService::calculateUtilityFunction(const PerceivedObjectSnapshot& po, double distanceDiff, double speedDiff, double orientationDiff, double lastInclusionSeconds)
 {
+	static constexpr double kMaxObjectPerceptionQuality = static_cast<double>(Vanetza_ITS2_ObjectPerceptionQuality_fullConfidence);
+
 	double ouf = 0.0;
 
-	ouf += static_cast<double>(po.objectPerceptionQuality) / 15.0;
+	ouf += static_cast<double>(po.objectPerceptionQuality) / kMaxObjectPerceptionQuality;
 	if (distanceDiff > mMinPositionChangePriorityThreshold.value()) {
 		ouf += std::min(1.0, (distanceDiff - mMinPositionChangePriorityThreshold.value()) / (mMaxPositionChangePriorityThreshold.value() - mMinPositionChangePriorityThreshold.value()));
 	}
@@ -719,16 +725,7 @@ void CpService::handlePseudonymChange()
 	std::fill(mCps2SensorId.begin(), mCps2SensorId.end(), kInvalidLemSensorId);
 }
 
-/*uint16_t CpService::allocateCpmObjectId(const omnetpp::SimTime& T_now, uint32_t lemId, int64_t objectAgeMs)
-{
-	auto cpsId = tryAllocateCpmObjectId(T_now, lemId, objectAgeMs);
-	if (cpsId) {
-		return *cpsId;
-	}
-	throw cRuntimeError("No available CPM objectId (Identifier2B space exhausted or retention too strict)");
-}*/
-
-std::optional<uint16_t> CpService::tryAllocateCpmObjectId(const omnetpp::SimTime& T_now, uint32_t lemId, int64_t objectAgeMs)
+std::optional<uint16_t> CpService::allocateCpmObjectId(const omnetpp::SimTime& T_now, uint32_t lemId, int64_t objectAgeMs)
 {
 	const int64_t retentionSigned = mUnusedObjectIdRetentionPeriod.inUnit(SIMTIME_MS);
 	const SimTime retention = retentionSigned > 0 ? SimTime(retentionSigned, SIMTIME_MS) : SimTime(0, SIMTIME_MS);
@@ -800,16 +797,7 @@ std::optional<uint16_t> CpService::tryAllocateCpmObjectId(const omnetpp::SimTime
 	return chosen;
 }
 
-/*uint8_t CpService::allocateCpmSensorId(const omnetpp::SimTime& T_now, const int sensorId)
-{
-	auto cpsId = tryAllocateCpmSensorId(T_now, sensorId);
-	if (cpsId) {
-		return *cpsId;
-	}
-	throw cRuntimeError("No available CPM sensorId (Identifier1B space exhausted or retention too strict)");
-}*/
-
-std::optional<uint8_t> CpService::tryAllocateCpmSensorId(const omnetpp::SimTime& T_now, const int sensorId)
+std::optional<uint8_t> CpService::allocateCpmSensorId(const omnetpp::SimTime& T_now, const int sensorId)
 {
 	// reuse existing mapping for this sensorId
 	auto it = mSensorId2Cps.find(sensorId);

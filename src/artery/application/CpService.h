@@ -124,10 +124,8 @@ class CpService : public ItsG5BaseService
 		void sortPerceivedObjects();
 		omnetpp::SimTime genCpmDcc();
 		void handlePseudonymChange();
-		// uint16_t allocateCpmObjectId(const omnetpp::SimTime& T_now, uint32_t lemId, int64_t objectAgeMs);
-		std::optional<uint16_t> tryAllocateCpmObjectId(const omnetpp::SimTime& T_now, uint32_t lemId, int64_t objectAgeMs);
-		// uint8_t allocateCpmSensorId(const omnetpp::SimTime& T_now, const int sensorId);
-		std::optional<uint8_t> tryAllocateCpmSensorId(const omnetpp::SimTime& T_now, const int sensorId);
+		std::optional<uint16_t> allocateCpmObjectId(const omnetpp::SimTime& T_now, uint32_t lemId, int64_t objectAgeMs);
+		std::optional<uint8_t> allocateCpmSensorId(const omnetpp::SimTime& T_now, const int sensorId);
 		PerceivedObjectType toPOType(vanetza::geonet::StationType st);
 
 		ChannelNumber mPrimaryChannel = channel::CCH;
@@ -164,11 +162,8 @@ class CpService : public ItsG5BaseService
 
 		// CPM object ID allocation. ETSI TS 103 324 (0..65535, reuse holdoff, reset on pseudonym change)
 		omnetpp::SimTime mUnusedObjectIdRetentionPeriod;
-		static constexpr std::size_t kCpmObjectIdSpace = 65536;
-		static constexpr uint32_t kInvalidLemId = std::numeric_limits<uint32_t>::max();
-		omnetpp::SimTime kNeverUsedSimTime;
-		bool mHaveStationId = false;
-		uint32_t mLastStationId = 0;
+		bool mHaveStationId;
+		uint32_t mLastStationId;
 		std::unordered_map<uint32_t, uint16_t> mLem2Cps;
 		std::vector<uint32_t> mCps2Lem;
 		std::vector<omnetpp::SimTime> mCpmObjectIdLastUsed;
@@ -177,8 +172,6 @@ class CpService : public ItsG5BaseService
 
 		// CPM sensorId allocation. ETSI TS 103 324 (0..255, stable mapping, reuse holdoff, reset on pseudonym change)
 		omnetpp::SimTime mUnusedSensorIdRetentionPeriod;
-		static constexpr std::size_t kCpmSensorIdSpace = 256;
-		static constexpr int kInvalidLemSensorId = -1;
 		std::unordered_map<int, uint8_t> mSensorId2Cps;
 		std::vector<int> mCps2SensorId; // cpsId -> LEM sensorId, kInvalidLemSensorId if not in use
 		std::vector<omnetpp::SimTime> mCpmSensorIdLastUsed;
