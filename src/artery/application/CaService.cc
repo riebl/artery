@@ -10,6 +10,7 @@
 #include "artery/application/MultiChannelPolicy.h"
 #include "artery/application/VehicleDataProvider.h"
 #include "artery/utility/simtime_cast.h"
+#include "artery/utility/round.h"
 #include "veins/base/utils/Coord.h"
 #include <boost/units/cmath.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
@@ -33,13 +34,6 @@ auto centimeter_per_second = vanetza::units::si::meter_per_second * boost::units
 static const simsignal_t scSignalCamReceived = cComponent::registerSignal("CamReceived");
 static const simsignal_t scSignalCamSent = cComponent::registerSignal("CamSent");
 static const auto scLowFrequencyContainerInterval = std::chrono::milliseconds(500);
-
-template<typename T, typename U>
-long round(const boost::units::quantity<T>& q, const U& u)
-{
-	boost::units::quantity<U> v { q };
-	return std::round(v.value());
-}
 
 SpeedValue_t buildSpeedValue(const vanetza::units::Velocity& v)
 {

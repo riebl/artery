@@ -11,6 +11,7 @@
 #include "artery/envmod/TraCIEnvironmentModelObject.h"
 #include "artery/envmod/sensor/FovSensor.h"
 #include "artery/utility/simtime_cast.h"
+#include "artery/utility/round.h"
 #include "veins/base/utils/Coord.h"
 #include <boost/units/cmath.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
@@ -36,13 +37,6 @@ static constexpr uint32_t kInvalidLemId = std::numeric_limits<uint32_t>::max();
 static constexpr std::size_t kCpmSensorIdSpace = 256;
 static constexpr int kInvalidLemSensorId = -1;
 static constexpr const_simtime_t kNeverUsedSimTime = -1;
-
-template<typename T, typename U>
-long round(const boost::units::quantity<T>& q, const U& u)
-{
-	boost::units::quantity<U> v { q };
-	return std::round(v.value());
-}
 
 void setPOClassification(Vanetza_ITS2_PerceivedObject_t& po, vanetza::geonet::StationType st)
 {
