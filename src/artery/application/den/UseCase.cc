@@ -1,8 +1,10 @@
 #include "artery/application/den/UseCase.h"
+
 #include "artery/application/DenService.h"
 #include "artery/application/StoryboardSignal.h"
 #include "artery/application/VehicleDataProvider.h"
 #include "artery/utility/round.h"
+
 #include <boost/units/systems/si/prefixes.hpp>
 #include <omnetpp/checkandcast.h>
 

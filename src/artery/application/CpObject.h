@@ -3,6 +3,7 @@
 
 #include <omnetpp/cobject.h>
 #include <vanetza/asn1/cpm.hpp>
+
 #include <memory>
 
 namespace artery
@@ -35,6 +36,6 @@ private:
     std::shared_ptr<const Cpm> m_cpm_wrapper;
 };
 
-} // namespace artery
+}  // namespace artery
 
 #endif /* ARTERY_CPOBJECT_H_ */

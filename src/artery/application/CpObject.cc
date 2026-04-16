@@ -1,5 +1,6 @@
 #include <artery/application/CpObject.h>
 #include <omnetpp.h>
+
 #include <cassert>
 
 namespace artery
@@ -7,8 +8,7 @@ namespace artery
 
 Register_Abstract_Class(CpObject)
 
-CpObject::CpObject(Cpm&& cpm) :
-    m_cpm_wrapper(std::make_shared<Cpm>(std::move(cpm)))
+CpObject::CpObject(Cpm&& cpm) : m_cpm_wrapper(std::make_shared<Cpm>(std::move(cpm)))
 {
 }
 
@@ -18,8 +18,7 @@ CpObject& CpObject::operator=(Cpm&& cpm)
     return *this;
 }
 
-CpObject::CpObject(const Cpm& cpm) :
-    m_cpm_wrapper(std::make_shared<Cpm>(cpm))
+CpObject::CpObject(const Cpm& cpm) : m_cpm_wrapper(std::make_shared<Cpm>(cpm))
 {
 }
 
@@ -29,8 +28,7 @@ CpObject& CpObject::operator=(const Cpm& cpm)
     return *this;
 }
 
-CpObject::CpObject(const std::shared_ptr<const Cpm>& ptr) :
-    m_cpm_wrapper(ptr)
+CpObject::CpObject(const std::shared_ptr<const Cpm>& ptr) : m_cpm_wrapper(ptr)
 {
     assert(m_cpm_wrapper);
 }
@@ -55,7 +53,7 @@ const Cpm& CpObject::asn1() const
 
 omnetpp::cObject* CpObject::dup() const
 {
-    return new CpObject { *this };
+    return new CpObject{*this};
 }
 
 using namespace omnetpp;
@@ -83,7 +81,7 @@ protected:
         if (auto cpm = dynamic_cast<CpObject*>(object)) {
             const auto& referenceTime = cpm->asn1()->payload.managementContainer.referenceTime;
             uint64_t genTime;
-            if(asn_INTEGER2uint64(&referenceTime, &genTime) == 0) {
+            if (asn_INTEGER2uint64(&referenceTime, &genTime) == 0) {
                 fire(this, t, genTime, details);
             }
         }
@@ -92,4 +90,4 @@ protected:
 
 Register_ResultFilter("cpmReferenceTime", CpmReferenceTimeResultFilter)
 
-} // namespace artery
+}  // namespace artery
