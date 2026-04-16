@@ -1,7 +1,10 @@
 #include "artery/application/den/UseCase.h"
+
 #include "artery/application/DenService.h"
 #include "artery/application/StoryboardSignal.h"
 #include "artery/application/VehicleDataProvider.h"
+#include "artery/utility/round.h"
+
 #include <boost/units/systems/si/prefixes.hpp>
 #include <omnetpp/checkandcast.h>
 
@@ -13,13 +16,6 @@ namespace den
 static const auto microdegree = vanetza::units::degree * boost::units::si::micro;
 static const auto decidegree = vanetza::units::degree * boost::units::si::deci;
 static const auto centimeter_per_second = vanetza::units::si::meter_per_second * boost::units::si::centi;
-
-template<typename T, typename U>
-long round(const boost::units::quantity<T>& q, const U& u)
-{
-    boost::units::quantity<U> v { q };
-    return std::round(v.value());
-}
 
 void UseCase::initialize(int stage)
 {
