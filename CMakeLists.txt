@@ -16,9 +16,22 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 # Artery Options #
 ##################
 
-# These are essential componets that are better to be turned on.
+# These are essential components that are better to be turned on.
 option(WITH_INET "Build Artery with INET framework integration" ON)
 option(WITH_VEINS "Build Artery with Veins framework integration" ON)
+
+# Artery may run with SUMO, using one of available communication APIs.
+# libsumo can only be used if Artery runs SUMO by itself, so connecting
+# to the existing SUMO instance is only possible with slower libtraci API.
+# Switching both options to OFF disables SUMO integration.
+option(WITH_LIBTRACI "Build Artery with SUMO support via libtraci" ON)
+option(WITH_LIBSUMO "Build Artery with SUMO support via libsumo" OFF)
+
+set(WITH_SUMO WITH_LIBSUMO OR WITH_LIBTRACI)
+
+if(WITH_LIBTRACI AND WITH_LIBSUMO)
+    message(ERROR "Cannot set SUMO support with libsumo & libtraci at the same time")
+endif()
 
 # Various extensions, adjust them as needed.
 option(WITH_SIMULTE "Build Artery with SimuLTE integration" OFF)
@@ -67,6 +80,7 @@ include(GNUInstallDirs)
 # checks on them only if variables (WITH*)
 # are set.
 
+find_package(SUMO QUIET)
 find_package(Protobuf QUIET)
 find_package(PkgConfig MODULE QUIET)
 find_package(SEA_V2X CONFIG QUIET)
@@ -107,10 +121,10 @@ endmacro()
 # Artery #
 ##########
 
-add_subdirectory(src/traci)
 add_subdirectory(src/artery)
 
 add_artery_subdirectory(src/ots REQUIRES INET PkgConfig::ZEROMQ SWITCH WITH_OTS)
+add_artery_subdirectory(src/traci REQUIRES INET SUMO::libsumocpp SWITCH WITH_SUMO)
 
 # scenarios directory is part of repository but omitted for Docker build context
 if(WITH_SCENARIOS)
