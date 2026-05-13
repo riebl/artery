@@ -134,4 +134,10 @@ void InetVehicleMobility::initialize(int stage)
     InetMobility::initialize(stage);
 }
 
+double InetVehicleMobility::getMaxSpeed() const
+{
+    auto maxSpeed = mController->getMaxSpeed() / boost::units::si::meter_per_second;
+    return maxSpeed;
+}
+
 } // namespace artery
