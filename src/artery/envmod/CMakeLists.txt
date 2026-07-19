@@ -17,4 +17,6 @@ add_artery_feature(envmod
     service/CollectivePerceptionMockMessage.cc
     service/CollectivePerceptionMockService.cc
     service/EnvmodPrinter.cc
+    service/CpService.cc
+    service/CpObject.cc
 )
