@@ -6,11 +6,11 @@
 #include "artery/envmod/service/CpService.h"
 
 #include "artery/application/Asn1PacketVisitor.h"
-#include "artery/envmod/service/CpObject.h"
 #include "artery/application/MultiChannelPolicy.h"
 #include "artery/application/VehicleDataProvider.h"
 #include "artery/envmod/TraCIEnvironmentModelObject.h"
 #include "artery/envmod/sensor/BaseSensor.h"
+#include "artery/envmod/service/CpObject.h"
 #include "artery/utility/round.h"
 
 #include <boost/units/cmath.hpp>
