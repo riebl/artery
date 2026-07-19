@@ -1,3 +1,4 @@
+import sys
 import unittest
 import argparse
 
@@ -26,7 +27,7 @@ def main():
         scenario_path = args.scenario_base_dir / scenario_name
         if not scenario_path.is_dir():
             raise FileNotFoundError
-        
+
         test_config = config_loader.test_config(scenario_name)
         for config in test_config.test_runner.tested_configurations:
             test_case = ArteryTestFactory.make(args.launch_conf, scenario_path, test_config, config)
@@ -35,6 +36,8 @@ def main():
     runner = unittest.TextTestRunner(verbosity=args.verbosity)
     result = runner.run(suite)
     result.printErrors()
+    if result.errors:
+        sys.exit(1)
 
 
 if __name__ == '__main__':

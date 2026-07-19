@@ -18,14 +18,24 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Configure CMake
+      - name: Prepare venv
+        run: python3 -m venv venv
+
+      - name: Install deps
+        run: . venv/bin/activate && pip install -r src/cavise/sionna/requirements.txt
+
+      - name: Generate Compile Commands
         run: |
-          tools/build.py -cl              \
-            --generator Ninja             \
-            -D WITH_SIMULTE:BOOL=ON       \
-            -D WITH_OTS:BOOL=ON           \
-            -D WITH_TESTBED:BOOL=ON       \
-            -D WITH_TRANSFUSION:BOOL=ON
+          . venv/bin/activate && python3 tools/build.py -cl \
+            --generator Ninja \
+            -D WITH_SIMULTE:BOOL=ON \
+            -D WITH_OTS:BOOL=ON \
+            -D WITH_TESTBED:BOOL=ON \
+            -D WITH_TESTS:BOOL=ON \
+            -D WITH_SIONNA:BOOL=ON \
+            -D WITH_TRANSFUSION:BOOL=ON \
+            -D CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON && \
+          cmake --build build/Debug --target artery-codegen
 
       - name: Build Artery codegen target
         run: cmake --build build/Debug --target artery-codegen

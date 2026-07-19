@@ -3,8 +3,6 @@ target_sources(core PRIVATE
     CaService.cc
     DenmObject.cc
     DenService.cc
-    CpService.cc
-    CpObject.cc
     ExampleService.cc
     GbcMockMessage.cc
     GbcMockService.cc

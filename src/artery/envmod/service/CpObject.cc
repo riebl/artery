@@ -1,4 +1,5 @@
-#include <artery/application/CpObject.h>
+#include "artery/envmod/service/CpObject.h"
+
 #include <omnetpp.h>
 
 #include <cassert>
