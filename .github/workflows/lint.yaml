@@ -22,7 +22,7 @@ jobs:
         run: python3 -m venv venv
 
       - name: Install deps
-        run: . venv/bin/activate && pip install -r src/cavise/sionna/requirements.txt
+        run: . venv/bin/activate && pip install -r src/artery/sionna/requirements.txt
 
       - name: Generate Compile Commands
         run: |
