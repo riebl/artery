@@ -3,17 +3,15 @@
  * Licensed under GPLv2, see COPYING file for detailed license and warranty terms.
  */
 
-#include "artery/application/CpService.h"
+#include "artery/envmod/service/CpService.h"
 
 #include "artery/application/Asn1PacketVisitor.h"
-#include "artery/application/CpObject.h"
+#include "artery/envmod/service/CpObject.h"
 #include "artery/application/MultiChannelPolicy.h"
 #include "artery/application/VehicleDataProvider.h"
 #include "artery/envmod/TraCIEnvironmentModelObject.h"
-#include "artery/envmod/sensor/FovSensor.h"
+#include "artery/envmod/sensor/BaseSensor.h"
 #include "artery/utility/round.h"
-#include "artery/utility/simtime_cast.h"
-#include "veins/base/utils/Coord.h"
 
 #include <boost/units/cmath.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
