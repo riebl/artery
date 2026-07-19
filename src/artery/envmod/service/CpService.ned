@@ -15,6 +15,8 @@
 
 package artery.envmod.service;
 
+import artery.application.ItsG5Service;
+
 simple CpService like ItsG5Service
 {
     parameters:
