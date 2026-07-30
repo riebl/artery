@@ -32,6 +32,7 @@ IndentPPDirectives: None
 IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: true
 MaxEmptyLinesToKeep: 2
+SpaceBeforeCpp11BracedList: true
 StatementMacros: [
   'Register_ResultFilter', 'Register_ResultFilter2',
   'Register_ResultRecorder', 'Register_ResultRecorder2',

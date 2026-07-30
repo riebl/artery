@@ -18,7 +18,8 @@ static const std::set<int> sPersonVariables {
     libsumo::VAR_POSITION, libsumo::VAR_SPEED, libsumo::VAR_ANGLE, libsumo::VAR_VEHICLE
 };
 static const std::set<int> sVehicleVariables {
-    libsumo::VAR_POSITION, libsumo::VAR_SPEED, libsumo::VAR_ANGLE
+    libsumo::VAR_POSITION, libsumo::VAR_SPEED, libsumo::VAR_ANGLE, libsumo::VAR_MAXSPEED
+    // VAR_MAXSPEED is cached for INET's MediumLimitCache
 };
 static const std::set<int> sSimulationVariables {
     libsumo::VAR_DEPARTED_VEHICLES_IDS, libsumo::VAR_ARRIVED_VEHICLES_IDS, libsumo::VAR_TELEPORT_STARTING_VEHICLES_IDS,
