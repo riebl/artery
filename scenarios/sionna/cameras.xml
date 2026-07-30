@@ -1,0 +1,22 @@
+<cameras>
+    <!-- Entry from city's north -->
+    <camera
+        id="limassol_north"
+        position="-0.94 415.13 -390.19"
+        orientation="-1.99 -0.46 2.18"
+    />
+
+    <!-- Seaside entry from the right of the map -->
+    <camera
+        id="limassol_seaside_entry_right"
+        position="850 199 -263"
+        orientation="-2.8 -0.25 1.1"
+    />
+
+    <!-- City district with single vehicle -->
+    <camera
+        id="limassol_district"
+        position="436.7 186.98 -280.29"
+        orientation="-1.99 -0.46 2.18"
+    />
+</cameras>
