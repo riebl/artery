@@ -18,7 +18,6 @@
 #include <vanetza/units/velocity.hpp>
 
 #include <cstdint>
-#include <limits>
 #include <optional>
 #include <unordered_map>
 #include <vector>
