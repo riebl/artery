@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<regions>
+    <polygon name="urban">
+        <point x="4182.04" y="379.95" />
+        <point x="3628.42" y="1368.03" />
+        <point x="4420.35" y="2851.07" />
+        <point x="5391.93" y="3798.82" />
+        <point x="6702.66" y="3974.80" />
+        <point x="6180.20" y="1793.32" />
+    </polygon>
+</regions>

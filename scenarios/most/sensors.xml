@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sensors>
+	<sensor name="FrontShortRangeRadar" type="artery.envmod.sensor.FrontRadar" />
+	<sensor type="artery.envmod.sensor.CamSensor" />
+</sensors>
