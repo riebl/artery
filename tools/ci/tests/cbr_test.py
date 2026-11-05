@@ -17,6 +17,10 @@ def average_cbr_test(test: TestCase, data: SimRecordedData, test_options: TestOp
 
     mask = data.scalar['scalarName'] == 'ChannelLoad:timeavg'
     cbr_values = data.scalar[mask]['scalarValue']
+    test.assertGreater(
+        len(cbr_values), 0,
+        'no ChannelLoad:timeavg CBR observations were recorded'
+    )
     match cbr:
         case 'greater':
             test.assertTrue(

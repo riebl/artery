@@ -37,7 +37,7 @@ def main():
     result = runner.run(suite)
     result.printErrors()
 
-    if result.errors:
+    if not result.wasSuccessful():
         sys.exit(1)
 
 
