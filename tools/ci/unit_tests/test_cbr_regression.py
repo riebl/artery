@@ -63,9 +63,11 @@ class CbrRegressionTest(unittest.TestCase):
         cases = (
             ('greater', [(True, 1.1)], True),
             ('greater', [(True, 1.0)], False),
+            ('greater', [(True, 0.9)], False),
             ('greater', [(True, 1.1), (True, float('nan'))], False),
             ('less', [(True, 0.9)], True),
             ('less', [(True, 1.0)], False),
+            ('less', [(True, 1.1)], False),
             ('less', [(True, 0.9), (True, float('nan'))], False),
         )
         for comparator, scalar_rows, expected_success in cases:

@@ -24,6 +24,9 @@ jobs:
       - name: Install pip dependencies
         run: . .venv/bin/activate && pip install -r tools/ci/requirements.txt
 
+      - name: Run unit tests
+        run: . .venv/bin/activate && PYTHONPATH=$PWD python3 -m unittest discover -s tools/ci/unit_tests -v
+
       - name: Configure and build CMake
         run: |
           tools/build.py -cb --config Release \
