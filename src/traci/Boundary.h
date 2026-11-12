@@ -36,4 +36,3 @@ private:
 } // namespace traci
 
 #endif /* BOUNDARY_H_5S0VZLYU */
-
