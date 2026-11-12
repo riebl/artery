@@ -1,8 +1,11 @@
 #include "traci/Core.h"
-#include "traci/Launcher.h"
+
 #include "traci/API.h"
+#include "traci/Launcher.h"
 #include "traci/SubscriptionManager.h"
+
 #include <inet/common/ModuleAccess.h>
+
 #include <limits>
 
 Define_Module(traci::Core)
@@ -15,7 +18,7 @@ namespace
 const simsignal_t initSignal = cComponent::registerSignal("traci.init");
 const simsignal_t stepSignal = cComponent::registerSignal("traci.step");
 const simsignal_t closeSignal = cComponent::registerSignal("traci.close");
-}
+}  // namespace
 
 namespace traci
 {
@@ -67,7 +70,7 @@ void Core::handleMessage(cMessage* msg)
         checkVersion();
         syncTime();
         emit(initSignal, simTime());
-        m_updateInterval = Time { m_traci->simulation.getDeltaT() };
+        m_updateInterval = Time{m_traci->simulation.getDeltaT()};
         scheduleAt(simTime() + m_updateInterval, m_updateEvent);
     }
 }
@@ -96,7 +99,7 @@ void Core::checkVersion()
 
 void Core::syncTime()
 {
-    SimTime offset { m_traci->simulation.getCurrentTime(), SIMTIME_MS };
+    SimTime offset{m_traci->simulation.getCurrentTime(), SIMTIME_MS};
     const SimTime now = simTime();
     if (!now.isZero()) {
         m_traci->simulationStep((now + offset).dbl());
@@ -108,4 +111,4 @@ std::shared_ptr<API> Core::getAPI()
     return m_traci;
 }
 
-} // namespace traci
+}  // namespace traci

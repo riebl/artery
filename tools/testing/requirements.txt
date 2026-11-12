@@ -1,0 +1,4 @@
+pandas
+pyaml
+rich
+pytest
