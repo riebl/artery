@@ -6,7 +6,8 @@ test_runner: !test_runner
   tested_configurations: 
     - General
 
-  sim_time_limit: 90
+  # The station-count fixture describes the first 30 seconds of traffic.
+  sim_time_limit: 30
 
 scenario: !scenario
   dynamic_nodes: 30

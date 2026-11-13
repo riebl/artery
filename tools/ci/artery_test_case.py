@@ -45,9 +45,10 @@ class ArteryTestCaseBase(TestCase):
 
     @classmethod
     def __preprocess_run_options(cls):
+        cls.run_options = dict(cls.run_options)
         runner_config = cls.test_config.test_runner
         if runner_config.sim_time_limit is not None:
-            cls.run_options['sim-time-limit'] = '30s'
+            cls.run_options['sim-time-limit'] = f'{runner_config.sim_time_limit}s'
 
     @classmethod
     def setUpClass(cls):
