@@ -23,6 +23,8 @@ def coordinates_span_test(test: TestCase, data: SimRecordedData, test_options: T
     merged = pd.merge(posX, posY, on='moduleName', how='inner')
     filtered = merged[['moduleName', 'vectorId_posX', 'vectorId_posY']]
 
+    test.assertFalse(filtered.empty, 'no paired posX/posY vectors; cannot verify coordinate spans')
+
     for module, posX_id, posY_id in filtered.itertuples(index=False, name=None):
         X_values = data.vectorData[data.vectorData['vectorId'] == posX_id]['value']
         Y_values = data.vectorData[data.vectorData['vectorId'] == posY_id]['value']
@@ -54,4 +56,3 @@ def coordinates_span_test(test: TestCase, data: SimRecordedData, test_options: T
             posY_min_span <= Y_span < posY_max_span,
             f'{module}: expected Y_span {Y_span} to be in ({posY_min_span}, {posY_max_span})'
         )
-        
