@@ -1,1 +1,2 @@
 docs/assets/* filter=lfs diff=lfs merge=lfs -text
+scenarios/sionna/meshes/*.ply filter=lfs diff=lfs merge=lfs -text

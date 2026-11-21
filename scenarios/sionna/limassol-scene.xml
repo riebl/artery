@@ -1,0 +1,100 @@
+<scene version="2.1.0">
+
+<!-- Defaults, these can be set via the command line: -Darg=value -->
+
+	<default name="spp" value="4096" />
+	<default name="resx" value="1920" />
+	<default name="resy" value="1080" />
+
+<!-- Materials -->
+
+	<bsdf type="itu-radio-material" id="mat-brick" name="mat-brick">
+		<string name="type" value="brick" />
+		<float name="thickness" value="0.1" />
+	</bsdf>
+	<bsdf type="itu-radio-material" id="mat-concrete" name="mat-concrete">
+		<string name="type" value="concrete" />
+		<float name="thickness" value="0.1" />
+	</bsdf>
+	<bsdf type="itu-radio-material" id="mat-dry-ground" name="mat-dry-ground">
+		<string name="type" value="medium_dry_ground" />
+		<float name="thickness" value="0.1" />
+	</bsdf>
+
+<!-- Emitters -->
+
+	<emitter type="directional" id="elm__2" name="elm__2">
+		<rgb value="3.000000 3.000000 3.000000" name="irradiance" />
+		<transform name="to_world">
+			<matrix
+                value="1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 -1.000000 398.492035 0.000000 1.000000 0.000000 469.706757 0.000000 0.000000 0.000000 1.000000"
+            />
+		</transform>
+	</emitter>
+
+<!-- Shapes -->
+
+	<shape type="ply" id="elm__5" name="elm__5">
+		<string name="filename" value="meshes/map_osm_buildings-wall.ply" />
+		<boolean name="face_normals" value="true" />
+		<ref id="mat-brick" name="bsdf" />
+	</shape>
+	<shape type="ply" id="elm__6" name="elm__6">
+		<string name="filename" value="meshes/map_osm_buildings-roof.ply" />
+		<boolean name="face_normals" value="true" />
+		<ref id="mat-concrete" name="bsdf" />
+	</shape>
+	<shape type="ply" id="elm__8" name="elm__8">
+		<string name="filename" value="meshes/map_osm_roads_tertiary.ply" />
+		<ref id="mat-concrete" name="bsdf" />
+	</shape>
+	<shape type="ply" id="elm__10" name="elm__10">
+		<string name="filename" value="meshes/map_osm_roads_residential.ply" />
+		<ref id="mat-concrete" name="bsdf" />
+	</shape>
+	<shape type="ply" id="elm__12" name="elm__12">
+		<string name="filename" value="meshes/map_osm_roads_pedestrian.ply" />
+		<ref id="mat-concrete" name="bsdf" />
+	</shape>
+	<shape type="ply" id="elm__14" name="elm__14">
+		<string name="filename" value="meshes/map_osm_roads_service.ply" />
+		<ref id="mat-concrete" name="bsdf" />
+	</shape>
+	<shape type="ply" id="elm__16" name="elm__16">
+		<string name="filename" value="meshes/map_osm_roads_primary.ply" />
+		<ref id="mat-concrete" name="bsdf" />
+	</shape>
+	<shape type="ply" id="elm__18" name="elm__18">
+		<string name="filename" value="meshes/map_osm_roads_secondary.ply" />
+		<ref id="mat-concrete" name="bsdf" />
+	</shape>
+	<shape type="ply" id="elm__20" name="elm__20">
+		<string name="filename" value="meshes/map_osm_paths_footway.ply" />
+		<ref id="mat-concrete" name="bsdf" />
+	</shape>
+	<shape type="ply" id="elm__22" name="elm__22">
+		<string name="filename" value="meshes/map_osm_vegetation.ply" />
+		<boolean name="face_normals" value="true" />
+		<ref id="mat-concrete" name="bsdf" />
+	</shape>
+	<shape type="ply" id="elm__24" name="elm__24">
+		<string name="filename" value="meshes/Terrain.ply" />
+		<ref id="mat-dry-ground" name="bsdf" />
+	</shape>
+	<shape type="ply" id="elm__26" name="elm__26">
+		<string name="filename" value="meshes/map_osm_paths_cycleway.ply" />
+		<ref id="mat-concrete" name="bsdf" />
+	</shape>
+	<shape type="ply" id="elm__28" name="elm__28">
+		<string name="filename" value="meshes/map_osm_areas_pedestrian.ply" />
+		<boolean name="face_normals" value="true" />
+		<ref id="mat-concrete" name="bsdf" />
+	</shape>
+	<shape type="ply" id="elm__30" name="elm__30">
+		<string name="filename" value="meshes/map_osm_paths_steps.ply" />
+		<ref id="mat-concrete" name="bsdf" />
+	</shape>
+
+<!-- Volumes -->
+
+</scene>

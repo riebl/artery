@@ -27,4 +27,3 @@ using artery::position_cast;
 } // namespace traci
 
 #endif /* ARTERY_TRACI_H_E0WJI6AS */
-

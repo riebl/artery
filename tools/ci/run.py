@@ -36,6 +36,8 @@ def main():
     runner = unittest.TextTestRunner(verbosity=args.verbosity)
     result = runner.run(suite)
     result.printErrors()
+    if result.errors:
+        sys.exit(1)
 
     if not result.wasSuccessful():
         sys.exit(1)

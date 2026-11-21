@@ -35,6 +35,7 @@ add_artery_subdirectory(storyboard SWITCH WITH_STORYBOARD)
 
 add_artery_subdirectory(transfusion REQUIRES protobuf::libprotobuf SWITCH WITH_TRANSFUSION)
 add_artery_subdirectory(testbed REQUIRES INET SWITCH WITH_TESTBED)
+add_artery_subdirectory(sionna REQUIRES INET SWITCH WITH_SIONNA)
 
 if(TARGET lte)
     # SimuLTE is a non-integral feature: add it to "artery" but not "core"
